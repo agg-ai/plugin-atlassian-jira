@@ -1,0 +1,29 @@
+# OpenAPI Generator Ignore
+# Prevents the generator from overwriting our Kestra project files
+
+# Build files
+build.gradle
+settings.gradle
+gradle.properties
+gradlew
+gradlew.bat
+gradle/
+
+# Documentation (we'll create our own)
+README.md
+docs/
+
+# Extra build files we don't need
+pom.xml
+build.sbt
+.travis.yml
+.gitlab-ci.yml
+git_push.sh
+api/
+
+# Test files (we write our own Kestra tests)
+src/test/
+
+# Git
+.gitignore
+

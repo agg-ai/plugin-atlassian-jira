@@ -9,6 +9,7 @@ plugins {
     id 'signing'
     id "com.github.ben-manes.versions" version "0.53.0"
     id 'net.researchgate.release' version '3.1.0'
+    id "org.openapi.generator" version "7.17.0"
 }
 
 def isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
@@ -49,8 +50,50 @@ dependencies {
     annotationProcessor group: "io.kestra", name: "processor", version: kestraVersion
     compileOnly group: "io.kestra", name: "core", version: kestraVersion
     compileOnly group: "io.kestra", name: "script", version: kestraVersion
+
+    // OpenAPI generated client dependencies
+    compileOnly "io.swagger.core.v3:swagger-annotations:2.2.26"
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+    compileOnly "com.fasterxml.jackson.core:jackson-databind"
+    compileOnly "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    compileOnly "org.openapitools:jackson-databind-nullable:0.2.6"
 }
 
+/**********************************************************************************************************************\
+ * OpenAPI Generator Configuration
+ **********************************************************************************************************************/
+openApiGenerate {
+    generatorName = "java"
+    inputSpec = "$rootDir/openapi/swagger-v3.v3.json".toString()
+    outputDir = "$rootDir".toString()
+    apiPackage = "io.kestra.plugin.jira.client.api"
+    modelPackage = "io.kestra.plugin.jira.client.model"
+    invokerPackage = "io.kestra.plugin.jira.client.invoker"
+    
+    // Generate into src/main/java
+    additionalProperties = [
+        sourceFolder: "src/main/java"
+    ]
+    
+    // Skip generation of extra files we don't need
+    generateApiTests = false
+    generateModelTests = false
+    generateApiDocumentation = false
+    generateModelDocumentation = false
+    
+    configOptions = [
+        library: "native",                    // Java 11+ HttpClient (no extra dependencies)
+        dateLibrary: "java8",                 // Use java.time classes
+        serializationLibrary: "jackson",      // Use Jackson for JSON
+        hideGenerationTimestamp: "true",      // Better for version control
+        useJakartaEe: "false",               // Use javax instead of jakarta
+        // openApiNullable: "false",            // Simpler code without JsonNullable wrapper
+        documentationProvider: "source"      // Include Javadoc in generated code
+    ]
+}
+
+// Note: We do NOT add compileJava.dependsOn tasks.openApiGenerate
+// This is intentional - we want to generate once and commit, not on every build
 
 /**********************************************************************************************************************\
  * Test
