@@ -30,7 +30,7 @@ java {
 }
 
 group = "io.kestra.plugin"
-description = 'Plugin template for Kestra'
+description = 'Kestra plugin for Atlassian Jira integration'
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
@@ -56,22 +56,23 @@ dependencies {
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
     compileOnly "javax.annotation:javax.annotation-api:1.3.2"
     
-    // OkHttp dependencies (HTTP client)
-    compileOnly "com.squareup.okhttp3:okhttp:4.12.0"
-    compileOnly "com.squareup.okhttp3:logging-interceptor:4.12.0"
-    compileOnly "com.squareup.okio:okio:3.6.0"
+    // OkHttp dependencies (HTTP client) - must be implementation for shadowJar
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.12.0"
+    implementation "com.squareup.okio:okio:3.6.0"
     
     // Jackson dependencies (for JSON serialization)
-    compileOnly "com.fasterxml.jackson.core:jackson-databind"
-    compileOnly "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    compileOnly "org.openapitools:jackson-databind-nullable:0.2.6"
+    // Note: Kestra platform provides Jackson core, but these need to be bundled
+    compileOnly "com.fasterxml.jackson.core:jackson-databind"  // Provided by Kestra platform
+    compileOnly "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"  // Provided by Kestra platform
+    implementation "org.openapitools:jackson-databind-nullable:0.2.6"  // Must be bundled - not in Kestra platform
     
     // Gson dependencies (temporary - remove after regenerating with Jackson)
-    compileOnly "com.google.code.gson:gson:2.10.1"
-    compileOnly "io.gsonfire:gson-fire:1.9.0"
+    implementation "com.google.code.gson:gson:2.10.1"  // Must be bundled for okhttp-gson library
+    implementation "io.gsonfire:gson-fire:1.9.0"  // Must be bundled for okhttp-gson library
     
-    // OAuth dependencies (for okhttp-gson library)
-    compileOnly "org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:1.0.2"
+    // OAuth dependencies (for okhttp-gson library) - must be bundled
+    implementation "org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:1.0.2"
 }
 
 /**********************************************************************************************************************\
@@ -226,8 +227,8 @@ jar {
     manifest {
         attributes(
                 "X-Kestra-Name": project.name,
-                "X-Kestra-Title": "Template",
-                "X-Kestra-Group": project.group + ".templates",
+                "X-Kestra-Title": "Atlassian Jira",
+                "X-Kestra-Group": project.group + ".jira",
                 "X-Kestra-Description": project.description,
                 "X-Kestra-Version": project.version
         )
