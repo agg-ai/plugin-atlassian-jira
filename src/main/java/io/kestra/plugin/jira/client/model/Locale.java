@@ -19,7 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
+// import java.util.Locale; // Commented out to avoid conflict with model class name
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -34,7 +34,7 @@ import io.kestra.plugin.jira.client.invoker.ApiClient;
  * Details of a locale.
  */
 @JsonPropertyOrder({
-  Locale.JSON_PROPERTY_LOCALE
+  io.kestra.plugin.jira.client.model.Locale.JSON_PROPERTY_LOCALE
 })
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Locale {
@@ -45,7 +45,7 @@ public class Locale {
   public Locale() { 
   }
 
-  public Locale locale(@javax.annotation.Nullable String locale) {
+  public io.kestra.plugin.jira.client.model.Locale locale(@javax.annotation.Nullable String locale) {
     this.locale = locale;
     return this;
   }
@@ -80,7 +80,7 @@ public class Locale {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Locale locale = (Locale) o;
+    io.kestra.plugin.jira.client.model.Locale locale = (io.kestra.plugin.jira.client.model.Locale) o;
     return Objects.equals(this.locale, locale.locale);
   }
 
@@ -143,7 +143,7 @@ public class Locale {
 
     // add `locale` to the URL query string
     if (getLocale() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slocale%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocale()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%slocale%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocale()))));
     }
 
     return joiner.toString();

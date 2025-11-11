@@ -223,10 +223,10 @@ public class IssueFieldOptionConfiguration {
     // add `attributes` to the URL query string
     if (getAttributes() != null) {
       int i = 0;
-      for (String _item : getAttributes()) {
-        joiner.add(String.format(Locale.ROOT, "%sattributes%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+      for (AttributesEnum _item : getAttributes()) {
+        joiner.add(String.format(java.util.Locale.ROOT, "%sattributes%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
+            ApiClient.urlEncode(ApiClient.valueToString(_item != null ? _item.getValue() : null))));
       }
       i++;
     }
