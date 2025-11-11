@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-
 package io.kestra.plugin.jira.client.model;
 
 import java.util.Objects;
@@ -57,7 +56,7 @@ import io.kestra.plugin.jira.client.invoker.JSON;
  * The result of a JQL search with issues reconsilation.
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-public class SearchAndReconcileResults {
+public class SearchAndReconcileResults implements io.kestra.core.models.tasks.Output {
   public static final String SERIALIZED_NAME_IS_LAST = "isLast";
   @SerializedName(SERIALIZED_NAME_IS_LAST)
   @javax.annotation.Nullable
@@ -87,12 +86,11 @@ public class SearchAndReconcileResults {
   }
 
   public SearchAndReconcileResults(
-     Boolean isLast, 
-     List<IssueBean> issues, 
-     Map<String, String> names, 
-     String nextPageToken, 
-     Map<String, JsonTypeBean> schema
-  ) {
+      Boolean isLast,
+      List<IssueBean> issues,
+      Map<String, String> names,
+      String nextPageToken,
+      Map<String, JsonTypeBean> schema) {
     this();
     this.isLast = isLast;
     this.issues = issues;
@@ -103,6 +101,7 @@ public class SearchAndReconcileResults {
 
   /**
    * Indicates whether this is the last page of the paginated response.
+   * 
    * @return isLast
    */
   @javax.annotation.Nullable
@@ -110,10 +109,9 @@ public class SearchAndReconcileResults {
     return isLast;
   }
 
-
-
   /**
    * The list of issues found by the search or reconsiliation.
+   * 
    * @return issues
    */
   @javax.annotation.Nullable
@@ -121,10 +119,9 @@ public class SearchAndReconcileResults {
     return issues;
   }
 
-
-
   /**
    * The ID and name of each field in the search results.
+   * 
    * @return names
    */
   @javax.annotation.Nullable
@@ -132,10 +129,10 @@ public class SearchAndReconcileResults {
     return names;
   }
 
-
-
   /**
-   * Continuation token to fetch the next page. If this result represents the last or the only page this token will be null. This token will expire in 7 days.
+   * Continuation token to fetch the next page. If this result represents the last
+   * or the only page this token will be null. This token will expire in 7 days.
+   * 
    * @return nextPageToken
    */
   @javax.annotation.Nullable
@@ -143,19 +140,15 @@ public class SearchAndReconcileResults {
     return nextPageToken;
   }
 
-
-
   /**
    * The schema describing the field types in the search results.
+   * 
    * @return schema
    */
   @javax.annotation.Nullable
   public Map<String, JsonTypeBean> getSchema() {
     return schema;
   }
-
-
-
 
   @Override
   public boolean equals(Object o) {
@@ -202,7 +195,6 @@ public class SearchAndReconcileResults {
     return o.toString().replace("\n", "\n    ");
   }
 
-
   public static HashSet<String> openapiFields;
   public static HashSet<String> openapiRequiredFields;
 
@@ -218,68 +210,79 @@ public class SearchAndReconcileResults {
    * Validates the JSON Element and throws an exception if issues found
    *
    * @param jsonElement JSON Element
-   * @throws IOException if the JSON Element is invalid with respect to SearchAndReconcileResults
+   * @throws IOException if the JSON Element is invalid with respect to
+   *                     SearchAndReconcileResults
    */
   public static void validateJsonElement(JsonElement jsonElement) throws IOException {
-      if (jsonElement == null) {
-        if (!SearchAndReconcileResults.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
-          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SearchAndReconcileResults is not found in the empty JSON string", SearchAndReconcileResults.openapiRequiredFields.toString()));
-        }
+    if (jsonElement == null) {
+      if (!SearchAndReconcileResults.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+        throw new IllegalArgumentException(String.format(Locale.ROOT,
+            "The required field(s) %s in SearchAndReconcileResults is not found in the empty JSON string",
+            SearchAndReconcileResults.openapiRequiredFields.toString()));
       }
+    }
 
-      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-      // check to see if the JSON string contains additional fields
-      for (Map.Entry<String, JsonElement> entry : entries) {
-        if (!SearchAndReconcileResults.openapiFields.contains(entry.getKey())) {
-          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SearchAndReconcileResults` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
-        }
+    Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+    // check to see if the JSON string contains additional fields
+    for (Map.Entry<String, JsonElement> entry : entries) {
+      if (!SearchAndReconcileResults.openapiFields.contains(entry.getKey())) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT,
+            "The field `%s` in the JSON string is not defined in the `SearchAndReconcileResults` properties. JSON: %s",
+            entry.getKey(), jsonElement.toString()));
       }
-        JsonObject jsonObj = jsonElement.getAsJsonObject();
-      if (jsonObj.get("issues") != null && !jsonObj.get("issues").isJsonNull()) {
-        JsonArray jsonArrayissues = jsonObj.getAsJsonArray("issues");
-        if (jsonArrayissues != null) {
-          // ensure the json data is an array
-          if (!jsonObj.get("issues").isJsonArray()) {
-            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issues` to be an array in the JSON string but got `%s`", jsonObj.get("issues").toString()));
-          }
+    }
+    JsonObject jsonObj = jsonElement.getAsJsonObject();
+    if (jsonObj.get("issues") != null && !jsonObj.get("issues").isJsonNull()) {
+      JsonArray jsonArrayissues = jsonObj.getAsJsonArray("issues");
+      if (jsonArrayissues != null) {
+        // ensure the json data is an array
+        if (!jsonObj.get("issues").isJsonArray()) {
+          throw new IllegalArgumentException(
+              String.format(Locale.ROOT, "Expected the field `issues` to be an array in the JSON string but got `%s`",
+                  jsonObj.get("issues").toString()));
+        }
 
-          // validate the optional field `issues` (array)
-          for (int i = 0; i < jsonArrayissues.size(); i++) {
-            IssueBean.validateJsonElement(jsonArrayissues.get(i));
-          };
+        // validate the optional field `issues` (array)
+        for (int i = 0; i < jsonArrayissues.size(); i++) {
+          IssueBean.validateJsonElement(jsonArrayissues.get(i));
         }
+        ;
       }
-      if ((jsonObj.get("nextPageToken") != null && !jsonObj.get("nextPageToken").isJsonNull()) && !jsonObj.get("nextPageToken").isJsonPrimitive()) {
-        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `nextPageToken` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nextPageToken").toString()));
-      }
+    }
+    if ((jsonObj.get("nextPageToken") != null && !jsonObj.get("nextPageToken").isJsonNull())
+        && !jsonObj.get("nextPageToken").isJsonPrimitive()) {
+      throw new IllegalArgumentException(String.format(Locale.ROOT,
+          "Expected the field `nextPageToken` to be a primitive type in the JSON string but got `%s`",
+          jsonObj.get("nextPageToken").toString()));
+    }
   }
 
   public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-       if (!SearchAndReconcileResults.class.isAssignableFrom(type.getRawType())) {
-         return null; // this class only serializes 'SearchAndReconcileResults' and its subtypes
-       }
-       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-       final TypeAdapter<SearchAndReconcileResults> thisAdapter
-                        = gson.getDelegateAdapter(this, TypeToken.get(SearchAndReconcileResults.class));
+      if (!SearchAndReconcileResults.class.isAssignableFrom(type.getRawType())) {
+        return null; // this class only serializes 'SearchAndReconcileResults' and its subtypes
+      }
+      final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+      final TypeAdapter<SearchAndReconcileResults> thisAdapter = gson.getDelegateAdapter(this,
+          TypeToken.get(SearchAndReconcileResults.class));
 
-       return (TypeAdapter<T>) new TypeAdapter<SearchAndReconcileResults>() {
-           @Override
-           public void write(JsonWriter out, SearchAndReconcileResults value) throws IOException {
-             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
-             elementAdapter.write(out, obj);
-           }
+      return (TypeAdapter<T>) new TypeAdapter<SearchAndReconcileResults>() {
+        @Override
+        public void write(JsonWriter out, SearchAndReconcileResults value) throws IOException {
+          JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+          elementAdapter.write(out, obj);
+        }
 
-           @Override
-           public SearchAndReconcileResults read(JsonReader in) throws IOException {
-             JsonElement jsonElement = elementAdapter.read(in);
-             validateJsonElement(jsonElement);
-             return thisAdapter.fromJsonTree(jsonElement);
-           }
+        @Override
+        public SearchAndReconcileResults read(JsonReader in) throws IOException {
+          JsonElement jsonElement = elementAdapter.read(in);
+          validateJsonElement(jsonElement);
+          return thisAdapter.fromJsonTree(jsonElement);
+        }
 
-       }.nullSafe();
+      }.nullSafe();
     }
   }
 
@@ -288,7 +291,8 @@ public class SearchAndReconcileResults {
    *
    * @param jsonString JSON string
    * @return An instance of SearchAndReconcileResults
-   * @throws IOException if the JSON string is invalid with respect to SearchAndReconcileResults
+   * @throws IOException if the JSON string is invalid with respect to
+   *                     SearchAndReconcileResults
    */
   public static SearchAndReconcileResults fromJson(String jsonString) throws IOException {
     return JSON.getGson().fromJson(jsonString, SearchAndReconcileResults.class);
@@ -303,4 +307,3 @@ public class SearchAndReconcileResults {
     return JSON.getGson().toJson(this);
   }
 }
-

@@ -1,10 +1,10 @@
 {
-  "name": "plugin-template",
+  "name": "plugin-atlassian-jira",
   "build": {
     "context": ".",
     "dockerfile": "Dockerfile"
   },
-  "workspaceFolder": "/workspaces/plugin-template",
+  "workspaceFolder": "/workspaces/plugin-atlassian-jira",
   "forwardPorts": [8080],
   "customizations": {
     "vscode": {
