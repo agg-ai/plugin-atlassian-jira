@@ -13,42 +13,57 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraExpressionEvaluateContextBean;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The request to evaluate a Jira expression. This bean will be replacing &#x60;JiraExpressionEvaluateRequest&#x60; as part of new &#x60;evaluate&#x60; endpoint
  */
-@JsonPropertyOrder({
-  JiraExpressionEvaluateRequestBean.JSON_PROPERTY_CONTEXT,
-  JiraExpressionEvaluateRequestBean.JSON_PROPERTY_EXPRESSION
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraExpressionEvaluateRequestBean {
-  public static final String JSON_PROPERTY_CONTEXT = "context";
+  public static final String SERIALIZED_NAME_CONTEXT = "context";
+  @SerializedName(SERIALIZED_NAME_CONTEXT)
   @javax.annotation.Nullable
   private JiraExpressionEvaluateContextBean context;
 
-  public static final String JSON_PROPERTY_EXPRESSION = "expression";
+  public static final String SERIALIZED_NAME_EXPRESSION = "expression";
+  @SerializedName(SERIALIZED_NAME_EXPRESSION)
   @javax.annotation.Nonnull
   private String expression;
 
-  public JiraExpressionEvaluateRequestBean() { 
+  public JiraExpressionEvaluateRequestBean() {
   }
 
   public JiraExpressionEvaluateRequestBean context(@javax.annotation.Nullable JiraExpressionEvaluateContextBean context) {
@@ -61,15 +76,10 @@ public class JiraExpressionEvaluateRequestBean {
    * @return context
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JiraExpressionEvaluateContextBean getContext() {
     return context;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContext(@javax.annotation.Nullable JiraExpressionEvaluateContextBean context) {
     this.context = context;
   }
@@ -85,23 +95,16 @@ public class JiraExpressionEvaluateRequestBean {
    * @return expression
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EXPRESSION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getExpression() {
     return expression;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPRESSION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setExpression(@javax.annotation.Nonnull String expression) {
     this.expression = expression;
   }
 
 
-  /**
-   * Return true if this JiraExpressionEvaluateRequestBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -141,49 +144,102 @@ public class JiraExpressionEvaluateRequestBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("context", "expression"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("expression"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraExpressionEvaluateRequestBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraExpressionEvaluateRequestBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraExpressionEvaluateRequestBean is not found in the empty JSON string", JiraExpressionEvaluateRequestBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraExpressionEvaluateRequestBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraExpressionEvaluateRequestBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraExpressionEvaluateRequestBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `context`
+      if (jsonObj.get("context") != null && !jsonObj.get("context").isJsonNull()) {
+        JiraExpressionEvaluateContextBean.validateJsonElement(jsonObj.get("context"));
+      }
+      if (!jsonObj.get("expression").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expression` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expression").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraExpressionEvaluateRequestBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraExpressionEvaluateRequestBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraExpressionEvaluateRequestBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraExpressionEvaluateRequestBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraExpressionEvaluateRequestBean>() {
+           @Override
+           public void write(JsonWriter out, JiraExpressionEvaluateRequestBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraExpressionEvaluateRequestBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of JiraExpressionEvaluateRequestBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraExpressionEvaluateRequestBean
+   * @throws IOException if the JSON string is invalid with respect to JiraExpressionEvaluateRequestBean
+   */
+  public static JiraExpressionEvaluateRequestBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraExpressionEvaluateRequestBean.class);
+  }
 
-    // add `context` to the URL query string
-    if (getContext() != null) {
-      joiner.add(getContext().toUrlQueryString(prefix + "context" + suffix));
-    }
-
-    // add `expression` to the URL query string
-    if (getExpression() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpression%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpression()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JiraExpressionEvaluateRequestBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

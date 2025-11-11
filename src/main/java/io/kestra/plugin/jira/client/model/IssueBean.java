@@ -13,136 +13,150 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IncludedFields;
 import io.kestra.plugin.jira.client.model.IssueTransition;
 import io.kestra.plugin.jira.client.model.IssueUpdateMetadata;
 import io.kestra.plugin.jira.client.model.JsonTypeBean;
 import io.kestra.plugin.jira.client.model.Operations;
 import io.kestra.plugin.jira.client.model.PageOfChangelogs;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about an issue.
  */
-@JsonPropertyOrder({
-  IssueBean.JSON_PROPERTY_CHANGELOG,
-  IssueBean.JSON_PROPERTY_EDITMETA,
-  IssueBean.JSON_PROPERTY_EXPAND,
-  IssueBean.JSON_PROPERTY_FIELDS,
-  IssueBean.JSON_PROPERTY_FIELDS_TO_INCLUDE,
-  IssueBean.JSON_PROPERTY_ID,
-  IssueBean.JSON_PROPERTY_KEY,
-  IssueBean.JSON_PROPERTY_NAMES,
-  IssueBean.JSON_PROPERTY_OPERATIONS,
-  IssueBean.JSON_PROPERTY_PROPERTIES,
-  IssueBean.JSON_PROPERTY_RENDERED_FIELDS,
-  IssueBean.JSON_PROPERTY_SCHEMA,
-  IssueBean.JSON_PROPERTY_SELF,
-  IssueBean.JSON_PROPERTY_TRANSITIONS,
-  IssueBean.JSON_PROPERTY_VERSIONED_REPRESENTATIONS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueBean {
-  public static final String JSON_PROPERTY_CHANGELOG = "changelog";
+  public static final String SERIALIZED_NAME_CHANGELOG = "changelog";
+  @SerializedName(SERIALIZED_NAME_CHANGELOG)
   @javax.annotation.Nullable
   private PageOfChangelogs changelog;
 
-  public static final String JSON_PROPERTY_EDITMETA = "editmeta";
+  public static final String SERIALIZED_NAME_EDITMETA = "editmeta";
+  @SerializedName(SERIALIZED_NAME_EDITMETA)
   @javax.annotation.Nullable
   private IssueUpdateMetadata editmeta;
 
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_FIELDS = "fields";
+  public static final String SERIALIZED_NAME_FIELDS = "fields";
+  @SerializedName(SERIALIZED_NAME_FIELDS)
   @javax.annotation.Nullable
   private Map<String, Object> fields = new HashMap<>();
 
-  public static final String JSON_PROPERTY_FIELDS_TO_INCLUDE = "fieldsToInclude";
+  public static final String SERIALIZED_NAME_FIELDS_TO_INCLUDE = "fieldsToInclude";
+  @SerializedName(SERIALIZED_NAME_FIELDS_TO_INCLUDE)
   @javax.annotation.Nullable
   private IncludedFields fieldsToInclude;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_NAMES = "names";
+  public static final String SERIALIZED_NAME_NAMES = "names";
+  @SerializedName(SERIALIZED_NAME_NAMES)
   @javax.annotation.Nullable
   private Map<String, String> names = new HashMap<>();
 
-  public static final String JSON_PROPERTY_OPERATIONS = "operations";
+  public static final String SERIALIZED_NAME_OPERATIONS = "operations";
+  @SerializedName(SERIALIZED_NAME_OPERATIONS)
   @javax.annotation.Nullable
   private Operations operations;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private Map<String, Object> properties = new HashMap<>();
 
-  public static final String JSON_PROPERTY_RENDERED_FIELDS = "renderedFields";
+  public static final String SERIALIZED_NAME_RENDERED_FIELDS = "renderedFields";
+  @SerializedName(SERIALIZED_NAME_RENDERED_FIELDS)
   @javax.annotation.Nullable
   private Map<String, Object> renderedFields = new HashMap<>();
 
-  public static final String JSON_PROPERTY_SCHEMA = "schema";
+  public static final String SERIALIZED_NAME_SCHEMA = "schema";
+  @SerializedName(SERIALIZED_NAME_SCHEMA)
   @javax.annotation.Nullable
   private Map<String, JsonTypeBean> schema = new HashMap<>();
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_TRANSITIONS = "transitions";
+  public static final String SERIALIZED_NAME_TRANSITIONS = "transitions";
+  @SerializedName(SERIALIZED_NAME_TRANSITIONS)
   @javax.annotation.Nullable
   private List<IssueTransition> transitions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_VERSIONED_REPRESENTATIONS = "versionedRepresentations";
+  public static final String SERIALIZED_NAME_VERSIONED_REPRESENTATIONS = "versionedRepresentations";
+  @SerializedName(SERIALIZED_NAME_VERSIONED_REPRESENTATIONS)
   @javax.annotation.Nullable
   private Map<String, Map<String, Object>> versionedRepresentations = new HashMap<>();
 
-  public IssueBean() { 
+  public IssueBean() {
   }
 
-  @JsonCreator
   public IssueBean(
-    @JsonProperty(JSON_PROPERTY_CHANGELOG) PageOfChangelogs changelog, 
-    @JsonProperty(JSON_PROPERTY_EDITMETA) IssueUpdateMetadata editmeta, 
-    @JsonProperty(JSON_PROPERTY_EXPAND) String expand, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_KEY) String key, 
-    @JsonProperty(JSON_PROPERTY_NAMES) Map<String, String> names, 
-    @JsonProperty(JSON_PROPERTY_OPERATIONS) Operations operations, 
-    @JsonProperty(JSON_PROPERTY_PROPERTIES) Map<String, Object> properties, 
-    @JsonProperty(JSON_PROPERTY_RENDERED_FIELDS) Map<String, Object> renderedFields, 
-    @JsonProperty(JSON_PROPERTY_SCHEMA) Map<String, JsonTypeBean> schema, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self, 
-    @JsonProperty(JSON_PROPERTY_TRANSITIONS) List<IssueTransition> transitions, 
-    @JsonProperty(JSON_PROPERTY_VERSIONED_REPRESENTATIONS) Map<String, Map<String, Object>> versionedRepresentations
+     PageOfChangelogs changelog, 
+     IssueUpdateMetadata editmeta, 
+     String expand, 
+     String id, 
+     String key, 
+     Map<String, String> names, 
+     Operations operations, 
+     Map<String, Object> properties, 
+     Map<String, Object> renderedFields, 
+     Map<String, JsonTypeBean> schema, 
+     URI self, 
+     List<IssueTransition> transitions, 
+     Map<String, Map<String, Object>> versionedRepresentations
   ) {
-  this();
+    this();
     this.changelog = changelog;
     this.editmeta = editmeta;
     this.expand = expand;
@@ -163,12 +177,9 @@ public class IssueBean {
    * @return changelog
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PageOfChangelogs getChangelog() {
     return changelog;
   }
-
 
 
 
@@ -177,12 +188,9 @@ public class IssueBean {
    * @return editmeta
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EDITMETA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IssueUpdateMetadata getEditmeta() {
     return editmeta;
   }
-
 
 
 
@@ -191,12 +199,9 @@ public class IssueBean {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
-
 
 
 
@@ -218,15 +223,10 @@ public class IssueBean {
    * @return fields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getFields() {
     return fields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setFields(@javax.annotation.Nullable Map<String, Object> fields) {
     this.fields = fields;
   }
@@ -242,15 +242,10 @@ public class IssueBean {
    * @return fieldsToInclude
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS_TO_INCLUDE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IncludedFields getFieldsToInclude() {
     return fieldsToInclude;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELDS_TO_INCLUDE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldsToInclude(@javax.annotation.Nullable IncludedFields fieldsToInclude) {
     this.fieldsToInclude = fieldsToInclude;
   }
@@ -261,12 +256,9 @@ public class IssueBean {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -275,12 +267,9 @@ public class IssueBean {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
-
 
 
 
@@ -289,12 +278,9 @@ public class IssueBean {
    * @return names
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getNames() {
     return names;
   }
-
 
 
 
@@ -303,12 +289,9 @@ public class IssueBean {
    * @return operations
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Operations getOperations() {
     return operations;
   }
-
 
 
 
@@ -317,12 +300,9 @@ public class IssueBean {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getProperties() {
     return properties;
   }
-
 
 
 
@@ -331,12 +311,9 @@ public class IssueBean {
    * @return renderedFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RENDERED_FIELDS, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getRenderedFields() {
     return renderedFields;
   }
-
 
 
 
@@ -345,12 +322,9 @@ public class IssueBean {
    * @return schema
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCHEMA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, JsonTypeBean> getSchema() {
     return schema;
   }
-
 
 
 
@@ -359,12 +333,9 @@ public class IssueBean {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -373,12 +344,9 @@ public class IssueBean {
    * @return transitions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueTransition> getTransitions() {
     return transitions;
   }
-
 
 
 
@@ -387,8 +355,6 @@ public class IssueBean {
    * @return versionedRepresentations
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VERSIONED_REPRESENTATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Map<String, Object>> getVersionedRepresentations() {
     return versionedRepresentations;
   }
@@ -396,9 +362,6 @@ public class IssueBean {
 
 
 
-  /**
-   * Return true if this IssueBean object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -464,145 +427,116 @@ public class IssueBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("changelog", "editmeta", "expand", "fields", "fieldsToInclude", "id", "key", "names", "operations", "properties", "renderedFields", "schema", "self", "transitions", "versionedRepresentations"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `changelog` to the URL query string
-    if (getChangelog() != null) {
-      joiner.add(getChangelog().toUrlQueryString(prefix + "changelog" + suffix));
-    }
-
-    // add `editmeta` to the URL query string
-    if (getEditmeta() != null) {
-      joiner.add(getEditmeta().toUrlQueryString(prefix + "editmeta" + suffix));
-    }
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `fields` to the URL query string
-    if (getFields() != null) {
-      for (String _key : getFields().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sfields%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getFields().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getFields().get(_key)))));
-      }
-    }
-
-    // add `fieldsToInclude` to the URL query string
-    if (getFieldsToInclude() != null) {
-      joiner.add(getFieldsToInclude().toUrlQueryString(prefix + "fieldsToInclude" + suffix));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `names` to the URL query string
-    if (getNames() != null) {
-      for (String _key : getNames().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%snames%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getNames().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getNames().get(_key)))));
-      }
-    }
-
-    // add `operations` to the URL query string
-    if (getOperations() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soperations%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperations()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
-      }
-    }
-
-    // add `renderedFields` to the URL query string
-    if (getRenderedFields() != null) {
-      for (String _key : getRenderedFields().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%srenderedFields%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getRenderedFields().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getRenderedFields().get(_key)))));
-      }
-    }
-
-    // add `schema` to the URL query string
-    if (getSchema() != null) {
-      for (String _key : getSchema().keySet()) {
-        if (getSchema().get(_key) != null) {
-          joiner.add(getSchema().get(_key).toUrlQueryString(String.format(Locale.ROOT, "%sschema%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueBean is not found in the empty JSON string", IssueBean.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `transitions` to the URL query string
-    if (getTransitions() != null) {
-      for (int i = 0; i < getTransitions().size(); i++) {
-        if (getTransitions().get(i) != null) {
-          joiner.add(String.format(Locale.ROOT, "%stransitions%s%s=%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-              ApiClient.urlEncode(ApiClient.valueToString(getTransitions().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
-
-    // add `versionedRepresentations` to the URL query string
-    if (getVersionedRepresentations() != null) {
-      for (String _key : getVersionedRepresentations().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sversionedRepresentations%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getVersionedRepresentations().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getVersionedRepresentations().get(_key)))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `changelog`
+      if (jsonObj.get("changelog") != null && !jsonObj.get("changelog").isJsonNull()) {
+        PageOfChangelogs.validateJsonElement(jsonObj.get("changelog"));
       }
-    }
+      // validate the optional field `editmeta`
+      if (jsonObj.get("editmeta") != null && !jsonObj.get("editmeta").isJsonNull()) {
+        IssueUpdateMetadata.validateJsonElement(jsonObj.get("editmeta"));
+      }
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
+      }
+      // validate the optional field `fieldsToInclude`
+      if (jsonObj.get("fieldsToInclude") != null && !jsonObj.get("fieldsToInclude").isJsonNull()) {
+        IncludedFields.validateJsonElement(jsonObj.get("fieldsToInclude"));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("transitions") != null && !jsonObj.get("transitions").isJsonNull() && !jsonObj.get("transitions").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `transitions` to be an array in the JSON string but got `%s`", jsonObj.get("transitions").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueBean>() {
+           @Override
+           public void write(JsonWriter out, IssueBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssueBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueBean
+   * @throws IOException if the JSON string is invalid with respect to IssueBean
+   */
+  public static IssueBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueBean.class);
+  }
+
+  /**
+   * Convert an instance of IssueBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

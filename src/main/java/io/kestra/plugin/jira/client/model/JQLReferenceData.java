@@ -13,50 +13,65 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.FieldReferenceData;
 import io.kestra.plugin.jira.client.model.FunctionReferenceData;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Lists of JQL reference data.
  */
-@JsonPropertyOrder({
-  JQLReferenceData.JSON_PROPERTY_JQL_RESERVED_WORDS,
-  JQLReferenceData.JSON_PROPERTY_VISIBLE_FIELD_NAMES,
-  JQLReferenceData.JSON_PROPERTY_VISIBLE_FUNCTION_NAMES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JQLReferenceData {
-  public static final String JSON_PROPERTY_JQL_RESERVED_WORDS = "jqlReservedWords";
+  public static final String SERIALIZED_NAME_JQL_RESERVED_WORDS = "jqlReservedWords";
+  @SerializedName(SERIALIZED_NAME_JQL_RESERVED_WORDS)
   @javax.annotation.Nullable
   private List<String> jqlReservedWords = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_VISIBLE_FIELD_NAMES = "visibleFieldNames";
+  public static final String SERIALIZED_NAME_VISIBLE_FIELD_NAMES = "visibleFieldNames";
+  @SerializedName(SERIALIZED_NAME_VISIBLE_FIELD_NAMES)
   @javax.annotation.Nullable
   private List<FieldReferenceData> visibleFieldNames = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_VISIBLE_FUNCTION_NAMES = "visibleFunctionNames";
+  public static final String SERIALIZED_NAME_VISIBLE_FUNCTION_NAMES = "visibleFunctionNames";
+  @SerializedName(SERIALIZED_NAME_VISIBLE_FUNCTION_NAMES)
   @javax.annotation.Nullable
   private List<FunctionReferenceData> visibleFunctionNames = new ArrayList<>();
 
-  public JQLReferenceData() { 
+  public JQLReferenceData() {
   }
 
   public JQLReferenceData jqlReservedWords(@javax.annotation.Nullable List<String> jqlReservedWords) {
@@ -77,15 +92,10 @@ public class JQLReferenceData {
    * @return jqlReservedWords
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_JQL_RESERVED_WORDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getJqlReservedWords() {
     return jqlReservedWords;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_JQL_RESERVED_WORDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setJqlReservedWords(@javax.annotation.Nullable List<String> jqlReservedWords) {
     this.jqlReservedWords = jqlReservedWords;
   }
@@ -109,15 +119,10 @@ public class JQLReferenceData {
    * @return visibleFieldNames
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VISIBLE_FIELD_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<FieldReferenceData> getVisibleFieldNames() {
     return visibleFieldNames;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VISIBLE_FIELD_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVisibleFieldNames(@javax.annotation.Nullable List<FieldReferenceData> visibleFieldNames) {
     this.visibleFieldNames = visibleFieldNames;
   }
@@ -141,23 +146,16 @@ public class JQLReferenceData {
    * @return visibleFunctionNames
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VISIBLE_FUNCTION_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<FunctionReferenceData> getVisibleFunctionNames() {
     return visibleFunctionNames;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VISIBLE_FUNCTION_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVisibleFunctionNames(@javax.annotation.Nullable List<FunctionReferenceData> visibleFunctionNames) {
     this.visibleFunctionNames = visibleFunctionNames;
   }
 
 
-  /**
-   * Return true if this JQLReferenceData object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -199,68 +197,120 @@ public class JQLReferenceData {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("jqlReservedWords", "visibleFieldNames", "visibleFunctionNames"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JQLReferenceData
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `jqlReservedWords` to the URL query string
-    if (getJqlReservedWords() != null) {
-      for (int i = 0; i < getJqlReservedWords().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sjqlReservedWords%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getJqlReservedWords().get(i)))));
-      }
-    }
-
-    // add `visibleFieldNames` to the URL query string
-    if (getVisibleFieldNames() != null) {
-      for (int i = 0; i < getVisibleFieldNames().size(); i++) {
-        if (getVisibleFieldNames().get(i) != null) {
-          joiner.add(getVisibleFieldNames().get(i).toUrlQueryString(String.format(Locale.ROOT, "%svisibleFieldNames%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JQLReferenceData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JQLReferenceData is not found in the empty JSON string", JQLReferenceData.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `visibleFunctionNames` to the URL query string
-    if (getVisibleFunctionNames() != null) {
-      for (int i = 0; i < getVisibleFunctionNames().size(); i++) {
-        if (getVisibleFunctionNames().get(i) != null) {
-          joiner.add(getVisibleFunctionNames().get(i).toUrlQueryString(String.format(Locale.ROOT, "%svisibleFunctionNames%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JQLReferenceData.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JQLReferenceData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("jqlReservedWords") != null && !jsonObj.get("jqlReservedWords").isJsonNull() && !jsonObj.get("jqlReservedWords").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `jqlReservedWords` to be an array in the JSON string but got `%s`", jsonObj.get("jqlReservedWords").toString()));
+      }
+      if (jsonObj.get("visibleFieldNames") != null && !jsonObj.get("visibleFieldNames").isJsonNull()) {
+        JsonArray jsonArrayvisibleFieldNames = jsonObj.getAsJsonArray("visibleFieldNames");
+        if (jsonArrayvisibleFieldNames != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("visibleFieldNames").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `visibleFieldNames` to be an array in the JSON string but got `%s`", jsonObj.get("visibleFieldNames").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `visibleFieldNames` (array)
+          for (int i = 0; i < jsonArrayvisibleFieldNames.size(); i++) {
+            FieldReferenceData.validateJsonElement(jsonArrayvisibleFieldNames.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("visibleFunctionNames") != null && !jsonObj.get("visibleFunctionNames").isJsonNull()) {
+        JsonArray jsonArrayvisibleFunctionNames = jsonObj.getAsJsonArray("visibleFunctionNames");
+        if (jsonArrayvisibleFunctionNames != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("visibleFunctionNames").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `visibleFunctionNames` to be an array in the JSON string but got `%s`", jsonObj.get("visibleFunctionNames").toString()));
+          }
+
+          // validate the optional field `visibleFunctionNames` (array)
+          for (int i = 0; i < jsonArrayvisibleFunctionNames.size(); i++) {
+            FunctionReferenceData.validateJsonElement(jsonArrayvisibleFunctionNames.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JQLReferenceData.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JQLReferenceData' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JQLReferenceData> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JQLReferenceData.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JQLReferenceData>() {
+           @Override
+           public void write(JsonWriter out, JQLReferenceData value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JQLReferenceData read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JQLReferenceData given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JQLReferenceData
+   * @throws IOException if the JSON string is invalid with respect to JQLReferenceData
+   */
+  public static JQLReferenceData fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JQLReferenceData.class);
+  }
+
+  /**
+   * Convert an instance of JQLReferenceData to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,57 +13,72 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectAndIssueTypePair;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A reference to the location of the error. This will be null if the error does not refer to a specific element.
  */
-@JsonPropertyOrder({
-  WorkflowElementReference.JSON_PROPERTY_PROPERTY_KEY,
-  WorkflowElementReference.JSON_PROPERTY_RULE_ID,
-  WorkflowElementReference.JSON_PROPERTY_STATUS_MAPPING_REFERENCE,
-  WorkflowElementReference.JSON_PROPERTY_STATUS_REFERENCE,
-  WorkflowElementReference.JSON_PROPERTY_TRANSITION_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowElementReference {
-  public static final String JSON_PROPERTY_PROPERTY_KEY = "propertyKey";
+  public static final String SERIALIZED_NAME_PROPERTY_KEY = "propertyKey";
+  @SerializedName(SERIALIZED_NAME_PROPERTY_KEY)
   @javax.annotation.Nullable
   private String propertyKey;
 
-  public static final String JSON_PROPERTY_RULE_ID = "ruleId";
+  public static final String SERIALIZED_NAME_RULE_ID = "ruleId";
+  @SerializedName(SERIALIZED_NAME_RULE_ID)
   @javax.annotation.Nullable
   private String ruleId;
 
-  public static final String JSON_PROPERTY_STATUS_MAPPING_REFERENCE = "statusMappingReference";
+  public static final String SERIALIZED_NAME_STATUS_MAPPING_REFERENCE = "statusMappingReference";
+  @SerializedName(SERIALIZED_NAME_STATUS_MAPPING_REFERENCE)
   @javax.annotation.Nullable
   private ProjectAndIssueTypePair statusMappingReference;
 
-  public static final String JSON_PROPERTY_STATUS_REFERENCE = "statusReference";
+  public static final String SERIALIZED_NAME_STATUS_REFERENCE = "statusReference";
+  @SerializedName(SERIALIZED_NAME_STATUS_REFERENCE)
   @javax.annotation.Nullable
   private String statusReference;
 
-  public static final String JSON_PROPERTY_TRANSITION_ID = "transitionId";
+  public static final String SERIALIZED_NAME_TRANSITION_ID = "transitionId";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_ID)
   @javax.annotation.Nullable
   private String transitionId;
 
-  public WorkflowElementReference() { 
+  public WorkflowElementReference() {
   }
 
   public WorkflowElementReference propertyKey(@javax.annotation.Nullable String propertyKey) {
@@ -76,15 +91,10 @@ public class WorkflowElementReference {
    * @return propertyKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPropertyKey() {
     return propertyKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPropertyKey(@javax.annotation.Nullable String propertyKey) {
     this.propertyKey = propertyKey;
   }
@@ -100,15 +110,10 @@ public class WorkflowElementReference {
    * @return ruleId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RULE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRuleId() {
     return ruleId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RULE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRuleId(@javax.annotation.Nullable String ruleId) {
     this.ruleId = ruleId;
   }
@@ -124,15 +129,10 @@ public class WorkflowElementReference {
    * @return statusMappingReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_MAPPING_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectAndIssueTypePair getStatusMappingReference() {
     return statusMappingReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_MAPPING_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusMappingReference(@javax.annotation.Nullable ProjectAndIssueTypePair statusMappingReference) {
     this.statusMappingReference = statusMappingReference;
   }
@@ -148,15 +148,10 @@ public class WorkflowElementReference {
    * @return statusReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStatusReference() {
     return statusReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusReference(@javax.annotation.Nullable String statusReference) {
     this.statusReference = statusReference;
   }
@@ -172,23 +167,16 @@ public class WorkflowElementReference {
    * @return transitionId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTransitionId() {
     return transitionId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTransitionId(@javax.annotation.Nullable String transitionId) {
     this.transitionId = transitionId;
   }
 
 
-  /**
-   * Return true if this WorkflowElementReference object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -234,64 +222,104 @@ public class WorkflowElementReference {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("propertyKey", "ruleId", "statusMappingReference", "statusReference", "transitionId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowElementReference
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowElementReference.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowElementReference is not found in the empty JSON string", WorkflowElementReference.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowElementReference.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowElementReference` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("propertyKey") != null && !jsonObj.get("propertyKey").isJsonNull()) && !jsonObj.get("propertyKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `propertyKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("propertyKey").toString()));
+      }
+      if ((jsonObj.get("ruleId") != null && !jsonObj.get("ruleId").isJsonNull()) && !jsonObj.get("ruleId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `ruleId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ruleId").toString()));
+      }
+      // validate the optional field `statusMappingReference`
+      if (jsonObj.get("statusMappingReference") != null && !jsonObj.get("statusMappingReference").isJsonNull()) {
+        ProjectAndIssueTypePair.validateJsonElement(jsonObj.get("statusMappingReference"));
+      }
+      if ((jsonObj.get("statusReference") != null && !jsonObj.get("statusReference").isJsonNull()) && !jsonObj.get("statusReference").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusReference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusReference").toString()));
+      }
+      if ((jsonObj.get("transitionId") != null && !jsonObj.get("transitionId").isJsonNull()) && !jsonObj.get("transitionId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `transitionId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("transitionId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowElementReference.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowElementReference' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowElementReference> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowElementReference.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowElementReference>() {
+           @Override
+           public void write(JsonWriter out, WorkflowElementReference value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowElementReference read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of WorkflowElementReference given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowElementReference
+   * @throws IOException if the JSON string is invalid with respect to WorkflowElementReference
+   */
+  public static WorkflowElementReference fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowElementReference.class);
+  }
 
-    // add `propertyKey` to the URL query string
-    if (getPropertyKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spropertyKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPropertyKey()))));
-    }
-
-    // add `ruleId` to the URL query string
-    if (getRuleId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sruleId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRuleId()))));
-    }
-
-    // add `statusMappingReference` to the URL query string
-    if (getStatusMappingReference() != null) {
-      joiner.add(getStatusMappingReference().toUrlQueryString(prefix + "statusMappingReference" + suffix));
-    }
-
-    // add `statusReference` to the URL query string
-    if (getStatusReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusReference()))));
-    }
-
-    // add `transitionId` to the URL query string
-    if (getTransitionId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stransitionId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransitionId()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of WorkflowElementReference to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

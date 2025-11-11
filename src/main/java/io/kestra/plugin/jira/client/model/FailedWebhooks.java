@@ -13,50 +13,65 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.FailedWebhook;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A page of failed webhooks.
  */
-@JsonPropertyOrder({
-  FailedWebhooks.JSON_PROPERTY_MAX_RESULTS,
-  FailedWebhooks.JSON_PROPERTY_NEXT,
-  FailedWebhooks.JSON_PROPERTY_VALUES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FailedWebhooks {
-  public static final String JSON_PROPERTY_MAX_RESULTS = "maxResults";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "maxResults";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nonnull
   private Integer maxResults;
 
-  public static final String JSON_PROPERTY_NEXT = "next";
+  public static final String SERIALIZED_NAME_NEXT = "next";
+  @SerializedName(SERIALIZED_NAME_NEXT)
   @javax.annotation.Nullable
   private URI next;
 
-  public static final String JSON_PROPERTY_VALUES = "values";
+  public static final String SERIALIZED_NAME_VALUES = "values";
+  @SerializedName(SERIALIZED_NAME_VALUES)
   @javax.annotation.Nonnull
   private List<FailedWebhook> values = new ArrayList<>();
 
-  public FailedWebhooks() { 
+  public FailedWebhooks() {
   }
 
   public FailedWebhooks maxResults(@javax.annotation.Nonnull Integer maxResults) {
@@ -69,15 +84,10 @@ public class FailedWebhooks {
    * @return maxResults
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getMaxResults() {
     return maxResults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setMaxResults(@javax.annotation.Nonnull Integer maxResults) {
     this.maxResults = maxResults;
   }
@@ -93,15 +103,10 @@ public class FailedWebhooks {
    * @return next
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getNext() {
     return next;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNext(@javax.annotation.Nullable URI next) {
     this.next = next;
   }
@@ -125,23 +130,16 @@ public class FailedWebhooks {
    * @return values
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_VALUES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<FailedWebhook> getValues() {
     return values;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setValues(@javax.annotation.Nonnull List<FailedWebhook> values) {
     this.values = values;
   }
 
 
-  /**
-   * Return true if this FailedWebhooks object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -183,59 +181,108 @@ public class FailedWebhooks {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("maxResults", "next", "values"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("maxResults", "values"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FailedWebhooks
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `maxResults` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smaxResults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
-
-    // add `next` to the URL query string
-    if (getNext() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snext%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNext()))));
-    }
-
-    // add `values` to the URL query string
-    if (getValues() != null) {
-      for (int i = 0; i < getValues().size(); i++) {
-        if (getValues().get(i) != null) {
-          joiner.add(getValues().get(i).toUrlQueryString(String.format(Locale.ROOT, "%svalues%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FailedWebhooks.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FailedWebhooks is not found in the empty JSON string", FailedWebhooks.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FailedWebhooks.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FailedWebhooks` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : FailedWebhooks.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("next") != null && !jsonObj.get("next").isJsonNull()) && !jsonObj.get("next").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `next` to be a primitive type in the JSON string but got `%s`", jsonObj.get("next").toString()));
+      }
+      // ensure the json data is an array
+      if (!jsonObj.get("values").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `values` to be an array in the JSON string but got `%s`", jsonObj.get("values").toString()));
+      }
+
+      JsonArray jsonArrayvalues = jsonObj.getAsJsonArray("values");
+      // validate the required field `values` (array)
+      for (int i = 0; i < jsonArrayvalues.size(); i++) {
+        FailedWebhook.validateJsonElement(jsonArrayvalues.get(i));
+      };
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FailedWebhooks.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FailedWebhooks' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FailedWebhooks> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FailedWebhooks.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<FailedWebhooks>() {
+           @Override
+           public void write(JsonWriter out, FailedWebhooks value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FailedWebhooks read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FailedWebhooks given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FailedWebhooks
+   * @throws IOException if the JSON string is invalid with respect to FailedWebhooks
+   */
+  public static FailedWebhooks fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FailedWebhooks.class);
+  }
+
+  /**
+   * Convert an instance of FailedWebhooks to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

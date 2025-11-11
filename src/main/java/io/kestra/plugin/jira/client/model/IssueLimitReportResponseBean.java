@@ -13,48 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * IssueLimitReportResponseBean
  */
-@JsonPropertyOrder({
-  IssueLimitReportResponseBean.JSON_PROPERTY_ISSUES_APPROACHING_LIMIT,
-  IssueLimitReportResponseBean.JSON_PROPERTY_ISSUES_BREACHING_LIMIT,
-  IssueLimitReportResponseBean.JSON_PROPERTY_LIMITS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueLimitReportResponseBean {
-  public static final String JSON_PROPERTY_ISSUES_APPROACHING_LIMIT = "issuesApproachingLimit";
+  public static final String SERIALIZED_NAME_ISSUES_APPROACHING_LIMIT = "issuesApproachingLimit";
+  @SerializedName(SERIALIZED_NAME_ISSUES_APPROACHING_LIMIT)
   @javax.annotation.Nullable
   private Map<String, Map<String, Long>> issuesApproachingLimit = new HashMap<>();
 
-  public static final String JSON_PROPERTY_ISSUES_BREACHING_LIMIT = "issuesBreachingLimit";
+  public static final String SERIALIZED_NAME_ISSUES_BREACHING_LIMIT = "issuesBreachingLimit";
+  @SerializedName(SERIALIZED_NAME_ISSUES_BREACHING_LIMIT)
   @javax.annotation.Nullable
   private Map<String, Map<String, Long>> issuesBreachingLimit = new HashMap<>();
 
-  public static final String JSON_PROPERTY_LIMITS = "limits";
+  public static final String SERIALIZED_NAME_LIMITS = "limits";
+  @SerializedName(SERIALIZED_NAME_LIMITS)
   @javax.annotation.Nullable
   private Map<String, Integer> limits = new HashMap<>();
 
-  public IssueLimitReportResponseBean() { 
+  public IssueLimitReportResponseBean() {
   }
 
   public IssueLimitReportResponseBean issuesApproachingLimit(@javax.annotation.Nullable Map<String, Map<String, Long>> issuesApproachingLimit) {
@@ -75,15 +90,10 @@ public class IssueLimitReportResponseBean {
    * @return issuesApproachingLimit
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_APPROACHING_LIMIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Map<String, Long>> getIssuesApproachingLimit() {
     return issuesApproachingLimit;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_APPROACHING_LIMIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssuesApproachingLimit(@javax.annotation.Nullable Map<String, Map<String, Long>> issuesApproachingLimit) {
     this.issuesApproachingLimit = issuesApproachingLimit;
   }
@@ -107,15 +117,10 @@ public class IssueLimitReportResponseBean {
    * @return issuesBreachingLimit
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_BREACHING_LIMIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Map<String, Long>> getIssuesBreachingLimit() {
     return issuesBreachingLimit;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_BREACHING_LIMIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssuesBreachingLimit(@javax.annotation.Nullable Map<String, Map<String, Long>> issuesBreachingLimit) {
     this.issuesBreachingLimit = issuesBreachingLimit;
   }
@@ -139,23 +144,16 @@ public class IssueLimitReportResponseBean {
    * @return limits
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LIMITS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Integer> getLimits() {
     return limits;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LIMITS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLimits(@javax.annotation.Nullable Map<String, Integer> limits) {
     this.limits = limits;
   }
 
 
-  /**
-   * Return true if this IssueLimitReportResponseBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -197,66 +195,88 @@ public class IssueLimitReportResponseBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issuesApproachingLimit", "issuesBreachingLimit", "limits"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueLimitReportResponseBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `issuesApproachingLimit` to the URL query string
-    if (getIssuesApproachingLimit() != null) {
-      for (String _key : getIssuesApproachingLimit().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sissuesApproachingLimit%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getIssuesApproachingLimit().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getIssuesApproachingLimit().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueLimitReportResponseBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueLimitReportResponseBean is not found in the empty JSON string", IssueLimitReportResponseBean.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `issuesBreachingLimit` to the URL query string
-    if (getIssuesBreachingLimit() != null) {
-      for (String _key : getIssuesBreachingLimit().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sissuesBreachingLimit%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getIssuesBreachingLimit().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getIssuesBreachingLimit().get(_key)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueLimitReportResponseBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueLimitReportResponseBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
 
-    // add `limits` to the URL query string
-    if (getLimits() != null) {
-      for (String _key : getLimits().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%slimits%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getLimits().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getLimits().get(_key)))));
-      }
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueLimitReportResponseBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueLimitReportResponseBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueLimitReportResponseBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueLimitReportResponseBean.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<IssueLimitReportResponseBean>() {
+           @Override
+           public void write(JsonWriter out, IssueLimitReportResponseBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueLimitReportResponseBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssueLimitReportResponseBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueLimitReportResponseBean
+   * @throws IOException if the JSON string is invalid with respect to IssueLimitReportResponseBean
+   */
+  public static IssueLimitReportResponseBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueLimitReportResponseBean.class);
+  }
+
+  /**
+   * Convert an instance of IssueLimitReportResponseBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,83 +13,97 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.AvatarUrlsBean;
 import io.kestra.plugin.jira.client.model.IssueTypeIssueCreateMetadata;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of the issue creation metadata for a project.
  */
-@JsonPropertyOrder({
-  ProjectIssueCreateMetadata.JSON_PROPERTY_AVATAR_URLS,
-  ProjectIssueCreateMetadata.JSON_PROPERTY_EXPAND,
-  ProjectIssueCreateMetadata.JSON_PROPERTY_ID,
-  ProjectIssueCreateMetadata.JSON_PROPERTY_ISSUETYPES,
-  ProjectIssueCreateMetadata.JSON_PROPERTY_KEY,
-  ProjectIssueCreateMetadata.JSON_PROPERTY_NAME,
-  ProjectIssueCreateMetadata.JSON_PROPERTY_SELF
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectIssueCreateMetadata {
-  public static final String JSON_PROPERTY_AVATAR_URLS = "avatarUrls";
+  public static final String SERIALIZED_NAME_AVATAR_URLS = "avatarUrls";
+  @SerializedName(SERIALIZED_NAME_AVATAR_URLS)
   @javax.annotation.Nullable
   private AvatarUrlsBean avatarUrls;
 
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_ISSUETYPES = "issuetypes";
+  public static final String SERIALIZED_NAME_ISSUETYPES = "issuetypes";
+  @SerializedName(SERIALIZED_NAME_ISSUETYPES)
   @javax.annotation.Nullable
   private List<IssueTypeIssueCreateMetadata> issuetypes = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public ProjectIssueCreateMetadata() { 
+  public ProjectIssueCreateMetadata() {
   }
 
-  @JsonCreator
   public ProjectIssueCreateMetadata(
-    @JsonProperty(JSON_PROPERTY_AVATAR_URLS) AvatarUrlsBean avatarUrls, 
-    @JsonProperty(JSON_PROPERTY_EXPAND) String expand, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_ISSUETYPES) List<IssueTypeIssueCreateMetadata> issuetypes, 
-    @JsonProperty(JSON_PROPERTY_KEY) String key, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_SELF) String self
+     AvatarUrlsBean avatarUrls, 
+     String expand, 
+     String id, 
+     List<IssueTypeIssueCreateMetadata> issuetypes, 
+     String key, 
+     String name, 
+     String self
   ) {
-  this();
+    this();
     this.avatarUrls = avatarUrls;
     this.expand = expand;
     this.id = id;
@@ -104,12 +118,9 @@ public class ProjectIssueCreateMetadata {
    * @return avatarUrls
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_URLS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AvatarUrlsBean getAvatarUrls() {
     return avatarUrls;
   }
-
 
 
 
@@ -118,12 +129,9 @@ public class ProjectIssueCreateMetadata {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
-
 
 
 
@@ -132,12 +140,9 @@ public class ProjectIssueCreateMetadata {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -146,12 +151,9 @@ public class ProjectIssueCreateMetadata {
    * @return issuetypes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUETYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueTypeIssueCreateMetadata> getIssuetypes() {
     return issuetypes;
   }
-
 
 
 
@@ -160,12 +162,9 @@ public class ProjectIssueCreateMetadata {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
-
 
 
 
@@ -174,12 +173,9 @@ public class ProjectIssueCreateMetadata {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -188,8 +184,6 @@ public class ProjectIssueCreateMetadata {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
@@ -197,9 +191,6 @@ public class ProjectIssueCreateMetadata {
 
 
 
-  /**
-   * Return true if this ProjectIssueCreateMetadata object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -249,79 +240,121 @@ public class ProjectIssueCreateMetadata {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("avatarUrls", "expand", "id", "issuetypes", "key", "name", "self"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectIssueCreateMetadata
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `avatarUrls` to the URL query string
-    if (getAvatarUrls() != null) {
-      joiner.add(getAvatarUrls().toUrlQueryString(prefix + "avatarUrls" + suffix));
-    }
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `issuetypes` to the URL query string
-    if (getIssuetypes() != null) {
-      for (int i = 0; i < getIssuetypes().size(); i++) {
-        if (getIssuetypes().get(i) != null) {
-          joiner.add(getIssuetypes().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissuetypes%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectIssueCreateMetadata.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectIssueCreateMetadata is not found in the empty JSON string", ProjectIssueCreateMetadata.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectIssueCreateMetadata.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectIssueCreateMetadata` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `avatarUrls`
+      if (jsonObj.get("avatarUrls") != null && !jsonObj.get("avatarUrls").isJsonNull()) {
+        AvatarUrlsBean.validateJsonElement(jsonObj.get("avatarUrls"));
+      }
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (jsonObj.get("issuetypes") != null && !jsonObj.get("issuetypes").isJsonNull()) {
+        JsonArray jsonArrayissuetypes = jsonObj.getAsJsonArray("issuetypes");
+        if (jsonArrayissuetypes != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issuetypes").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issuetypes` to be an array in the JSON string but got `%s`", jsonObj.get("issuetypes").toString()));
+          }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+          // validate the optional field `issuetypes` (array)
+          for (int i = 0; i < jsonArrayissuetypes.size(); i++) {
+            IssueTypeIssueCreateMetadata.validateJsonElement(jsonArrayissuetypes.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectIssueCreateMetadata.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectIssueCreateMetadata' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectIssueCreateMetadata> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectIssueCreateMetadata.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<ProjectIssueCreateMetadata>() {
+           @Override
+           public void write(JsonWriter out, ProjectIssueCreateMetadata value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectIssueCreateMetadata read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ProjectIssueCreateMetadata given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectIssueCreateMetadata
+   * @throws IOException if the JSON string is invalid with respect to ProjectIssueCreateMetadata
+   */
+  public static ProjectIssueCreateMetadata fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectIssueCreateMetadata.class);
+  }
+
+  /**
+   * Convert an instance of ProjectIssueCreateMetadata to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

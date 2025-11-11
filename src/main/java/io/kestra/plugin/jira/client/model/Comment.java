@@ -13,119 +13,127 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.EntityProperty;
 import io.kestra.plugin.jira.client.model.UserDetails;
 import io.kestra.plugin.jira.client.model.Visibility;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A comment.
  */
-@JsonPropertyOrder({
-  Comment.JSON_PROPERTY_AUTHOR,
-  Comment.JSON_PROPERTY_BODY,
-  Comment.JSON_PROPERTY_CREATED,
-  Comment.JSON_PROPERTY_ID,
-  Comment.JSON_PROPERTY_JSD_AUTHOR_CAN_SEE_REQUEST,
-  Comment.JSON_PROPERTY_JSD_PUBLIC,
-  Comment.JSON_PROPERTY_PROPERTIES,
-  Comment.JSON_PROPERTY_RENDERED_BODY,
-  Comment.JSON_PROPERTY_SELF,
-  Comment.JSON_PROPERTY_UPDATE_AUTHOR,
-  Comment.JSON_PROPERTY_UPDATED,
-  Comment.JSON_PROPERTY_VISIBILITY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Comment {
-  public static final String JSON_PROPERTY_AUTHOR = "author";
+  public static final String SERIALIZED_NAME_AUTHOR = "author";
+  @SerializedName(SERIALIZED_NAME_AUTHOR)
   @javax.annotation.Nullable
   private UserDetails author;
 
-  public static final String JSON_PROPERTY_BODY = "body";
-  private JsonNullable<Object> body = JsonNullable.<Object>of(null);
+  public static final String SERIALIZED_NAME_BODY = "body";
+  @SerializedName(SERIALIZED_NAME_BODY)
+  @javax.annotation.Nullable
+  private Object body = null;
 
-  public static final String JSON_PROPERTY_CREATED = "created";
+  public static final String SERIALIZED_NAME_CREATED = "created";
+  @SerializedName(SERIALIZED_NAME_CREATED)
   @javax.annotation.Nullable
   private OffsetDateTime created;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_JSD_AUTHOR_CAN_SEE_REQUEST = "jsdAuthorCanSeeRequest";
+  public static final String SERIALIZED_NAME_JSD_AUTHOR_CAN_SEE_REQUEST = "jsdAuthorCanSeeRequest";
+  @SerializedName(SERIALIZED_NAME_JSD_AUTHOR_CAN_SEE_REQUEST)
   @javax.annotation.Nullable
   private Boolean jsdAuthorCanSeeRequest;
 
-  public static final String JSON_PROPERTY_JSD_PUBLIC = "jsdPublic";
+  public static final String SERIALIZED_NAME_JSD_PUBLIC = "jsdPublic";
+  @SerializedName(SERIALIZED_NAME_JSD_PUBLIC)
   @javax.annotation.Nullable
   private Boolean jsdPublic;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private List<EntityProperty> properties = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_RENDERED_BODY = "renderedBody";
+  public static final String SERIALIZED_NAME_RENDERED_BODY = "renderedBody";
+  @SerializedName(SERIALIZED_NAME_RENDERED_BODY)
   @javax.annotation.Nullable
   private String renderedBody;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public static final String JSON_PROPERTY_UPDATE_AUTHOR = "updateAuthor";
+  public static final String SERIALIZED_NAME_UPDATE_AUTHOR = "updateAuthor";
+  @SerializedName(SERIALIZED_NAME_UPDATE_AUTHOR)
   @javax.annotation.Nullable
   private UserDetails updateAuthor;
 
-  public static final String JSON_PROPERTY_UPDATED = "updated";
+  public static final String SERIALIZED_NAME_UPDATED = "updated";
+  @SerializedName(SERIALIZED_NAME_UPDATED)
   @javax.annotation.Nullable
   private OffsetDateTime updated;
 
-  public static final String JSON_PROPERTY_VISIBILITY = "visibility";
+  public static final String SERIALIZED_NAME_VISIBILITY = "visibility";
+  @SerializedName(SERIALIZED_NAME_VISIBILITY)
   @javax.annotation.Nullable
   private Visibility visibility;
 
-  public Comment() { 
+  public Comment() {
   }
 
-  @JsonCreator
   public Comment(
-    @JsonProperty(JSON_PROPERTY_AUTHOR) UserDetails author, 
-    @JsonProperty(JSON_PROPERTY_CREATED) OffsetDateTime created, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_JSD_AUTHOR_CAN_SEE_REQUEST) Boolean jsdAuthorCanSeeRequest, 
-    @JsonProperty(JSON_PROPERTY_JSD_PUBLIC) Boolean jsdPublic, 
-    @JsonProperty(JSON_PROPERTY_RENDERED_BODY) String renderedBody, 
-    @JsonProperty(JSON_PROPERTY_SELF) String self, 
-    @JsonProperty(JSON_PROPERTY_UPDATE_AUTHOR) UserDetails updateAuthor, 
-    @JsonProperty(JSON_PROPERTY_UPDATED) OffsetDateTime updated
+     UserDetails author, 
+     OffsetDateTime created, 
+     String id, 
+     Boolean jsdAuthorCanSeeRequest, 
+     Boolean jsdPublic, 
+     String renderedBody, 
+     String self, 
+     UserDetails updateAuthor, 
+     OffsetDateTime updated
   ) {
-  this();
+    this();
     this.author = author;
     this.created = created;
     this.id = id;
@@ -142,17 +150,14 @@ public class Comment {
    * @return author
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserDetails getAuthor() {
     return author;
   }
 
 
 
-
   public Comment body(@javax.annotation.Nullable Object body) {
-    this.body = JsonNullable.<Object>of(body);
+    this.body = body;
     return this;
   }
 
@@ -161,25 +166,12 @@ public class Comment {
    * @return body
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Object getBody() {
-        return body.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_BODY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Object> getBody_JsonNullable() {
     return body;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_BODY)
-  public void setBody_JsonNullable(JsonNullable<Object> body) {
-    this.body = body;
   }
 
   public void setBody(@javax.annotation.Nullable Object body) {
-    this.body = JsonNullable.<Object>of(body);
+    this.body = body;
   }
 
 
@@ -188,12 +180,9 @@ public class Comment {
    * @return created
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getCreated() {
     return created;
   }
-
 
 
 
@@ -202,12 +191,9 @@ public class Comment {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -216,12 +202,9 @@ public class Comment {
    * @return jsdAuthorCanSeeRequest
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_JSD_AUTHOR_CAN_SEE_REQUEST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getJsdAuthorCanSeeRequest() {
     return jsdAuthorCanSeeRequest;
   }
-
 
 
 
@@ -230,12 +213,9 @@ public class Comment {
    * @return jsdPublic
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_JSD_PUBLIC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getJsdPublic() {
     return jsdPublic;
   }
-
 
 
 
@@ -257,15 +237,10 @@ public class Comment {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<EntityProperty> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable List<EntityProperty> properties) {
     this.properties = properties;
   }
@@ -276,12 +251,9 @@ public class Comment {
    * @return renderedBody
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RENDERED_BODY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRenderedBody() {
     return renderedBody;
   }
-
 
 
 
@@ -290,12 +262,9 @@ public class Comment {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
-
 
 
 
@@ -304,12 +273,9 @@ public class Comment {
    * @return updateAuthor
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_AUTHOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserDetails getUpdateAuthor() {
     return updateAuthor;
   }
-
 
 
 
@@ -318,12 +284,9 @@ public class Comment {
    * @return updated
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getUpdated() {
     return updated;
   }
-
 
 
 
@@ -337,15 +300,10 @@ public class Comment {
    * @return visibility
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VISIBILITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Visibility getVisibility() {
     return visibility;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VISIBILITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVisibility(@javax.annotation.Nullable Visibility visibility) {
     this.visibility = visibility;
   }
@@ -360,11 +318,11 @@ public class Comment {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the Comment instance itself
    */
-  @JsonAnySetter
   public Comment putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -374,18 +332,19 @@ public class Comment {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -394,9 +353,7 @@ public class Comment {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this Comment object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -407,7 +364,7 @@ public class Comment {
     }
     Comment comment = (Comment) o;
     return Objects.equals(this.author, comment.author) &&
-        equalsNullable(this.body, comment.body) &&
+        Objects.equals(this.body, comment.body) &&
         Objects.equals(this.created, comment.created) &&
         Objects.equals(this.id, comment.id) &&
         Objects.equals(this.jsdAuthorCanSeeRequest, comment.jsdAuthorCanSeeRequest) &&
@@ -427,7 +384,7 @@ public class Comment {
 
   @Override
   public int hashCode() {
-    return Objects.hash(author, hashCodeNullable(body), created, id, jsdAuthorCanSeeRequest, jsdPublic, properties, renderedBody, self, updateAuthor, updated, visibility, additionalProperties);
+    return Objects.hash(author, body, created, id, jsdAuthorCanSeeRequest, jsdPublic, properties, renderedBody, self, updateAuthor, updated, visibility, additionalProperties);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -469,104 +426,154 @@ public class Comment {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("author", "body", "created", "id", "jsdAuthorCanSeeRequest", "jsdPublic", "properties", "renderedBody", "self", "updateAuthor", "updated", "visibility"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Comment
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `author` to the URL query string
-    if (getAuthor() != null) {
-      joiner.add(getAuthor().toUrlQueryString(prefix + "author" + suffix));
-    }
-
-    // add `body` to the URL query string
-    if (getBody() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbody%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBody()))));
-    }
-
-    // add `created` to the URL query string
-    if (getCreated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreated()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `jsdAuthorCanSeeRequest` to the URL query string
-    if (getJsdAuthorCanSeeRequest() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sjsdAuthorCanSeeRequest%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getJsdAuthorCanSeeRequest()))));
-    }
-
-    // add `jsdPublic` to the URL query string
-    if (getJsdPublic() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sjsdPublic%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getJsdPublic()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (int i = 0; i < getProperties().size(); i++) {
-        if (getProperties().get(i) != null) {
-          joiner.add(getProperties().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sproperties%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Comment.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Comment is not found in the empty JSON string", Comment.openapiRequiredFields.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `author`
+      if (jsonObj.get("author") != null && !jsonObj.get("author").isJsonNull()) {
+        UserDetails.validateJsonElement(jsonObj.get("author"));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (jsonObj.get("properties") != null && !jsonObj.get("properties").isJsonNull()) {
+        JsonArray jsonArrayproperties = jsonObj.getAsJsonArray("properties");
+        if (jsonArrayproperties != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("properties").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `properties` to be an array in the JSON string but got `%s`", jsonObj.get("properties").toString()));
+          }
 
-    // add `renderedBody` to the URL query string
-    if (getRenderedBody() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srenderedBody%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRenderedBody()))));
-    }
+          // validate the optional field `properties` (array)
+          for (int i = 0; i < jsonArrayproperties.size(); i++) {
+            EntityProperty.validateJsonElement(jsonArrayproperties.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("renderedBody") != null && !jsonObj.get("renderedBody").isJsonNull()) && !jsonObj.get("renderedBody").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `renderedBody` to be a primitive type in the JSON string but got `%s`", jsonObj.get("renderedBody").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      // validate the optional field `updateAuthor`
+      if (jsonObj.get("updateAuthor") != null && !jsonObj.get("updateAuthor").isJsonNull()) {
+        UserDetails.validateJsonElement(jsonObj.get("updateAuthor"));
+      }
+  }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Comment.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Comment' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Comment> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Comment.class));
 
-    // add `updateAuthor` to the URL query string
-    if (getUpdateAuthor() != null) {
-      joiner.add(getUpdateAuthor().toUrlQueryString(prefix + "updateAuthor" + suffix));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<Comment>() {
+           @Override
+           public void write(JsonWriter out, Comment value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
 
-    // add `updated` to the URL query string
-    if (getUpdated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%supdated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUpdated()))));
-    }
+           @Override
+           public Comment read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             Comment instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
 
-    // add `visibility` to the URL query string
-    if (getVisibility() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svisibility%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVisibility()))));
+       }.nullSafe();
     }
+  }
 
-    return joiner.toString();
+  /**
+   * Create an instance of Comment given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Comment
+   * @throws IOException if the JSON string is invalid with respect to Comment
+   */
+  public static Comment fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Comment.class);
+  }
+
+  /**
+   * Convert an instance of Comment to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

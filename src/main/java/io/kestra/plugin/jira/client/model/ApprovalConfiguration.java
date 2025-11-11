@@ -13,51 +13,56 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The approval configuration of a status within a workflow. Applies only to Jira Service Management approvals.
  */
-@JsonPropertyOrder({
-  ApprovalConfiguration.JSON_PROPERTY_ACTIVE,
-  ApprovalConfiguration.JSON_PROPERTY_CONDITION_TYPE,
-  ApprovalConfiguration.JSON_PROPERTY_CONDITION_VALUE,
-  ApprovalConfiguration.JSON_PROPERTY_EXCLUDE,
-  ApprovalConfiguration.JSON_PROPERTY_FIELD_ID,
-  ApprovalConfiguration.JSON_PROPERTY_PRE_POPULATED_FIELD_ID,
-  ApprovalConfiguration.JSON_PROPERTY_TRANSITION_APPROVED,
-  ApprovalConfiguration.JSON_PROPERTY_TRANSITION_REJECTED
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ApprovalConfiguration {
   /**
    * Whether the approval configuration is active.
    */
+  @JsonAdapter(ActiveEnum.Adapter.class)
   public enum ActiveEnum {
-    TRUE(String.valueOf("true")),
+    TRUE("true"),
     
-    FALSE(String.valueOf("false"));
+    FALSE("false");
 
     private String value;
 
@@ -65,7 +70,6 @@ public class ApprovalConfiguration {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -75,7 +79,6 @@ public class ApprovalConfiguration {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ActiveEnum fromValue(String value) {
       for (ActiveEnum b : ActiveEnum.values()) {
         if (b.value.equals(value)) {
@@ -84,21 +87,41 @@ public class ApprovalConfiguration {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ActiveEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ActiveEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ActiveEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ActiveEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ActiveEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ACTIVE = "active";
+  public static final String SERIALIZED_NAME_ACTIVE = "active";
+  @SerializedName(SERIALIZED_NAME_ACTIVE)
   @javax.annotation.Nonnull
   private ActiveEnum active;
 
   /**
    * How the required approval count is calculated. It may be configured to require a specific number of approvals, or approval by a percentage of approvers. If the approvers source field is Approver groups, you can configure how many approvals per group are required for the request to be approved. The number will be the same across all groups.
    */
+  @JsonAdapter(ConditionTypeEnum.Adapter.class)
   public enum ConditionTypeEnum {
-    NUMBER(String.valueOf("number")),
+    NUMBER("number"),
     
-    PERCENT(String.valueOf("percent")),
+    PERCENT("percent"),
     
-    NUMBER_PER_PRINCIPAL(String.valueOf("numberPerPrincipal"));
+    NUMBER_PER_PRINCIPAL("numberPerPrincipal");
 
     private String value;
 
@@ -106,7 +129,6 @@ public class ApprovalConfiguration {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -116,7 +138,6 @@ public class ApprovalConfiguration {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ConditionTypeEnum fromValue(String value) {
       for (ConditionTypeEnum b : ConditionTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -125,23 +146,44 @@ public class ApprovalConfiguration {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ConditionTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ConditionTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ConditionTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ConditionTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ConditionTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_CONDITION_TYPE = "conditionType";
+  public static final String SERIALIZED_NAME_CONDITION_TYPE = "conditionType";
+  @SerializedName(SERIALIZED_NAME_CONDITION_TYPE)
   @javax.annotation.Nonnull
   private ConditionTypeEnum conditionType;
 
-  public static final String JSON_PROPERTY_CONDITION_VALUE = "conditionValue";
+  public static final String SERIALIZED_NAME_CONDITION_VALUE = "conditionValue";
+  @SerializedName(SERIALIZED_NAME_CONDITION_VALUE)
   @javax.annotation.Nonnull
   private String conditionValue;
 
   /**
    * A list of roles that should be excluded as possible approvers.
    */
+  @JsonAdapter(ExcludeEnum.Adapter.class)
   public enum ExcludeEnum {
-    ASSIGNEE(String.valueOf("assignee")),
+    ASSIGNEE("assignee"),
     
-    REPORTER(String.valueOf("reporter"));
+    REPORTER("reporter");
 
     private String value;
 
@@ -149,7 +191,6 @@ public class ApprovalConfiguration {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -159,7 +200,6 @@ public class ApprovalConfiguration {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ExcludeEnum fromValue(String value) {
       for (ExcludeEnum b : ExcludeEnum.values()) {
         if (b.value.equals(value)) {
@@ -168,27 +208,52 @@ public class ApprovalConfiguration {
       }
       return null;
     }
+
+    public static class Adapter extends TypeAdapter<ExcludeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ExcludeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ExcludeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ExcludeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ExcludeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_EXCLUDE = "exclude";
-  private JsonNullable<List<ExcludeEnum>> exclude = JsonNullable.<List<ExcludeEnum>>undefined();
+  public static final String SERIALIZED_NAME_EXCLUDE = "exclude";
+  @SerializedName(SERIALIZED_NAME_EXCLUDE)
+  @javax.annotation.Nullable
+  private List<ExcludeEnum> exclude;
 
-  public static final String JSON_PROPERTY_FIELD_ID = "fieldId";
+  public static final String SERIALIZED_NAME_FIELD_ID = "fieldId";
+  @SerializedName(SERIALIZED_NAME_FIELD_ID)
   @javax.annotation.Nonnull
   private String fieldId;
 
-  public static final String JSON_PROPERTY_PRE_POPULATED_FIELD_ID = "prePopulatedFieldId";
-  private JsonNullable<String> prePopulatedFieldId = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_PRE_POPULATED_FIELD_ID = "prePopulatedFieldId";
+  @SerializedName(SERIALIZED_NAME_PRE_POPULATED_FIELD_ID)
+  @javax.annotation.Nullable
+  private String prePopulatedFieldId;
 
-  public static final String JSON_PROPERTY_TRANSITION_APPROVED = "transitionApproved";
+  public static final String SERIALIZED_NAME_TRANSITION_APPROVED = "transitionApproved";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_APPROVED)
   @javax.annotation.Nonnull
   private String transitionApproved;
 
-  public static final String JSON_PROPERTY_TRANSITION_REJECTED = "transitionRejected";
+  public static final String SERIALIZED_NAME_TRANSITION_REJECTED = "transitionRejected";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_REJECTED)
   @javax.annotation.Nonnull
   private String transitionRejected;
 
-  public ApprovalConfiguration() { 
+  public ApprovalConfiguration() {
   }
 
   public ApprovalConfiguration active(@javax.annotation.Nonnull ActiveEnum active) {
@@ -201,15 +266,10 @@ public class ApprovalConfiguration {
    * @return active
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACTIVE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public ActiveEnum getActive() {
     return active;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTIVE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setActive(@javax.annotation.Nonnull ActiveEnum active) {
     this.active = active;
   }
@@ -225,15 +285,10 @@ public class ApprovalConfiguration {
    * @return conditionType
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CONDITION_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public ConditionTypeEnum getConditionType() {
     return conditionType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONDITION_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setConditionType(@javax.annotation.Nonnull ConditionTypeEnum conditionType) {
     this.conditionType = conditionType;
   }
@@ -249,34 +304,25 @@ public class ApprovalConfiguration {
    * @return conditionValue
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CONDITION_VALUE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getConditionValue() {
     return conditionValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONDITION_VALUE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setConditionValue(@javax.annotation.Nonnull String conditionValue) {
     this.conditionValue = conditionValue;
   }
 
 
   public ApprovalConfiguration exclude(@javax.annotation.Nullable List<ExcludeEnum> exclude) {
-    this.exclude = JsonNullable.<List<ExcludeEnum>>of(exclude);
+    this.exclude = exclude;
     return this;
   }
 
   public ApprovalConfiguration addExcludeItem(ExcludeEnum excludeItem) {
-    if (this.exclude == null || !this.exclude.isPresent()) {
-      this.exclude = JsonNullable.<List<ExcludeEnum>>of(new ArrayList<>());
+    if (this.exclude == null) {
+      this.exclude = new ArrayList<>();
     }
-    try {
-      this.exclude.get().add(excludeItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.exclude.add(excludeItem);
     return this;
   }
 
@@ -285,25 +331,12 @@ public class ApprovalConfiguration {
    * @return exclude
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<ExcludeEnum> getExclude() {
-        return exclude.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_EXCLUDE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<ExcludeEnum>> getExclude_JsonNullable() {
     return exclude;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_EXCLUDE)
-  public void setExclude_JsonNullable(JsonNullable<List<ExcludeEnum>> exclude) {
-    this.exclude = exclude;
   }
 
   public void setExclude(@javax.annotation.Nullable List<ExcludeEnum> exclude) {
-    this.exclude = JsonNullable.<List<ExcludeEnum>>of(exclude);
+    this.exclude = exclude;
   }
 
 
@@ -317,22 +350,17 @@ public class ApprovalConfiguration {
    * @return fieldId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getFieldId() {
     return fieldId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFieldId(@javax.annotation.Nonnull String fieldId) {
     this.fieldId = fieldId;
   }
 
 
   public ApprovalConfiguration prePopulatedFieldId(@javax.annotation.Nullable String prePopulatedFieldId) {
-    this.prePopulatedFieldId = JsonNullable.<String>of(prePopulatedFieldId);
+    this.prePopulatedFieldId = prePopulatedFieldId;
     return this;
   }
 
@@ -341,25 +369,12 @@ public class ApprovalConfiguration {
    * @return prePopulatedFieldId
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getPrePopulatedFieldId() {
-        return prePopulatedFieldId.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_PRE_POPULATED_FIELD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getPrePopulatedFieldId_JsonNullable() {
     return prePopulatedFieldId;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PRE_POPULATED_FIELD_ID)
-  public void setPrePopulatedFieldId_JsonNullable(JsonNullable<String> prePopulatedFieldId) {
-    this.prePopulatedFieldId = prePopulatedFieldId;
   }
 
   public void setPrePopulatedFieldId(@javax.annotation.Nullable String prePopulatedFieldId) {
-    this.prePopulatedFieldId = JsonNullable.<String>of(prePopulatedFieldId);
+    this.prePopulatedFieldId = prePopulatedFieldId;
   }
 
 
@@ -373,15 +388,10 @@ public class ApprovalConfiguration {
    * @return transitionApproved
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_APPROVED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTransitionApproved() {
     return transitionApproved;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_APPROVED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setTransitionApproved(@javax.annotation.Nonnull String transitionApproved) {
     this.transitionApproved = transitionApproved;
   }
@@ -397,23 +407,16 @@ public class ApprovalConfiguration {
    * @return transitionRejected
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_REJECTED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTransitionRejected() {
     return transitionRejected;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_REJECTED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setTransitionRejected(@javax.annotation.Nonnull String transitionRejected) {
     this.transitionRejected = transitionRejected;
   }
 
 
-  /**
-   * Return true if this ApprovalConfiguration object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -426,9 +429,9 @@ public class ApprovalConfiguration {
     return Objects.equals(this.active, approvalConfiguration.active) &&
         Objects.equals(this.conditionType, approvalConfiguration.conditionType) &&
         Objects.equals(this.conditionValue, approvalConfiguration.conditionValue) &&
-        equalsNullable(this.exclude, approvalConfiguration.exclude) &&
+        Objects.equals(this.exclude, approvalConfiguration.exclude) &&
         Objects.equals(this.fieldId, approvalConfiguration.fieldId) &&
-        equalsNullable(this.prePopulatedFieldId, approvalConfiguration.prePopulatedFieldId) &&
+        Objects.equals(this.prePopulatedFieldId, approvalConfiguration.prePopulatedFieldId) &&
         Objects.equals(this.transitionApproved, approvalConfiguration.transitionApproved) &&
         Objects.equals(this.transitionRejected, approvalConfiguration.transitionRejected);
   }
@@ -439,7 +442,7 @@ public class ApprovalConfiguration {
 
   @Override
   public int hashCode() {
-    return Objects.hash(active, conditionType, conditionValue, hashCodeNullable(exclude), fieldId, hashCodeNullable(prePopulatedFieldId), transitionApproved, transitionRejected);
+    return Objects.hash(active, conditionType, conditionValue, exclude, fieldId, prePopulatedFieldId, transitionApproved, transitionRejected);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -476,83 +479,124 @@ public class ApprovalConfiguration {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("active", "conditionType", "conditionValue", "exclude", "fieldId", "prePopulatedFieldId", "transitionApproved", "transitionRejected"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("active", "conditionType", "conditionValue", "fieldId", "transitionApproved", "transitionRejected"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ApprovalConfiguration
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `active` to the URL query string
-    if (getActive() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sactive%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getActive()))));
-    }
-
-    // add `conditionType` to the URL query string
-    if (getConditionType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sconditionType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getConditionType()))));
-    }
-
-    // add `conditionValue` to the URL query string
-    if (getConditionValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sconditionValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getConditionValue()))));
-    }
-
-    // add `exclude` to the URL query string
-    if (getExclude() != null) {
-      for (int i = 0; i < getExclude().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sexclude%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getExclude().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ApprovalConfiguration.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ApprovalConfiguration is not found in the empty JSON string", ApprovalConfiguration.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `fieldId` to the URL query string
-    if (getFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldId()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ApprovalConfiguration.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ApprovalConfiguration` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    // add `prePopulatedFieldId` to the URL query string
-    if (getPrePopulatedFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprePopulatedFieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPrePopulatedFieldId()))));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : ApprovalConfiguration.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("active").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `active` to be a primitive type in the JSON string but got `%s`", jsonObj.get("active").toString()));
+      }
+      // validate the required field `active`
+      ActiveEnum.validateJsonElement(jsonObj.get("active"));
+      if (!jsonObj.get("conditionType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `conditionType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("conditionType").toString()));
+      }
+      // validate the required field `conditionType`
+      ConditionTypeEnum.validateJsonElement(jsonObj.get("conditionType"));
+      if (!jsonObj.get("conditionValue").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `conditionValue` to be a primitive type in the JSON string but got `%s`", jsonObj.get("conditionValue").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("exclude") != null && !jsonObj.get("exclude").isJsonNull() && !jsonObj.get("exclude").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `exclude` to be an array in the JSON string but got `%s`", jsonObj.get("exclude").toString()));
+      }
+      if (!jsonObj.get("fieldId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldId").toString()));
+      }
+      if ((jsonObj.get("prePopulatedFieldId") != null && !jsonObj.get("prePopulatedFieldId").isJsonNull()) && !jsonObj.get("prePopulatedFieldId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `prePopulatedFieldId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("prePopulatedFieldId").toString()));
+      }
+      if (!jsonObj.get("transitionApproved").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `transitionApproved` to be a primitive type in the JSON string but got `%s`", jsonObj.get("transitionApproved").toString()));
+      }
+      if (!jsonObj.get("transitionRejected").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `transitionRejected` to be a primitive type in the JSON string but got `%s`", jsonObj.get("transitionRejected").toString()));
+      }
+  }
 
-    // add `transitionApproved` to the URL query string
-    if (getTransitionApproved() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stransitionApproved%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransitionApproved()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ApprovalConfiguration.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ApprovalConfiguration' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ApprovalConfiguration> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ApprovalConfiguration.class));
 
-    // add `transitionRejected` to the URL query string
-    if (getTransitionRejected() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stransitionRejected%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransitionRejected()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<ApprovalConfiguration>() {
+           @Override
+           public void write(JsonWriter out, ApprovalConfiguration value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public ApprovalConfiguration read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ApprovalConfiguration given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ApprovalConfiguration
+   * @throws IOException if the JSON string is invalid with respect to ApprovalConfiguration
+   */
+  public static ApprovalConfiguration fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ApprovalConfiguration.class);
+  }
+
+  /**
+   * Convert an instance of ApprovalConfiguration to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

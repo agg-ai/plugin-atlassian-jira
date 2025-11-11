@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.EntityProperty;
 import io.kestra.plugin.jira.client.model.GetForgeAppProperty200Response;
@@ -24,1068 +33,1191 @@ import io.kestra.plugin.jira.client.model.GetForgeAppPropertyKeys200Response;
 import io.kestra.plugin.jira.client.model.OperationMessage;
 import io.kestra.plugin.jira.client.model.PropertyKeys;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AppPropertiesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public AppPropertiesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public AppPropertiesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addonPropertiesResourceDeleteAddonPropertyDelete
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property is not found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addonPropertiesResourceDeleteAddonPropertyDeleteCall(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public AppPropertiesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public AppPropertiesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Delete app property
-   * Deletes an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void addonPropertiesResourceDeleteAddonPropertyDelete(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey) throws ApiException {
-    addonPropertiesResourceDeleteAddonPropertyDelete(addonKey, propertyKey, null);
-  }
-
-  /**
-   * Delete app property
-   * Deletes an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void addonPropertiesResourceDeleteAddonPropertyDelete(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    addonPropertiesResourceDeleteAddonPropertyDeleteWithHttpInfo(addonKey, propertyKey, headers);
-  }
-
-  /**
-   * Delete app property
-   * Deletes an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> addonPropertiesResourceDeleteAddonPropertyDeleteWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey) throws ApiException {
-    return addonPropertiesResourceDeleteAddonPropertyDeleteWithHttpInfo(addonKey, propertyKey, null);
-  }
-
-  /**
-   * Delete app property
-   * Deletes an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> addonPropertiesResourceDeleteAddonPropertyDeleteWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addonPropertiesResourceDeleteAddonPropertyDeleteRequestBuilder(addonKey, propertyKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addonPropertiesResourceDeleteAddonPropertyDelete", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder addonPropertiesResourceDeleteAddonPropertyDeleteRequestBuilder(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'addonKey' is set
-    if (addonKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'addonKey' when calling addonPropertiesResourceDeleteAddonPropertyDelete");
-    }
-    // verify the required parameter 'propertyKey' is set
-    if (propertyKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'propertyKey' when calling addonPropertiesResourceDeleteAddonPropertyDelete");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
-        .replace("{addonKey}", ApiClient.urlEncode(addonKey.toString()))
-        .replace("{propertyKey}", ApiClient.urlEncode(propertyKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get app properties
-   * Gets all the properties of an app.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @return PropertyKeys
-   * @throws ApiException if fails to make API call
-   */
-  public PropertyKeys addonPropertiesResourceGetAddonPropertiesGet(@javax.annotation.Nonnull String addonKey) throws ApiException {
-    return addonPropertiesResourceGetAddonPropertiesGet(addonKey, null);
-  }
-
-  /**
-   * Get app properties
-   * Gets all the properties of an app.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param headers Optional headers to include in the request
-   * @return PropertyKeys
-   * @throws ApiException if fails to make API call
-   */
-  public PropertyKeys addonPropertiesResourceGetAddonPropertiesGet(@javax.annotation.Nonnull String addonKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<PropertyKeys> localVarResponse = addonPropertiesResourceGetAddonPropertiesGetWithHttpInfo(addonKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get app properties
-   * Gets all the properties of an app.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @return ApiResponse&lt;PropertyKeys&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PropertyKeys> addonPropertiesResourceGetAddonPropertiesGetWithHttpInfo(@javax.annotation.Nonnull String addonKey) throws ApiException {
-    return addonPropertiesResourceGetAddonPropertiesGetWithHttpInfo(addonKey, null);
-  }
-
-  /**
-   * Get app properties
-   * Gets all the properties of an app.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PropertyKeys&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PropertyKeys> addonPropertiesResourceGetAddonPropertiesGetWithHttpInfo(@javax.annotation.Nonnull String addonKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addonPropertiesResourceGetAddonPropertiesGetRequestBuilder(addonKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addonPropertiesResourceGetAddonPropertiesGet", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PropertyKeys>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PropertyKeys responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PropertyKeys>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<PropertyKeys>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
+            .replace("{" + "addonKey" + "}", localVarApiClient.escapeString(addonKey.toString()))
+            .replace("{" + "propertyKey" + "}", localVarApiClient.escapeString(propertyKey.toString()));
 
-  private HttpRequest.Builder addonPropertiesResourceGetAddonPropertiesGetRequestBuilder(@javax.annotation.Nonnull String addonKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'addonKey' is set
-    if (addonKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'addonKey' when calling addonPropertiesResourceGetAddonPropertiesGet");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/atlassian-connect/1/addons/{addonKey}/properties"
-        .replace("{addonKey}", ApiClient.urlEncode(addonKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get app property
-   * Returns the key and value of an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @return EntityProperty
-   * @throws ApiException if fails to make API call
-   */
-  public EntityProperty addonPropertiesResourceGetAddonPropertyGet(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey) throws ApiException {
-    return addonPropertiesResourceGetAddonPropertyGet(addonKey, propertyKey, null);
-  }
-
-  /**
-   * Get app property
-   * Returns the key and value of an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @param headers Optional headers to include in the request
-   * @return EntityProperty
-   * @throws ApiException if fails to make API call
-   */
-  public EntityProperty addonPropertiesResourceGetAddonPropertyGet(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<EntityProperty> localVarResponse = addonPropertiesResourceGetAddonPropertyGetWithHttpInfo(addonKey, propertyKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get app property
-   * Returns the key and value of an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @return ApiResponse&lt;EntityProperty&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<EntityProperty> addonPropertiesResourceGetAddonPropertyGetWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey) throws ApiException {
-    return addonPropertiesResourceGetAddonPropertyGetWithHttpInfo(addonKey, propertyKey, null);
-  }
-
-  /**
-   * Get app property
-   * Returns the key and value of an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;EntityProperty&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<EntityProperty> addonPropertiesResourceGetAddonPropertyGetWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addonPropertiesResourceGetAddonPropertyGetRequestBuilder(addonKey, propertyKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addonPropertiesResourceGetAddonPropertyGet", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<EntityProperty>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        EntityProperty responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<EntityProperty>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<EntityProperty>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder addonPropertiesResourceGetAddonPropertyGetRequestBuilder(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'addonKey' is set
-    if (addonKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'addonKey' when calling addonPropertiesResourceGetAddonPropertyGet");
-    }
-    // verify the required parameter 'propertyKey' is set
-    if (propertyKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'propertyKey' when calling addonPropertiesResourceGetAddonPropertyGet");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
-        .replace("{addonKey}", ApiClient.urlEncode(addonKey.toString()))
-        .replace("{propertyKey}", ApiClient.urlEncode(propertyKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Set app property
-   * Sets the value of an app&#39;s property. Use this resource to store custom data for your app.  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @param body  (required)
-   * @return OperationMessage
-   * @throws ApiException if fails to make API call
-   */
-  public OperationMessage addonPropertiesResourcePutAddonPropertyPut(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body) throws ApiException {
-    return addonPropertiesResourcePutAddonPropertyPut(addonKey, propertyKey, body, null);
-  }
-
-  /**
-   * Set app property
-   * Sets the value of an app&#39;s property. Use this resource to store custom data for your app.  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @param body  (required)
-   * @param headers Optional headers to include in the request
-   * @return OperationMessage
-   * @throws ApiException if fails to make API call
-   */
-  public OperationMessage addonPropertiesResourcePutAddonPropertyPut(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
-    ApiResponse<OperationMessage> localVarResponse = addonPropertiesResourcePutAddonPropertyPutWithHttpInfo(addonKey, propertyKey, body, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set app property
-   * Sets the value of an app&#39;s property. Use this resource to store custom data for your app.  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @param body  (required)
-   * @return ApiResponse&lt;OperationMessage&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<OperationMessage> addonPropertiesResourcePutAddonPropertyPutWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body) throws ApiException {
-    return addonPropertiesResourcePutAddonPropertyPutWithHttpInfo(addonKey, propertyKey, body, null);
-  }
-
-  /**
-   * Set app property
-   * Sets the value of an app&#39;s property. Use this resource to store custom data for your app.  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
-   * @param addonKey The key of the app, as defined in its descriptor. (required)
-   * @param propertyKey The key of the property. (required)
-   * @param body  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;OperationMessage&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<OperationMessage> addonPropertiesResourcePutAddonPropertyPutWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addonPropertiesResourcePutAddonPropertyPutRequestBuilder(addonKey, propertyKey, body, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addonPropertiesResourcePutAddonPropertyPut", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<OperationMessage>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        OperationMessage responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<OperationMessage>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<OperationMessage>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder addonPropertiesResourcePutAddonPropertyPutRequestBuilder(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'addonKey' is set
-    if (addonKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'addonKey' when calling addonPropertiesResourcePutAddonPropertyPut");
-    }
-    // verify the required parameter 'propertyKey' is set
-    if (propertyKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'propertyKey' when calling addonPropertiesResourcePutAddonPropertyPut");
-    }
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling addonPropertiesResourcePutAddonPropertyPut");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
-        .replace("{addonKey}", ApiClient.urlEncode(addonKey.toString()))
-        .replace("{propertyKey}", ApiClient.urlEncode(propertyKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete app property (Forge)
-   * Deletes a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param propertyKey The key of the property. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteForgeAppProperty(@javax.annotation.Nonnull String propertyKey) throws ApiException {
-    deleteForgeAppProperty(propertyKey, null);
-  }
-
-  /**
-   * Delete app property (Forge)
-   * Deletes a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param propertyKey The key of the property. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteForgeAppProperty(@javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    deleteForgeAppPropertyWithHttpInfo(propertyKey, headers);
-  }
-
-  /**
-   * Delete app property (Forge)
-   * Deletes a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param propertyKey The key of the property. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey) throws ApiException {
-    return deleteForgeAppPropertyWithHttpInfo(propertyKey, null);
-  }
-
-  /**
-   * Delete app property (Forge)
-   * Deletes a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param propertyKey The key of the property. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteForgeAppPropertyRequestBuilder(propertyKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteForgeAppProperty", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteForgeAppPropertyRequestBuilder(@javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'propertyKey' is set
-    if (propertyKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'propertyKey' when calling deleteForgeAppProperty");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/forge/1/app/properties/{propertyKey}"
-        .replace("{propertyKey}", ApiClient.urlEncode(propertyKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get app property (Forge)
-   * Returns the value of a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
-   * @param propertyKey The key of the property. (required)
-   * @return GetForgeAppProperty200Response
-   * @throws ApiException if fails to make API call
-   */
-  public GetForgeAppProperty200Response getForgeAppProperty(@javax.annotation.Nonnull String propertyKey) throws ApiException {
-    return getForgeAppProperty(propertyKey, null);
-  }
-
-  /**
-   * Get app property (Forge)
-   * Returns the value of a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
-   * @param propertyKey The key of the property. (required)
-   * @param headers Optional headers to include in the request
-   * @return GetForgeAppProperty200Response
-   * @throws ApiException if fails to make API call
-   */
-  public GetForgeAppProperty200Response getForgeAppProperty(@javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<GetForgeAppProperty200Response> localVarResponse = getForgeAppPropertyWithHttpInfo(propertyKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get app property (Forge)
-   * Returns the value of a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
-   * @param propertyKey The key of the property. (required)
-   * @return ApiResponse&lt;GetForgeAppProperty200Response&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetForgeAppProperty200Response> getForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey) throws ApiException {
-    return getForgeAppPropertyWithHttpInfo(propertyKey, null);
-  }
-
-  /**
-   * Get app property (Forge)
-   * Returns the value of a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
-   * @param propertyKey The key of the property. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;GetForgeAppProperty200Response&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetForgeAppProperty200Response> getForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getForgeAppPropertyRequestBuilder(propertyKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getForgeAppProperty", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<GetForgeAppProperty200Response>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addonPropertiesResourceDeleteAddonPropertyDeleteValidateBeforeCall(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'addonKey' is set
+        if (addonKey == null) {
+            throw new ApiException("Missing the required parameter 'addonKey' when calling addonPropertiesResourceDeleteAddonPropertyDelete(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        GetForgeAppProperty200Response responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<GetForgeAppProperty200Response>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<GetForgeAppProperty200Response>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getForgeAppPropertyRequestBuilder(@javax.annotation.Nonnull String propertyKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'propertyKey' is set
-    if (propertyKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'propertyKey' when calling getForgeAppProperty");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/forge/1/app/properties/{propertyKey}"
-        .replace("{propertyKey}", ApiClient.urlEncode(propertyKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get app property keys (Forge)
-   * Returns all property keys for the Forge app.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
-   * @return GetForgeAppPropertyKeys200Response
-   * @throws ApiException if fails to make API call
-   */
-  public GetForgeAppPropertyKeys200Response getForgeAppPropertyKeys() throws ApiException {
-    return getForgeAppPropertyKeys(null);
-  }
-
-  /**
-   * Get app property keys (Forge)
-   * Returns all property keys for the Forge app.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
-   * @param headers Optional headers to include in the request
-   * @return GetForgeAppPropertyKeys200Response
-   * @throws ApiException if fails to make API call
-   */
-  public GetForgeAppPropertyKeys200Response getForgeAppPropertyKeys(Map<String, String> headers) throws ApiException {
-    ApiResponse<GetForgeAppPropertyKeys200Response> localVarResponse = getForgeAppPropertyKeysWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get app property keys (Forge)
-   * Returns all property keys for the Forge app.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
-   * @return ApiResponse&lt;GetForgeAppPropertyKeys200Response&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetForgeAppPropertyKeys200Response> getForgeAppPropertyKeysWithHttpInfo() throws ApiException {
-    return getForgeAppPropertyKeysWithHttpInfo(null);
-  }
-
-  /**
-   * Get app property keys (Forge)
-   * Returns all property keys for the Forge app.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;GetForgeAppPropertyKeys200Response&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetForgeAppPropertyKeys200Response> getForgeAppPropertyKeysWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getForgeAppPropertyKeysRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getForgeAppPropertyKeys", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<GetForgeAppPropertyKeys200Response>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'propertyKey' is set
+        if (propertyKey == null) {
+            throw new ApiException("Missing the required parameter 'propertyKey' when calling addonPropertiesResourceDeleteAddonPropertyDelete(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        GetForgeAppPropertyKeys200Response responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<GetForgeAppPropertyKeys200Response>() {});
-        
-        localVarResponse.body().close();
+        return addonPropertiesResourceDeleteAddonPropertyDeleteCall(addonKey, propertyKey, _callback);
 
-        return new ApiResponse<GetForgeAppPropertyKeys200Response>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
+
+    /**
+     * Delete app property
+     * Deletes an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property is not found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void addonPropertiesResourceDeleteAddonPropertyDelete(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey) throws ApiException {
+        addonPropertiesResourceDeleteAddonPropertyDeleteWithHttpInfo(addonKey, propertyKey);
     }
-  }
 
-  private HttpRequest.Builder getForgeAppPropertyKeysRequestBuilder(Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/forge/1/app/properties";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Delete app property
+     * Deletes an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property is not found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> addonPropertiesResourceDeleteAddonPropertyDeleteWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey) throws ApiException {
+        okhttp3.Call localVarCall = addonPropertiesResourceDeleteAddonPropertyDeleteValidateBeforeCall(addonKey, propertyKey, null);
+        return localVarApiClient.execute(localVarCall);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Delete app property (asynchronously)
+     * Deletes an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property is not found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addonPropertiesResourceDeleteAddonPropertyDeleteAsync(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = addonPropertiesResourceDeleteAddonPropertyDeleteValidateBeforeCall(addonKey, propertyKey, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for addonPropertiesResourceGetAddonPropertiesGet
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addonPropertiesResourceGetAddonPropertiesGetCall(@javax.annotation.Nonnull String addonKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Set app property (Forge)
-   * Sets the value of a Forge app&#39;s property. These values can be retrieved in [Jira expressions](/cloud/jira/platform/jira-expressions/) through the &#x60;app&#x60; [context variable](/cloud/jira/platform/jira-expressions/#context-variables). They are also available in [entity property display conditions](/platform/forge/manifest-reference/display-conditions/entity-property-conditions/).  For other use cases, use the [Storage API](/platform/forge/runtime-reference/storage-api/).  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param propertyKey The key of the property. (required)
-   * @param body  (required)
-   * @return OperationMessage
-   * @throws ApiException if fails to make API call
-   */
-  public OperationMessage putForgeAppProperty(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body) throws ApiException {
-    return putForgeAppProperty(propertyKey, body, null);
-  }
-
-  /**
-   * Set app property (Forge)
-   * Sets the value of a Forge app&#39;s property. These values can be retrieved in [Jira expressions](/cloud/jira/platform/jira-expressions/) through the &#x60;app&#x60; [context variable](/cloud/jira/platform/jira-expressions/#context-variables). They are also available in [entity property display conditions](/platform/forge/manifest-reference/display-conditions/entity-property-conditions/).  For other use cases, use the [Storage API](/platform/forge/runtime-reference/storage-api/).  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param propertyKey The key of the property. (required)
-   * @param body  (required)
-   * @param headers Optional headers to include in the request
-   * @return OperationMessage
-   * @throws ApiException if fails to make API call
-   */
-  public OperationMessage putForgeAppProperty(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
-    ApiResponse<OperationMessage> localVarResponse = putForgeAppPropertyWithHttpInfo(propertyKey, body, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set app property (Forge)
-   * Sets the value of a Forge app&#39;s property. These values can be retrieved in [Jira expressions](/cloud/jira/platform/jira-expressions/) through the &#x60;app&#x60; [context variable](/cloud/jira/platform/jira-expressions/#context-variables). They are also available in [entity property display conditions](/platform/forge/manifest-reference/display-conditions/entity-property-conditions/).  For other use cases, use the [Storage API](/platform/forge/runtime-reference/storage-api/).  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param propertyKey The key of the property. (required)
-   * @param body  (required)
-   * @return ApiResponse&lt;OperationMessage&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<OperationMessage> putForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body) throws ApiException {
-    return putForgeAppPropertyWithHttpInfo(propertyKey, body, null);
-  }
-
-  /**
-   * Set app property (Forge)
-   * Sets the value of a Forge app&#39;s property. These values can be retrieved in [Jira expressions](/cloud/jira/platform/jira-expressions/) through the &#x60;app&#x60; [context variable](/cloud/jira/platform/jira-expressions/#context-variables). They are also available in [entity property display conditions](/platform/forge/manifest-reference/display-conditions/entity-property-conditions/).  For other use cases, use the [Storage API](/platform/forge/runtime-reference/storage-api/).  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param propertyKey The key of the property. (required)
-   * @param body  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;OperationMessage&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<OperationMessage> putForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = putForgeAppPropertyRequestBuilder(propertyKey, body, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("putForgeAppProperty", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<OperationMessage>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        OperationMessage responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<OperationMessage>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<OperationMessage>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/atlassian-connect/1/addons/{addonKey}/properties"
+            .replace("{" + "addonKey" + "}", localVarApiClient.escapeString(addonKey.toString()));
 
-  private HttpRequest.Builder putForgeAppPropertyRequestBuilder(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'propertyKey' is set
-    if (propertyKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'propertyKey' when calling putForgeAppProperty");
-    }
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling putForgeAppProperty");
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addonPropertiesResourceGetAddonPropertiesGetValidateBeforeCall(@javax.annotation.Nonnull String addonKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'addonKey' is set
+        if (addonKey == null) {
+            throw new ApiException("Missing the required parameter 'addonKey' when calling addonPropertiesResourceGetAddonPropertiesGet(Async)");
+        }
 
-    String localVarPath = "/rest/forge/1/app/properties/{propertyKey}"
-        .replace("{propertyKey}", ApiClient.urlEncode(propertyKey.toString()));
+        return addonPropertiesResourceGetAddonPropertiesGetCall(addonKey, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Get app properties
+     * Gets all the properties of an app.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @return PropertyKeys
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PropertyKeys addonPropertiesResourceGetAddonPropertiesGet(@javax.annotation.Nonnull String addonKey) throws ApiException {
+        ApiResponse<PropertyKeys> localVarResp = addonPropertiesResourceGetAddonPropertiesGetWithHttpInfo(addonKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get app properties
+     * Gets all the properties of an app.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @return ApiResponse&lt;PropertyKeys&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PropertyKeys> addonPropertiesResourceGetAddonPropertiesGetWithHttpInfo(@javax.annotation.Nonnull String addonKey) throws ApiException {
+        okhttp3.Call localVarCall = addonPropertiesResourceGetAddonPropertiesGetValidateBeforeCall(addonKey, null);
+        Type localVarReturnType = new TypeToken<PropertyKeys>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get app properties (asynchronously)
+     * Gets all the properties of an app.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addonPropertiesResourceGetAddonPropertiesGetAsync(@javax.annotation.Nonnull String addonKey, final ApiCallback<PropertyKeys> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = addonPropertiesResourceGetAddonPropertiesGetValidateBeforeCall(addonKey, _callback);
+        Type localVarReturnType = new TypeToken<PropertyKeys>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for addonPropertiesResourceGetAddonPropertyGet
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property is not found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addonPropertiesResourceGetAddonPropertyGetCall(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
+            .replace("{" + "addonKey" + "}", localVarApiClient.escapeString(addonKey.toString()))
+            .replace("{" + "propertyKey" + "}", localVarApiClient.escapeString(propertyKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addonPropertiesResourceGetAddonPropertyGetValidateBeforeCall(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'addonKey' is set
+        if (addonKey == null) {
+            throw new ApiException("Missing the required parameter 'addonKey' when calling addonPropertiesResourceGetAddonPropertyGet(Async)");
+        }
+
+        // verify the required parameter 'propertyKey' is set
+        if (propertyKey == null) {
+            throw new ApiException("Missing the required parameter 'propertyKey' when calling addonPropertiesResourceGetAddonPropertyGet(Async)");
+        }
+
+        return addonPropertiesResourceGetAddonPropertyGetCall(addonKey, propertyKey, _callback);
+
+    }
+
+    /**
+     * Get app property
+     * Returns the key and value of an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @return EntityProperty
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property is not found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public EntityProperty addonPropertiesResourceGetAddonPropertyGet(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey) throws ApiException {
+        ApiResponse<EntityProperty> localVarResp = addonPropertiesResourceGetAddonPropertyGetWithHttpInfo(addonKey, propertyKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get app property
+     * Returns the key and value of an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @return ApiResponse&lt;EntityProperty&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property is not found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<EntityProperty> addonPropertiesResourceGetAddonPropertyGetWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey) throws ApiException {
+        okhttp3.Call localVarCall = addonPropertiesResourceGetAddonPropertyGetValidateBeforeCall(addonKey, propertyKey, null);
+        Type localVarReturnType = new TypeToken<EntityProperty>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get app property (asynchronously)
+     * Returns the key and value of an app&#39;s property.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property is not found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addonPropertiesResourceGetAddonPropertyGetAsync(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, final ApiCallback<EntityProperty> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = addonPropertiesResourceGetAddonPropertyGetValidateBeforeCall(addonKey, propertyKey, _callback);
+        Type localVarReturnType = new TypeToken<EntityProperty>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for addonPropertiesResourcePutAddonPropertyPut
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @param body  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the property is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned is the property is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   * the property key is longer than 127 characters.   * the value is not valid JSON.   * the value is longer than 32768 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addonPropertiesResourcePutAddonPropertyPutCall(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = body;
+
+        // create path and map variables
+        String localVarPath = "/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
+            .replace("{" + "addonKey" + "}", localVarApiClient.escapeString(addonKey.toString()))
+            .replace("{" + "propertyKey" + "}", localVarApiClient.escapeString(propertyKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addonPropertiesResourcePutAddonPropertyPutValidateBeforeCall(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'addonKey' is set
+        if (addonKey == null) {
+            throw new ApiException("Missing the required parameter 'addonKey' when calling addonPropertiesResourcePutAddonPropertyPut(Async)");
+        }
+
+        // verify the required parameter 'propertyKey' is set
+        if (propertyKey == null) {
+            throw new ApiException("Missing the required parameter 'propertyKey' when calling addonPropertiesResourcePutAddonPropertyPut(Async)");
+        }
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling addonPropertiesResourcePutAddonPropertyPut(Async)");
+        }
+
+        return addonPropertiesResourcePutAddonPropertyPutCall(addonKey, propertyKey, body, _callback);
+
+    }
+
+    /**
+     * Set app property
+     * Sets the value of an app&#39;s property. Use this resource to store custom data for your app.  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @param body  (required)
+     * @return OperationMessage
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the property is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned is the property is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   * the property key is longer than 127 characters.   * the value is not valid JSON.   * the value is longer than 32768 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public OperationMessage addonPropertiesResourcePutAddonPropertyPut(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body) throws ApiException {
+        ApiResponse<OperationMessage> localVarResp = addonPropertiesResourcePutAddonPropertyPutWithHttpInfo(addonKey, propertyKey, body);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set app property
+     * Sets the value of an app&#39;s property. Use this resource to store custom data for your app.  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @param body  (required)
+     * @return ApiResponse&lt;OperationMessage&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the property is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned is the property is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   * the property key is longer than 127 characters.   * the value is not valid JSON.   * the value is longer than 32768 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<OperationMessage> addonPropertiesResourcePutAddonPropertyPutWithHttpInfo(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body) throws ApiException {
+        okhttp3.Call localVarCall = addonPropertiesResourcePutAddonPropertyPutValidateBeforeCall(addonKey, propertyKey, body, null);
+        Type localVarReturnType = new TypeToken<OperationMessage>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set app property (asynchronously)
+     * Sets the value of an app&#39;s property. Use this resource to store custom data for your app.  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only a Connect app whose key matches &#x60;addonKey&#x60; can make this request. Additionally, Forge apps can access Connect app properties (stored against the same &#x60;app.connect.key&#x60;).
+     * @param addonKey The key of the app, as defined in its descriptor. (required)
+     * @param propertyKey The key of the property. (required)
+     * @param body  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the property is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned is the property is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   * the property key is longer than 127 characters.   * the value is not valid JSON.   * the value is longer than 32768 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addonPropertiesResourcePutAddonPropertyPutAsync(@javax.annotation.Nonnull String addonKey, @javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, final ApiCallback<OperationMessage> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = addonPropertiesResourcePutAddonPropertyPutValidateBeforeCall(addonKey, propertyKey, body, _callback);
+        Type localVarReturnType = new TypeToken<OperationMessage>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteForgeAppProperty
+     * @param propertyKey The key of the property. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property isn&#39;t found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteForgeAppPropertyCall(@javax.annotation.Nonnull String propertyKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/forge/1/app/properties/{propertyKey}"
+            .replace("{" + "propertyKey" + "}", localVarApiClient.escapeString(propertyKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteForgeAppPropertyValidateBeforeCall(@javax.annotation.Nonnull String propertyKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'propertyKey' is set
+        if (propertyKey == null) {
+            throw new ApiException("Missing the required parameter 'propertyKey' when calling deleteForgeAppProperty(Async)");
+        }
+
+        return deleteForgeAppPropertyCall(propertyKey, _callback);
+
+    }
+
+    /**
+     * Delete app property (Forge)
+     * Deletes a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param propertyKey The key of the property. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property isn&#39;t found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteForgeAppProperty(@javax.annotation.Nonnull String propertyKey) throws ApiException {
+        deleteForgeAppPropertyWithHttpInfo(propertyKey);
+    }
+
+    /**
+     * Delete app property (Forge)
+     * Deletes a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param propertyKey The key of the property. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property isn&#39;t found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey) throws ApiException {
+        okhttp3.Call localVarCall = deleteForgeAppPropertyValidateBeforeCall(propertyKey, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete app property (Forge) (asynchronously)
+     * Deletes a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param propertyKey The key of the property. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property isn&#39;t found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteForgeAppPropertyAsync(@javax.annotation.Nonnull String propertyKey, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteForgeAppPropertyValidateBeforeCall(propertyKey, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getForgeAppProperty
+     * @param propertyKey The key of the property. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property isn&#39;t found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getForgeAppPropertyCall(@javax.annotation.Nonnull String propertyKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/forge/1/app/properties/{propertyKey}"
+            .replace("{" + "propertyKey" + "}", localVarApiClient.escapeString(propertyKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getForgeAppPropertyValidateBeforeCall(@javax.annotation.Nonnull String propertyKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'propertyKey' is set
+        if (propertyKey == null) {
+            throw new ApiException("Missing the required parameter 'propertyKey' when calling getForgeAppProperty(Async)");
+        }
+
+        return getForgeAppPropertyCall(propertyKey, _callback);
+
+    }
+
+    /**
+     * Get app property (Forge)
+     * Returns the value of a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
+     * @param propertyKey The key of the property. (required)
+     * @return GetForgeAppProperty200Response
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property isn&#39;t found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public GetForgeAppProperty200Response getForgeAppProperty(@javax.annotation.Nonnull String propertyKey) throws ApiException {
+        ApiResponse<GetForgeAppProperty200Response> localVarResp = getForgeAppPropertyWithHttpInfo(propertyKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get app property (Forge)
+     * Returns the value of a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
+     * @param propertyKey The key of the property. (required)
+     * @return ApiResponse&lt;GetForgeAppProperty200Response&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property isn&#39;t found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<GetForgeAppProperty200Response> getForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey) throws ApiException {
+        okhttp3.Call localVarCall = getForgeAppPropertyValidateBeforeCall(propertyKey, null);
+        Type localVarReturnType = new TypeToken<GetForgeAppProperty200Response>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get app property (Forge) (asynchronously)
+     * Returns the value of a Forge app&#39;s property.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
+     * @param propertyKey The key of the property. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the property key is longer than 127 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the property isn&#39;t found or doesn&#39;t belong to the app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getForgeAppPropertyAsync(@javax.annotation.Nonnull String propertyKey, final ApiCallback<GetForgeAppProperty200Response> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getForgeAppPropertyValidateBeforeCall(propertyKey, _callback);
+        Type localVarReturnType = new TypeToken<GetForgeAppProperty200Response>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getForgeAppPropertyKeys
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getForgeAppPropertyKeysCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/forge/1/app/properties";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getForgeAppPropertyKeysValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getForgeAppPropertyKeysCall(_callback);
+
+    }
+
+    /**
+     * Get app property keys (Forge)
+     * Returns all property keys for the Forge app.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
+     * @return GetForgeAppPropertyKeys200Response
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public GetForgeAppPropertyKeys200Response getForgeAppPropertyKeys() throws ApiException {
+        ApiResponse<GetForgeAppPropertyKeys200Response> localVarResp = getForgeAppPropertyKeysWithHttpInfo();
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get app property keys (Forge)
+     * Returns all property keys for the Forge app.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
+     * @return ApiResponse&lt;GetForgeAppPropertyKeys200Response&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<GetForgeAppPropertyKeys200Response> getForgeAppPropertyKeysWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getForgeAppPropertyKeysValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<GetForgeAppPropertyKeys200Response>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get app property keys (Forge) (asynchronously)
+     * Returns all property keys for the Forge app.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getForgeAppPropertyKeysAsync(final ApiCallback<GetForgeAppPropertyKeys200Response> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getForgeAppPropertyKeysValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<GetForgeAppPropertyKeys200Response>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for putForgeAppProperty
+     * @param propertyKey The key of the property. (required)
+     * @param body  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the property is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned is the property is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   * the property key is longer than 127 characters.   * the value isn&#39;t valid JSON.   * the value is longer than 32768 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call putForgeAppPropertyCall(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = body;
+
+        // create path and map variables
+        String localVarPath = "/rest/forge/1/app/properties/{propertyKey}"
+            .replace("{" + "propertyKey" + "}", localVarApiClient.escapeString(propertyKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call putForgeAppPropertyValidateBeforeCall(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'propertyKey' is set
+        if (propertyKey == null) {
+            throw new ApiException("Missing the required parameter 'propertyKey' when calling putForgeAppProperty(Async)");
+        }
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling putForgeAppProperty(Async)");
+        }
+
+        return putForgeAppPropertyCall(propertyKey, body, _callback);
+
+    }
+
+    /**
+     * Set app property (Forge)
+     * Sets the value of a Forge app&#39;s property. These values can be retrieved in [Jira expressions](/cloud/jira/platform/jira-expressions/) through the &#x60;app&#x60; [context variable](/cloud/jira/platform/jira-expressions/#context-variables). They are also available in [entity property display conditions](/platform/forge/manifest-reference/display-conditions/entity-property-conditions/).  For other use cases, use the [Storage API](/platform/forge/runtime-reference/storage-api/).  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param propertyKey The key of the property. (required)
+     * @param body  (required)
+     * @return OperationMessage
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the property is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned is the property is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   * the property key is longer than 127 characters.   * the value isn&#39;t valid JSON.   * the value is longer than 32768 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public OperationMessage putForgeAppProperty(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body) throws ApiException {
+        ApiResponse<OperationMessage> localVarResp = putForgeAppPropertyWithHttpInfo(propertyKey, body);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set app property (Forge)
+     * Sets the value of a Forge app&#39;s property. These values can be retrieved in [Jira expressions](/cloud/jira/platform/jira-expressions/) through the &#x60;app&#x60; [context variable](/cloud/jira/platform/jira-expressions/#context-variables). They are also available in [entity property display conditions](/platform/forge/manifest-reference/display-conditions/entity-property-conditions/).  For other use cases, use the [Storage API](/platform/forge/runtime-reference/storage-api/).  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param propertyKey The key of the property. (required)
+     * @param body  (required)
+     * @return ApiResponse&lt;OperationMessage&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the property is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned is the property is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   * the property key is longer than 127 characters.   * the value isn&#39;t valid JSON.   * the value is longer than 32768 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<OperationMessage> putForgeAppPropertyWithHttpInfo(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body) throws ApiException {
+        okhttp3.Call localVarCall = putForgeAppPropertyValidateBeforeCall(propertyKey, body, null);
+        Type localVarReturnType = new TypeToken<OperationMessage>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set app property (Forge) (asynchronously)
+     * Sets the value of a Forge app&#39;s property. These values can be retrieved in [Jira expressions](/cloud/jira/platform/jira-expressions/) through the &#x60;app&#x60; [context variable](/cloud/jira/platform/jira-expressions/#context-variables). They are also available in [entity property display conditions](/platform/forge/manifest-reference/display-conditions/entity-property-conditions/).  For other use cases, use the [Storage API](/platform/forge/runtime-reference/storage-api/).  The value of the request body must be a [valid](http://tools.ietf.org/html/rfc4627), non-empty JSON blob. The maximum length is 32768 characters.  **[Permissions](#permissions) required:** Only Forge apps can make this request. This API can only be accessed using **[asApp()](https://developer.atlassian.com/platform/forge/apis-reference/fetch-api-product.requestjira/#method-signature)** requests from Forge.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param propertyKey The key of the property. (required)
+     * @param body  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the property is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned is the property is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   * the property key is longer than 127 characters.   * the value isn&#39;t valid JSON.   * the value is longer than 32768 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request isn&#39;t made directly by an app or if it&#39;s an impersonated request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call putForgeAppPropertyAsync(@javax.annotation.Nonnull String propertyKey, @javax.annotation.Nullable Object body, final ApiCallback<OperationMessage> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = putForgeAppPropertyValidateBeforeCall(propertyKey, body, _callback);
+        Type localVarReturnType = new TypeToken<OperationMessage>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

@@ -13,219 +13,174 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueContextVariable;
 import io.kestra.plugin.jira.client.model.JsonContextVariable;
 import io.kestra.plugin.jira.client.model.UserContextVariable;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+
 import io.kestra.plugin.jira.client.invoker.JSON;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-@JsonDeserialize(using = CustomContextVariable.CustomContextVariableDeserializer.class)
-@JsonSerialize(using = CustomContextVariable.CustomContextVariableSerializer.class)
 public class CustomContextVariable extends AbstractOpenApiSchema {
     private static final Logger log = Logger.getLogger(CustomContextVariable.class.getName());
 
-    public static class CustomContextVariableSerializer extends StdSerializer<CustomContextVariable> {
-        public CustomContextVariableSerializer(Class<CustomContextVariable> t) {
-            super(t);
-        }
-
-        public CustomContextVariableSerializer() {
-            this(null);
-        }
-
+    public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
         @Override
-        public void serialize(CustomContextVariable value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeObject(value.getActualInstance());
-        }
-    }
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (!CustomContextVariable.class.isAssignableFrom(type.getRawType())) {
+                return null; // this class only serializes 'CustomContextVariable' and its subtypes
+            }
+            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+            final TypeAdapter<UserContextVariable> adapterUserContextVariable = gson.getDelegateAdapter(this, TypeToken.get(UserContextVariable.class));
+            final TypeAdapter<IssueContextVariable> adapterIssueContextVariable = gson.getDelegateAdapter(this, TypeToken.get(IssueContextVariable.class));
+            final TypeAdapter<JsonContextVariable> adapterJsonContextVariable = gson.getDelegateAdapter(this, TypeToken.get(JsonContextVariable.class));
 
-    public static class CustomContextVariableDeserializer extends StdDeserializer<CustomContextVariable> {
-        public CustomContextVariableDeserializer() {
-            this(CustomContextVariable.class);
-        }
-
-        public CustomContextVariableDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public CustomContextVariable deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode tree = jp.readValueAsTree();
-            Object deserialized = null;
-            boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
-            int match = 0;
-            JsonToken token = tree.traverse(jp.getCodec()).nextToken();
-            // deserialize IssueContextVariable
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (IssueContextVariable.class.equals(Integer.class) || IssueContextVariable.class.equals(Long.class) || IssueContextVariable.class.equals(Float.class) || IssueContextVariable.class.equals(Double.class) || IssueContextVariable.class.equals(Boolean.class) || IssueContextVariable.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((IssueContextVariable.class.equals(Integer.class) || IssueContextVariable.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((IssueContextVariable.class.equals(Float.class) || IssueContextVariable.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (IssueContextVariable.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (IssueContextVariable.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+            return (TypeAdapter<T>) new TypeAdapter<CustomContextVariable>() {
+                @Override
+                public void write(JsonWriter out, CustomContextVariable value) throws IOException {
+                    if (value == null || value.getActualInstance() == null) {
+                        elementAdapter.write(out, null);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(IssueContextVariable.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'IssueContextVariable'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'IssueContextVariable'", e);
-            }
 
-            // deserialize JsonContextVariable
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (JsonContextVariable.class.equals(Integer.class) || JsonContextVariable.class.equals(Long.class) || JsonContextVariable.class.equals(Float.class) || JsonContextVariable.class.equals(Double.class) || JsonContextVariable.class.equals(Boolean.class) || JsonContextVariable.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((JsonContextVariable.class.equals(Integer.class) || JsonContextVariable.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((JsonContextVariable.class.equals(Float.class) || JsonContextVariable.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (JsonContextVariable.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (JsonContextVariable.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `UserContextVariable`
+                    if (value.getActualInstance() instanceof UserContextVariable) {
+                        JsonElement element = adapterUserContextVariable.toJsonTree((UserContextVariable)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(JsonContextVariable.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'JsonContextVariable'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'JsonContextVariable'", e);
-            }
-
-            // deserialize UserContextVariable
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (UserContextVariable.class.equals(Integer.class) || UserContextVariable.class.equals(Long.class) || UserContextVariable.class.equals(Float.class) || UserContextVariable.class.equals(Double.class) || UserContextVariable.class.equals(Boolean.class) || UserContextVariable.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((UserContextVariable.class.equals(Integer.class) || UserContextVariable.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((UserContextVariable.class.equals(Float.class) || UserContextVariable.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (UserContextVariable.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (UserContextVariable.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `IssueContextVariable`
+                    if (value.getActualInstance() instanceof IssueContextVariable) {
+                        JsonElement element = adapterIssueContextVariable.toJsonTree((IssueContextVariable)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
+                    // check if the actual instance is of the type `JsonContextVariable`
+                    if (value.getActualInstance() instanceof JsonContextVariable) {
+                        JsonElement element = adapterJsonContextVariable.toJsonTree((JsonContextVariable)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    throw new IOException("Failed to serialize as the type doesn't match oneOf schemas: IssueContextVariable, JsonContextVariable, UserContextVariable");
                 }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(UserContextVariable.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'UserContextVariable'");
+
+                @Override
+                public CustomContextVariable read(JsonReader in) throws IOException {
+                    Object deserialized = null;
+                    JsonElement jsonElement = elementAdapter.read(in);
+
+                    int match = 0;
+                    ArrayList<String> errorMessages = new ArrayList<>();
+                    TypeAdapter actualAdapter = elementAdapter;
+
+                    // deserialize UserContextVariable
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        UserContextVariable.validateJsonElement(jsonElement);
+                        actualAdapter = adapterUserContextVariable;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'UserContextVariable'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for UserContextVariable failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'UserContextVariable'", e);
+                    }
+                    // deserialize IssueContextVariable
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        IssueContextVariable.validateJsonElement(jsonElement);
+                        actualAdapter = adapterIssueContextVariable;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'IssueContextVariable'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for IssueContextVariable failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'IssueContextVariable'", e);
+                    }
+                    // deserialize JsonContextVariable
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        JsonContextVariable.validateJsonElement(jsonElement);
+                        actualAdapter = adapterJsonContextVariable;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'JsonContextVariable'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for JsonContextVariable failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'JsonContextVariable'", e);
+                    }
+
+                    if (match == 1) {
+                        CustomContextVariable ret = new CustomContextVariable();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    }
+
+                    throw new IOException(String.format(Locale.ROOT, "Failed deserialization for CustomContextVariable: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
                 }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'UserContextVariable'", e);
-            }
-
-            if (match == 1) {
-                CustomContextVariable ret = new CustomContextVariable();
-                ret.setActualInstance(deserialized);
-                return ret;
-            }
-            throw new IOException(String.format(Locale.ROOT, "Failed deserialization for CustomContextVariable: %d classes match result, expected 1", match));
-        }
-
-        /**
-         * Handle deserialization of the 'null' value.
-         */
-        @Override
-        public CustomContextVariable getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "CustomContextVariable cannot be null");
+            }.nullSafe();
         }
     }
 
     // store a list of schema names defined in oneOf
-    public static final Map<String, Class<?>> schemas = new HashMap<>();
+    public static final Map<String, Class<?>> schemas = new HashMap<String, Class<?>>();
 
     public CustomContextVariable() {
         super("oneOf", Boolean.FALSE);
     }
 
-    public CustomContextVariable(IssueContextVariable o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomContextVariable(JsonContextVariable o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomContextVariable(UserContextVariable o) {
+    public CustomContextVariable(Object o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
     static {
+        schemas.put("UserContextVariable", UserContextVariable.class);
         schemas.put("IssueContextVariable", IssueContextVariable.class);
         schemas.put("JsonContextVariable", JsonContextVariable.class);
-        schemas.put("UserContextVariable", UserContextVariable.class);
-        JSON.registerDescendants(CustomContextVariable.class, Collections.unmodifiableMap(schemas));
-        // Initialize and register the discriminator mappings.
-        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("issue", IssueContextVariable.class);
-        mappings.put("json", JsonContextVariable.class);
-        mappings.put("user", UserContextVariable.class);
-        mappings.put("CustomContextVariable", CustomContextVariable.class);
-        JSON.registerDiscriminator(CustomContextVariable.class, "type", mappings);
     }
 
     @Override
@@ -239,21 +194,20 @@ public class CustomContextVariable extends AbstractOpenApiSchema {
      * IssueContextVariable, JsonContextVariable, UserContextVariable
      *
      * It could be an instance of the 'oneOf' schemas.
-     * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(IssueContextVariable.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof UserContextVariable) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(JsonContextVariable.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof IssueContextVariable) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(UserContextVariable.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof JsonContextVariable) {
             super.setActualInstance(instance);
             return;
         }
@@ -267,9 +221,21 @@ public class CustomContextVariable extends AbstractOpenApiSchema {
      *
      * @return The actual instance (IssueContextVariable, JsonContextVariable, UserContextVariable)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `UserContextVariable`. If the actual instance is not `UserContextVariable`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `UserContextVariable`
+     * @throws ClassCastException if the instance is not `UserContextVariable`
+     */
+    public UserContextVariable getUserContextVariable() throws ClassCastException {
+        return (UserContextVariable)super.getActualInstance();
     }
 
     /**
@@ -295,70 +261,62 @@ public class CustomContextVariable extends AbstractOpenApiSchema {
     }
 
     /**
-     * Get the actual instance of `UserContextVariable`. If the actual instance is not `UserContextVariable`,
-     * the ClassCastException will be thrown.
+     * Validates the JSON Element and throws an exception if issues found
      *
-     * @return The actual instance of `UserContextVariable`
-     * @throws ClassCastException if the instance is not `UserContextVariable`
+     * @param jsonElement JSON Element
+     * @throws IOException if the JSON Element is invalid with respect to CustomContextVariable
      */
-    public UserContextVariable getUserContextVariable() throws ClassCastException {
-        return (UserContextVariable)super.getActualInstance();
-    }
-
-
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
-  }
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @param prefix prefix of the query string
-   * @return URL query string
-   */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    if (getActualInstance() instanceof UserContextVariable) {
-        if (getActualInstance() != null) {
-          joiner.add(((UserContextVariable)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+        // validate oneOf schemas one by one
+        int validCount = 0;
+        ArrayList<String> errorMessages = new ArrayList<>();
+        // validate the json string with UserContextVariable
+        try {
+            UserContextVariable.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for UserContextVariable failed with `%s`.", e.getMessage()));
+            // continue to the next one
         }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof IssueContextVariable) {
-        if (getActualInstance() != null) {
-          joiner.add(((IssueContextVariable)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
+        // validate the json string with IssueContextVariable
+        try {
+            IssueContextVariable.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for IssueContextVariable failed with `%s`.", e.getMessage()));
+            // continue to the next one
         }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof JsonContextVariable) {
-        if (getActualInstance() != null) {
-          joiner.add(((JsonContextVariable)getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
+        // validate the json string with JsonContextVariable
+        try {
+            JsonContextVariable.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for JsonContextVariable failed with `%s`.", e.getMessage()));
+            // continue to the next one
         }
-        return joiner.toString();
+        if (validCount != 1) {
+            throw new IOException(String.format(Locale.ROOT, "The JSON string is invalid for CustomContextVariable with oneOf schemas: IssueContextVariable, JsonContextVariable, UserContextVariable. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
+        }
     }
-    return null;
-  }
 
+    /**
+     * Create an instance of CustomContextVariable given an JSON string
+     *
+     * @param jsonString JSON string
+     * @return An instance of CustomContextVariable
+     * @throws IOException if the JSON string is invalid with respect to CustomContextVariable
+     */
+    public static CustomContextVariable fromJson(String jsonString) throws IOException {
+        return JSON.getGson().fromJson(jsonString, CustomContextVariable.class);
+    }
+
+    /**
+     * Convert an instance of CustomContextVariable to an JSON string
+     *
+     * @return JSON string
+     */
+    public String toJson() {
+        return JSON.getGson().toJson(this);
+    }
 }
 

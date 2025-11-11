@@ -13,65 +13,75 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ApprovalConfiguration;
 import io.kestra.plugin.jira.client.model.WorkflowLayout;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The statuses associated with this workflow.
  */
-@JsonPropertyOrder({
-  StatusLayoutUpdate.JSON_PROPERTY_APPROVAL_CONFIGURATION,
-  StatusLayoutUpdate.JSON_PROPERTY_LAYOUT,
-  StatusLayoutUpdate.JSON_PROPERTY_PROPERTIES,
-  StatusLayoutUpdate.JSON_PROPERTY_STATUS_REFERENCE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class StatusLayoutUpdate {
-  public static final String JSON_PROPERTY_APPROVAL_CONFIGURATION = "approvalConfiguration";
-  private JsonNullable<ApprovalConfiguration> approvalConfiguration = JsonNullable.<ApprovalConfiguration>undefined();
+  public static final String SERIALIZED_NAME_APPROVAL_CONFIGURATION = "approvalConfiguration";
+  @SerializedName(SERIALIZED_NAME_APPROVAL_CONFIGURATION)
+  @javax.annotation.Nullable
+  private ApprovalConfiguration approvalConfiguration;
 
-  public static final String JSON_PROPERTY_LAYOUT = "layout";
-  private JsonNullable<WorkflowLayout> layout = JsonNullable.<WorkflowLayout>undefined();
+  public static final String SERIALIZED_NAME_LAYOUT = "layout";
+  @SerializedName(SERIALIZED_NAME_LAYOUT)
+  @javax.annotation.Nullable
+  private WorkflowLayout layout;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nonnull
   private Map<String, String> properties = new HashMap<>();
 
-  public static final String JSON_PROPERTY_STATUS_REFERENCE = "statusReference";
+  public static final String SERIALIZED_NAME_STATUS_REFERENCE = "statusReference";
+  @SerializedName(SERIALIZED_NAME_STATUS_REFERENCE)
   @javax.annotation.Nonnull
   private String statusReference;
 
-  public StatusLayoutUpdate() { 
+  public StatusLayoutUpdate() {
   }
 
   public StatusLayoutUpdate approvalConfiguration(@javax.annotation.Nullable ApprovalConfiguration approvalConfiguration) {
-    this.approvalConfiguration = JsonNullable.<ApprovalConfiguration>of(approvalConfiguration);
+    this.approvalConfiguration = approvalConfiguration;
     return this;
   }
 
@@ -80,30 +90,17 @@ public class StatusLayoutUpdate {
    * @return approvalConfiguration
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public ApprovalConfiguration getApprovalConfiguration() {
-        return approvalConfiguration.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_APPROVAL_CONFIGURATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<ApprovalConfiguration> getApprovalConfiguration_JsonNullable() {
     return approvalConfiguration;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_APPROVAL_CONFIGURATION)
-  public void setApprovalConfiguration_JsonNullable(JsonNullable<ApprovalConfiguration> approvalConfiguration) {
-    this.approvalConfiguration = approvalConfiguration;
   }
 
   public void setApprovalConfiguration(@javax.annotation.Nullable ApprovalConfiguration approvalConfiguration) {
-    this.approvalConfiguration = JsonNullable.<ApprovalConfiguration>of(approvalConfiguration);
+    this.approvalConfiguration = approvalConfiguration;
   }
 
 
   public StatusLayoutUpdate layout(@javax.annotation.Nullable WorkflowLayout layout) {
-    this.layout = JsonNullable.<WorkflowLayout>of(layout);
+    this.layout = layout;
     return this;
   }
 
@@ -112,25 +109,12 @@ public class StatusLayoutUpdate {
    * @return layout
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public WorkflowLayout getLayout() {
-        return layout.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<WorkflowLayout> getLayout_JsonNullable() {
     return layout;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LAYOUT)
-  public void setLayout_JsonNullable(JsonNullable<WorkflowLayout> layout) {
-    this.layout = layout;
   }
 
   public void setLayout(@javax.annotation.Nullable WorkflowLayout layout) {
-    this.layout = JsonNullable.<WorkflowLayout>of(layout);
+    this.layout = layout;
   }
 
 
@@ -152,15 +136,10 @@ public class StatusLayoutUpdate {
    * @return properties
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Map<String, String> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setProperties(@javax.annotation.Nonnull Map<String, String> properties) {
     this.properties = properties;
   }
@@ -176,15 +155,10 @@ public class StatusLayoutUpdate {
    * @return statusReference
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_STATUS_REFERENCE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getStatusReference() {
     return statusReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_REFERENCE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStatusReference(@javax.annotation.Nonnull String statusReference) {
     this.statusReference = statusReference;
   }
@@ -199,11 +173,11 @@ public class StatusLayoutUpdate {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the StatusLayoutUpdate instance itself
    */
-  @JsonAnySetter
   public StatusLayoutUpdate putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -213,18 +187,19 @@ public class StatusLayoutUpdate {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -233,9 +208,7 @@ public class StatusLayoutUpdate {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this StatusLayoutUpdate object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -245,8 +218,8 @@ public class StatusLayoutUpdate {
       return false;
     }
     StatusLayoutUpdate statusLayoutUpdate = (StatusLayoutUpdate) o;
-    return equalsNullable(this.approvalConfiguration, statusLayoutUpdate.approvalConfiguration) &&
-        equalsNullable(this.layout, statusLayoutUpdate.layout) &&
+    return Objects.equals(this.approvalConfiguration, statusLayoutUpdate.approvalConfiguration) &&
+        Objects.equals(this.layout, statusLayoutUpdate.layout) &&
         Objects.equals(this.properties, statusLayoutUpdate.properties) &&
         Objects.equals(this.statusReference, statusLayoutUpdate.statusReference)&&
         Objects.equals(this.additionalProperties, statusLayoutUpdate.additionalProperties);
@@ -258,7 +231,7 @@ public class StatusLayoutUpdate {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(approvalConfiguration), hashCodeNullable(layout), properties, statusReference, additionalProperties);
+    return Objects.hash(approvalConfiguration, layout, properties, statusReference, additionalProperties);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -292,63 +265,141 @@ public class StatusLayoutUpdate {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("approvalConfiguration", "layout", "properties", "statusReference"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("properties", "statusReference"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to StatusLayoutUpdate
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `approvalConfiguration` to the URL query string
-    if (getApprovalConfiguration() != null) {
-      joiner.add(getApprovalConfiguration().toUrlQueryString(prefix + "approvalConfiguration" + suffix));
-    }
-
-    // add `layout` to the URL query string
-    if (getLayout() != null) {
-      joiner.add(getLayout().toUrlQueryString(prefix + "layout" + suffix));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!StatusLayoutUpdate.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in StatusLayoutUpdate is not found in the empty JSON string", StatusLayoutUpdate.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `statusReference` to the URL query string
-    if (getStatusReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusReference()))));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : StatusLayoutUpdate.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `approvalConfiguration`
+      if (jsonObj.get("approvalConfiguration") != null && !jsonObj.get("approvalConfiguration").isJsonNull()) {
+        ApprovalConfiguration.validateJsonElement(jsonObj.get("approvalConfiguration"));
+      }
+      // validate the optional field `layout`
+      if (jsonObj.get("layout") != null && !jsonObj.get("layout").isJsonNull()) {
+        WorkflowLayout.validateJsonElement(jsonObj.get("layout"));
+      }
+      if (!jsonObj.get("statusReference").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusReference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusReference").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!StatusLayoutUpdate.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'StatusLayoutUpdate' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<StatusLayoutUpdate> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(StatusLayoutUpdate.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<StatusLayoutUpdate>() {
+           @Override
+           public void write(JsonWriter out, StatusLayoutUpdate value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public StatusLayoutUpdate read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             StatusLayoutUpdate instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of StatusLayoutUpdate given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of StatusLayoutUpdate
+   * @throws IOException if the JSON string is invalid with respect to StatusLayoutUpdate
+   */
+  public static StatusLayoutUpdate fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, StatusLayoutUpdate.class);
+  }
+
+  /**
+   * Convert an instance of StatusLayoutUpdate to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

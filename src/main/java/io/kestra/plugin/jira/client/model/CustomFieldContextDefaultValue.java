@@ -13,22 +13,13 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.CustomFieldContextDefaultValueCascadingOption;
 import io.kestra.plugin.jira.client.model.CustomFieldContextDefaultValueDate;
 import io.kestra.plugin.jira.client.model.CustomFieldContextDefaultValueDateTime;
@@ -57,997 +48,648 @@ import io.kestra.plugin.jira.client.model.CustomFieldContextDefaultValueTextFiel
 import io.kestra.plugin.jira.client.model.CustomFieldContextDefaultValueURL;
 import io.kestra.plugin.jira.client.model.CustomFieldContextSingleUserPickerDefaults;
 import io.kestra.plugin.jira.client.model.UserFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+
 import io.kestra.plugin.jira.client.invoker.JSON;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-@JsonDeserialize(using = CustomFieldContextDefaultValue.CustomFieldContextDefaultValueDeserializer.class)
-@JsonSerialize(using = CustomFieldContextDefaultValue.CustomFieldContextDefaultValueSerializer.class)
 public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
     private static final Logger log = Logger.getLogger(CustomFieldContextDefaultValue.class.getName());
 
-    public static class CustomFieldContextDefaultValueSerializer extends StdSerializer<CustomFieldContextDefaultValue> {
-        public CustomFieldContextDefaultValueSerializer(Class<CustomFieldContextDefaultValue> t) {
-            super(t);
-        }
-
-        public CustomFieldContextDefaultValueSerializer() {
-            this(null);
-        }
-
+    public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
         @Override
-        public void serialize(CustomFieldContextDefaultValue value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeObject(value.getActualInstance());
-        }
-    }
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (!CustomFieldContextDefaultValue.class.isAssignableFrom(type.getRawType())) {
+                return null; // this class only serializes 'CustomFieldContextDefaultValue' and its subtypes
+            }
+            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+            final TypeAdapter<CustomFieldContextDefaultValueCascadingOption> adapterCustomFieldContextDefaultValueCascadingOption = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueCascadingOption.class));
+            final TypeAdapter<CustomFieldContextDefaultValueMultipleOption> adapterCustomFieldContextDefaultValueMultipleOption = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueMultipleOption.class));
+            final TypeAdapter<CustomFieldContextDefaultValueSingleOption> adapterCustomFieldContextDefaultValueSingleOption = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueSingleOption.class));
+            final TypeAdapter<CustomFieldContextSingleUserPickerDefaults> adapterCustomFieldContextSingleUserPickerDefaults = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextSingleUserPickerDefaults.class));
+            final TypeAdapter<CustomFieldContextDefaultValueMultiUserPicker> adapterCustomFieldContextDefaultValueMultiUserPicker = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueMultiUserPicker.class));
+            final TypeAdapter<CustomFieldContextDefaultValueSingleGroupPicker> adapterCustomFieldContextDefaultValueSingleGroupPicker = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueSingleGroupPicker.class));
+            final TypeAdapter<CustomFieldContextDefaultValueMultipleGroupPicker> adapterCustomFieldContextDefaultValueMultipleGroupPicker = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueMultipleGroupPicker.class));
+            final TypeAdapter<CustomFieldContextDefaultValueDate> adapterCustomFieldContextDefaultValueDate = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueDate.class));
+            final TypeAdapter<CustomFieldContextDefaultValueDateTime> adapterCustomFieldContextDefaultValueDateTime = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueDateTime.class));
+            final TypeAdapter<CustomFieldContextDefaultValueURL> adapterCustomFieldContextDefaultValueURL = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueURL.class));
+            final TypeAdapter<CustomFieldContextDefaultValueProject> adapterCustomFieldContextDefaultValueProject = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueProject.class));
+            final TypeAdapter<CustomFieldContextDefaultValueFloat> adapterCustomFieldContextDefaultValueFloat = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueFloat.class));
+            final TypeAdapter<CustomFieldContextDefaultValueLabels> adapterCustomFieldContextDefaultValueLabels = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueLabels.class));
+            final TypeAdapter<CustomFieldContextDefaultValueTextField> adapterCustomFieldContextDefaultValueTextField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueTextField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueTextArea> adapterCustomFieldContextDefaultValueTextArea = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueTextArea.class));
+            final TypeAdapter<CustomFieldContextDefaultValueReadOnly> adapterCustomFieldContextDefaultValueReadOnly = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueReadOnly.class));
+            final TypeAdapter<CustomFieldContextDefaultValueSingleVersionPicker> adapterCustomFieldContextDefaultValueSingleVersionPicker = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueSingleVersionPicker.class));
+            final TypeAdapter<CustomFieldContextDefaultValueMultipleVersionPicker> adapterCustomFieldContextDefaultValueMultipleVersionPicker = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueMultipleVersionPicker.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeStringField> adapterCustomFieldContextDefaultValueForgeStringField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeStringField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeMultiStringField> adapterCustomFieldContextDefaultValueForgeMultiStringField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeMultiStringField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeObjectField> adapterCustomFieldContextDefaultValueForgeObjectField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeObjectField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeDateTimeField> adapterCustomFieldContextDefaultValueForgeDateTimeField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeDateTimeField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeGroupField> adapterCustomFieldContextDefaultValueForgeGroupField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeGroupField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeMultiGroupField> adapterCustomFieldContextDefaultValueForgeMultiGroupField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeMultiGroupField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeNumberField> adapterCustomFieldContextDefaultValueForgeNumberField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeNumberField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeUserField> adapterCustomFieldContextDefaultValueForgeUserField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeUserField.class));
+            final TypeAdapter<CustomFieldContextDefaultValueForgeMultiUserField> adapterCustomFieldContextDefaultValueForgeMultiUserField = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeMultiUserField.class));
 
-    public static class CustomFieldContextDefaultValueDeserializer extends StdDeserializer<CustomFieldContextDefaultValue> {
-        public CustomFieldContextDefaultValueDeserializer() {
-            this(CustomFieldContextDefaultValue.class);
-        }
-
-        public CustomFieldContextDefaultValueDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public CustomFieldContextDefaultValue deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode tree = jp.readValueAsTree();
-            Object deserialized = null;
-            boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
-            int match = 0;
-            JsonToken token = tree.traverse(jp.getCodec()).nextToken();
-            // deserialize CustomFieldContextDefaultValueCascadingOption
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueCascadingOption.class.equals(Integer.class) || CustomFieldContextDefaultValueCascadingOption.class.equals(Long.class) || CustomFieldContextDefaultValueCascadingOption.class.equals(Float.class) || CustomFieldContextDefaultValueCascadingOption.class.equals(Double.class) || CustomFieldContextDefaultValueCascadingOption.class.equals(Boolean.class) || CustomFieldContextDefaultValueCascadingOption.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueCascadingOption.class.equals(Integer.class) || CustomFieldContextDefaultValueCascadingOption.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueCascadingOption.class.equals(Float.class) || CustomFieldContextDefaultValueCascadingOption.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueCascadingOption.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueCascadingOption.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+            return (TypeAdapter<T>) new TypeAdapter<CustomFieldContextDefaultValue>() {
+                @Override
+                public void write(JsonWriter out, CustomFieldContextDefaultValue value) throws IOException {
+                    if (value == null || value.getActualInstance() == null) {
+                        elementAdapter.write(out, null);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueCascadingOption.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueCascadingOption'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueCascadingOption'", e);
-            }
 
-            // deserialize CustomFieldContextDefaultValueDate
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueDate.class.equals(Integer.class) || CustomFieldContextDefaultValueDate.class.equals(Long.class) || CustomFieldContextDefaultValueDate.class.equals(Float.class) || CustomFieldContextDefaultValueDate.class.equals(Double.class) || CustomFieldContextDefaultValueDate.class.equals(Boolean.class) || CustomFieldContextDefaultValueDate.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueDate.class.equals(Integer.class) || CustomFieldContextDefaultValueDate.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueDate.class.equals(Float.class) || CustomFieldContextDefaultValueDate.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueDate.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueDate.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueCascadingOption`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueCascadingOption) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueCascadingOption.toJsonTree((CustomFieldContextDefaultValueCascadingOption)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueDate.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueDate'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueDate'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueDateTime
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueDateTime.class.equals(Integer.class) || CustomFieldContextDefaultValueDateTime.class.equals(Long.class) || CustomFieldContextDefaultValueDateTime.class.equals(Float.class) || CustomFieldContextDefaultValueDateTime.class.equals(Double.class) || CustomFieldContextDefaultValueDateTime.class.equals(Boolean.class) || CustomFieldContextDefaultValueDateTime.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueDateTime.class.equals(Integer.class) || CustomFieldContextDefaultValueDateTime.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueDateTime.class.equals(Float.class) || CustomFieldContextDefaultValueDateTime.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueDateTime.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueDateTime.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueMultipleOption`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueMultipleOption) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueMultipleOption.toJsonTree((CustomFieldContextDefaultValueMultipleOption)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueDateTime.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueDateTime'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueDateTime'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueFloat
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueFloat.class.equals(Integer.class) || CustomFieldContextDefaultValueFloat.class.equals(Long.class) || CustomFieldContextDefaultValueFloat.class.equals(Float.class) || CustomFieldContextDefaultValueFloat.class.equals(Double.class) || CustomFieldContextDefaultValueFloat.class.equals(Boolean.class) || CustomFieldContextDefaultValueFloat.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueFloat.class.equals(Integer.class) || CustomFieldContextDefaultValueFloat.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueFloat.class.equals(Float.class) || CustomFieldContextDefaultValueFloat.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueFloat.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueFloat.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueSingleOption`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueSingleOption) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueSingleOption.toJsonTree((CustomFieldContextDefaultValueSingleOption)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueFloat.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueFloat'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueFloat'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeDateTimeField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeDateTimeField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeDateTimeField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeDateTimeField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextSingleUserPickerDefaults`
+                    if (value.getActualInstance() instanceof CustomFieldContextSingleUserPickerDefaults) {
+                        JsonElement element = adapterCustomFieldContextSingleUserPickerDefaults.toJsonTree((CustomFieldContextSingleUserPickerDefaults)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeDateTimeField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeDateTimeField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeDateTimeField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeGroupField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeGroupField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeGroupField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeGroupField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeGroupField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeGroupField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeGroupField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeGroupField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeGroupField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeGroupField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeGroupField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeGroupField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeGroupField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueMultiUserPicker`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueMultiUserPicker) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueMultiUserPicker.toJsonTree((CustomFieldContextDefaultValueMultiUserPicker)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeGroupField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeGroupField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeGroupField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeMultiGroupField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeMultiGroupField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueSingleGroupPicker`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueSingleGroupPicker) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueSingleGroupPicker.toJsonTree((CustomFieldContextDefaultValueSingleGroupPicker)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeMultiGroupField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeMultiGroupField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeMultiGroupField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeMultiStringField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeMultiStringField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeMultiStringField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeMultiStringField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueMultipleGroupPicker`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueMultipleGroupPicker) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueMultipleGroupPicker.toJsonTree((CustomFieldContextDefaultValueMultipleGroupPicker)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeMultiStringField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeMultiStringField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeMultiStringField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeMultiUserField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeMultiUserField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeMultiUserField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeMultiUserField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueDate`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueDate) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueDate.toJsonTree((CustomFieldContextDefaultValueDate)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeMultiUserField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeMultiUserField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeMultiUserField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeNumberField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeNumberField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeNumberField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeNumberField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeNumberField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeNumberField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeNumberField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeNumberField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeNumberField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeNumberField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeNumberField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeNumberField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeNumberField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueDateTime`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueDateTime) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueDateTime.toJsonTree((CustomFieldContextDefaultValueDateTime)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeNumberField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeNumberField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeNumberField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeObjectField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeObjectField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeObjectField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeObjectField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeObjectField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeObjectField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeObjectField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeObjectField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeObjectField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeObjectField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeObjectField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeObjectField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeObjectField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueURL`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueURL) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueURL.toJsonTree((CustomFieldContextDefaultValueURL)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeObjectField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeObjectField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeObjectField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeStringField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeStringField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeStringField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeStringField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeStringField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeStringField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeStringField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeStringField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeStringField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeStringField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeStringField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeStringField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeStringField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueProject`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueProject) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueProject.toJsonTree((CustomFieldContextDefaultValueProject)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeStringField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeStringField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeStringField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueForgeUserField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueForgeUserField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeUserField.class.equals(Long.class) || CustomFieldContextDefaultValueForgeUserField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeUserField.class.equals(Double.class) || CustomFieldContextDefaultValueForgeUserField.class.equals(Boolean.class) || CustomFieldContextDefaultValueForgeUserField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeUserField.class.equals(Integer.class) || CustomFieldContextDefaultValueForgeUserField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueForgeUserField.class.equals(Float.class) || CustomFieldContextDefaultValueForgeUserField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeUserField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueForgeUserField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueFloat`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueFloat) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueFloat.toJsonTree((CustomFieldContextDefaultValueFloat)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueForgeUserField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeUserField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeUserField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueLabels
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueLabels.class.equals(Integer.class) || CustomFieldContextDefaultValueLabels.class.equals(Long.class) || CustomFieldContextDefaultValueLabels.class.equals(Float.class) || CustomFieldContextDefaultValueLabels.class.equals(Double.class) || CustomFieldContextDefaultValueLabels.class.equals(Boolean.class) || CustomFieldContextDefaultValueLabels.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueLabels.class.equals(Integer.class) || CustomFieldContextDefaultValueLabels.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueLabels.class.equals(Float.class) || CustomFieldContextDefaultValueLabels.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueLabels.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueLabels.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueLabels`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueLabels) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueLabels.toJsonTree((CustomFieldContextDefaultValueLabels)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueLabels.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueLabels'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueLabels'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueMultiUserPicker
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueMultiUserPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueMultiUserPicker.class.equals(Long.class) || CustomFieldContextDefaultValueMultiUserPicker.class.equals(Float.class) || CustomFieldContextDefaultValueMultiUserPicker.class.equals(Double.class) || CustomFieldContextDefaultValueMultiUserPicker.class.equals(Boolean.class) || CustomFieldContextDefaultValueMultiUserPicker.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueMultiUserPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueMultiUserPicker.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueMultiUserPicker.class.equals(Float.class) || CustomFieldContextDefaultValueMultiUserPicker.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueMultiUserPicker.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueMultiUserPicker.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueTextField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueTextField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueTextField.toJsonTree((CustomFieldContextDefaultValueTextField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueMultiUserPicker.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueMultiUserPicker'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueMultiUserPicker'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueMultipleGroupPicker
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Long.class) || CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Float.class) || CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Double.class) || CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Boolean.class) || CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Float.class) || CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueMultipleGroupPicker.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueTextArea`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueTextArea) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueTextArea.toJsonTree((CustomFieldContextDefaultValueTextArea)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueMultipleGroupPicker.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueMultipleGroupPicker'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueMultipleGroupPicker'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueMultipleOption
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueMultipleOption.class.equals(Integer.class) || CustomFieldContextDefaultValueMultipleOption.class.equals(Long.class) || CustomFieldContextDefaultValueMultipleOption.class.equals(Float.class) || CustomFieldContextDefaultValueMultipleOption.class.equals(Double.class) || CustomFieldContextDefaultValueMultipleOption.class.equals(Boolean.class) || CustomFieldContextDefaultValueMultipleOption.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueMultipleOption.class.equals(Integer.class) || CustomFieldContextDefaultValueMultipleOption.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueMultipleOption.class.equals(Float.class) || CustomFieldContextDefaultValueMultipleOption.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueMultipleOption.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueMultipleOption.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueReadOnly`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueReadOnly) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueReadOnly.toJsonTree((CustomFieldContextDefaultValueReadOnly)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueMultipleOption.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueMultipleOption'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueMultipleOption'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueMultipleVersionPicker
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Long.class) || CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Float.class) || CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Double.class) || CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Boolean.class) || CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Float.class) || CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueMultipleVersionPicker.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueSingleVersionPicker`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueSingleVersionPicker) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueSingleVersionPicker.toJsonTree((CustomFieldContextDefaultValueSingleVersionPicker)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueMultipleVersionPicker.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueMultipleVersionPicker'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueMultipleVersionPicker'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueProject
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueProject.class.equals(Integer.class) || CustomFieldContextDefaultValueProject.class.equals(Long.class) || CustomFieldContextDefaultValueProject.class.equals(Float.class) || CustomFieldContextDefaultValueProject.class.equals(Double.class) || CustomFieldContextDefaultValueProject.class.equals(Boolean.class) || CustomFieldContextDefaultValueProject.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueProject.class.equals(Integer.class) || CustomFieldContextDefaultValueProject.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueProject.class.equals(Float.class) || CustomFieldContextDefaultValueProject.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueProject.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueProject.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueMultipleVersionPicker`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueMultipleVersionPicker) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueMultipleVersionPicker.toJsonTree((CustomFieldContextDefaultValueMultipleVersionPicker)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueProject.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueProject'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueProject'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueReadOnly
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueReadOnly.class.equals(Integer.class) || CustomFieldContextDefaultValueReadOnly.class.equals(Long.class) || CustomFieldContextDefaultValueReadOnly.class.equals(Float.class) || CustomFieldContextDefaultValueReadOnly.class.equals(Double.class) || CustomFieldContextDefaultValueReadOnly.class.equals(Boolean.class) || CustomFieldContextDefaultValueReadOnly.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueReadOnly.class.equals(Integer.class) || CustomFieldContextDefaultValueReadOnly.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueReadOnly.class.equals(Float.class) || CustomFieldContextDefaultValueReadOnly.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueReadOnly.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueReadOnly.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeStringField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeStringField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeStringField.toJsonTree((CustomFieldContextDefaultValueForgeStringField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueReadOnly.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueReadOnly'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueReadOnly'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueSingleGroupPicker
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Long.class) || CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Float.class) || CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Double.class) || CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Boolean.class) || CustomFieldContextDefaultValueSingleGroupPicker.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Float.class) || CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueSingleGroupPicker.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueSingleGroupPicker.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeMultiStringField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeMultiStringField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeMultiStringField.toJsonTree((CustomFieldContextDefaultValueForgeMultiStringField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueSingleGroupPicker.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueSingleGroupPicker'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueSingleGroupPicker'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueSingleOption
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueSingleOption.class.equals(Integer.class) || CustomFieldContextDefaultValueSingleOption.class.equals(Long.class) || CustomFieldContextDefaultValueSingleOption.class.equals(Float.class) || CustomFieldContextDefaultValueSingleOption.class.equals(Double.class) || CustomFieldContextDefaultValueSingleOption.class.equals(Boolean.class) || CustomFieldContextDefaultValueSingleOption.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueSingleOption.class.equals(Integer.class) || CustomFieldContextDefaultValueSingleOption.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueSingleOption.class.equals(Float.class) || CustomFieldContextDefaultValueSingleOption.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueSingleOption.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueSingleOption.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeObjectField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeObjectField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeObjectField.toJsonTree((CustomFieldContextDefaultValueForgeObjectField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueSingleOption.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueSingleOption'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueSingleOption'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueSingleVersionPicker
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Long.class) || CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Float.class) || CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Double.class) || CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Boolean.class) || CustomFieldContextDefaultValueSingleVersionPicker.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Integer.class) || CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Float.class) || CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueSingleVersionPicker.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueSingleVersionPicker.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeDateTimeField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeDateTimeField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeDateTimeField.toJsonTree((CustomFieldContextDefaultValueForgeDateTimeField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueSingleVersionPicker.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueSingleVersionPicker'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueSingleVersionPicker'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueTextArea
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueTextArea.class.equals(Integer.class) || CustomFieldContextDefaultValueTextArea.class.equals(Long.class) || CustomFieldContextDefaultValueTextArea.class.equals(Float.class) || CustomFieldContextDefaultValueTextArea.class.equals(Double.class) || CustomFieldContextDefaultValueTextArea.class.equals(Boolean.class) || CustomFieldContextDefaultValueTextArea.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueTextArea.class.equals(Integer.class) || CustomFieldContextDefaultValueTextArea.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueTextArea.class.equals(Float.class) || CustomFieldContextDefaultValueTextArea.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueTextArea.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueTextArea.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeGroupField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeGroupField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeGroupField.toJsonTree((CustomFieldContextDefaultValueForgeGroupField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueTextArea.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueTextArea'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueTextArea'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueTextField
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueTextField.class.equals(Integer.class) || CustomFieldContextDefaultValueTextField.class.equals(Long.class) || CustomFieldContextDefaultValueTextField.class.equals(Float.class) || CustomFieldContextDefaultValueTextField.class.equals(Double.class) || CustomFieldContextDefaultValueTextField.class.equals(Boolean.class) || CustomFieldContextDefaultValueTextField.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueTextField.class.equals(Integer.class) || CustomFieldContextDefaultValueTextField.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueTextField.class.equals(Float.class) || CustomFieldContextDefaultValueTextField.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueTextField.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueTextField.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeMultiGroupField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeMultiGroupField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeMultiGroupField.toJsonTree((CustomFieldContextDefaultValueForgeMultiGroupField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueTextField.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueTextField'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueTextField'", e);
-            }
-
-            // deserialize CustomFieldContextDefaultValueURL
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextDefaultValueURL.class.equals(Integer.class) || CustomFieldContextDefaultValueURL.class.equals(Long.class) || CustomFieldContextDefaultValueURL.class.equals(Float.class) || CustomFieldContextDefaultValueURL.class.equals(Double.class) || CustomFieldContextDefaultValueURL.class.equals(Boolean.class) || CustomFieldContextDefaultValueURL.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextDefaultValueURL.class.equals(Integer.class) || CustomFieldContextDefaultValueURL.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextDefaultValueURL.class.equals(Float.class) || CustomFieldContextDefaultValueURL.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextDefaultValueURL.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextDefaultValueURL.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeNumberField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeNumberField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeNumberField.toJsonTree((CustomFieldContextDefaultValueForgeNumberField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextDefaultValueURL.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueURL'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueURL'", e);
-            }
-
-            // deserialize CustomFieldContextSingleUserPickerDefaults
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (CustomFieldContextSingleUserPickerDefaults.class.equals(Integer.class) || CustomFieldContextSingleUserPickerDefaults.class.equals(Long.class) || CustomFieldContextSingleUserPickerDefaults.class.equals(Float.class) || CustomFieldContextSingleUserPickerDefaults.class.equals(Double.class) || CustomFieldContextSingleUserPickerDefaults.class.equals(Boolean.class) || CustomFieldContextSingleUserPickerDefaults.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((CustomFieldContextSingleUserPickerDefaults.class.equals(Integer.class) || CustomFieldContextSingleUserPickerDefaults.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((CustomFieldContextSingleUserPickerDefaults.class.equals(Float.class) || CustomFieldContextSingleUserPickerDefaults.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (CustomFieldContextSingleUserPickerDefaults.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (CustomFieldContextSingleUserPickerDefaults.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeUserField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeUserField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeUserField.toJsonTree((CustomFieldContextDefaultValueForgeUserField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
+                    // check if the actual instance is of the type `CustomFieldContextDefaultValueForgeMultiUserField`
+                    if (value.getActualInstance() instanceof CustomFieldContextDefaultValueForgeMultiUserField) {
+                        JsonElement element = adapterCustomFieldContextDefaultValueForgeMultiUserField.toJsonTree((CustomFieldContextDefaultValueForgeMultiUserField)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    throw new IOException("Failed to serialize as the type doesn't match oneOf schemas: CustomFieldContextDefaultValueCascadingOption, CustomFieldContextDefaultValueDate, CustomFieldContextDefaultValueDateTime, CustomFieldContextDefaultValueFloat, CustomFieldContextDefaultValueForgeDateTimeField, CustomFieldContextDefaultValueForgeGroupField, CustomFieldContextDefaultValueForgeMultiGroupField, CustomFieldContextDefaultValueForgeMultiStringField, CustomFieldContextDefaultValueForgeMultiUserField, CustomFieldContextDefaultValueForgeNumberField, CustomFieldContextDefaultValueForgeObjectField, CustomFieldContextDefaultValueForgeStringField, CustomFieldContextDefaultValueForgeUserField, CustomFieldContextDefaultValueLabels, CustomFieldContextDefaultValueMultiUserPicker, CustomFieldContextDefaultValueMultipleGroupPicker, CustomFieldContextDefaultValueMultipleOption, CustomFieldContextDefaultValueMultipleVersionPicker, CustomFieldContextDefaultValueProject, CustomFieldContextDefaultValueReadOnly, CustomFieldContextDefaultValueSingleGroupPicker, CustomFieldContextDefaultValueSingleOption, CustomFieldContextDefaultValueSingleVersionPicker, CustomFieldContextDefaultValueTextArea, CustomFieldContextDefaultValueTextField, CustomFieldContextDefaultValueURL, CustomFieldContextSingleUserPickerDefaults");
                 }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(CustomFieldContextSingleUserPickerDefaults.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'CustomFieldContextSingleUserPickerDefaults'");
+
+                @Override
+                public CustomFieldContextDefaultValue read(JsonReader in) throws IOException {
+                    Object deserialized = null;
+                    JsonElement jsonElement = elementAdapter.read(in);
+
+                    int match = 0;
+                    ArrayList<String> errorMessages = new ArrayList<>();
+                    TypeAdapter actualAdapter = elementAdapter;
+
+                    // deserialize CustomFieldContextDefaultValueCascadingOption
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueCascadingOption.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueCascadingOption;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueCascadingOption'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueCascadingOption failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueCascadingOption'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueMultipleOption
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueMultipleOption.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueMultipleOption;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueMultipleOption'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueMultipleOption failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueMultipleOption'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueSingleOption
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueSingleOption.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueSingleOption;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueSingleOption'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueSingleOption failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueSingleOption'", e);
+                    }
+                    // deserialize CustomFieldContextSingleUserPickerDefaults
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextSingleUserPickerDefaults.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextSingleUserPickerDefaults;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextSingleUserPickerDefaults'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextSingleUserPickerDefaults failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextSingleUserPickerDefaults'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueMultiUserPicker
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueMultiUserPicker.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueMultiUserPicker;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueMultiUserPicker'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueMultiUserPicker failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueMultiUserPicker'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueSingleGroupPicker
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueSingleGroupPicker.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueSingleGroupPicker;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueSingleGroupPicker'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueSingleGroupPicker failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueSingleGroupPicker'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueMultipleGroupPicker
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueMultipleGroupPicker.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueMultipleGroupPicker;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueMultipleGroupPicker'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueMultipleGroupPicker failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueMultipleGroupPicker'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueDate
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueDate.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueDate;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueDate'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueDate failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueDate'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueDateTime
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueDateTime.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueDateTime;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueDateTime'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueDateTime failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueDateTime'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueURL
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueURL.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueURL;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueURL'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueURL failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueURL'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueProject
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueProject.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueProject;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueProject'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueProject failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueProject'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueFloat
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueFloat.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueFloat;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueFloat'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueFloat failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueFloat'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueLabels
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueLabels.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueLabels;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueLabels'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueLabels failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueLabels'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueTextField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueTextField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueTextField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueTextField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueTextField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueTextField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueTextArea
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueTextArea.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueTextArea;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueTextArea'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueTextArea failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueTextArea'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueReadOnly
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueReadOnly.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueReadOnly;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueReadOnly'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueReadOnly failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueReadOnly'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueSingleVersionPicker
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueSingleVersionPicker.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueSingleVersionPicker;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueSingleVersionPicker'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueSingleVersionPicker failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueSingleVersionPicker'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueMultipleVersionPicker
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueMultipleVersionPicker.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueMultipleVersionPicker;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueMultipleVersionPicker'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueMultipleVersionPicker failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueMultipleVersionPicker'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeStringField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeStringField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeStringField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeStringField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeStringField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeStringField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeMultiStringField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeMultiStringField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeMultiStringField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeMultiStringField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeMultiStringField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeMultiStringField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeObjectField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeObjectField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeObjectField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeObjectField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeObjectField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeObjectField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeDateTimeField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeDateTimeField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeDateTimeField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeDateTimeField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeDateTimeField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeDateTimeField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeGroupField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeGroupField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeGroupField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeGroupField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeGroupField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeGroupField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeMultiGroupField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeMultiGroupField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeMultiGroupField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeMultiGroupField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeMultiGroupField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeMultiGroupField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeNumberField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeNumberField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeNumberField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeNumberField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeNumberField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeNumberField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeUserField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeUserField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeUserField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeUserField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeUserField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeUserField'", e);
+                    }
+                    // deserialize CustomFieldContextDefaultValueForgeMultiUserField
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CustomFieldContextDefaultValueForgeMultiUserField.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCustomFieldContextDefaultValueForgeMultiUserField;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'CustomFieldContextDefaultValueForgeMultiUserField'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeMultiUserField failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextDefaultValueForgeMultiUserField'", e);
+                    }
+
+                    if (match == 1) {
+                        CustomFieldContextDefaultValue ret = new CustomFieldContextDefaultValue();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    }
+
+                    throw new IOException(String.format(Locale.ROOT, "Failed deserialization for CustomFieldContextDefaultValue: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
                 }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'CustomFieldContextSingleUserPickerDefaults'", e);
-            }
-
-            if (match == 1) {
-                CustomFieldContextDefaultValue ret = new CustomFieldContextDefaultValue();
-                ret.setActualInstance(deserialized);
-                return ret;
-            }
-            throw new IOException(String.format(Locale.ROOT, "Failed deserialization for CustomFieldContextDefaultValue: %d classes match result, expected 1", match));
-        }
-
-        /**
-         * Handle deserialization of the 'null' value.
-         */
-        @Override
-        public CustomFieldContextDefaultValue getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "CustomFieldContextDefaultValue cannot be null");
+            }.nullSafe();
         }
     }
 
     // store a list of schema names defined in oneOf
-    public static final Map<String, Class<?>> schemas = new HashMap<>();
+    public static final Map<String, Class<?>> schemas = new HashMap<String, Class<?>>();
 
     public CustomFieldContextDefaultValue() {
         super("oneOf", Boolean.FALSE);
     }
 
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueCascadingOption o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueDate o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueDateTime o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueFloat o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeDateTimeField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeGroupField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeMultiGroupField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeMultiStringField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeMultiUserField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeNumberField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeObjectField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeStringField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueForgeUserField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueLabels o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueMultiUserPicker o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueMultipleGroupPicker o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueMultipleOption o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueMultipleVersionPicker o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueProject o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueReadOnly o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueSingleGroupPicker o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueSingleOption o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueSingleVersionPicker o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueTextArea o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueTextField o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextDefaultValueURL o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public CustomFieldContextDefaultValue(CustomFieldContextSingleUserPickerDefaults o) {
+    public CustomFieldContextDefaultValue(Object o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
     static {
         schemas.put("CustomFieldContextDefaultValueCascadingOption", CustomFieldContextDefaultValueCascadingOption.class);
+        schemas.put("CustomFieldContextDefaultValueMultipleOption", CustomFieldContextDefaultValueMultipleOption.class);
+        schemas.put("CustomFieldContextDefaultValueSingleOption", CustomFieldContextDefaultValueSingleOption.class);
+        schemas.put("CustomFieldContextSingleUserPickerDefaults", CustomFieldContextSingleUserPickerDefaults.class);
+        schemas.put("CustomFieldContextDefaultValueMultiUserPicker", CustomFieldContextDefaultValueMultiUserPicker.class);
+        schemas.put("CustomFieldContextDefaultValueSingleGroupPicker", CustomFieldContextDefaultValueSingleGroupPicker.class);
+        schemas.put("CustomFieldContextDefaultValueMultipleGroupPicker", CustomFieldContextDefaultValueMultipleGroupPicker.class);
         schemas.put("CustomFieldContextDefaultValueDate", CustomFieldContextDefaultValueDate.class);
         schemas.put("CustomFieldContextDefaultValueDateTime", CustomFieldContextDefaultValueDateTime.class);
+        schemas.put("CustomFieldContextDefaultValueURL", CustomFieldContextDefaultValueURL.class);
+        schemas.put("CustomFieldContextDefaultValueProject", CustomFieldContextDefaultValueProject.class);
         schemas.put("CustomFieldContextDefaultValueFloat", CustomFieldContextDefaultValueFloat.class);
+        schemas.put("CustomFieldContextDefaultValueLabels", CustomFieldContextDefaultValueLabels.class);
+        schemas.put("CustomFieldContextDefaultValueTextField", CustomFieldContextDefaultValueTextField.class);
+        schemas.put("CustomFieldContextDefaultValueTextArea", CustomFieldContextDefaultValueTextArea.class);
+        schemas.put("CustomFieldContextDefaultValueReadOnly", CustomFieldContextDefaultValueReadOnly.class);
+        schemas.put("CustomFieldContextDefaultValueSingleVersionPicker", CustomFieldContextDefaultValueSingleVersionPicker.class);
+        schemas.put("CustomFieldContextDefaultValueMultipleVersionPicker", CustomFieldContextDefaultValueMultipleVersionPicker.class);
+        schemas.put("CustomFieldContextDefaultValueForgeStringField", CustomFieldContextDefaultValueForgeStringField.class);
+        schemas.put("CustomFieldContextDefaultValueForgeMultiStringField", CustomFieldContextDefaultValueForgeMultiStringField.class);
+        schemas.put("CustomFieldContextDefaultValueForgeObjectField", CustomFieldContextDefaultValueForgeObjectField.class);
         schemas.put("CustomFieldContextDefaultValueForgeDateTimeField", CustomFieldContextDefaultValueForgeDateTimeField.class);
         schemas.put("CustomFieldContextDefaultValueForgeGroupField", CustomFieldContextDefaultValueForgeGroupField.class);
         schemas.put("CustomFieldContextDefaultValueForgeMultiGroupField", CustomFieldContextDefaultValueForgeMultiGroupField.class);
-        schemas.put("CustomFieldContextDefaultValueForgeMultiStringField", CustomFieldContextDefaultValueForgeMultiStringField.class);
-        schemas.put("CustomFieldContextDefaultValueForgeMultiUserField", CustomFieldContextDefaultValueForgeMultiUserField.class);
         schemas.put("CustomFieldContextDefaultValueForgeNumberField", CustomFieldContextDefaultValueForgeNumberField.class);
-        schemas.put("CustomFieldContextDefaultValueForgeObjectField", CustomFieldContextDefaultValueForgeObjectField.class);
-        schemas.put("CustomFieldContextDefaultValueForgeStringField", CustomFieldContextDefaultValueForgeStringField.class);
         schemas.put("CustomFieldContextDefaultValueForgeUserField", CustomFieldContextDefaultValueForgeUserField.class);
-        schemas.put("CustomFieldContextDefaultValueLabels", CustomFieldContextDefaultValueLabels.class);
-        schemas.put("CustomFieldContextDefaultValueMultiUserPicker", CustomFieldContextDefaultValueMultiUserPicker.class);
-        schemas.put("CustomFieldContextDefaultValueMultipleGroupPicker", CustomFieldContextDefaultValueMultipleGroupPicker.class);
-        schemas.put("CustomFieldContextDefaultValueMultipleOption", CustomFieldContextDefaultValueMultipleOption.class);
-        schemas.put("CustomFieldContextDefaultValueMultipleVersionPicker", CustomFieldContextDefaultValueMultipleVersionPicker.class);
-        schemas.put("CustomFieldContextDefaultValueProject", CustomFieldContextDefaultValueProject.class);
-        schemas.put("CustomFieldContextDefaultValueReadOnly", CustomFieldContextDefaultValueReadOnly.class);
-        schemas.put("CustomFieldContextDefaultValueSingleGroupPicker", CustomFieldContextDefaultValueSingleGroupPicker.class);
-        schemas.put("CustomFieldContextDefaultValueSingleOption", CustomFieldContextDefaultValueSingleOption.class);
-        schemas.put("CustomFieldContextDefaultValueSingleVersionPicker", CustomFieldContextDefaultValueSingleVersionPicker.class);
-        schemas.put("CustomFieldContextDefaultValueTextArea", CustomFieldContextDefaultValueTextArea.class);
-        schemas.put("CustomFieldContextDefaultValueTextField", CustomFieldContextDefaultValueTextField.class);
-        schemas.put("CustomFieldContextDefaultValueURL", CustomFieldContextDefaultValueURL.class);
-        schemas.put("CustomFieldContextSingleUserPickerDefaults", CustomFieldContextSingleUserPickerDefaults.class);
-        JSON.registerDescendants(CustomFieldContextDefaultValue.class, Collections.unmodifiableMap(schemas));
-        // Initialize and register the discriminator mappings.
-        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("datepicker", CustomFieldContextDefaultValueDate.class);
-        mappings.put("datetimepicker", CustomFieldContextDefaultValueDateTime.class);
-        mappings.put("float", CustomFieldContextDefaultValueFloat.class);
-        mappings.put("forge.datetime", CustomFieldContextDefaultValueForgeDateTimeField.class);
-        mappings.put("forge.group", CustomFieldContextDefaultValueForgeGroupField.class);
-        mappings.put("forge.group.list", CustomFieldContextDefaultValueForgeMultiGroupField.class);
-        mappings.put("forge.number", CustomFieldContextDefaultValueForgeNumberField.class);
-        mappings.put("forge.object", CustomFieldContextDefaultValueForgeObjectField.class);
-        mappings.put("forge.string", CustomFieldContextDefaultValueForgeStringField.class);
-        mappings.put("forge.string.list", CustomFieldContextDefaultValueForgeMultiStringField.class);
-        mappings.put("forge.user", CustomFieldContextDefaultValueForgeUserField.class);
-        mappings.put("forge.user.list", CustomFieldContextDefaultValueForgeMultiUserField.class);
-        mappings.put("grouppicker.multiple", CustomFieldContextDefaultValueMultipleGroupPicker.class);
-        mappings.put("grouppicker.single", CustomFieldContextDefaultValueSingleGroupPicker.class);
-        mappings.put("labels", CustomFieldContextDefaultValueLabels.class);
-        mappings.put("multi.user.select", CustomFieldContextDefaultValueMultiUserPicker.class);
-        mappings.put("option.cascading", CustomFieldContextDefaultValueCascadingOption.class);
-        mappings.put("option.multiple", CustomFieldContextDefaultValueMultipleOption.class);
-        mappings.put("option.single", CustomFieldContextDefaultValueSingleOption.class);
-        mappings.put("project", CustomFieldContextDefaultValueProject.class);
-        mappings.put("readonly", CustomFieldContextDefaultValueReadOnly.class);
-        mappings.put("single.user.select", CustomFieldContextSingleUserPickerDefaults.class);
-        mappings.put("textarea", CustomFieldContextDefaultValueTextArea.class);
-        mappings.put("textfield", CustomFieldContextDefaultValueTextField.class);
-        mappings.put("url", CustomFieldContextDefaultValueURL.class);
-        mappings.put("version.multiple", CustomFieldContextDefaultValueMultipleVersionPicker.class);
-        mappings.put("version.single", CustomFieldContextDefaultValueSingleVersionPicker.class);
-        mappings.put("CustomFieldContextDefaultValue", CustomFieldContextDefaultValue.class);
-        JSON.registerDiscriminator(CustomFieldContextDefaultValue.class, "type", mappings);
+        schemas.put("CustomFieldContextDefaultValueForgeMultiUserField", CustomFieldContextDefaultValueForgeMultiUserField.class);
     }
 
     @Override
@@ -1061,141 +703,140 @@ public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
      * CustomFieldContextDefaultValueCascadingOption, CustomFieldContextDefaultValueDate, CustomFieldContextDefaultValueDateTime, CustomFieldContextDefaultValueFloat, CustomFieldContextDefaultValueForgeDateTimeField, CustomFieldContextDefaultValueForgeGroupField, CustomFieldContextDefaultValueForgeMultiGroupField, CustomFieldContextDefaultValueForgeMultiStringField, CustomFieldContextDefaultValueForgeMultiUserField, CustomFieldContextDefaultValueForgeNumberField, CustomFieldContextDefaultValueForgeObjectField, CustomFieldContextDefaultValueForgeStringField, CustomFieldContextDefaultValueForgeUserField, CustomFieldContextDefaultValueLabels, CustomFieldContextDefaultValueMultiUserPicker, CustomFieldContextDefaultValueMultipleGroupPicker, CustomFieldContextDefaultValueMultipleOption, CustomFieldContextDefaultValueMultipleVersionPicker, CustomFieldContextDefaultValueProject, CustomFieldContextDefaultValueReadOnly, CustomFieldContextDefaultValueSingleGroupPicker, CustomFieldContextDefaultValueSingleOption, CustomFieldContextDefaultValueSingleVersionPicker, CustomFieldContextDefaultValueTextArea, CustomFieldContextDefaultValueTextField, CustomFieldContextDefaultValueURL, CustomFieldContextSingleUserPickerDefaults
      *
      * It could be an instance of the 'oneOf' schemas.
-     * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueCascadingOption.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueCascadingOption) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueDate.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueMultipleOption) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueDateTime.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueSingleOption) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueFloat.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextSingleUserPickerDefaults) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeDateTimeField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueMultiUserPicker) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeGroupField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueSingleGroupPicker) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeMultiGroupField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueMultipleGroupPicker) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeMultiStringField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueDate) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeMultiUserField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueDateTime) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeNumberField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueURL) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeObjectField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueProject) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeStringField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueFloat) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueForgeUserField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueLabels) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueLabels.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueTextField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueMultiUserPicker.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueTextArea) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueMultipleGroupPicker.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueReadOnly) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueMultipleOption.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueSingleVersionPicker) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueMultipleVersionPicker.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueMultipleVersionPicker) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueProject.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeStringField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueReadOnly.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeMultiStringField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueSingleGroupPicker.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeObjectField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueSingleOption.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeDateTimeField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueSingleVersionPicker.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeGroupField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueTextArea.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeMultiGroupField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueTextField.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeNumberField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextDefaultValueURL.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeUserField) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(CustomFieldContextSingleUserPickerDefaults.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CustomFieldContextDefaultValueForgeMultiUserField) {
             super.setActualInstance(instance);
             return;
         }
@@ -1209,6 +850,7 @@ public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
      *
      * @return The actual instance (CustomFieldContextDefaultValueCascadingOption, CustomFieldContextDefaultValueDate, CustomFieldContextDefaultValueDateTime, CustomFieldContextDefaultValueFloat, CustomFieldContextDefaultValueForgeDateTimeField, CustomFieldContextDefaultValueForgeGroupField, CustomFieldContextDefaultValueForgeMultiGroupField, CustomFieldContextDefaultValueForgeMultiStringField, CustomFieldContextDefaultValueForgeMultiUserField, CustomFieldContextDefaultValueForgeNumberField, CustomFieldContextDefaultValueForgeObjectField, CustomFieldContextDefaultValueForgeStringField, CustomFieldContextDefaultValueForgeUserField, CustomFieldContextDefaultValueLabels, CustomFieldContextDefaultValueMultiUserPicker, CustomFieldContextDefaultValueMultipleGroupPicker, CustomFieldContextDefaultValueMultipleOption, CustomFieldContextDefaultValueMultipleVersionPicker, CustomFieldContextDefaultValueProject, CustomFieldContextDefaultValueReadOnly, CustomFieldContextDefaultValueSingleGroupPicker, CustomFieldContextDefaultValueSingleOption, CustomFieldContextDefaultValueSingleVersionPicker, CustomFieldContextDefaultValueTextArea, CustomFieldContextDefaultValueTextField, CustomFieldContextDefaultValueURL, CustomFieldContextSingleUserPickerDefaults)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
@@ -1223,6 +865,72 @@ public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
      */
     public CustomFieldContextDefaultValueCascadingOption getCustomFieldContextDefaultValueCascadingOption() throws ClassCastException {
         return (CustomFieldContextDefaultValueCascadingOption)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueMultipleOption`. If the actual instance is not `CustomFieldContextDefaultValueMultipleOption`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueMultipleOption`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueMultipleOption`
+     */
+    public CustomFieldContextDefaultValueMultipleOption getCustomFieldContextDefaultValueMultipleOption() throws ClassCastException {
+        return (CustomFieldContextDefaultValueMultipleOption)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueSingleOption`. If the actual instance is not `CustomFieldContextDefaultValueSingleOption`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueSingleOption`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueSingleOption`
+     */
+    public CustomFieldContextDefaultValueSingleOption getCustomFieldContextDefaultValueSingleOption() throws ClassCastException {
+        return (CustomFieldContextDefaultValueSingleOption)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextSingleUserPickerDefaults`. If the actual instance is not `CustomFieldContextSingleUserPickerDefaults`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextSingleUserPickerDefaults`
+     * @throws ClassCastException if the instance is not `CustomFieldContextSingleUserPickerDefaults`
+     */
+    public CustomFieldContextSingleUserPickerDefaults getCustomFieldContextSingleUserPickerDefaults() throws ClassCastException {
+        return (CustomFieldContextSingleUserPickerDefaults)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueMultiUserPicker`. If the actual instance is not `CustomFieldContextDefaultValueMultiUserPicker`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueMultiUserPicker`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueMultiUserPicker`
+     */
+    public CustomFieldContextDefaultValueMultiUserPicker getCustomFieldContextDefaultValueMultiUserPicker() throws ClassCastException {
+        return (CustomFieldContextDefaultValueMultiUserPicker)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueSingleGroupPicker`. If the actual instance is not `CustomFieldContextDefaultValueSingleGroupPicker`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueSingleGroupPicker`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueSingleGroupPicker`
+     */
+    public CustomFieldContextDefaultValueSingleGroupPicker getCustomFieldContextDefaultValueSingleGroupPicker() throws ClassCastException {
+        return (CustomFieldContextDefaultValueSingleGroupPicker)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueMultipleGroupPicker`. If the actual instance is not `CustomFieldContextDefaultValueMultipleGroupPicker`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueMultipleGroupPicker`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueMultipleGroupPicker`
+     */
+    public CustomFieldContextDefaultValueMultipleGroupPicker getCustomFieldContextDefaultValueMultipleGroupPicker() throws ClassCastException {
+        return (CustomFieldContextDefaultValueMultipleGroupPicker)super.getActualInstance();
     }
 
     /**
@@ -1248,6 +956,28 @@ public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
     }
 
     /**
+     * Get the actual instance of `CustomFieldContextDefaultValueURL`. If the actual instance is not `CustomFieldContextDefaultValueURL`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueURL`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueURL`
+     */
+    public CustomFieldContextDefaultValueURL getCustomFieldContextDefaultValueURL() throws ClassCastException {
+        return (CustomFieldContextDefaultValueURL)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueProject`. If the actual instance is not `CustomFieldContextDefaultValueProject`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueProject`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueProject`
+     */
+    public CustomFieldContextDefaultValueProject getCustomFieldContextDefaultValueProject() throws ClassCastException {
+        return (CustomFieldContextDefaultValueProject)super.getActualInstance();
+    }
+
+    /**
      * Get the actual instance of `CustomFieldContextDefaultValueFloat`. If the actual instance is not `CustomFieldContextDefaultValueFloat`,
      * the ClassCastException will be thrown.
      *
@@ -1256,6 +986,105 @@ public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
      */
     public CustomFieldContextDefaultValueFloat getCustomFieldContextDefaultValueFloat() throws ClassCastException {
         return (CustomFieldContextDefaultValueFloat)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueLabels`. If the actual instance is not `CustomFieldContextDefaultValueLabels`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueLabels`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueLabels`
+     */
+    public CustomFieldContextDefaultValueLabels getCustomFieldContextDefaultValueLabels() throws ClassCastException {
+        return (CustomFieldContextDefaultValueLabels)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueTextField`. If the actual instance is not `CustomFieldContextDefaultValueTextField`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueTextField`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueTextField`
+     */
+    public CustomFieldContextDefaultValueTextField getCustomFieldContextDefaultValueTextField() throws ClassCastException {
+        return (CustomFieldContextDefaultValueTextField)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueTextArea`. If the actual instance is not `CustomFieldContextDefaultValueTextArea`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueTextArea`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueTextArea`
+     */
+    public CustomFieldContextDefaultValueTextArea getCustomFieldContextDefaultValueTextArea() throws ClassCastException {
+        return (CustomFieldContextDefaultValueTextArea)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueReadOnly`. If the actual instance is not `CustomFieldContextDefaultValueReadOnly`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueReadOnly`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueReadOnly`
+     */
+    public CustomFieldContextDefaultValueReadOnly getCustomFieldContextDefaultValueReadOnly() throws ClassCastException {
+        return (CustomFieldContextDefaultValueReadOnly)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueSingleVersionPicker`. If the actual instance is not `CustomFieldContextDefaultValueSingleVersionPicker`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueSingleVersionPicker`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueSingleVersionPicker`
+     */
+    public CustomFieldContextDefaultValueSingleVersionPicker getCustomFieldContextDefaultValueSingleVersionPicker() throws ClassCastException {
+        return (CustomFieldContextDefaultValueSingleVersionPicker)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueMultipleVersionPicker`. If the actual instance is not `CustomFieldContextDefaultValueMultipleVersionPicker`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueMultipleVersionPicker`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueMultipleVersionPicker`
+     */
+    public CustomFieldContextDefaultValueMultipleVersionPicker getCustomFieldContextDefaultValueMultipleVersionPicker() throws ClassCastException {
+        return (CustomFieldContextDefaultValueMultipleVersionPicker)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueForgeStringField`. If the actual instance is not `CustomFieldContextDefaultValueForgeStringField`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueForgeStringField`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueForgeStringField`
+     */
+    public CustomFieldContextDefaultValueForgeStringField getCustomFieldContextDefaultValueForgeStringField() throws ClassCastException {
+        return (CustomFieldContextDefaultValueForgeStringField)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueForgeMultiStringField`. If the actual instance is not `CustomFieldContextDefaultValueForgeMultiStringField`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueForgeMultiStringField`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueForgeMultiStringField`
+     */
+    public CustomFieldContextDefaultValueForgeMultiStringField getCustomFieldContextDefaultValueForgeMultiStringField() throws ClassCastException {
+        return (CustomFieldContextDefaultValueForgeMultiStringField)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `CustomFieldContextDefaultValueForgeObjectField`. If the actual instance is not `CustomFieldContextDefaultValueForgeObjectField`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `CustomFieldContextDefaultValueForgeObjectField`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueForgeObjectField`
+     */
+    public CustomFieldContextDefaultValueForgeObjectField getCustomFieldContextDefaultValueForgeObjectField() throws ClassCastException {
+        return (CustomFieldContextDefaultValueForgeObjectField)super.getActualInstance();
     }
 
     /**
@@ -1292,28 +1121,6 @@ public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
     }
 
     /**
-     * Get the actual instance of `CustomFieldContextDefaultValueForgeMultiStringField`. If the actual instance is not `CustomFieldContextDefaultValueForgeMultiStringField`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueForgeMultiStringField`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueForgeMultiStringField`
-     */
-    public CustomFieldContextDefaultValueForgeMultiStringField getCustomFieldContextDefaultValueForgeMultiStringField() throws ClassCastException {
-        return (CustomFieldContextDefaultValueForgeMultiStringField)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueForgeMultiUserField`. If the actual instance is not `CustomFieldContextDefaultValueForgeMultiUserField`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueForgeMultiUserField`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueForgeMultiUserField`
-     */
-    public CustomFieldContextDefaultValueForgeMultiUserField getCustomFieldContextDefaultValueForgeMultiUserField() throws ClassCastException {
-        return (CustomFieldContextDefaultValueForgeMultiUserField)super.getActualInstance();
-    }
-
-    /**
      * Get the actual instance of `CustomFieldContextDefaultValueForgeNumberField`. If the actual instance is not `CustomFieldContextDefaultValueForgeNumberField`,
      * the ClassCastException will be thrown.
      *
@@ -1322,28 +1129,6 @@ public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
      */
     public CustomFieldContextDefaultValueForgeNumberField getCustomFieldContextDefaultValueForgeNumberField() throws ClassCastException {
         return (CustomFieldContextDefaultValueForgeNumberField)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueForgeObjectField`. If the actual instance is not `CustomFieldContextDefaultValueForgeObjectField`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueForgeObjectField`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueForgeObjectField`
-     */
-    public CustomFieldContextDefaultValueForgeObjectField getCustomFieldContextDefaultValueForgeObjectField() throws ClassCastException {
-        return (CustomFieldContextDefaultValueForgeObjectField)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueForgeStringField`. If the actual instance is not `CustomFieldContextDefaultValueForgeStringField`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueForgeStringField`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueForgeStringField`
-     */
-    public CustomFieldContextDefaultValueForgeStringField getCustomFieldContextDefaultValueForgeStringField() throws ClassCastException {
-        return (CustomFieldContextDefaultValueForgeStringField)super.getActualInstance();
     }
 
     /**
@@ -1358,357 +1143,265 @@ public class CustomFieldContextDefaultValue extends AbstractOpenApiSchema {
     }
 
     /**
-     * Get the actual instance of `CustomFieldContextDefaultValueLabels`. If the actual instance is not `CustomFieldContextDefaultValueLabels`,
+     * Get the actual instance of `CustomFieldContextDefaultValueForgeMultiUserField`. If the actual instance is not `CustomFieldContextDefaultValueForgeMultiUserField`,
      * the ClassCastException will be thrown.
      *
-     * @return The actual instance of `CustomFieldContextDefaultValueLabels`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueLabels`
+     * @return The actual instance of `CustomFieldContextDefaultValueForgeMultiUserField`
+     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueForgeMultiUserField`
      */
-    public CustomFieldContextDefaultValueLabels getCustomFieldContextDefaultValueLabels() throws ClassCastException {
-        return (CustomFieldContextDefaultValueLabels)super.getActualInstance();
+    public CustomFieldContextDefaultValueForgeMultiUserField getCustomFieldContextDefaultValueForgeMultiUserField() throws ClassCastException {
+        return (CustomFieldContextDefaultValueForgeMultiUserField)super.getActualInstance();
     }
 
     /**
-     * Get the actual instance of `CustomFieldContextDefaultValueMultiUserPicker`. If the actual instance is not `CustomFieldContextDefaultValueMultiUserPicker`,
-     * the ClassCastException will be thrown.
+     * Validates the JSON Element and throws an exception if issues found
      *
-     * @return The actual instance of `CustomFieldContextDefaultValueMultiUserPicker`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueMultiUserPicker`
+     * @param jsonElement JSON Element
+     * @throws IOException if the JSON Element is invalid with respect to CustomFieldContextDefaultValue
      */
-    public CustomFieldContextDefaultValueMultiUserPicker getCustomFieldContextDefaultValueMultiUserPicker() throws ClassCastException {
-        return (CustomFieldContextDefaultValueMultiUserPicker)super.getActualInstance();
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+        // validate oneOf schemas one by one
+        int validCount = 0;
+        ArrayList<String> errorMessages = new ArrayList<>();
+        // validate the json string with CustomFieldContextDefaultValueCascadingOption
+        try {
+            CustomFieldContextDefaultValueCascadingOption.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueCascadingOption failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueMultipleOption
+        try {
+            CustomFieldContextDefaultValueMultipleOption.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueMultipleOption failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueSingleOption
+        try {
+            CustomFieldContextDefaultValueSingleOption.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueSingleOption failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextSingleUserPickerDefaults
+        try {
+            CustomFieldContextSingleUserPickerDefaults.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextSingleUserPickerDefaults failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueMultiUserPicker
+        try {
+            CustomFieldContextDefaultValueMultiUserPicker.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueMultiUserPicker failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueSingleGroupPicker
+        try {
+            CustomFieldContextDefaultValueSingleGroupPicker.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueSingleGroupPicker failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueMultipleGroupPicker
+        try {
+            CustomFieldContextDefaultValueMultipleGroupPicker.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueMultipleGroupPicker failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueDate
+        try {
+            CustomFieldContextDefaultValueDate.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueDate failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueDateTime
+        try {
+            CustomFieldContextDefaultValueDateTime.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueDateTime failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueURL
+        try {
+            CustomFieldContextDefaultValueURL.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueURL failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueProject
+        try {
+            CustomFieldContextDefaultValueProject.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueProject failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueFloat
+        try {
+            CustomFieldContextDefaultValueFloat.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueFloat failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueLabels
+        try {
+            CustomFieldContextDefaultValueLabels.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueLabels failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueTextField
+        try {
+            CustomFieldContextDefaultValueTextField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueTextField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueTextArea
+        try {
+            CustomFieldContextDefaultValueTextArea.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueTextArea failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueReadOnly
+        try {
+            CustomFieldContextDefaultValueReadOnly.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueReadOnly failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueSingleVersionPicker
+        try {
+            CustomFieldContextDefaultValueSingleVersionPicker.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueSingleVersionPicker failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueMultipleVersionPicker
+        try {
+            CustomFieldContextDefaultValueMultipleVersionPicker.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueMultipleVersionPicker failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeStringField
+        try {
+            CustomFieldContextDefaultValueForgeStringField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeStringField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeMultiStringField
+        try {
+            CustomFieldContextDefaultValueForgeMultiStringField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeMultiStringField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeObjectField
+        try {
+            CustomFieldContextDefaultValueForgeObjectField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeObjectField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeDateTimeField
+        try {
+            CustomFieldContextDefaultValueForgeDateTimeField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeDateTimeField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeGroupField
+        try {
+            CustomFieldContextDefaultValueForgeGroupField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeGroupField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeMultiGroupField
+        try {
+            CustomFieldContextDefaultValueForgeMultiGroupField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeMultiGroupField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeNumberField
+        try {
+            CustomFieldContextDefaultValueForgeNumberField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeNumberField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeUserField
+        try {
+            CustomFieldContextDefaultValueForgeUserField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeUserField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with CustomFieldContextDefaultValueForgeMultiUserField
+        try {
+            CustomFieldContextDefaultValueForgeMultiUserField.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CustomFieldContextDefaultValueForgeMultiUserField failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        if (validCount != 1) {
+            throw new IOException(String.format(Locale.ROOT, "The JSON string is invalid for CustomFieldContextDefaultValue with oneOf schemas: CustomFieldContextDefaultValueCascadingOption, CustomFieldContextDefaultValueDate, CustomFieldContextDefaultValueDateTime, CustomFieldContextDefaultValueFloat, CustomFieldContextDefaultValueForgeDateTimeField, CustomFieldContextDefaultValueForgeGroupField, CustomFieldContextDefaultValueForgeMultiGroupField, CustomFieldContextDefaultValueForgeMultiStringField, CustomFieldContextDefaultValueForgeMultiUserField, CustomFieldContextDefaultValueForgeNumberField, CustomFieldContextDefaultValueForgeObjectField, CustomFieldContextDefaultValueForgeStringField, CustomFieldContextDefaultValueForgeUserField, CustomFieldContextDefaultValueLabels, CustomFieldContextDefaultValueMultiUserPicker, CustomFieldContextDefaultValueMultipleGroupPicker, CustomFieldContextDefaultValueMultipleOption, CustomFieldContextDefaultValueMultipleVersionPicker, CustomFieldContextDefaultValueProject, CustomFieldContextDefaultValueReadOnly, CustomFieldContextDefaultValueSingleGroupPicker, CustomFieldContextDefaultValueSingleOption, CustomFieldContextDefaultValueSingleVersionPicker, CustomFieldContextDefaultValueTextArea, CustomFieldContextDefaultValueTextField, CustomFieldContextDefaultValueURL, CustomFieldContextSingleUserPickerDefaults. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
+        }
     }
 
     /**
-     * Get the actual instance of `CustomFieldContextDefaultValueMultipleGroupPicker`. If the actual instance is not `CustomFieldContextDefaultValueMultipleGroupPicker`,
-     * the ClassCastException will be thrown.
+     * Create an instance of CustomFieldContextDefaultValue given an JSON string
      *
-     * @return The actual instance of `CustomFieldContextDefaultValueMultipleGroupPicker`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueMultipleGroupPicker`
+     * @param jsonString JSON string
+     * @return An instance of CustomFieldContextDefaultValue
+     * @throws IOException if the JSON string is invalid with respect to CustomFieldContextDefaultValue
      */
-    public CustomFieldContextDefaultValueMultipleGroupPicker getCustomFieldContextDefaultValueMultipleGroupPicker() throws ClassCastException {
-        return (CustomFieldContextDefaultValueMultipleGroupPicker)super.getActualInstance();
+    public static CustomFieldContextDefaultValue fromJson(String jsonString) throws IOException {
+        return JSON.getGson().fromJson(jsonString, CustomFieldContextDefaultValue.class);
     }
 
     /**
-     * Get the actual instance of `CustomFieldContextDefaultValueMultipleOption`. If the actual instance is not `CustomFieldContextDefaultValueMultipleOption`,
-     * the ClassCastException will be thrown.
+     * Convert an instance of CustomFieldContextDefaultValue to an JSON string
      *
-     * @return The actual instance of `CustomFieldContextDefaultValueMultipleOption`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueMultipleOption`
+     * @return JSON string
      */
-    public CustomFieldContextDefaultValueMultipleOption getCustomFieldContextDefaultValueMultipleOption() throws ClassCastException {
-        return (CustomFieldContextDefaultValueMultipleOption)super.getActualInstance();
+    public String toJson() {
+        return JSON.getGson().toJson(this);
     }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueMultipleVersionPicker`. If the actual instance is not `CustomFieldContextDefaultValueMultipleVersionPicker`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueMultipleVersionPicker`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueMultipleVersionPicker`
-     */
-    public CustomFieldContextDefaultValueMultipleVersionPicker getCustomFieldContextDefaultValueMultipleVersionPicker() throws ClassCastException {
-        return (CustomFieldContextDefaultValueMultipleVersionPicker)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueProject`. If the actual instance is not `CustomFieldContextDefaultValueProject`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueProject`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueProject`
-     */
-    public CustomFieldContextDefaultValueProject getCustomFieldContextDefaultValueProject() throws ClassCastException {
-        return (CustomFieldContextDefaultValueProject)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueReadOnly`. If the actual instance is not `CustomFieldContextDefaultValueReadOnly`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueReadOnly`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueReadOnly`
-     */
-    public CustomFieldContextDefaultValueReadOnly getCustomFieldContextDefaultValueReadOnly() throws ClassCastException {
-        return (CustomFieldContextDefaultValueReadOnly)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueSingleGroupPicker`. If the actual instance is not `CustomFieldContextDefaultValueSingleGroupPicker`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueSingleGroupPicker`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueSingleGroupPicker`
-     */
-    public CustomFieldContextDefaultValueSingleGroupPicker getCustomFieldContextDefaultValueSingleGroupPicker() throws ClassCastException {
-        return (CustomFieldContextDefaultValueSingleGroupPicker)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueSingleOption`. If the actual instance is not `CustomFieldContextDefaultValueSingleOption`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueSingleOption`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueSingleOption`
-     */
-    public CustomFieldContextDefaultValueSingleOption getCustomFieldContextDefaultValueSingleOption() throws ClassCastException {
-        return (CustomFieldContextDefaultValueSingleOption)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueSingleVersionPicker`. If the actual instance is not `CustomFieldContextDefaultValueSingleVersionPicker`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueSingleVersionPicker`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueSingleVersionPicker`
-     */
-    public CustomFieldContextDefaultValueSingleVersionPicker getCustomFieldContextDefaultValueSingleVersionPicker() throws ClassCastException {
-        return (CustomFieldContextDefaultValueSingleVersionPicker)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueTextArea`. If the actual instance is not `CustomFieldContextDefaultValueTextArea`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueTextArea`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueTextArea`
-     */
-    public CustomFieldContextDefaultValueTextArea getCustomFieldContextDefaultValueTextArea() throws ClassCastException {
-        return (CustomFieldContextDefaultValueTextArea)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueTextField`. If the actual instance is not `CustomFieldContextDefaultValueTextField`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueTextField`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueTextField`
-     */
-    public CustomFieldContextDefaultValueTextField getCustomFieldContextDefaultValueTextField() throws ClassCastException {
-        return (CustomFieldContextDefaultValueTextField)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextDefaultValueURL`. If the actual instance is not `CustomFieldContextDefaultValueURL`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextDefaultValueURL`
-     * @throws ClassCastException if the instance is not `CustomFieldContextDefaultValueURL`
-     */
-    public CustomFieldContextDefaultValueURL getCustomFieldContextDefaultValueURL() throws ClassCastException {
-        return (CustomFieldContextDefaultValueURL)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `CustomFieldContextSingleUserPickerDefaults`. If the actual instance is not `CustomFieldContextSingleUserPickerDefaults`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `CustomFieldContextSingleUserPickerDefaults`
-     * @throws ClassCastException if the instance is not `CustomFieldContextSingleUserPickerDefaults`
-     */
-    public CustomFieldContextSingleUserPickerDefaults getCustomFieldContextSingleUserPickerDefaults() throws ClassCastException {
-        return (CustomFieldContextSingleUserPickerDefaults)super.getActualInstance();
-    }
-
-
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
-  }
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @param prefix prefix of the query string
-   * @return URL query string
-   */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueCascadingOption) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueCascadingOption)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueMultipleOption) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueMultipleOption)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueSingleOption) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueSingleOption)getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextSingleUserPickerDefaults) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextSingleUserPickerDefaults)getActualInstance()).toUrlQueryString(prefix + "one_of_3" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueMultiUserPicker) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueMultiUserPicker)getActualInstance()).toUrlQueryString(prefix + "one_of_4" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueSingleGroupPicker) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueSingleGroupPicker)getActualInstance()).toUrlQueryString(prefix + "one_of_5" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueMultipleGroupPicker) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueMultipleGroupPicker)getActualInstance()).toUrlQueryString(prefix + "one_of_6" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueDate) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueDate)getActualInstance()).toUrlQueryString(prefix + "one_of_7" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueDateTime) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueDateTime)getActualInstance()).toUrlQueryString(prefix + "one_of_8" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueURL) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueURL)getActualInstance()).toUrlQueryString(prefix + "one_of_9" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueProject) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueProject)getActualInstance()).toUrlQueryString(prefix + "one_of_10" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueFloat) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueFloat)getActualInstance()).toUrlQueryString(prefix + "one_of_11" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueLabels) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueLabels)getActualInstance()).toUrlQueryString(prefix + "one_of_12" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueTextField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueTextField)getActualInstance()).toUrlQueryString(prefix + "one_of_13" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueTextArea) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueTextArea)getActualInstance()).toUrlQueryString(prefix + "one_of_14" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueReadOnly) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueReadOnly)getActualInstance()).toUrlQueryString(prefix + "one_of_15" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueSingleVersionPicker) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueSingleVersionPicker)getActualInstance()).toUrlQueryString(prefix + "one_of_16" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueMultipleVersionPicker) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueMultipleVersionPicker)getActualInstance()).toUrlQueryString(prefix + "one_of_17" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeStringField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeStringField)getActualInstance()).toUrlQueryString(prefix + "one_of_18" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeMultiStringField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeMultiStringField)getActualInstance()).toUrlQueryString(prefix + "one_of_19" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeObjectField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeObjectField)getActualInstance()).toUrlQueryString(prefix + "one_of_20" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeDateTimeField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeDateTimeField)getActualInstance()).toUrlQueryString(prefix + "one_of_21" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeGroupField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeGroupField)getActualInstance()).toUrlQueryString(prefix + "one_of_22" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeMultiGroupField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeMultiGroupField)getActualInstance()).toUrlQueryString(prefix + "one_of_23" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeNumberField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeNumberField)getActualInstance()).toUrlQueryString(prefix + "one_of_24" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeUserField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeUserField)getActualInstance()).toUrlQueryString(prefix + "one_of_25" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof CustomFieldContextDefaultValueForgeMultiUserField) {
-        if (getActualInstance() != null) {
-          joiner.add(((CustomFieldContextDefaultValueForgeMultiUserField)getActualInstance()).toUrlQueryString(prefix + "one_of_26" + suffix));
-        }
-        return joiner.toString();
-    }
-    return null;
-  }
-
 }
 

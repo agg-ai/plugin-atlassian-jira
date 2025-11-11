@@ -13,46 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the mapping between an issue type and a workflow.
  */
-@JsonPropertyOrder({
-  IssueTypeWorkflowMapping.JSON_PROPERTY_ISSUE_TYPE,
-  IssueTypeWorkflowMapping.JSON_PROPERTY_UPDATE_DRAFT_IF_NEEDED,
-  IssueTypeWorkflowMapping.JSON_PROPERTY_WORKFLOW
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueTypeWorkflowMapping {
-  public static final String JSON_PROPERTY_ISSUE_TYPE = "issueType";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE = "issueType";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE)
   @javax.annotation.Nullable
   private String issueType;
 
-  public static final String JSON_PROPERTY_UPDATE_DRAFT_IF_NEEDED = "updateDraftIfNeeded";
+  public static final String SERIALIZED_NAME_UPDATE_DRAFT_IF_NEEDED = "updateDraftIfNeeded";
+  @SerializedName(SERIALIZED_NAME_UPDATE_DRAFT_IF_NEEDED)
   @javax.annotation.Nullable
   private Boolean updateDraftIfNeeded;
 
-  public static final String JSON_PROPERTY_WORKFLOW = "workflow";
+  public static final String SERIALIZED_NAME_WORKFLOW = "workflow";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW)
   @javax.annotation.Nullable
   private String workflow;
 
-  public IssueTypeWorkflowMapping() { 
+  public IssueTypeWorkflowMapping() {
   }
 
   public IssueTypeWorkflowMapping issueType(@javax.annotation.Nullable String issueType) {
@@ -65,15 +80,10 @@ public class IssueTypeWorkflowMapping {
    * @return issueType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIssueType() {
     return issueType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueType(@javax.annotation.Nullable String issueType) {
     this.issueType = issueType;
   }
@@ -89,15 +99,10 @@ public class IssueTypeWorkflowMapping {
    * @return updateDraftIfNeeded
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_DRAFT_IF_NEEDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getUpdateDraftIfNeeded() {
     return updateDraftIfNeeded;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_DRAFT_IF_NEEDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUpdateDraftIfNeeded(@javax.annotation.Nullable Boolean updateDraftIfNeeded) {
     this.updateDraftIfNeeded = updateDraftIfNeeded;
   }
@@ -113,23 +118,16 @@ public class IssueTypeWorkflowMapping {
    * @return workflow
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getWorkflow() {
     return workflow;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkflow(@javax.annotation.Nullable String workflow) {
     this.workflow = workflow;
   }
 
 
-  /**
-   * Return true if this IssueTypeWorkflowMapping object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -171,54 +169,94 @@ public class IssueTypeWorkflowMapping {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueType", "updateDraftIfNeeded", "workflow"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueTypeWorkflowMapping
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueTypeWorkflowMapping.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueTypeWorkflowMapping is not found in the empty JSON string", IssueTypeWorkflowMapping.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueTypeWorkflowMapping.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueTypeWorkflowMapping` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("issueType") != null && !jsonObj.get("issueType").isJsonNull()) && !jsonObj.get("issueType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("issueType").toString()));
+      }
+      if ((jsonObj.get("workflow") != null && !jsonObj.get("workflow").isJsonNull()) && !jsonObj.get("workflow").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `workflow` to be a primitive type in the JSON string but got `%s`", jsonObj.get("workflow").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueTypeWorkflowMapping.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueTypeWorkflowMapping' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueTypeWorkflowMapping> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueTypeWorkflowMapping.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueTypeWorkflowMapping>() {
+           @Override
+           public void write(JsonWriter out, IssueTypeWorkflowMapping value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueTypeWorkflowMapping read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of IssueTypeWorkflowMapping given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueTypeWorkflowMapping
+   * @throws IOException if the JSON string is invalid with respect to IssueTypeWorkflowMapping
+   */
+  public static IssueTypeWorkflowMapping fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueTypeWorkflowMapping.class);
+  }
 
-    // add `issueType` to the URL query string
-    if (getIssueType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueType()))));
-    }
-
-    // add `updateDraftIfNeeded` to the URL query string
-    if (getUpdateDraftIfNeeded() != null) {
-      joiner.add(String.format(Locale.ROOT, "%supdateDraftIfNeeded%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUpdateDraftIfNeeded()))));
-    }
-
-    // add `workflow` to the URL query string
-    if (getWorkflow() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sworkflow%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWorkflow()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of IssueTypeWorkflowMapping to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

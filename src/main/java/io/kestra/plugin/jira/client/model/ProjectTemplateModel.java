@@ -13,83 +13,98 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.CustomTemplateOptions;
 import io.kestra.plugin.jira.client.model.ProjectArchetype;
 import io.kestra.plugin.jira.client.model.ProjectTemplateKey;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * ProjectTemplateModel
  */
-@JsonPropertyOrder({
-  ProjectTemplateModel.JSON_PROPERTY_ARCHETYPE,
-  ProjectTemplateModel.JSON_PROPERTY_DEFAULT_BOARD_VIEW,
-  ProjectTemplateModel.JSON_PROPERTY_DESCRIPTION,
-  ProjectTemplateModel.JSON_PROPERTY_LIVE_TEMPLATE_PROJECT_ID_REFERENCE,
-  ProjectTemplateModel.JSON_PROPERTY_NAME,
-  ProjectTemplateModel.JSON_PROPERTY_PROJECT_TEMPLATE_KEY,
-  ProjectTemplateModel.JSON_PROPERTY_SNAPSHOT_TEMPLATE,
-  ProjectTemplateModel.JSON_PROPERTY_TEMPLATE_GENERATION_OPTIONS,
-  ProjectTemplateModel.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectTemplateModel {
-  public static final String JSON_PROPERTY_ARCHETYPE = "archetype";
+  public static final String SERIALIZED_NAME_ARCHETYPE = "archetype";
+  @SerializedName(SERIALIZED_NAME_ARCHETYPE)
   @javax.annotation.Nullable
   private ProjectArchetype archetype;
 
-  public static final String JSON_PROPERTY_DEFAULT_BOARD_VIEW = "defaultBoardView";
+  public static final String SERIALIZED_NAME_DEFAULT_BOARD_VIEW = "defaultBoardView";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_BOARD_VIEW)
   @javax.annotation.Nullable
   private String defaultBoardView;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_LIVE_TEMPLATE_PROJECT_ID_REFERENCE = "liveTemplateProjectIdReference";
+  public static final String SERIALIZED_NAME_LIVE_TEMPLATE_PROJECT_ID_REFERENCE = "liveTemplateProjectIdReference";
+  @SerializedName(SERIALIZED_NAME_LIVE_TEMPLATE_PROJECT_ID_REFERENCE)
   @javax.annotation.Nullable
   private Long liveTemplateProjectIdReference;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PROJECT_TEMPLATE_KEY = "projectTemplateKey";
+  public static final String SERIALIZED_NAME_PROJECT_TEMPLATE_KEY = "projectTemplateKey";
+  @SerializedName(SERIALIZED_NAME_PROJECT_TEMPLATE_KEY)
   @javax.annotation.Nullable
   private ProjectTemplateKey projectTemplateKey;
 
-  public static final String JSON_PROPERTY_SNAPSHOT_TEMPLATE = "snapshotTemplate";
+  public static final String SERIALIZED_NAME_SNAPSHOT_TEMPLATE = "snapshotTemplate";
+  @SerializedName(SERIALIZED_NAME_SNAPSHOT_TEMPLATE)
   @javax.annotation.Nullable
   private Map<String, Object> snapshotTemplate = new HashMap<>();
 
-  public static final String JSON_PROPERTY_TEMPLATE_GENERATION_OPTIONS = "templateGenerationOptions";
+  public static final String SERIALIZED_NAME_TEMPLATE_GENERATION_OPTIONS = "templateGenerationOptions";
+  @SerializedName(SERIALIZED_NAME_TEMPLATE_GENERATION_OPTIONS)
   @javax.annotation.Nullable
   private CustomTemplateOptions templateGenerationOptions;
 
   /**
    * Gets or Sets type
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    LIVE(String.valueOf("LIVE")),
+    LIVE("LIVE"),
     
-    SNAPSHOT(String.valueOf("SNAPSHOT"));
+    SNAPSHOT("SNAPSHOT");
 
     private String value;
 
@@ -97,7 +112,6 @@ public class ProjectTemplateModel {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -107,7 +121,6 @@ public class ProjectTemplateModel {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -116,13 +129,32 @@ public class ProjectTemplateModel {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private TypeEnum type;
 
-  public ProjectTemplateModel() { 
+  public ProjectTemplateModel() {
   }
 
   public ProjectTemplateModel archetype(@javax.annotation.Nullable ProjectArchetype archetype) {
@@ -135,15 +167,10 @@ public class ProjectTemplateModel {
    * @return archetype
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ARCHETYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectArchetype getArchetype() {
     return archetype;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ARCHETYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setArchetype(@javax.annotation.Nullable ProjectArchetype archetype) {
     this.archetype = archetype;
   }
@@ -159,15 +186,10 @@ public class ProjectTemplateModel {
    * @return defaultBoardView
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_BOARD_VIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDefaultBoardView() {
     return defaultBoardView;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_BOARD_VIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultBoardView(@javax.annotation.Nullable String defaultBoardView) {
     this.defaultBoardView = defaultBoardView;
   }
@@ -183,15 +205,10 @@ public class ProjectTemplateModel {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -207,15 +224,10 @@ public class ProjectTemplateModel {
    * @return liveTemplateProjectIdReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LIVE_TEMPLATE_PROJECT_ID_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getLiveTemplateProjectIdReference() {
     return liveTemplateProjectIdReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LIVE_TEMPLATE_PROJECT_ID_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLiveTemplateProjectIdReference(@javax.annotation.Nullable Long liveTemplateProjectIdReference) {
     this.liveTemplateProjectIdReference = liveTemplateProjectIdReference;
   }
@@ -231,15 +243,10 @@ public class ProjectTemplateModel {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -255,15 +262,10 @@ public class ProjectTemplateModel {
    * @return projectTemplateKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TEMPLATE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectTemplateKey getProjectTemplateKey() {
     return projectTemplateKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TEMPLATE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectTemplateKey(@javax.annotation.Nullable ProjectTemplateKey projectTemplateKey) {
     this.projectTemplateKey = projectTemplateKey;
   }
@@ -287,15 +289,10 @@ public class ProjectTemplateModel {
    * @return snapshotTemplate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SNAPSHOT_TEMPLATE, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getSnapshotTemplate() {
     return snapshotTemplate;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SNAPSHOT_TEMPLATE, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setSnapshotTemplate(@javax.annotation.Nullable Map<String, Object> snapshotTemplate) {
     this.snapshotTemplate = snapshotTemplate;
   }
@@ -311,15 +308,10 @@ public class ProjectTemplateModel {
    * @return templateGenerationOptions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_GENERATION_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CustomTemplateOptions getTemplateGenerationOptions() {
     return templateGenerationOptions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_GENERATION_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTemplateGenerationOptions(@javax.annotation.Nullable CustomTemplateOptions templateGenerationOptions) {
     this.templateGenerationOptions = templateGenerationOptions;
   }
@@ -335,23 +327,16 @@ public class ProjectTemplateModel {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable TypeEnum type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this ProjectTemplateModel object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -405,88 +390,116 @@ public class ProjectTemplateModel {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("archetype", "defaultBoardView", "description", "liveTemplateProjectIdReference", "name", "projectTemplateKey", "snapshotTemplate", "templateGenerationOptions", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectTemplateModel
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `archetype` to the URL query string
-    if (getArchetype() != null) {
-      joiner.add(getArchetype().toUrlQueryString(prefix + "archetype" + suffix));
-    }
-
-    // add `defaultBoardView` to the URL query string
-    if (getDefaultBoardView() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefaultBoardView%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultBoardView()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `liveTemplateProjectIdReference` to the URL query string
-    if (getLiveTemplateProjectIdReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sliveTemplateProjectIdReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLiveTemplateProjectIdReference()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `projectTemplateKey` to the URL query string
-    if (getProjectTemplateKey() != null) {
-      joiner.add(getProjectTemplateKey().toUrlQueryString(prefix + "projectTemplateKey" + suffix));
-    }
-
-    // add `snapshotTemplate` to the URL query string
-    if (getSnapshotTemplate() != null) {
-      for (String _key : getSnapshotTemplate().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%ssnapshotTemplate%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getSnapshotTemplate().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getSnapshotTemplate().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectTemplateModel.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectTemplateModel is not found in the empty JSON string", ProjectTemplateModel.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `templateGenerationOptions` to the URL query string
-    if (getTemplateGenerationOptions() != null) {
-      joiner.add(getTemplateGenerationOptions().toUrlQueryString(prefix + "templateGenerationOptions" + suffix));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectTemplateModel.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectTemplateModel` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `archetype`
+      if (jsonObj.get("archetype") != null && !jsonObj.get("archetype").isJsonNull()) {
+        ProjectArchetype.validateJsonElement(jsonObj.get("archetype"));
+      }
+      if ((jsonObj.get("defaultBoardView") != null && !jsonObj.get("defaultBoardView").isJsonNull()) && !jsonObj.get("defaultBoardView").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `defaultBoardView` to be a primitive type in the JSON string but got `%s`", jsonObj.get("defaultBoardView").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `projectTemplateKey`
+      if (jsonObj.get("projectTemplateKey") != null && !jsonObj.get("projectTemplateKey").isJsonNull()) {
+        ProjectTemplateKey.validateJsonElement(jsonObj.get("projectTemplateKey"));
+      }
+      // validate the optional field `templateGenerationOptions`
+      if (jsonObj.get("templateGenerationOptions") != null && !jsonObj.get("templateGenerationOptions").isJsonNull()) {
+        CustomTemplateOptions.validateJsonElement(jsonObj.get("templateGenerationOptions"));
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the optional field `type`
+      if (jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) {
+        TypeEnum.validateJsonElement(jsonObj.get("type"));
+      }
+  }
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectTemplateModel.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectTemplateModel' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectTemplateModel> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectTemplateModel.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<ProjectTemplateModel>() {
+           @Override
+           public void write(JsonWriter out, ProjectTemplateModel value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectTemplateModel read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ProjectTemplateModel given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectTemplateModel
+   * @throws IOException if the JSON string is invalid with respect to ProjectTemplateModel
+   */
+  public static ProjectTemplateModel fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectTemplateModel.class);
+  }
+
+  /**
+   * Convert an instance of ProjectTemplateModel to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

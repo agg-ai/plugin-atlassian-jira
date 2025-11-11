@@ -13,58 +13,72 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueBulkTransitionForWorkflow;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Bulk Transition Get Available Transitions Response.
  */
-@JsonPropertyOrder({
-  BulkTransitionGetAvailableTransitions.JSON_PROPERTY_AVAILABLE_TRANSITIONS,
-  BulkTransitionGetAvailableTransitions.JSON_PROPERTY_ENDING_BEFORE,
-  BulkTransitionGetAvailableTransitions.JSON_PROPERTY_STARTING_AFTER
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkTransitionGetAvailableTransitions {
-  public static final String JSON_PROPERTY_AVAILABLE_TRANSITIONS = "availableTransitions";
+  public static final String SERIALIZED_NAME_AVAILABLE_TRANSITIONS = "availableTransitions";
+  @SerializedName(SERIALIZED_NAME_AVAILABLE_TRANSITIONS)
   @javax.annotation.Nullable
   private List<IssueBulkTransitionForWorkflow> availableTransitions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ENDING_BEFORE = "endingBefore";
+  public static final String SERIALIZED_NAME_ENDING_BEFORE = "endingBefore";
+  @SerializedName(SERIALIZED_NAME_ENDING_BEFORE)
   @javax.annotation.Nullable
   private String endingBefore;
 
-  public static final String JSON_PROPERTY_STARTING_AFTER = "startingAfter";
+  public static final String SERIALIZED_NAME_STARTING_AFTER = "startingAfter";
+  @SerializedName(SERIALIZED_NAME_STARTING_AFTER)
   @javax.annotation.Nullable
   private String startingAfter;
 
-  public BulkTransitionGetAvailableTransitions() { 
+  public BulkTransitionGetAvailableTransitions() {
   }
 
-  @JsonCreator
   public BulkTransitionGetAvailableTransitions(
-    @JsonProperty(JSON_PROPERTY_AVAILABLE_TRANSITIONS) List<IssueBulkTransitionForWorkflow> availableTransitions, 
-    @JsonProperty(JSON_PROPERTY_ENDING_BEFORE) String endingBefore, 
-    @JsonProperty(JSON_PROPERTY_STARTING_AFTER) String startingAfter
+     List<IssueBulkTransitionForWorkflow> availableTransitions, 
+     String endingBefore, 
+     String startingAfter
   ) {
-  this();
+    this();
     this.availableTransitions = availableTransitions;
     this.endingBefore = endingBefore;
     this.startingAfter = startingAfter;
@@ -75,12 +89,9 @@ public class BulkTransitionGetAvailableTransitions {
    * @return availableTransitions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVAILABLE_TRANSITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueBulkTransitionForWorkflow> getAvailableTransitions() {
     return availableTransitions;
   }
-
 
 
 
@@ -89,12 +100,9 @@ public class BulkTransitionGetAvailableTransitions {
    * @return endingBefore
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ENDING_BEFORE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEndingBefore() {
     return endingBefore;
   }
-
 
 
 
@@ -103,8 +111,6 @@ public class BulkTransitionGetAvailableTransitions {
    * @return startingAfter
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STARTING_AFTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStartingAfter() {
     return startingAfter;
   }
@@ -112,9 +118,6 @@ public class BulkTransitionGetAvailableTransitions {
 
 
 
-  /**
-   * Return true if this BulkTransitionGetAvailableTransitions object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -156,59 +159,108 @@ public class BulkTransitionGetAvailableTransitions {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("availableTransitions", "endingBefore", "startingAfter"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkTransitionGetAvailableTransitions
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `availableTransitions` to the URL query string
-    if (getAvailableTransitions() != null) {
-      for (int i = 0; i < getAvailableTransitions().size(); i++) {
-        if (getAvailableTransitions().get(i) != null) {
-          joiner.add(getAvailableTransitions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%savailableTransitions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkTransitionGetAvailableTransitions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkTransitionGetAvailableTransitions is not found in the empty JSON string", BulkTransitionGetAvailableTransitions.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `endingBefore` to the URL query string
-    if (getEndingBefore() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sendingBefore%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEndingBefore()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkTransitionGetAvailableTransitions.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkTransitionGetAvailableTransitions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("availableTransitions") != null && !jsonObj.get("availableTransitions").isJsonNull()) {
+        JsonArray jsonArrayavailableTransitions = jsonObj.getAsJsonArray("availableTransitions");
+        if (jsonArrayavailableTransitions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("availableTransitions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `availableTransitions` to be an array in the JSON string but got `%s`", jsonObj.get("availableTransitions").toString()));
+          }
 
-    // add `startingAfter` to the URL query string
-    if (getStartingAfter() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartingAfter%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartingAfter()))));
-    }
+          // validate the optional field `availableTransitions` (array)
+          for (int i = 0; i < jsonArrayavailableTransitions.size(); i++) {
+            IssueBulkTransitionForWorkflow.validateJsonElement(jsonArrayavailableTransitions.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("endingBefore") != null && !jsonObj.get("endingBefore").isJsonNull()) && !jsonObj.get("endingBefore").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `endingBefore` to be a primitive type in the JSON string but got `%s`", jsonObj.get("endingBefore").toString()));
+      }
+      if ((jsonObj.get("startingAfter") != null && !jsonObj.get("startingAfter").isJsonNull()) && !jsonObj.get("startingAfter").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `startingAfter` to be a primitive type in the JSON string but got `%s`", jsonObj.get("startingAfter").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkTransitionGetAvailableTransitions.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkTransitionGetAvailableTransitions' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkTransitionGetAvailableTransitions> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkTransitionGetAvailableTransitions.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<BulkTransitionGetAvailableTransitions>() {
+           @Override
+           public void write(JsonWriter out, BulkTransitionGetAvailableTransitions value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BulkTransitionGetAvailableTransitions read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of BulkTransitionGetAvailableTransitions given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkTransitionGetAvailableTransitions
+   * @throws IOException if the JSON string is invalid with respect to BulkTransitionGetAvailableTransitions
+   */
+  public static BulkTransitionGetAvailableTransitions fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkTransitionGetAvailableTransitions.class);
+  }
+
+  /**
+   * Convert an instance of BulkTransitionGetAvailableTransitions to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

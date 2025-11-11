@@ -13,79 +13,93 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectCreateResourceIdentifier;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The payload for creating a project
  */
-@JsonPropertyOrder({
-  ProjectPayload.JSON_PROPERTY_FIELD_LAYOUT_SCHEME_ID,
-  ProjectPayload.JSON_PROPERTY_ISSUE_SECURITY_SCHEME_ID,
-  ProjectPayload.JSON_PROPERTY_ISSUE_TYPE_SCHEME_ID,
-  ProjectPayload.JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME_ID,
-  ProjectPayload.JSON_PROPERTY_NOTIFICATION_SCHEME_ID,
-  ProjectPayload.JSON_PROPERTY_PCRI,
-  ProjectPayload.JSON_PROPERTY_PERMISSION_SCHEME_ID,
-  ProjectPayload.JSON_PROPERTY_PROJECT_TYPE_KEY,
-  ProjectPayload.JSON_PROPERTY_WORKFLOW_SCHEME_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectPayload {
-  public static final String JSON_PROPERTY_FIELD_LAYOUT_SCHEME_ID = "fieldLayoutSchemeId";
+  public static final String SERIALIZED_NAME_FIELD_LAYOUT_SCHEME_ID = "fieldLayoutSchemeId";
+  @SerializedName(SERIALIZED_NAME_FIELD_LAYOUT_SCHEME_ID)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier fieldLayoutSchemeId;
 
-  public static final String JSON_PROPERTY_ISSUE_SECURITY_SCHEME_ID = "issueSecuritySchemeId";
+  public static final String SERIALIZED_NAME_ISSUE_SECURITY_SCHEME_ID = "issueSecuritySchemeId";
+  @SerializedName(SERIALIZED_NAME_ISSUE_SECURITY_SCHEME_ID)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier issueSecuritySchemeId;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_SCHEME_ID = "issueTypeSchemeId";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_SCHEME_ID = "issueTypeSchemeId";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_SCHEME_ID)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier issueTypeSchemeId;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME_ID = "issueTypeScreenSchemeId";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_SCREEN_SCHEME_ID = "issueTypeScreenSchemeId";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_SCREEN_SCHEME_ID)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier issueTypeScreenSchemeId;
 
-  public static final String JSON_PROPERTY_NOTIFICATION_SCHEME_ID = "notificationSchemeId";
+  public static final String SERIALIZED_NAME_NOTIFICATION_SCHEME_ID = "notificationSchemeId";
+  @SerializedName(SERIALIZED_NAME_NOTIFICATION_SCHEME_ID)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier notificationSchemeId;
 
-  public static final String JSON_PROPERTY_PCRI = "pcri";
+  public static final String SERIALIZED_NAME_PCRI = "pcri";
+  @SerializedName(SERIALIZED_NAME_PCRI)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier pcri;
 
-  public static final String JSON_PROPERTY_PERMISSION_SCHEME_ID = "permissionSchemeId";
+  public static final String SERIALIZED_NAME_PERMISSION_SCHEME_ID = "permissionSchemeId";
+  @SerializedName(SERIALIZED_NAME_PERMISSION_SCHEME_ID)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier permissionSchemeId;
 
   /**
    * The [project type](https://confluence.atlassian.com/x/GwiiLQ#Jiraapplicationsoverview-Productfeaturesandprojecttypes), which defines the application-specific feature set. If you don&#39;t specify the project template you have to specify the project type.
    */
+  @JsonAdapter(ProjectTypeKeyEnum.Adapter.class)
   public enum ProjectTypeKeyEnum {
-    SOFTWARE(String.valueOf("software")),
+    SOFTWARE("software"),
     
-    BUSINESS(String.valueOf("business")),
+    BUSINESS("business"),
     
-    SERVICE_DESK(String.valueOf("service_desk")),
+    SERVICE_DESK("service_desk"),
     
-    PRODUCT_DISCOVERY(String.valueOf("product_discovery"));
+    PRODUCT_DISCOVERY("product_discovery");
 
     private String value;
 
@@ -93,7 +107,6 @@ public class ProjectPayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -103,7 +116,6 @@ public class ProjectPayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ProjectTypeKeyEnum fromValue(String value) {
       for (ProjectTypeKeyEnum b : ProjectTypeKeyEnum.values()) {
         if (b.value.equals(value)) {
@@ -112,17 +124,37 @@ public class ProjectPayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ProjectTypeKeyEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ProjectTypeKeyEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ProjectTypeKeyEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ProjectTypeKeyEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ProjectTypeKeyEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_PROJECT_TYPE_KEY = "projectTypeKey";
+  public static final String SERIALIZED_NAME_PROJECT_TYPE_KEY = "projectTypeKey";
+  @SerializedName(SERIALIZED_NAME_PROJECT_TYPE_KEY)
   @javax.annotation.Nullable
   private ProjectTypeKeyEnum projectTypeKey;
 
-  public static final String JSON_PROPERTY_WORKFLOW_SCHEME_ID = "workflowSchemeId";
+  public static final String SERIALIZED_NAME_WORKFLOW_SCHEME_ID = "workflowSchemeId";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW_SCHEME_ID)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier workflowSchemeId;
 
-  public ProjectPayload() { 
+  public ProjectPayload() {
   }
 
   public ProjectPayload fieldLayoutSchemeId(@javax.annotation.Nullable ProjectCreateResourceIdentifier fieldLayoutSchemeId) {
@@ -135,15 +167,10 @@ public class ProjectPayload {
    * @return fieldLayoutSchemeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_LAYOUT_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getFieldLayoutSchemeId() {
     return fieldLayoutSchemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_LAYOUT_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldLayoutSchemeId(@javax.annotation.Nullable ProjectCreateResourceIdentifier fieldLayoutSchemeId) {
     this.fieldLayoutSchemeId = fieldLayoutSchemeId;
   }
@@ -159,15 +186,10 @@ public class ProjectPayload {
    * @return issueSecuritySchemeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SECURITY_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getIssueSecuritySchemeId() {
     return issueSecuritySchemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SECURITY_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueSecuritySchemeId(@javax.annotation.Nullable ProjectCreateResourceIdentifier issueSecuritySchemeId) {
     this.issueSecuritySchemeId = issueSecuritySchemeId;
   }
@@ -183,15 +205,10 @@ public class ProjectPayload {
    * @return issueTypeSchemeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getIssueTypeSchemeId() {
     return issueTypeSchemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeSchemeId(@javax.annotation.Nullable ProjectCreateResourceIdentifier issueTypeSchemeId) {
     this.issueTypeSchemeId = issueTypeSchemeId;
   }
@@ -207,15 +224,10 @@ public class ProjectPayload {
    * @return issueTypeScreenSchemeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getIssueTypeScreenSchemeId() {
     return issueTypeScreenSchemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeScreenSchemeId(@javax.annotation.Nullable ProjectCreateResourceIdentifier issueTypeScreenSchemeId) {
     this.issueTypeScreenSchemeId = issueTypeScreenSchemeId;
   }
@@ -231,15 +243,10 @@ public class ProjectPayload {
    * @return notificationSchemeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getNotificationSchemeId() {
     return notificationSchemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNotificationSchemeId(@javax.annotation.Nullable ProjectCreateResourceIdentifier notificationSchemeId) {
     this.notificationSchemeId = notificationSchemeId;
   }
@@ -255,15 +262,10 @@ public class ProjectPayload {
    * @return pcri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getPcri() {
     return pcri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPcri(@javax.annotation.Nullable ProjectCreateResourceIdentifier pcri) {
     this.pcri = pcri;
   }
@@ -279,15 +281,10 @@ public class ProjectPayload {
    * @return permissionSchemeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getPermissionSchemeId() {
     return permissionSchemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPermissionSchemeId(@javax.annotation.Nullable ProjectCreateResourceIdentifier permissionSchemeId) {
     this.permissionSchemeId = permissionSchemeId;
   }
@@ -303,15 +300,10 @@ public class ProjectPayload {
    * @return projectTypeKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectTypeKeyEnum getProjectTypeKey() {
     return projectTypeKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectTypeKey(@javax.annotation.Nullable ProjectTypeKeyEnum projectTypeKey) {
     this.projectTypeKey = projectTypeKey;
   }
@@ -327,23 +319,16 @@ public class ProjectPayload {
    * @return workflowSchemeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getWorkflowSchemeId() {
     return workflowSchemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkflowSchemeId(@javax.annotation.Nullable ProjectCreateResourceIdentifier workflowSchemeId) {
     this.workflowSchemeId = workflowSchemeId;
   }
 
 
-  /**
-   * Return true if this ProjectPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -397,84 +382,127 @@ public class ProjectPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("fieldLayoutSchemeId", "issueSecuritySchemeId", "issueTypeSchemeId", "issueTypeScreenSchemeId", "notificationSchemeId", "pcri", "permissionSchemeId", "projectTypeKey", "workflowSchemeId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectPayload is not found in the empty JSON string", ProjectPayload.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `fieldLayoutSchemeId`
+      if (jsonObj.get("fieldLayoutSchemeId") != null && !jsonObj.get("fieldLayoutSchemeId").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("fieldLayoutSchemeId"));
+      }
+      // validate the optional field `issueSecuritySchemeId`
+      if (jsonObj.get("issueSecuritySchemeId") != null && !jsonObj.get("issueSecuritySchemeId").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("issueSecuritySchemeId"));
+      }
+      // validate the optional field `issueTypeSchemeId`
+      if (jsonObj.get("issueTypeSchemeId") != null && !jsonObj.get("issueTypeSchemeId").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("issueTypeSchemeId"));
+      }
+      // validate the optional field `issueTypeScreenSchemeId`
+      if (jsonObj.get("issueTypeScreenSchemeId") != null && !jsonObj.get("issueTypeScreenSchemeId").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("issueTypeScreenSchemeId"));
+      }
+      // validate the optional field `notificationSchemeId`
+      if (jsonObj.get("notificationSchemeId") != null && !jsonObj.get("notificationSchemeId").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("notificationSchemeId"));
+      }
+      // validate the optional field `pcri`
+      if (jsonObj.get("pcri") != null && !jsonObj.get("pcri").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("pcri"));
+      }
+      // validate the optional field `permissionSchemeId`
+      if (jsonObj.get("permissionSchemeId") != null && !jsonObj.get("permissionSchemeId").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("permissionSchemeId"));
+      }
+      if ((jsonObj.get("projectTypeKey") != null && !jsonObj.get("projectTypeKey").isJsonNull()) && !jsonObj.get("projectTypeKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectTypeKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectTypeKey").toString()));
+      }
+      // validate the optional field `projectTypeKey`
+      if (jsonObj.get("projectTypeKey") != null && !jsonObj.get("projectTypeKey").isJsonNull()) {
+        ProjectTypeKeyEnum.validateJsonElement(jsonObj.get("projectTypeKey"));
+      }
+      // validate the optional field `workflowSchemeId`
+      if (jsonObj.get("workflowSchemeId") != null && !jsonObj.get("workflowSchemeId").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("workflowSchemeId"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ProjectPayload>() {
+           @Override
+           public void write(JsonWriter out, ProjectPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ProjectPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectPayload
+   * @throws IOException if the JSON string is invalid with respect to ProjectPayload
+   */
+  public static ProjectPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectPayload.class);
+  }
 
-    // add `fieldLayoutSchemeId` to the URL query string
-    if (getFieldLayoutSchemeId() != null) {
-      joiner.add(getFieldLayoutSchemeId().toUrlQueryString(prefix + "fieldLayoutSchemeId" + suffix));
-    }
-
-    // add `issueSecuritySchemeId` to the URL query string
-    if (getIssueSecuritySchemeId() != null) {
-      joiner.add(getIssueSecuritySchemeId().toUrlQueryString(prefix + "issueSecuritySchemeId" + suffix));
-    }
-
-    // add `issueTypeSchemeId` to the URL query string
-    if (getIssueTypeSchemeId() != null) {
-      joiner.add(getIssueTypeSchemeId().toUrlQueryString(prefix + "issueTypeSchemeId" + suffix));
-    }
-
-    // add `issueTypeScreenSchemeId` to the URL query string
-    if (getIssueTypeScreenSchemeId() != null) {
-      joiner.add(getIssueTypeScreenSchemeId().toUrlQueryString(prefix + "issueTypeScreenSchemeId" + suffix));
-    }
-
-    // add `notificationSchemeId` to the URL query string
-    if (getNotificationSchemeId() != null) {
-      joiner.add(getNotificationSchemeId().toUrlQueryString(prefix + "notificationSchemeId" + suffix));
-    }
-
-    // add `pcri` to the URL query string
-    if (getPcri() != null) {
-      joiner.add(getPcri().toUrlQueryString(prefix + "pcri" + suffix));
-    }
-
-    // add `permissionSchemeId` to the URL query string
-    if (getPermissionSchemeId() != null) {
-      joiner.add(getPermissionSchemeId().toUrlQueryString(prefix + "permissionSchemeId" + suffix));
-    }
-
-    // add `projectTypeKey` to the URL query string
-    if (getProjectTypeKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectTypeKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectTypeKey()))));
-    }
-
-    // add `workflowSchemeId` to the URL query string
-    if (getWorkflowSchemeId() != null) {
-      joiner.add(getWorkflowSchemeId().toUrlQueryString(prefix + "workflowSchemeId" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -10,322 +10,276 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.FoundUsersAndGroups;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class GroupAndUserPickerApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public GroupAndUserPickerApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public GroupAndUserPickerApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for findUsersAndGroups
+     * @param query The search string. (required)
+     * @param maxResults The maximum number of items to return in each list. (optional, default to 50)
+     * @param showAvatar Whether the user avatar should be returned. If an invalid value is provided, the default value is used. (optional, default to false)
+     * @param fieldId The custom field ID of the field this request is for. (optional)
+     * @param projectId The ID of a project that returned users and groups must have permission to view. To include multiple projects, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
+     * @param issueTypeId The ID of an issue type that returned users and groups must have permission to view. To include multiple issue types, provide an ampersand-separated list. For example, &#x60;issueTypeId&#x3D;10000&amp;issueTypeId&#x3D;10001&#x60;. Special values, such as &#x60;-1&#x60; (all standard issue types) and &#x60;-2&#x60; (all subtask issue types), are supported. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
+     * @param avatarSize The size of the avatar to return. If an invalid value is provided, the default value is used. (optional, default to xsmall)
+     * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
+     * @param excludeConnectAddons Whether Connect app users and groups should be excluded from the search results. If an invalid value is provided, the default value is used. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the query parameter is not provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 429 </td><td> Returned if the rate limit is exceeded. User search endpoints share a collective rate limit for the tenant, in addition to Jira&#39;s normal rate limiting you may receive a rate limit for user search. Please respect the Retry-After header. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call findUsersAndGroupsCall(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public GroupAndUserPickerApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public GroupAndUserPickerApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Find users and groups
-   * Returns a list of users and groups matching a string. The string is used:   *  for users, to find a case-insensitive match with display name and e-mail address. Note that if a user has hidden their email address in their user profile, partial matches of the email address will not find the user. An exact match is required.  *  for groups, to find a case-sensitive match with group name.  For example, if the string *tin* is used, records with the display name *Tina*, email address *sarah@tinplatetraining.com*, and the group *accounting* would be returned.  Optionally, the search can be refined to:   *  the projects and issue types associated with a custom field, such as a user picker. The search can then be further refined to return only users and groups that have permission to view specific:           *  projects.      *  issue types.          If multiple projects or issue types are specified, they must be a subset of those enabled for the custom field or no results are returned. For example, if a field is enabled for projects A, B, and C then the search could be limited to projects B and C. However, if the search is limited to projects B and D, nothing is returned.  *  not return Connect app users and groups.  *  return groups that have a case-insensitive match with the query.  The primary use case for this resource is to populate a picker field suggestion list with users or groups. To this end, the returned object includes an &#x60;html&#x60; field for each list. This field highlights the matched query term in the item name with the HTML strong tag. Also, each list is wrapped in a response object that contains a header for use in a picker, specifically *Showing X of Y matching groups*.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param query The search string. (required)
-   * @param maxResults The maximum number of items to return in each list. (optional, default to 50)
-   * @param showAvatar Whether the user avatar should be returned. If an invalid value is provided, the default value is used. (optional, default to false)
-   * @param fieldId The custom field ID of the field this request is for. (optional)
-   * @param projectId The ID of a project that returned users and groups must have permission to view. To include multiple projects, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
-   * @param issueTypeId The ID of an issue type that returned users and groups must have permission to view. To include multiple issue types, provide an ampersand-separated list. For example, &#x60;issueTypeId&#x3D;10000&amp;issueTypeId&#x3D;10001&#x60;. Special values, such as &#x60;-1&#x60; (all standard issue types) and &#x60;-2&#x60; (all subtask issue types), are supported. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
-   * @param avatarSize The size of the avatar to return. If an invalid value is provided, the default value is used. (optional, default to xsmall)
-   * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
-   * @param excludeConnectAddons Whether Connect app users and groups should be excluded from the search results. If an invalid value is provided, the default value is used. (optional, default to false)
-   * @return FoundUsersAndGroups
-   * @throws ApiException if fails to make API call
-   */
-  public FoundUsersAndGroups findUsersAndGroups(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons) throws ApiException {
-    return findUsersAndGroups(query, maxResults, showAvatar, fieldId, projectId, issueTypeId, avatarSize, caseInsensitive, excludeConnectAddons, null);
-  }
-
-  /**
-   * Find users and groups
-   * Returns a list of users and groups matching a string. The string is used:   *  for users, to find a case-insensitive match with display name and e-mail address. Note that if a user has hidden their email address in their user profile, partial matches of the email address will not find the user. An exact match is required.  *  for groups, to find a case-sensitive match with group name.  For example, if the string *tin* is used, records with the display name *Tina*, email address *sarah@tinplatetraining.com*, and the group *accounting* would be returned.  Optionally, the search can be refined to:   *  the projects and issue types associated with a custom field, such as a user picker. The search can then be further refined to return only users and groups that have permission to view specific:           *  projects.      *  issue types.          If multiple projects or issue types are specified, they must be a subset of those enabled for the custom field or no results are returned. For example, if a field is enabled for projects A, B, and C then the search could be limited to projects B and C. However, if the search is limited to projects B and D, nothing is returned.  *  not return Connect app users and groups.  *  return groups that have a case-insensitive match with the query.  The primary use case for this resource is to populate a picker field suggestion list with users or groups. To this end, the returned object includes an &#x60;html&#x60; field for each list. This field highlights the matched query term in the item name with the HTML strong tag. Also, each list is wrapped in a response object that contains a header for use in a picker, specifically *Showing X of Y matching groups*.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param query The search string. (required)
-   * @param maxResults The maximum number of items to return in each list. (optional, default to 50)
-   * @param showAvatar Whether the user avatar should be returned. If an invalid value is provided, the default value is used. (optional, default to false)
-   * @param fieldId The custom field ID of the field this request is for. (optional)
-   * @param projectId The ID of a project that returned users and groups must have permission to view. To include multiple projects, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
-   * @param issueTypeId The ID of an issue type that returned users and groups must have permission to view. To include multiple issue types, provide an ampersand-separated list. For example, &#x60;issueTypeId&#x3D;10000&amp;issueTypeId&#x3D;10001&#x60;. Special values, such as &#x60;-1&#x60; (all standard issue types) and &#x60;-2&#x60; (all subtask issue types), are supported. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
-   * @param avatarSize The size of the avatar to return. If an invalid value is provided, the default value is used. (optional, default to xsmall)
-   * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
-   * @param excludeConnectAddons Whether Connect app users and groups should be excluded from the search results. If an invalid value is provided, the default value is used. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return FoundUsersAndGroups
-   * @throws ApiException if fails to make API call
-   */
-  public FoundUsersAndGroups findUsersAndGroups(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons, Map<String, String> headers) throws ApiException {
-    ApiResponse<FoundUsersAndGroups> localVarResponse = findUsersAndGroupsWithHttpInfo(query, maxResults, showAvatar, fieldId, projectId, issueTypeId, avatarSize, caseInsensitive, excludeConnectAddons, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Find users and groups
-   * Returns a list of users and groups matching a string. The string is used:   *  for users, to find a case-insensitive match with display name and e-mail address. Note that if a user has hidden their email address in their user profile, partial matches of the email address will not find the user. An exact match is required.  *  for groups, to find a case-sensitive match with group name.  For example, if the string *tin* is used, records with the display name *Tina*, email address *sarah@tinplatetraining.com*, and the group *accounting* would be returned.  Optionally, the search can be refined to:   *  the projects and issue types associated with a custom field, such as a user picker. The search can then be further refined to return only users and groups that have permission to view specific:           *  projects.      *  issue types.          If multiple projects or issue types are specified, they must be a subset of those enabled for the custom field or no results are returned. For example, if a field is enabled for projects A, B, and C then the search could be limited to projects B and C. However, if the search is limited to projects B and D, nothing is returned.  *  not return Connect app users and groups.  *  return groups that have a case-insensitive match with the query.  The primary use case for this resource is to populate a picker field suggestion list with users or groups. To this end, the returned object includes an &#x60;html&#x60; field for each list. This field highlights the matched query term in the item name with the HTML strong tag. Also, each list is wrapped in a response object that contains a header for use in a picker, specifically *Showing X of Y matching groups*.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param query The search string. (required)
-   * @param maxResults The maximum number of items to return in each list. (optional, default to 50)
-   * @param showAvatar Whether the user avatar should be returned. If an invalid value is provided, the default value is used. (optional, default to false)
-   * @param fieldId The custom field ID of the field this request is for. (optional)
-   * @param projectId The ID of a project that returned users and groups must have permission to view. To include multiple projects, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
-   * @param issueTypeId The ID of an issue type that returned users and groups must have permission to view. To include multiple issue types, provide an ampersand-separated list. For example, &#x60;issueTypeId&#x3D;10000&amp;issueTypeId&#x3D;10001&#x60;. Special values, such as &#x60;-1&#x60; (all standard issue types) and &#x60;-2&#x60; (all subtask issue types), are supported. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
-   * @param avatarSize The size of the avatar to return. If an invalid value is provided, the default value is used. (optional, default to xsmall)
-   * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
-   * @param excludeConnectAddons Whether Connect app users and groups should be excluded from the search results. If an invalid value is provided, the default value is used. (optional, default to false)
-   * @return ApiResponse&lt;FoundUsersAndGroups&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FoundUsersAndGroups> findUsersAndGroupsWithHttpInfo(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons) throws ApiException {
-    return findUsersAndGroupsWithHttpInfo(query, maxResults, showAvatar, fieldId, projectId, issueTypeId, avatarSize, caseInsensitive, excludeConnectAddons, null);
-  }
-
-  /**
-   * Find users and groups
-   * Returns a list of users and groups matching a string. The string is used:   *  for users, to find a case-insensitive match with display name and e-mail address. Note that if a user has hidden their email address in their user profile, partial matches of the email address will not find the user. An exact match is required.  *  for groups, to find a case-sensitive match with group name.  For example, if the string *tin* is used, records with the display name *Tina*, email address *sarah@tinplatetraining.com*, and the group *accounting* would be returned.  Optionally, the search can be refined to:   *  the projects and issue types associated with a custom field, such as a user picker. The search can then be further refined to return only users and groups that have permission to view specific:           *  projects.      *  issue types.          If multiple projects or issue types are specified, they must be a subset of those enabled for the custom field or no results are returned. For example, if a field is enabled for projects A, B, and C then the search could be limited to projects B and C. However, if the search is limited to projects B and D, nothing is returned.  *  not return Connect app users and groups.  *  return groups that have a case-insensitive match with the query.  The primary use case for this resource is to populate a picker field suggestion list with users or groups. To this end, the returned object includes an &#x60;html&#x60; field for each list. This field highlights the matched query term in the item name with the HTML strong tag. Also, each list is wrapped in a response object that contains a header for use in a picker, specifically *Showing X of Y matching groups*.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param query The search string. (required)
-   * @param maxResults The maximum number of items to return in each list. (optional, default to 50)
-   * @param showAvatar Whether the user avatar should be returned. If an invalid value is provided, the default value is used. (optional, default to false)
-   * @param fieldId The custom field ID of the field this request is for. (optional)
-   * @param projectId The ID of a project that returned users and groups must have permission to view. To include multiple projects, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
-   * @param issueTypeId The ID of an issue type that returned users and groups must have permission to view. To include multiple issue types, provide an ampersand-separated list. For example, &#x60;issueTypeId&#x3D;10000&amp;issueTypeId&#x3D;10001&#x60;. Special values, such as &#x60;-1&#x60; (all standard issue types) and &#x60;-2&#x60; (all subtask issue types), are supported. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
-   * @param avatarSize The size of the avatar to return. If an invalid value is provided, the default value is used. (optional, default to xsmall)
-   * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
-   * @param excludeConnectAddons Whether Connect app users and groups should be excluded from the search results. If an invalid value is provided, the default value is used. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;FoundUsersAndGroups&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FoundUsersAndGroups> findUsersAndGroupsWithHttpInfo(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = findUsersAndGroupsRequestBuilder(query, maxResults, showAvatar, fieldId, projectId, issueTypeId, avatarSize, caseInsensitive, excludeConnectAddons, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("findUsersAndGroups", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<FoundUsersAndGroups>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        FoundUsersAndGroups responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<FoundUsersAndGroups>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<FoundUsersAndGroups>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
+        // create path and map variables
+        String localVarPath = "/rest/api/3/groupuserpicker";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (query != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("query", query));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (showAvatar != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("showAvatar", showAvatar));
+        }
+
+        if (fieldId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fieldId", fieldId));
+        }
+
+        if (projectId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "projectId", projectId));
+        }
+
+        if (issueTypeId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "issueTypeId", issueTypeId));
+        }
+
+        if (avatarSize != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("avatarSize", avatarSize));
+        }
+
+        if (caseInsensitive != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("caseInsensitive", caseInsensitive));
+        }
+
+        if (excludeConnectAddons != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("excludeConnectAddons", excludeConnectAddons));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
 
-  private HttpRequest.Builder findUsersAndGroupsRequestBuilder(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'query' is set
-    if (query == null) {
-      throw new ApiException(400, "Missing the required parameter 'query' when calling findUsersAndGroups");
-    }
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call findUsersAndGroupsValidateBeforeCall(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'query' is set
+        if (query == null) {
+            throw new ApiException("Missing the required parameter 'query' when calling findUsersAndGroups(Async)");
+        }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        return findUsersAndGroupsCall(query, maxResults, showAvatar, fieldId, projectId, issueTypeId, avatarSize, caseInsensitive, excludeConnectAddons, _callback);
 
-    String localVarPath = "/rest/api/3/groupuserpicker";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "query";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("query", query));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "showAvatar";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("showAvatar", showAvatar));
-    localVarQueryParameterBaseName = "fieldId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("fieldId", fieldId));
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "projectId", projectId));
-    localVarQueryParameterBaseName = "issueTypeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "issueTypeId", issueTypeId));
-    localVarQueryParameterBaseName = "avatarSize";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("avatarSize", avatarSize));
-    localVarQueryParameterBaseName = "caseInsensitive";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("caseInsensitive", caseInsensitive));
-    localVarQueryParameterBaseName = "excludeConnectAddons";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("excludeConnectAddons", excludeConnectAddons));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Find users and groups
+     * Returns a list of users and groups matching a string. The string is used:   *  for users, to find a case-insensitive match with display name and e-mail address. Note that if a user has hidden their email address in their user profile, partial matches of the email address will not find the user. An exact match is required.  *  for groups, to find a case-sensitive match with group name.  For example, if the string *tin* is used, records with the display name *Tina*, email address *sarah@tinplatetraining.com*, and the group *accounting* would be returned.  Optionally, the search can be refined to:   *  the projects and issue types associated with a custom field, such as a user picker. The search can then be further refined to return only users and groups that have permission to view specific:           *  projects.      *  issue types.          If multiple projects or issue types are specified, they must be a subset of those enabled for the custom field or no results are returned. For example, if a field is enabled for projects A, B, and C then the search could be limited to projects B and C. However, if the search is limited to projects B and D, nothing is returned.  *  not return Connect app users and groups.  *  return groups that have a case-insensitive match with the query.  The primary use case for this resource is to populate a picker field suggestion list with users or groups. To this end, the returned object includes an &#x60;html&#x60; field for each list. This field highlights the matched query term in the item name with the HTML strong tag. Also, each list is wrapped in a response object that contains a header for use in a picker, specifically *Showing X of Y matching groups*.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param query The search string. (required)
+     * @param maxResults The maximum number of items to return in each list. (optional, default to 50)
+     * @param showAvatar Whether the user avatar should be returned. If an invalid value is provided, the default value is used. (optional, default to false)
+     * @param fieldId The custom field ID of the field this request is for. (optional)
+     * @param projectId The ID of a project that returned users and groups must have permission to view. To include multiple projects, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
+     * @param issueTypeId The ID of an issue type that returned users and groups must have permission to view. To include multiple issue types, provide an ampersand-separated list. For example, &#x60;issueTypeId&#x3D;10000&amp;issueTypeId&#x3D;10001&#x60;. Special values, such as &#x60;-1&#x60; (all standard issue types) and &#x60;-2&#x60; (all subtask issue types), are supported. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
+     * @param avatarSize The size of the avatar to return. If an invalid value is provided, the default value is used. (optional, default to xsmall)
+     * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
+     * @param excludeConnectAddons Whether Connect app users and groups should be excluded from the search results. If an invalid value is provided, the default value is used. (optional, default to false)
+     * @return FoundUsersAndGroups
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the query parameter is not provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 429 </td><td> Returned if the rate limit is exceeded. User search endpoints share a collective rate limit for the tenant, in addition to Jira&#39;s normal rate limiting you may receive a rate limit for user search. Please respect the Retry-After header. </td><td>  -  </td></tr>
+     </table>
+     */
+    public FoundUsersAndGroups findUsersAndGroups(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons) throws ApiException {
+        ApiResponse<FoundUsersAndGroups> localVarResp = findUsersAndGroupsWithHttpInfo(query, maxResults, showAvatar, fieldId, projectId, issueTypeId, avatarSize, caseInsensitive, excludeConnectAddons);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Find users and groups
+     * Returns a list of users and groups matching a string. The string is used:   *  for users, to find a case-insensitive match with display name and e-mail address. Note that if a user has hidden their email address in their user profile, partial matches of the email address will not find the user. An exact match is required.  *  for groups, to find a case-sensitive match with group name.  For example, if the string *tin* is used, records with the display name *Tina*, email address *sarah@tinplatetraining.com*, and the group *accounting* would be returned.  Optionally, the search can be refined to:   *  the projects and issue types associated with a custom field, such as a user picker. The search can then be further refined to return only users and groups that have permission to view specific:           *  projects.      *  issue types.          If multiple projects or issue types are specified, they must be a subset of those enabled for the custom field or no results are returned. For example, if a field is enabled for projects A, B, and C then the search could be limited to projects B and C. However, if the search is limited to projects B and D, nothing is returned.  *  not return Connect app users and groups.  *  return groups that have a case-insensitive match with the query.  The primary use case for this resource is to populate a picker field suggestion list with users or groups. To this end, the returned object includes an &#x60;html&#x60; field for each list. This field highlights the matched query term in the item name with the HTML strong tag. Also, each list is wrapped in a response object that contains a header for use in a picker, specifically *Showing X of Y matching groups*.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param query The search string. (required)
+     * @param maxResults The maximum number of items to return in each list. (optional, default to 50)
+     * @param showAvatar Whether the user avatar should be returned. If an invalid value is provided, the default value is used. (optional, default to false)
+     * @param fieldId The custom field ID of the field this request is for. (optional)
+     * @param projectId The ID of a project that returned users and groups must have permission to view. To include multiple projects, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
+     * @param issueTypeId The ID of an issue type that returned users and groups must have permission to view. To include multiple issue types, provide an ampersand-separated list. For example, &#x60;issueTypeId&#x3D;10000&amp;issueTypeId&#x3D;10001&#x60;. Special values, such as &#x60;-1&#x60; (all standard issue types) and &#x60;-2&#x60; (all subtask issue types), are supported. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
+     * @param avatarSize The size of the avatar to return. If an invalid value is provided, the default value is used. (optional, default to xsmall)
+     * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
+     * @param excludeConnectAddons Whether Connect app users and groups should be excluded from the search results. If an invalid value is provided, the default value is used. (optional, default to false)
+     * @return ApiResponse&lt;FoundUsersAndGroups&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the query parameter is not provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 429 </td><td> Returned if the rate limit is exceeded. User search endpoints share a collective rate limit for the tenant, in addition to Jira&#39;s normal rate limiting you may receive a rate limit for user search. Please respect the Retry-After header. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<FoundUsersAndGroups> findUsersAndGroupsWithHttpInfo(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons) throws ApiException {
+        okhttp3.Call localVarCall = findUsersAndGroupsValidateBeforeCall(query, maxResults, showAvatar, fieldId, projectId, issueTypeId, avatarSize, caseInsensitive, excludeConnectAddons, null);
+        Type localVarReturnType = new TypeToken<FoundUsersAndGroups>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Find users and groups (asynchronously)
+     * Returns a list of users and groups matching a string. The string is used:   *  for users, to find a case-insensitive match with display name and e-mail address. Note that if a user has hidden their email address in their user profile, partial matches of the email address will not find the user. An exact match is required.  *  for groups, to find a case-sensitive match with group name.  For example, if the string *tin* is used, records with the display name *Tina*, email address *sarah@tinplatetraining.com*, and the group *accounting* would be returned.  Optionally, the search can be refined to:   *  the projects and issue types associated with a custom field, such as a user picker. The search can then be further refined to return only users and groups that have permission to view specific:           *  projects.      *  issue types.          If multiple projects or issue types are specified, they must be a subset of those enabled for the custom field or no results are returned. For example, if a field is enabled for projects A, B, and C then the search could be limited to projects B and C. However, if the search is limited to projects B and D, nothing is returned.  *  not return Connect app users and groups.  *  return groups that have a case-insensitive match with the query.  The primary use case for this resource is to populate a picker field suggestion list with users or groups. To this end, the returned object includes an &#x60;html&#x60; field for each list. This field highlights the matched query term in the item name with the HTML strong tag. Also, each list is wrapped in a response object that contains a header for use in a picker, specifically *Showing X of Y matching groups*.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param query The search string. (required)
+     * @param maxResults The maximum number of items to return in each list. (optional, default to 50)
+     * @param showAvatar Whether the user avatar should be returned. If an invalid value is provided, the default value is used. (optional, default to false)
+     * @param fieldId The custom field ID of the field this request is for. (optional)
+     * @param projectId The ID of a project that returned users and groups must have permission to view. To include multiple projects, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
+     * @param issueTypeId The ID of an issue type that returned users and groups must have permission to view. To include multiple issue types, provide an ampersand-separated list. For example, &#x60;issueTypeId&#x3D;10000&amp;issueTypeId&#x3D;10001&#x60;. Special values, such as &#x60;-1&#x60; (all standard issue types) and &#x60;-2&#x60; (all subtask issue types), are supported. This parameter is only used when &#x60;fieldId&#x60; is present. (optional)
+     * @param avatarSize The size of the avatar to return. If an invalid value is provided, the default value is used. (optional, default to xsmall)
+     * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
+     * @param excludeConnectAddons Whether Connect app users and groups should be excluded from the search results. If an invalid value is provided, the default value is used. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the query parameter is not provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 429 </td><td> Returned if the rate limit is exceeded. User search endpoints share a collective rate limit for the tenant, in addition to Jira&#39;s normal rate limiting you may receive a rate limit for user search. Please respect the Retry-After header. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call findUsersAndGroupsAsync(@javax.annotation.Nonnull String query, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean showAvatar, @javax.annotation.Nullable String fieldId, @javax.annotation.Nullable List<String> projectId, @javax.annotation.Nullable List<String> issueTypeId, @javax.annotation.Nullable String avatarSize, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable Boolean excludeConnectAddons, final ApiCallback<FoundUsersAndGroups> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = findUsersAndGroupsValidateBeforeCall(query, maxResults, showAvatar, fieldId, projectId, issueTypeId, avatarSize, caseInsensitive, excludeConnectAddons, _callback);
+        Type localVarReturnType = new TypeToken<FoundUsersAndGroups>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

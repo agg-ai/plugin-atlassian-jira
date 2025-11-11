@@ -13,109 +13,119 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.FieldMetadata;
 import io.kestra.plugin.jira.client.model.StatusDetails;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of an issue transition.
  */
-@JsonPropertyOrder({
-  IssueTransition.JSON_PROPERTY_EXPAND,
-  IssueTransition.JSON_PROPERTY_FIELDS,
-  IssueTransition.JSON_PROPERTY_HAS_SCREEN,
-  IssueTransition.JSON_PROPERTY_ID,
-  IssueTransition.JSON_PROPERTY_IS_AVAILABLE,
-  IssueTransition.JSON_PROPERTY_IS_CONDITIONAL,
-  IssueTransition.JSON_PROPERTY_IS_GLOBAL,
-  IssueTransition.JSON_PROPERTY_IS_INITIAL,
-  IssueTransition.JSON_PROPERTY_LOOPED,
-  IssueTransition.JSON_PROPERTY_NAME,
-  IssueTransition.JSON_PROPERTY_TO
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueTransition {
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_FIELDS = "fields";
+  public static final String SERIALIZED_NAME_FIELDS = "fields";
+  @SerializedName(SERIALIZED_NAME_FIELDS)
   @javax.annotation.Nullable
   private Map<String, FieldMetadata> fields = new HashMap<>();
 
-  public static final String JSON_PROPERTY_HAS_SCREEN = "hasScreen";
+  public static final String SERIALIZED_NAME_HAS_SCREEN = "hasScreen";
+  @SerializedName(SERIALIZED_NAME_HAS_SCREEN)
   @javax.annotation.Nullable
   private Boolean hasScreen;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_IS_AVAILABLE = "isAvailable";
+  public static final String SERIALIZED_NAME_IS_AVAILABLE = "isAvailable";
+  @SerializedName(SERIALIZED_NAME_IS_AVAILABLE)
   @javax.annotation.Nullable
   private Boolean isAvailable;
 
-  public static final String JSON_PROPERTY_IS_CONDITIONAL = "isConditional";
+  public static final String SERIALIZED_NAME_IS_CONDITIONAL = "isConditional";
+  @SerializedName(SERIALIZED_NAME_IS_CONDITIONAL)
   @javax.annotation.Nullable
   private Boolean isConditional;
 
-  public static final String JSON_PROPERTY_IS_GLOBAL = "isGlobal";
+  public static final String SERIALIZED_NAME_IS_GLOBAL = "isGlobal";
+  @SerializedName(SERIALIZED_NAME_IS_GLOBAL)
   @javax.annotation.Nullable
   private Boolean isGlobal;
 
-  public static final String JSON_PROPERTY_IS_INITIAL = "isInitial";
+  public static final String SERIALIZED_NAME_IS_INITIAL = "isInitial";
+  @SerializedName(SERIALIZED_NAME_IS_INITIAL)
   @javax.annotation.Nullable
   private Boolean isInitial;
 
-  public static final String JSON_PROPERTY_LOOPED = "looped";
+  public static final String SERIALIZED_NAME_LOOPED = "looped";
+  @SerializedName(SERIALIZED_NAME_LOOPED)
   @javax.annotation.Nullable
   private Boolean looped;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_TO = "to";
+  public static final String SERIALIZED_NAME_TO = "to";
+  @SerializedName(SERIALIZED_NAME_TO)
   @javax.annotation.Nullable
   private StatusDetails to;
 
-  public IssueTransition() { 
+  public IssueTransition() {
   }
 
-  @JsonCreator
   public IssueTransition(
-    @JsonProperty(JSON_PROPERTY_EXPAND) String expand, 
-    @JsonProperty(JSON_PROPERTY_FIELDS) Map<String, FieldMetadata> fields, 
-    @JsonProperty(JSON_PROPERTY_HAS_SCREEN) Boolean hasScreen, 
-    @JsonProperty(JSON_PROPERTY_IS_AVAILABLE) Boolean isAvailable, 
-    @JsonProperty(JSON_PROPERTY_IS_CONDITIONAL) Boolean isConditional, 
-    @JsonProperty(JSON_PROPERTY_IS_GLOBAL) Boolean isGlobal, 
-    @JsonProperty(JSON_PROPERTY_IS_INITIAL) Boolean isInitial, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_TO) StatusDetails to
+     String expand, 
+     Map<String, FieldMetadata> fields, 
+     Boolean hasScreen, 
+     Boolean isAvailable, 
+     Boolean isConditional, 
+     Boolean isGlobal, 
+     Boolean isInitial, 
+     String name, 
+     StatusDetails to
   ) {
-  this();
+    this();
     this.expand = expand;
     this.fields = fields;
     this.hasScreen = hasScreen;
@@ -132,12 +142,9 @@ public class IssueTransition {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
-
 
 
 
@@ -146,12 +153,9 @@ public class IssueTransition {
    * @return fields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, FieldMetadata> getFields() {
     return fields;
   }
-
 
 
 
@@ -160,12 +164,9 @@ public class IssueTransition {
    * @return hasScreen
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HAS_SCREEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasScreen() {
     return hasScreen;
   }
-
 
 
 
@@ -179,15 +180,10 @@ public class IssueTransition {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -198,12 +194,9 @@ public class IssueTransition {
    * @return isAvailable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_AVAILABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsAvailable() {
     return isAvailable;
   }
-
 
 
 
@@ -212,12 +205,9 @@ public class IssueTransition {
    * @return isConditional
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_CONDITIONAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsConditional() {
     return isConditional;
   }
-
 
 
 
@@ -226,12 +216,9 @@ public class IssueTransition {
    * @return isGlobal
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_GLOBAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsGlobal() {
     return isGlobal;
   }
-
 
 
 
@@ -240,12 +227,9 @@ public class IssueTransition {
    * @return isInitial
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_INITIAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsInitial() {
     return isInitial;
   }
-
 
 
 
@@ -259,15 +243,10 @@ public class IssueTransition {
    * @return looped
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LOOPED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getLooped() {
     return looped;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LOOPED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLooped(@javax.annotation.Nullable Boolean looped) {
     this.looped = looped;
   }
@@ -278,12 +257,9 @@ public class IssueTransition {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -292,12 +268,9 @@ public class IssueTransition {
    * @return to
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public StatusDetails getTo() {
     return to;
   }
-
 
 
   /**
@@ -310,11 +283,11 @@ public class IssueTransition {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the IssueTransition instance itself
    */
-  @JsonAnySetter
   public IssueTransition putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -324,18 +297,19 @@ public class IssueTransition {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -344,9 +318,7 @@ public class IssueTransition {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this IssueTransition object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -406,99 +378,132 @@ public class IssueTransition {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("expand", "fields", "hasScreen", "id", "isAvailable", "isConditional", "isGlobal", "isInitial", "looped", "name", "to"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueTransition
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `fields` to the URL query string
-    if (getFields() != null) {
-      for (String _key : getFields().keySet()) {
-        if (getFields().get(_key) != null) {
-          joiner.add(getFields().get(_key).toUrlQueryString(String.format(Locale.ROOT, "%sfields%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueTransition.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueTransition is not found in the empty JSON string", IssueTransition.openapiRequiredFields.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+  }
 
-    // add `hasScreen` to the URL query string
-    if (getHasScreen() != null) {
-      joiner.add(String.format(Locale.ROOT, "%shasScreen%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHasScreen()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueTransition.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueTransition' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueTransition> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueTransition.class));
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<IssueTransition>() {
+           @Override
+           public void write(JsonWriter out, IssueTransition value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
 
-    // add `isAvailable` to the URL query string
-    if (getIsAvailable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisAvailable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsAvailable()))));
-    }
+           @Override
+           public IssueTransition read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             IssueTransition instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
 
-    // add `isConditional` to the URL query string
-    if (getIsConditional() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisConditional%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsConditional()))));
+       }.nullSafe();
     }
+  }
 
-    // add `isGlobal` to the URL query string
-    if (getIsGlobal() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisGlobal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsGlobal()))));
-    }
+  /**
+   * Create an instance of IssueTransition given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueTransition
+   * @throws IOException if the JSON string is invalid with respect to IssueTransition
+   */
+  public static IssueTransition fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueTransition.class);
+  }
 
-    // add `isInitial` to the URL query string
-    if (getIsInitial() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisInitial%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsInitial()))));
-    }
-
-    // add `looped` to the URL query string
-    if (getLooped() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slooped%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLooped()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `to` to the URL query string
-    if (getTo() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sto%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTo()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of IssueTransition to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

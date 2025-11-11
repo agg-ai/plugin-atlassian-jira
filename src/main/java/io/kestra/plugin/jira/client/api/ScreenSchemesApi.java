@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.PageBeanScreenScheme;
 import io.kestra.plugin.jira.client.model.ScreenSchemeDetails;
@@ -24,638 +33,655 @@ import io.kestra.plugin.jira.client.model.ScreenSchemeId;
 import java.util.Set;
 import io.kestra.plugin.jira.client.model.UpdateScreenSchemeDetails;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ScreenSchemesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ScreenSchemesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ScreenSchemesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createScreenScheme
+     * @param screenSchemeDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if a screen used as one of the screen types in the screen scheme is not found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createScreenSchemeCall(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ScreenSchemesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ScreenSchemesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create screen scheme
-   * Creates a screen scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeDetails  (required)
-   * @return ScreenSchemeId
-   * @throws ApiException if fails to make API call
-   */
-  public ScreenSchemeId createScreenScheme(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails) throws ApiException {
-    return createScreenScheme(screenSchemeDetails, null);
-  }
-
-  /**
-   * Create screen scheme
-   * Creates a screen scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ScreenSchemeId
-   * @throws ApiException if fails to make API call
-   */
-  public ScreenSchemeId createScreenScheme(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<ScreenSchemeId> localVarResponse = createScreenSchemeWithHttpInfo(screenSchemeDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create screen scheme
-   * Creates a screen scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeDetails  (required)
-   * @return ApiResponse&lt;ScreenSchemeId&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ScreenSchemeId> createScreenSchemeWithHttpInfo(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails) throws ApiException {
-    return createScreenSchemeWithHttpInfo(screenSchemeDetails, null);
-  }
-
-  /**
-   * Create screen scheme
-   * Creates a screen scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ScreenSchemeId&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ScreenSchemeId> createScreenSchemeWithHttpInfo(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createScreenSchemeRequestBuilder(screenSchemeDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createScreenScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ScreenSchemeId>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ScreenSchemeId responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ScreenSchemeId>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = screenSchemeDetails;
 
-        return new ApiResponse<ScreenSchemeId>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/screenscheme";
 
-  private HttpRequest.Builder createScreenSchemeRequestBuilder(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'screenSchemeDetails' is set
-    if (screenSchemeDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'screenSchemeDetails' when calling createScreenScheme");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/screenscheme";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(screenSchemeDetails);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete screen scheme
-   * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.  Only screens schemes used in classic projects can be deleted.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeId The ID of the screen scheme. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteScreenScheme(@javax.annotation.Nonnull String screenSchemeId) throws ApiException {
-    deleteScreenScheme(screenSchemeId, null);
-  }
-
-  /**
-   * Delete screen scheme
-   * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.  Only screens schemes used in classic projects can be deleted.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeId The ID of the screen scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteScreenScheme(@javax.annotation.Nonnull String screenSchemeId, Map<String, String> headers) throws ApiException {
-    deleteScreenSchemeWithHttpInfo(screenSchemeId, headers);
-  }
-
-  /**
-   * Delete screen scheme
-   * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.  Only screens schemes used in classic projects can be deleted.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeId The ID of the screen scheme. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteScreenSchemeWithHttpInfo(@javax.annotation.Nonnull String screenSchemeId) throws ApiException {
-    return deleteScreenSchemeWithHttpInfo(screenSchemeId, null);
-  }
-
-  /**
-   * Delete screen scheme
-   * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.  Only screens schemes used in classic projects can be deleted.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeId The ID of the screen scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteScreenSchemeWithHttpInfo(@javax.annotation.Nonnull String screenSchemeId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteScreenSchemeRequestBuilder(screenSchemeId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteScreenScheme", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteScreenSchemeRequestBuilder(@javax.annotation.Nonnull String screenSchemeId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'screenSchemeId' is set
-    if (screenSchemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'screenSchemeId' when calling deleteScreenScheme");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/screenscheme/{screenSchemeId}"
-        .replace("{screenSchemeId}", ApiClient.urlEncode(screenSchemeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get screen schemes
-   * Returns a [paginated](#pagination) list of screen schemes.  Only screen schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 25)
-   * @param id The list of screen scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param expand Use [expand](#expansion) include additional information in the response. This parameter accepts &#x60;issueTypeScreenSchemes&#x60; that, for each screen schemes, returns information about the issue type screen scheme the screen scheme is assigned to. (optional, default to )
-   * @param queryString String used to perform a case-insensitive partial match with screen scheme name. (optional, default to )
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;id&#x60; Sorts by screen scheme ID.  *  &#x60;name&#x60; Sorts by screen scheme name. (optional)
-   * @return PageBeanScreenScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanScreenScheme getScreenSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy) throws ApiException {
-    return getScreenSchemes(startAt, maxResults, id, expand, queryString, orderBy, null);
-  }
-
-  /**
-   * Get screen schemes
-   * Returns a [paginated](#pagination) list of screen schemes.  Only screen schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 25)
-   * @param id The list of screen scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param expand Use [expand](#expansion) include additional information in the response. This parameter accepts &#x60;issueTypeScreenSchemes&#x60; that, for each screen schemes, returns information about the issue type screen scheme the screen scheme is assigned to. (optional, default to )
-   * @param queryString String used to perform a case-insensitive partial match with screen scheme name. (optional, default to )
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;id&#x60; Sorts by screen scheme ID.  *  &#x60;name&#x60; Sorts by screen scheme name. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanScreenScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanScreenScheme getScreenSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanScreenScheme> localVarResponse = getScreenSchemesWithHttpInfo(startAt, maxResults, id, expand, queryString, orderBy, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get screen schemes
-   * Returns a [paginated](#pagination) list of screen schemes.  Only screen schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 25)
-   * @param id The list of screen scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param expand Use [expand](#expansion) include additional information in the response. This parameter accepts &#x60;issueTypeScreenSchemes&#x60; that, for each screen schemes, returns information about the issue type screen scheme the screen scheme is assigned to. (optional, default to )
-   * @param queryString String used to perform a case-insensitive partial match with screen scheme name. (optional, default to )
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;id&#x60; Sorts by screen scheme ID.  *  &#x60;name&#x60; Sorts by screen scheme name. (optional)
-   * @return ApiResponse&lt;PageBeanScreenScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanScreenScheme> getScreenSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy) throws ApiException {
-    return getScreenSchemesWithHttpInfo(startAt, maxResults, id, expand, queryString, orderBy, null);
-  }
-
-  /**
-   * Get screen schemes
-   * Returns a [paginated](#pagination) list of screen schemes.  Only screen schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 25)
-   * @param id The list of screen scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param expand Use [expand](#expansion) include additional information in the response. This parameter accepts &#x60;issueTypeScreenSchemes&#x60; that, for each screen schemes, returns information about the issue type screen scheme the screen scheme is assigned to. (optional, default to )
-   * @param queryString String used to perform a case-insensitive partial match with screen scheme name. (optional, default to )
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;id&#x60; Sorts by screen scheme ID.  *  &#x60;name&#x60; Sorts by screen scheme name. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanScreenScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanScreenScheme> getScreenSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getScreenSchemesRequestBuilder(startAt, maxResults, id, expand, queryString, orderBy, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getScreenSchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanScreenScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanScreenScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanScreenScheme>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanScreenScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getScreenSchemesRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/screenscheme";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-    localVarQueryParameterBaseName = "queryString";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("queryString", queryString));
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update screen scheme
-   * Updates a screen scheme. Only screen schemes used in classic projects can be updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeId The ID of the screen scheme. (required)
-   * @param updateScreenSchemeDetails The screen scheme update details. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateScreenScheme(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails) throws ApiException {
-    return updateScreenScheme(screenSchemeId, updateScreenSchemeDetails, null);
-  }
-
-  /**
-   * Update screen scheme
-   * Updates a screen scheme. Only screen schemes used in classic projects can be updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeId The ID of the screen scheme. (required)
-   * @param updateScreenSchemeDetails The screen scheme update details. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateScreenScheme(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateScreenSchemeWithHttpInfo(screenSchemeId, updateScreenSchemeDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update screen scheme
-   * Updates a screen scheme. Only screen schemes used in classic projects can be updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeId The ID of the screen scheme. (required)
-   * @param updateScreenSchemeDetails The screen scheme update details. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateScreenSchemeWithHttpInfo(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails) throws ApiException {
-    return updateScreenSchemeWithHttpInfo(screenSchemeId, updateScreenSchemeDetails, null);
-  }
-
-  /**
-   * Update screen scheme
-   * Updates a screen scheme. Only screen schemes used in classic projects can be updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenSchemeId The ID of the screen scheme. (required)
-   * @param updateScreenSchemeDetails The screen scheme update details. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateScreenSchemeWithHttpInfo(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateScreenSchemeRequestBuilder(screenSchemeId, updateScreenSchemeDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateScreenScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateScreenSchemeRequestBuilder(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'screenSchemeId' is set
-    if (screenSchemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'screenSchemeId' when calling updateScreenScheme");
-    }
-    // verify the required parameter 'updateScreenSchemeDetails' is set
-    if (updateScreenSchemeDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateScreenSchemeDetails' when calling updateScreenScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createScreenSchemeValidateBeforeCall(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'screenSchemeDetails' is set
+        if (screenSchemeDetails == null) {
+            throw new ApiException("Missing the required parameter 'screenSchemeDetails' when calling createScreenScheme(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/screenscheme/{screenSchemeId}"
-        .replace("{screenSchemeId}", ApiClient.urlEncode(screenSchemeId.toString()));
+        return createScreenSchemeCall(screenSchemeDetails, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateScreenSchemeDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create screen scheme
+     * Creates a screen scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeDetails  (required)
+     * @return ScreenSchemeId
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if a screen used as one of the screen types in the screen scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ScreenSchemeId createScreenScheme(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails) throws ApiException {
+        ApiResponse<ScreenSchemeId> localVarResp = createScreenSchemeWithHttpInfo(screenSchemeDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Create screen scheme
+     * Creates a screen scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeDetails  (required)
+     * @return ApiResponse&lt;ScreenSchemeId&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if a screen used as one of the screen types in the screen scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ScreenSchemeId> createScreenSchemeWithHttpInfo(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails) throws ApiException {
+        okhttp3.Call localVarCall = createScreenSchemeValidateBeforeCall(screenSchemeDetails, null);
+        Type localVarReturnType = new TypeToken<ScreenSchemeId>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create screen scheme (asynchronously)
+     * Creates a screen scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if a screen used as one of the screen types in the screen scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createScreenSchemeAsync(@javax.annotation.Nonnull ScreenSchemeDetails screenSchemeDetails, final ApiCallback<ScreenSchemeId> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createScreenSchemeValidateBeforeCall(screenSchemeDetails, _callback);
+        Type localVarReturnType = new TypeToken<ScreenSchemeId>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteScreenScheme
+     * @param screenSchemeId The ID of the screen scheme. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the screen scheme is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the screen scheme is used in an issue type screen scheme. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteScreenSchemeCall(@javax.annotation.Nonnull String screenSchemeId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/screenscheme/{screenSchemeId}"
+            .replace("{" + "screenSchemeId" + "}", localVarApiClient.escapeString(screenSchemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteScreenSchemeValidateBeforeCall(@javax.annotation.Nonnull String screenSchemeId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'screenSchemeId' is set
+        if (screenSchemeId == null) {
+            throw new ApiException("Missing the required parameter 'screenSchemeId' when calling deleteScreenScheme(Async)");
+        }
+
+        return deleteScreenSchemeCall(screenSchemeId, _callback);
+
+    }
+
+    /**
+     * Delete screen scheme
+     * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.  Only screens schemes used in classic projects can be deleted.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeId The ID of the screen scheme. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the screen scheme is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the screen scheme is used in an issue type screen scheme. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteScreenScheme(@javax.annotation.Nonnull String screenSchemeId) throws ApiException {
+        deleteScreenSchemeWithHttpInfo(screenSchemeId);
+    }
+
+    /**
+     * Delete screen scheme
+     * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.  Only screens schemes used in classic projects can be deleted.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeId The ID of the screen scheme. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the screen scheme is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the screen scheme is used in an issue type screen scheme. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteScreenSchemeWithHttpInfo(@javax.annotation.Nonnull String screenSchemeId) throws ApiException {
+        okhttp3.Call localVarCall = deleteScreenSchemeValidateBeforeCall(screenSchemeId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete screen scheme (asynchronously)
+     * Deletes a screen scheme. A screen scheme cannot be deleted if it is used in an issue type screen scheme.  Only screens schemes used in classic projects can be deleted.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeId The ID of the screen scheme. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the screen scheme is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the screen scheme is used in an issue type screen scheme. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteScreenSchemeAsync(@javax.annotation.Nonnull String screenSchemeId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteScreenSchemeValidateBeforeCall(screenSchemeId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getScreenSchemes
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 25)
+     * @param id The list of screen scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param expand Use [expand](#expansion) include additional information in the response. This parameter accepts &#x60;issueTypeScreenSchemes&#x60; that, for each screen schemes, returns information about the issue type screen scheme the screen scheme is assigned to. (optional, default to )
+     * @param queryString String used to perform a case-insensitive partial match with screen scheme name. (optional, default to )
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;id&#x60; Sorts by screen scheme ID.  *  &#x60;name&#x60; Sorts by screen scheme name. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getScreenSchemesCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/screenscheme";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        if (queryString != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("queryString", queryString));
+        }
+
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getScreenSchemesValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy, final ApiCallback _callback) throws ApiException {
+        return getScreenSchemesCall(startAt, maxResults, id, expand, queryString, orderBy, _callback);
+
+    }
+
+    /**
+     * Get screen schemes
+     * Returns a [paginated](#pagination) list of screen schemes.  Only screen schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 25)
+     * @param id The list of screen scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param expand Use [expand](#expansion) include additional information in the response. This parameter accepts &#x60;issueTypeScreenSchemes&#x60; that, for each screen schemes, returns information about the issue type screen scheme the screen scheme is assigned to. (optional, default to )
+     * @param queryString String used to perform a case-insensitive partial match with screen scheme name. (optional, default to )
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;id&#x60; Sorts by screen scheme ID.  *  &#x60;name&#x60; Sorts by screen scheme name. (optional)
+     * @return PageBeanScreenScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanScreenScheme getScreenSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy) throws ApiException {
+        ApiResponse<PageBeanScreenScheme> localVarResp = getScreenSchemesWithHttpInfo(startAt, maxResults, id, expand, queryString, orderBy);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get screen schemes
+     * Returns a [paginated](#pagination) list of screen schemes.  Only screen schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 25)
+     * @param id The list of screen scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param expand Use [expand](#expansion) include additional information in the response. This parameter accepts &#x60;issueTypeScreenSchemes&#x60; that, for each screen schemes, returns information about the issue type screen scheme the screen scheme is assigned to. (optional, default to )
+     * @param queryString String used to perform a case-insensitive partial match with screen scheme name. (optional, default to )
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;id&#x60; Sorts by screen scheme ID.  *  &#x60;name&#x60; Sorts by screen scheme name. (optional)
+     * @return ApiResponse&lt;PageBeanScreenScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanScreenScheme> getScreenSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy) throws ApiException {
+        okhttp3.Call localVarCall = getScreenSchemesValidateBeforeCall(startAt, maxResults, id, expand, queryString, orderBy, null);
+        Type localVarReturnType = new TypeToken<PageBeanScreenScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get screen schemes (asynchronously)
+     * Returns a [paginated](#pagination) list of screen schemes.  Only screen schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 25)
+     * @param id The list of screen scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param expand Use [expand](#expansion) include additional information in the response. This parameter accepts &#x60;issueTypeScreenSchemes&#x60; that, for each screen schemes, returns information about the issue type screen scheme the screen scheme is assigned to. (optional, default to )
+     * @param queryString String used to perform a case-insensitive partial match with screen scheme name. (optional, default to )
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;id&#x60; Sorts by screen scheme ID.  *  &#x60;name&#x60; Sorts by screen scheme name. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getScreenSchemesAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, @javax.annotation.Nullable String orderBy, final ApiCallback<PageBeanScreenScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getScreenSchemesValidateBeforeCall(startAt, maxResults, id, expand, queryString, orderBy, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanScreenScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateScreenScheme
+     * @param screenSchemeId The ID of the screen scheme. (required)
+     * @param updateScreenSchemeDetails The screen scheme update details. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen scheme or a screen used as one of the screen types is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateScreenSchemeCall(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = updateScreenSchemeDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/screenscheme/{screenSchemeId}"
+            .replace("{" + "screenSchemeId" + "}", localVarApiClient.escapeString(screenSchemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateScreenSchemeValidateBeforeCall(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'screenSchemeId' is set
+        if (screenSchemeId == null) {
+            throw new ApiException("Missing the required parameter 'screenSchemeId' when calling updateScreenScheme(Async)");
+        }
+
+        // verify the required parameter 'updateScreenSchemeDetails' is set
+        if (updateScreenSchemeDetails == null) {
+            throw new ApiException("Missing the required parameter 'updateScreenSchemeDetails' when calling updateScreenScheme(Async)");
+        }
+
+        return updateScreenSchemeCall(screenSchemeId, updateScreenSchemeDetails, _callback);
+
+    }
+
+    /**
+     * Update screen scheme
+     * Updates a screen scheme. Only screen schemes used in classic projects can be updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeId The ID of the screen scheme. (required)
+     * @param updateScreenSchemeDetails The screen scheme update details. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen scheme or a screen used as one of the screen types is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateScreenScheme(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails) throws ApiException {
+        ApiResponse<Object> localVarResp = updateScreenSchemeWithHttpInfo(screenSchemeId, updateScreenSchemeDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update screen scheme
+     * Updates a screen scheme. Only screen schemes used in classic projects can be updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeId The ID of the screen scheme. (required)
+     * @param updateScreenSchemeDetails The screen scheme update details. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen scheme or a screen used as one of the screen types is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateScreenSchemeWithHttpInfo(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails) throws ApiException {
+        okhttp3.Call localVarCall = updateScreenSchemeValidateBeforeCall(screenSchemeId, updateScreenSchemeDetails, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update screen scheme (asynchronously)
+     * Updates a screen scheme. Only screen schemes used in classic projects can be updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenSchemeId The ID of the screen scheme. (required)
+     * @param updateScreenSchemeDetails The screen scheme update details. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen scheme or a screen used as one of the screen types is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateScreenSchemeAsync(@javax.annotation.Nonnull String screenSchemeId, @javax.annotation.Nonnull UpdateScreenSchemeDetails updateScreenSchemeDetails, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateScreenSchemeValidateBeforeCall(screenSchemeId, updateScreenSchemeDetails, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

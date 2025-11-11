@@ -13,40 +13,55 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The level of validation to return from the API. If no values are provided, the default would return &#x60;WARNING&#x60; and &#x60;ERROR&#x60; level validation results.
  */
-@JsonPropertyOrder({
-  ValidationOptionsForUpdate.JSON_PROPERTY_LEVELS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ValidationOptionsForUpdate {
   /**
    * Gets or Sets levels
    */
+  @JsonAdapter(LevelsEnum.Adapter.class)
   public enum LevelsEnum {
-    WARNING(String.valueOf("WARNING")),
+    WARNING("WARNING"),
     
-    ERROR(String.valueOf("ERROR"));
+    ERROR("ERROR");
 
     private String value;
 
@@ -54,7 +69,6 @@ public class ValidationOptionsForUpdate {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -64,7 +78,6 @@ public class ValidationOptionsForUpdate {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static LevelsEnum fromValue(String value) {
       for (LevelsEnum b : LevelsEnum.values()) {
         if (b.value.equals(value)) {
@@ -73,13 +86,32 @@ public class ValidationOptionsForUpdate {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<LevelsEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final LevelsEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public LevelsEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return LevelsEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      LevelsEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_LEVELS = "levels";
+  public static final String SERIALIZED_NAME_LEVELS = "levels";
+  @SerializedName(SERIALIZED_NAME_LEVELS)
   @javax.annotation.Nullable
   private List<LevelsEnum> levels = new ArrayList<>();
 
-  public ValidationOptionsForUpdate() { 
+  public ValidationOptionsForUpdate() {
   }
 
   public ValidationOptionsForUpdate levels(@javax.annotation.Nullable List<LevelsEnum> levels) {
@@ -100,23 +132,16 @@ public class ValidationOptionsForUpdate {
    * @return levels
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEVELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LevelsEnum> getLevels() {
     return levels;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEVELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLevels(@javax.annotation.Nullable List<LevelsEnum> levels) {
     this.levels = levels;
   }
 
 
-  /**
-   * Return true if this ValidationOptionsForUpdate object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -154,48 +179,92 @@ public class ValidationOptionsForUpdate {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("levels"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ValidationOptionsForUpdate
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `levels` to the URL query string
-    if (getLevels() != null) {
-      for (int i = 0; i < getLevels().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%slevels%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getLevels().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ValidationOptionsForUpdate.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ValidationOptionsForUpdate is not found in the empty JSON string", ValidationOptionsForUpdate.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ValidationOptionsForUpdate.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ValidationOptionsForUpdate` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("levels") != null && !jsonObj.get("levels").isJsonNull() && !jsonObj.get("levels").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `levels` to be an array in the JSON string but got `%s`", jsonObj.get("levels").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ValidationOptionsForUpdate.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ValidationOptionsForUpdate' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ValidationOptionsForUpdate> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ValidationOptionsForUpdate.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ValidationOptionsForUpdate>() {
+           @Override
+           public void write(JsonWriter out, ValidationOptionsForUpdate value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ValidationOptionsForUpdate read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ValidationOptionsForUpdate given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ValidationOptionsForUpdate
+   * @throws IOException if the JSON string is invalid with respect to ValidationOptionsForUpdate
+   */
+  public static ValidationOptionsForUpdate fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ValidationOptionsForUpdate.class);
+  }
+
+  /**
+   * Convert an instance of ValidationOptionsForUpdate to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

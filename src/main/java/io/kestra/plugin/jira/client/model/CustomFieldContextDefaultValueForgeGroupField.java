@@ -13,46 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The default value for a Forge group custom field.
  */
-@JsonPropertyOrder({
-  CustomFieldContextDefaultValueForgeGroupField.JSON_PROPERTY_CONTEXT_ID,
-  CustomFieldContextDefaultValueForgeGroupField.JSON_PROPERTY_GROUP_ID,
-  CustomFieldContextDefaultValueForgeGroupField.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CustomFieldContextDefaultValueForgeGroupField {
-  public static final String JSON_PROPERTY_CONTEXT_ID = "contextId";
+  public static final String SERIALIZED_NAME_CONTEXT_ID = "contextId";
+  @SerializedName(SERIALIZED_NAME_CONTEXT_ID)
   @javax.annotation.Nonnull
   private String contextId;
 
-  public static final String JSON_PROPERTY_GROUP_ID = "groupId";
+  public static final String SERIALIZED_NAME_GROUP_ID = "groupId";
+  @SerializedName(SERIALIZED_NAME_GROUP_ID)
   @javax.annotation.Nonnull
   private String groupId;
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nonnull
   private String type;
 
-  public CustomFieldContextDefaultValueForgeGroupField() { 
+  public CustomFieldContextDefaultValueForgeGroupField() {
   }
 
   public CustomFieldContextDefaultValueForgeGroupField contextId(@javax.annotation.Nonnull String contextId) {
@@ -65,15 +80,10 @@ public class CustomFieldContextDefaultValueForgeGroupField {
    * @return contextId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getContextId() {
     return contextId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setContextId(@javax.annotation.Nonnull String contextId) {
     this.contextId = contextId;
   }
@@ -89,15 +99,10 @@ public class CustomFieldContextDefaultValueForgeGroupField {
    * @return groupId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getGroupId() {
     return groupId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setGroupId(@javax.annotation.Nonnull String groupId) {
     this.groupId = groupId;
   }
@@ -113,23 +118,16 @@ public class CustomFieldContextDefaultValueForgeGroupField {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(@javax.annotation.Nonnull String type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this CustomFieldContextDefaultValueForgeGroupField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -171,54 +169,104 @@ public class CustomFieldContextDefaultValueForgeGroupField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("contextId", "groupId", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("contextId", "groupId", "type"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CustomFieldContextDefaultValueForgeGroupField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CustomFieldContextDefaultValueForgeGroupField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CustomFieldContextDefaultValueForgeGroupField is not found in the empty JSON string", CustomFieldContextDefaultValueForgeGroupField.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CustomFieldContextDefaultValueForgeGroupField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CustomFieldContextDefaultValueForgeGroupField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CustomFieldContextDefaultValueForgeGroupField.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("contextId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `contextId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("contextId").toString()));
+      }
+      if (!jsonObj.get("groupId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groupId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("groupId").toString()));
+      }
+      if (!jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CustomFieldContextDefaultValueForgeGroupField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CustomFieldContextDefaultValueForgeGroupField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CustomFieldContextDefaultValueForgeGroupField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeGroupField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CustomFieldContextDefaultValueForgeGroupField>() {
+           @Override
+           public void write(JsonWriter out, CustomFieldContextDefaultValueForgeGroupField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CustomFieldContextDefaultValueForgeGroupField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CustomFieldContextDefaultValueForgeGroupField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CustomFieldContextDefaultValueForgeGroupField
+   * @throws IOException if the JSON string is invalid with respect to CustomFieldContextDefaultValueForgeGroupField
+   */
+  public static CustomFieldContextDefaultValueForgeGroupField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CustomFieldContextDefaultValueForgeGroupField.class);
+  }
 
-    // add `contextId` to the URL query string
-    if (getContextId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontextId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContextId()))));
-    }
-
-    // add `groupId` to the URL query string
-    if (getGroupId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sgroupId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CustomFieldContextDefaultValueForgeGroupField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

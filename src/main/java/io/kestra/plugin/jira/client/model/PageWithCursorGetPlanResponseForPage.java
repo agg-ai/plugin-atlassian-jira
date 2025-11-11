@@ -13,64 +13,79 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.GetPlanResponseForPage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * PageWithCursorGetPlanResponseForPage
  */
-@JsonPropertyOrder({
-  PageWithCursorGetPlanResponseForPage.JSON_PROPERTY_CURSOR,
-  PageWithCursorGetPlanResponseForPage.JSON_PROPERTY_LAST,
-  PageWithCursorGetPlanResponseForPage.JSON_PROPERTY_NEXT_PAGE_CURSOR,
-  PageWithCursorGetPlanResponseForPage.JSON_PROPERTY_SIZE,
-  PageWithCursorGetPlanResponseForPage.JSON_PROPERTY_TOTAL,
-  PageWithCursorGetPlanResponseForPage.JSON_PROPERTY_VALUES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PageWithCursorGetPlanResponseForPage {
-  public static final String JSON_PROPERTY_CURSOR = "cursor";
+  public static final String SERIALIZED_NAME_CURSOR = "cursor";
+  @SerializedName(SERIALIZED_NAME_CURSOR)
   @javax.annotation.Nullable
   private String cursor;
 
-  public static final String JSON_PROPERTY_LAST = "last";
+  public static final String SERIALIZED_NAME_LAST = "last";
+  @SerializedName(SERIALIZED_NAME_LAST)
   @javax.annotation.Nullable
   private Boolean last;
 
-  public static final String JSON_PROPERTY_NEXT_PAGE_CURSOR = "nextPageCursor";
+  public static final String SERIALIZED_NAME_NEXT_PAGE_CURSOR = "nextPageCursor";
+  @SerializedName(SERIALIZED_NAME_NEXT_PAGE_CURSOR)
   @javax.annotation.Nullable
   private String nextPageCursor;
 
-  public static final String JSON_PROPERTY_SIZE = "size";
+  public static final String SERIALIZED_NAME_SIZE = "size";
+  @SerializedName(SERIALIZED_NAME_SIZE)
   @javax.annotation.Nullable
   private Integer size;
 
-  public static final String JSON_PROPERTY_TOTAL = "total";
+  public static final String SERIALIZED_NAME_TOTAL = "total";
+  @SerializedName(SERIALIZED_NAME_TOTAL)
   @javax.annotation.Nullable
   private Long total;
 
-  public static final String JSON_PROPERTY_VALUES = "values";
+  public static final String SERIALIZED_NAME_VALUES = "values";
+  @SerializedName(SERIALIZED_NAME_VALUES)
   @javax.annotation.Nullable
   private List<GetPlanResponseForPage> values = new ArrayList<>();
 
-  public PageWithCursorGetPlanResponseForPage() { 
+  public PageWithCursorGetPlanResponseForPage() {
   }
 
   public PageWithCursorGetPlanResponseForPage cursor(@javax.annotation.Nullable String cursor) {
@@ -83,15 +98,10 @@ public class PageWithCursorGetPlanResponseForPage {
    * @return cursor
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CURSOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCursor() {
     return cursor;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CURSOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCursor(@javax.annotation.Nullable String cursor) {
     this.cursor = cursor;
   }
@@ -107,15 +117,10 @@ public class PageWithCursorGetPlanResponseForPage {
    * @return last
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getLast() {
     return last;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LAST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLast(@javax.annotation.Nullable Boolean last) {
     this.last = last;
   }
@@ -131,15 +136,10 @@ public class PageWithCursorGetPlanResponseForPage {
    * @return nextPageCursor
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NEXT_PAGE_CURSOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNextPageCursor() {
     return nextPageCursor;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NEXT_PAGE_CURSOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNextPageCursor(@javax.annotation.Nullable String nextPageCursor) {
     this.nextPageCursor = nextPageCursor;
   }
@@ -155,15 +155,10 @@ public class PageWithCursorGetPlanResponseForPage {
    * @return size
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSize() {
     return size;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSize(@javax.annotation.Nullable Integer size) {
     this.size = size;
   }
@@ -179,15 +174,10 @@ public class PageWithCursorGetPlanResponseForPage {
    * @return total
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getTotal() {
     return total;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTotal(@javax.annotation.Nullable Long total) {
     this.total = total;
   }
@@ -211,23 +201,16 @@ public class PageWithCursorGetPlanResponseForPage {
    * @return values
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<GetPlanResponseForPage> getValues() {
     return values;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValues(@javax.annotation.Nullable List<GetPlanResponseForPage> values) {
     this.values = values;
   }
 
 
-  /**
-   * Return true if this PageWithCursorGetPlanResponseForPage object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -275,74 +258,108 @@ public class PageWithCursorGetPlanResponseForPage {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("cursor", "last", "nextPageCursor", "size", "total", "values"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to PageWithCursorGetPlanResponseForPage
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `cursor` to the URL query string
-    if (getCursor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scursor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCursor()))));
-    }
-
-    // add `last` to the URL query string
-    if (getLast() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slast%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLast()))));
-    }
-
-    // add `nextPageCursor` to the URL query string
-    if (getNextPageCursor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snextPageCursor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNextPageCursor()))));
-    }
-
-    // add `size` to the URL query string
-    if (getSize() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-    }
-
-    // add `total` to the URL query string
-    if (getTotal() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stotal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTotal()))));
-    }
-
-    // add `values` to the URL query string
-    if (getValues() != null) {
-      for (int i = 0; i < getValues().size(); i++) {
-        if (getValues().get(i) != null) {
-          joiner.add(getValues().get(i).toUrlQueryString(String.format(Locale.ROOT, "%svalues%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!PageWithCursorGetPlanResponseForPage.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in PageWithCursorGetPlanResponseForPage is not found in the empty JSON string", PageWithCursorGetPlanResponseForPage.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!PageWithCursorGetPlanResponseForPage.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `PageWithCursorGetPlanResponseForPage` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("cursor") != null && !jsonObj.get("cursor").isJsonNull()) && !jsonObj.get("cursor").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `cursor` to be a primitive type in the JSON string but got `%s`", jsonObj.get("cursor").toString()));
+      }
+      if ((jsonObj.get("nextPageCursor") != null && !jsonObj.get("nextPageCursor").isJsonNull()) && !jsonObj.get("nextPageCursor").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `nextPageCursor` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nextPageCursor").toString()));
+      }
+      if (jsonObj.get("values") != null && !jsonObj.get("values").isJsonNull()) {
+        JsonArray jsonArrayvalues = jsonObj.getAsJsonArray("values");
+        if (jsonArrayvalues != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("values").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `values` to be an array in the JSON string but got `%s`", jsonObj.get("values").toString()));
+          }
+
+          // validate the optional field `values` (array)
+          for (int i = 0; i < jsonArrayvalues.size(); i++) {
+            GetPlanResponseForPage.validateJsonElement(jsonArrayvalues.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!PageWithCursorGetPlanResponseForPage.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'PageWithCursorGetPlanResponseForPage' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<PageWithCursorGetPlanResponseForPage> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(PageWithCursorGetPlanResponseForPage.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<PageWithCursorGetPlanResponseForPage>() {
+           @Override
+           public void write(JsonWriter out, PageWithCursorGetPlanResponseForPage value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public PageWithCursorGetPlanResponseForPage read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of PageWithCursorGetPlanResponseForPage given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of PageWithCursorGetPlanResponseForPage
+   * @throws IOException if the JSON string is invalid with respect to PageWithCursorGetPlanResponseForPage
+   */
+  public static PageWithCursorGetPlanResponseForPage fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, PageWithCursorGetPlanResponseForPage.class);
+  }
+
+  /**
+   * Convert an instance of PageWithCursorGetPlanResponseForPage to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

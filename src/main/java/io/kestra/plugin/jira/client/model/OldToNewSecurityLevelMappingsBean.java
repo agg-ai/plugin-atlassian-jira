@@ -13,41 +13,56 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * OldToNewSecurityLevelMappingsBean
  */
-@JsonPropertyOrder({
-  OldToNewSecurityLevelMappingsBean.JSON_PROPERTY_NEW_LEVEL_ID,
-  OldToNewSecurityLevelMappingsBean.JSON_PROPERTY_OLD_LEVEL_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class OldToNewSecurityLevelMappingsBean {
-  public static final String JSON_PROPERTY_NEW_LEVEL_ID = "newLevelId";
+  public static final String SERIALIZED_NAME_NEW_LEVEL_ID = "newLevelId";
+  @SerializedName(SERIALIZED_NAME_NEW_LEVEL_ID)
   @javax.annotation.Nonnull
   private String newLevelId;
 
-  public static final String JSON_PROPERTY_OLD_LEVEL_ID = "oldLevelId";
+  public static final String SERIALIZED_NAME_OLD_LEVEL_ID = "oldLevelId";
+  @SerializedName(SERIALIZED_NAME_OLD_LEVEL_ID)
   @javax.annotation.Nonnull
   private String oldLevelId;
 
-  public OldToNewSecurityLevelMappingsBean() { 
+  public OldToNewSecurityLevelMappingsBean() {
   }
 
   public OldToNewSecurityLevelMappingsBean newLevelId(@javax.annotation.Nonnull String newLevelId) {
@@ -60,15 +75,10 @@ public class OldToNewSecurityLevelMappingsBean {
    * @return newLevelId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NEW_LEVEL_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getNewLevelId() {
     return newLevelId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NEW_LEVEL_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setNewLevelId(@javax.annotation.Nonnull String newLevelId) {
     this.newLevelId = newLevelId;
   }
@@ -84,23 +94,16 @@ public class OldToNewSecurityLevelMappingsBean {
    * @return oldLevelId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OLD_LEVEL_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getOldLevelId() {
     return oldLevelId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OLD_LEVEL_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOldLevelId(@javax.annotation.Nonnull String oldLevelId) {
     this.oldLevelId = oldLevelId;
   }
 
 
-  /**
-   * Return true if this OldToNewSecurityLevelMappingsBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -140,49 +143,101 @@ public class OldToNewSecurityLevelMappingsBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("newLevelId", "oldLevelId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("newLevelId", "oldLevelId"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to OldToNewSecurityLevelMappingsBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!OldToNewSecurityLevelMappingsBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in OldToNewSecurityLevelMappingsBean is not found in the empty JSON string", OldToNewSecurityLevelMappingsBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!OldToNewSecurityLevelMappingsBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `OldToNewSecurityLevelMappingsBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : OldToNewSecurityLevelMappingsBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("newLevelId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `newLevelId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("newLevelId").toString()));
+      }
+      if (!jsonObj.get("oldLevelId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `oldLevelId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("oldLevelId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!OldToNewSecurityLevelMappingsBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'OldToNewSecurityLevelMappingsBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<OldToNewSecurityLevelMappingsBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(OldToNewSecurityLevelMappingsBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<OldToNewSecurityLevelMappingsBean>() {
+           @Override
+           public void write(JsonWriter out, OldToNewSecurityLevelMappingsBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public OldToNewSecurityLevelMappingsBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of OldToNewSecurityLevelMappingsBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of OldToNewSecurityLevelMappingsBean
+   * @throws IOException if the JSON string is invalid with respect to OldToNewSecurityLevelMappingsBean
+   */
+  public static OldToNewSecurityLevelMappingsBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, OldToNewSecurityLevelMappingsBean.class);
+  }
 
-    // add `newLevelId` to the URL query string
-    if (getNewLevelId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snewLevelId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNewLevelId()))));
-    }
-
-    // add `oldLevelId` to the URL query string
-    if (getOldLevelId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soldLevelId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOldLevelId()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of OldToNewSecurityLevelMappingsBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

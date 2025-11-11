@@ -13,64 +13,79 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.PriorityMapping;
 import io.kestra.plugin.jira.client.model.UpdatePrioritiesInSchemeRequestBean;
 import io.kestra.plugin.jira.client.model.UpdateProjectsInSchemeRequestBean;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a priority scheme.
  */
-@JsonPropertyOrder({
-  UpdatePrioritySchemeRequestBean.JSON_PROPERTY_DEFAULT_PRIORITY_ID,
-  UpdatePrioritySchemeRequestBean.JSON_PROPERTY_DESCRIPTION,
-  UpdatePrioritySchemeRequestBean.JSON_PROPERTY_MAPPINGS,
-  UpdatePrioritySchemeRequestBean.JSON_PROPERTY_NAME,
-  UpdatePrioritySchemeRequestBean.JSON_PROPERTY_PRIORITIES,
-  UpdatePrioritySchemeRequestBean.JSON_PROPERTY_PROJECTS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class UpdatePrioritySchemeRequestBean {
-  public static final String JSON_PROPERTY_DEFAULT_PRIORITY_ID = "defaultPriorityId";
+  public static final String SERIALIZED_NAME_DEFAULT_PRIORITY_ID = "defaultPriorityId";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_PRIORITY_ID)
   @javax.annotation.Nullable
   private Long defaultPriorityId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_MAPPINGS = "mappings";
+  public static final String SERIALIZED_NAME_MAPPINGS = "mappings";
+  @SerializedName(SERIALIZED_NAME_MAPPINGS)
   @javax.annotation.Nullable
   private PriorityMapping mappings;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PRIORITIES = "priorities";
+  public static final String SERIALIZED_NAME_PRIORITIES = "priorities";
+  @SerializedName(SERIALIZED_NAME_PRIORITIES)
   @javax.annotation.Nullable
   private UpdatePrioritiesInSchemeRequestBean priorities;
 
-  public static final String JSON_PROPERTY_PROJECTS = "projects";
+  public static final String SERIALIZED_NAME_PROJECTS = "projects";
+  @SerializedName(SERIALIZED_NAME_PROJECTS)
   @javax.annotation.Nullable
   private UpdateProjectsInSchemeRequestBean projects;
 
-  public UpdatePrioritySchemeRequestBean() { 
+  public UpdatePrioritySchemeRequestBean() {
   }
 
   public UpdatePrioritySchemeRequestBean defaultPriorityId(@javax.annotation.Nullable Long defaultPriorityId) {
@@ -83,15 +98,10 @@ public class UpdatePrioritySchemeRequestBean {
    * @return defaultPriorityId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_PRIORITY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getDefaultPriorityId() {
     return defaultPriorityId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_PRIORITY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultPriorityId(@javax.annotation.Nullable Long defaultPriorityId) {
     this.defaultPriorityId = defaultPriorityId;
   }
@@ -107,15 +117,10 @@ public class UpdatePrioritySchemeRequestBean {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -131,15 +136,10 @@ public class UpdatePrioritySchemeRequestBean {
    * @return mappings
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PriorityMapping getMappings() {
     return mappings;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMappings(@javax.annotation.Nullable PriorityMapping mappings) {
     this.mappings = mappings;
   }
@@ -155,15 +155,10 @@ public class UpdatePrioritySchemeRequestBean {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -179,15 +174,10 @@ public class UpdatePrioritySchemeRequestBean {
    * @return priorities
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PRIORITIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UpdatePrioritiesInSchemeRequestBean getPriorities() {
     return priorities;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PRIORITIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPriorities(@javax.annotation.Nullable UpdatePrioritiesInSchemeRequestBean priorities) {
     this.priorities = priorities;
   }
@@ -203,23 +193,16 @@ public class UpdatePrioritySchemeRequestBean {
    * @return projects
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UpdateProjectsInSchemeRequestBean getProjects() {
     return projects;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjects(@javax.annotation.Nullable UpdateProjectsInSchemeRequestBean projects) {
     this.projects = projects;
   }
 
 
-  /**
-   * Return true if this UpdatePrioritySchemeRequestBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -267,69 +250,98 @@ public class UpdatePrioritySchemeRequestBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("defaultPriorityId", "description", "mappings", "name", "priorities", "projects"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to UpdatePrioritySchemeRequestBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!UpdatePrioritySchemeRequestBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in UpdatePrioritySchemeRequestBean is not found in the empty JSON string", UpdatePrioritySchemeRequestBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!UpdatePrioritySchemeRequestBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `UpdatePrioritySchemeRequestBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      // validate the optional field `mappings`
+      if (jsonObj.get("mappings") != null && !jsonObj.get("mappings").isJsonNull()) {
+        PriorityMapping.validateJsonElement(jsonObj.get("mappings"));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!UpdatePrioritySchemeRequestBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'UpdatePrioritySchemeRequestBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<UpdatePrioritySchemeRequestBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(UpdatePrioritySchemeRequestBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<UpdatePrioritySchemeRequestBean>() {
+           @Override
+           public void write(JsonWriter out, UpdatePrioritySchemeRequestBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public UpdatePrioritySchemeRequestBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of UpdatePrioritySchemeRequestBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of UpdatePrioritySchemeRequestBean
+   * @throws IOException if the JSON string is invalid with respect to UpdatePrioritySchemeRequestBean
+   */
+  public static UpdatePrioritySchemeRequestBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, UpdatePrioritySchemeRequestBean.class);
+  }
 
-    // add `defaultPriorityId` to the URL query string
-    if (getDefaultPriorityId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefaultPriorityId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultPriorityId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `mappings` to the URL query string
-    if (getMappings() != null) {
-      joiner.add(getMappings().toUrlQueryString(prefix + "mappings" + suffix));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `priorities` to the URL query string
-    if (getPriorities() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spriorities%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPriorities()))));
-    }
-
-    // add `projects` to the URL query string
-    if (getProjects() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojects%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjects()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of UpdatePrioritySchemeRequestBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

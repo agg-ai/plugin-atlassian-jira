@@ -13,45 +13,59 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.WorkflowId;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a workflow configuration update request.
  */
-@JsonPropertyOrder({
-  WorkflowTransitionRulesDetails.JSON_PROPERTY_WORKFLOW_ID,
-  WorkflowTransitionRulesDetails.JSON_PROPERTY_WORKFLOW_RULE_IDS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowTransitionRulesDetails {
-  public static final String JSON_PROPERTY_WORKFLOW_ID = "workflowId";
+  public static final String SERIALIZED_NAME_WORKFLOW_ID = "workflowId";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW_ID)
   @javax.annotation.Nonnull
   private WorkflowId workflowId;
 
-  public static final String JSON_PROPERTY_WORKFLOW_RULE_IDS = "workflowRuleIds";
+  public static final String SERIALIZED_NAME_WORKFLOW_RULE_IDS = "workflowRuleIds";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW_RULE_IDS)
   @javax.annotation.Nonnull
   private Set<String> workflowRuleIds = new LinkedHashSet<>();
 
-  public WorkflowTransitionRulesDetails() { 
+  public WorkflowTransitionRulesDetails() {
   }
 
   public WorkflowTransitionRulesDetails workflowId(@javax.annotation.Nonnull WorkflowId workflowId) {
@@ -64,15 +78,10 @@ public class WorkflowTransitionRulesDetails {
    * @return workflowId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public WorkflowId getWorkflowId() {
     return workflowId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setWorkflowId(@javax.annotation.Nonnull WorkflowId workflowId) {
     this.workflowId = workflowId;
   }
@@ -96,24 +105,16 @@ public class WorkflowTransitionRulesDetails {
    * @return workflowRuleIds
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_RULE_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Set<String> getWorkflowRuleIds() {
     return workflowRuleIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_RULE_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setWorkflowRuleIds(@javax.annotation.Nonnull Set<String> workflowRuleIds) {
     this.workflowRuleIds = workflowRuleIds;
   }
 
 
-  /**
-   * Return true if this WorkflowTransitionRulesDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -153,55 +154,103 @@ public class WorkflowTransitionRulesDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("workflowId", "workflowRuleIds"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("workflowId", "workflowRuleIds"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowTransitionRulesDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `workflowId` to the URL query string
-    if (getWorkflowId() != null) {
-      joiner.add(getWorkflowId().toUrlQueryString(prefix + "workflowId" + suffix));
-    }
-
-    // add `workflowRuleIds` to the URL query string
-    if (getWorkflowRuleIds() != null) {
-      int i = 0;
-      for (String _item : getWorkflowRuleIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sworkflowRuleIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowTransitionRulesDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowTransitionRulesDetails is not found in the empty JSON string", WorkflowTransitionRulesDetails.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowTransitionRulesDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowTransitionRulesDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : WorkflowTransitionRulesDetails.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the required field `workflowId`
+      WorkflowId.validateJsonElement(jsonObj.get("workflowId"));
+      // ensure the required json array is present
+      if (jsonObj.get("workflowRuleIds") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("workflowRuleIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `workflowRuleIds` to be an array in the JSON string but got `%s`", jsonObj.get("workflowRuleIds").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowTransitionRulesDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowTransitionRulesDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowTransitionRulesDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowTransitionRulesDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowTransitionRulesDetails>() {
+           @Override
+           public void write(JsonWriter out, WorkflowTransitionRulesDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowTransitionRulesDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowTransitionRulesDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowTransitionRulesDetails
+   * @throws IOException if the JSON string is invalid with respect to WorkflowTransitionRulesDetails
+   */
+  public static WorkflowTransitionRulesDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowTransitionRulesDetails.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowTransitionRulesDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

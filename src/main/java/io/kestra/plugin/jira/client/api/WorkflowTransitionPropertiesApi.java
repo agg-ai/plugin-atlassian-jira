@@ -10,807 +10,836 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.WorkflowTransitionProperty;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowTransitionPropertiesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public WorkflowTransitionPropertiesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public WorkflowTransitionPropertiesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createWorkflowTransitionProperty
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The key of the property being added, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowTransitionProperty  (required)
+     * @param workflowMode The workflow status. Set to *live* for inactive workflows or *draft* for draft workflows. Active workflows cannot be edited. (optional, default to live)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a workflow property with the same key is present on the transition. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    @Deprecated
+    public okhttp3.Call createWorkflowTransitionPropertyCall(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public WorkflowTransitionPropertiesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public WorkflowTransitionPropertiesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); add transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Adds a property to a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The key of the property being added, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowTransitionProperty  (required)
-   * @param workflowMode The workflow status. Set to *live* for inactive workflows or *draft* for draft workflows. Active workflows cannot be edited. (optional, default to live)
-   * @return WorkflowTransitionProperty
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public WorkflowTransitionProperty createWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode) throws ApiException {
-    return createWorkflowTransitionProperty(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, null);
-  }
-
-  /**
-   * Create workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); add transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Adds a property to a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The key of the property being added, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowTransitionProperty  (required)
-   * @param workflowMode The workflow status. Set to *live* for inactive workflows or *draft* for draft workflows. Active workflows cannot be edited. (optional, default to live)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowTransitionProperty
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public WorkflowTransitionProperty createWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowTransitionProperty> localVarResponse = createWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); add transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Adds a property to a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The key of the property being added, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowTransitionProperty  (required)
-   * @param workflowMode The workflow status. Set to *live* for inactive workflows or *draft* for draft workflows. Active workflows cannot be edited. (optional, default to live)
-   * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<WorkflowTransitionProperty> createWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode) throws ApiException {
-    return createWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, null);
-  }
-
-  /**
-   * Create workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); add transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Adds a property to a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The key of the property being added, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowTransitionProperty  (required)
-   * @param workflowMode The workflow status. Set to *live* for inactive workflows or *draft* for draft workflows. Active workflows cannot be edited. (optional, default to live)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<WorkflowTransitionProperty> createWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createWorkflowTransitionPropertyRequestBuilder(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createWorkflowTransitionProperty", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowTransitionProperty>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowTransitionProperty responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowTransitionProperty>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = workflowTransitionProperty;
 
-        return new ApiResponse<WorkflowTransitionProperty>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflow/transitions/{transitionId}/properties"
+            .replace("{" + "transitionId" + "}", localVarApiClient.escapeString(transitionId.toString()));
 
-  private HttpRequest.Builder createWorkflowTransitionPropertyRequestBuilder(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'transitionId' is set
-    if (transitionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'transitionId' when calling createWorkflowTransitionProperty");
-    }
-    // verify the required parameter 'key' is set
-    if (key == null) {
-      throw new ApiException(400, "Missing the required parameter 'key' when calling createWorkflowTransitionProperty");
-    }
-    // verify the required parameter 'workflowName' is set
-    if (workflowName == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowName' when calling createWorkflowTransitionProperty");
-    }
-    // verify the required parameter 'workflowTransitionProperty' is set
-    if (workflowTransitionProperty == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowTransitionProperty' when calling createWorkflowTransitionProperty");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflow/transitions/{transitionId}/properties"
-        .replace("{transitionId}", ApiClient.urlEncode(transitionId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "key";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("key", key));
-    localVarQueryParameterBaseName = "workflowName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowName", workflowName));
-    localVarQueryParameterBaseName = "workflowMode";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowMode", workflowMode));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowTransitionProperty);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); delete transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Deletes a property from a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The name of the transition property to delete, also known as the name of the property. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public void deleteWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode) throws ApiException {
-    deleteWorkflowTransitionProperty(transitionId, key, workflowName, workflowMode, null);
-  }
-
-  /**
-   * Delete workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); delete transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Deletes a property from a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The name of the transition property to delete, also known as the name of the property. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public void deleteWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    deleteWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowMode, headers);
-  }
-
-  /**
-   * Delete workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); delete transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Deletes a property from a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The name of the transition property to delete, also known as the name of the property. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<Void> deleteWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode) throws ApiException {
-    return deleteWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowMode, null);
-  }
-
-  /**
-   * Delete workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); delete transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Deletes a property from a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The name of the transition property to delete, also known as the name of the property. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<Void> deleteWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteWorkflowTransitionPropertyRequestBuilder(transitionId, key, workflowName, workflowMode, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteWorkflowTransitionProperty", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteWorkflowTransitionPropertyRequestBuilder(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'transitionId' is set
-    if (transitionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'transitionId' when calling deleteWorkflowTransitionProperty");
-    }
-    // verify the required parameter 'key' is set
-    if (key == null) {
-      throw new ApiException(400, "Missing the required parameter 'key' when calling deleteWorkflowTransitionProperty");
-    }
-    // verify the required parameter 'workflowName' is set
-    if (workflowName == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowName' when calling deleteWorkflowTransitionProperty");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflow/transitions/{transitionId}/properties"
-        .replace("{transitionId}", ApiClient.urlEncode(transitionId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "key";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("key", key));
-    localVarQueryParameterBaseName = "workflowName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowName", workflowName));
-    localVarQueryParameterBaseName = "workflowMode";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowMode", workflowMode));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get workflow transition properties
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); fetch transition properties from [Bulk get workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-post) instead.  Returns the properties on a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira administration console. The ID is shown next to the transition. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param includeReservedKeys Some properties with keys that have the *jira.* prefix are reserved, which means they are not editable. To include these properties in the results, set this parameter to *true*. (optional, default to false)
-   * @param key The key of the property being returned, also known as the name of the property. If this parameter is not specified, all properties on the transition are returned. (optional)
-   * @param workflowMode The workflow status. Set to *live* for active and inactive workflows, or *draft* for draft workflows. (optional, default to live)
-   * @return WorkflowTransitionProperty
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public WorkflowTransitionProperty getWorkflowTransitionProperties(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode) throws ApiException {
-    return getWorkflowTransitionProperties(transitionId, workflowName, includeReservedKeys, key, workflowMode, null);
-  }
-
-  /**
-   * Get workflow transition properties
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); fetch transition properties from [Bulk get workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-post) instead.  Returns the properties on a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira administration console. The ID is shown next to the transition. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param includeReservedKeys Some properties with keys that have the *jira.* prefix are reserved, which means they are not editable. To include these properties in the results, set this parameter to *true*. (optional, default to false)
-   * @param key The key of the property being returned, also known as the name of the property. If this parameter is not specified, all properties on the transition are returned. (optional)
-   * @param workflowMode The workflow status. Set to *live* for active and inactive workflows, or *draft* for draft workflows. (optional, default to live)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowTransitionProperty
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public WorkflowTransitionProperty getWorkflowTransitionProperties(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowTransitionProperty> localVarResponse = getWorkflowTransitionPropertiesWithHttpInfo(transitionId, workflowName, includeReservedKeys, key, workflowMode, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get workflow transition properties
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); fetch transition properties from [Bulk get workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-post) instead.  Returns the properties on a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira administration console. The ID is shown next to the transition. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param includeReservedKeys Some properties with keys that have the *jira.* prefix are reserved, which means they are not editable. To include these properties in the results, set this parameter to *true*. (optional, default to false)
-   * @param key The key of the property being returned, also known as the name of the property. If this parameter is not specified, all properties on the transition are returned. (optional)
-   * @param workflowMode The workflow status. Set to *live* for active and inactive workflows, or *draft* for draft workflows. (optional, default to live)
-   * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<WorkflowTransitionProperty> getWorkflowTransitionPropertiesWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode) throws ApiException {
-    return getWorkflowTransitionPropertiesWithHttpInfo(transitionId, workflowName, includeReservedKeys, key, workflowMode, null);
-  }
-
-  /**
-   * Get workflow transition properties
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); fetch transition properties from [Bulk get workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-post) instead.  Returns the properties on a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira administration console. The ID is shown next to the transition. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param includeReservedKeys Some properties with keys that have the *jira.* prefix are reserved, which means they are not editable. To include these properties in the results, set this parameter to *true*. (optional, default to false)
-   * @param key The key of the property being returned, also known as the name of the property. If this parameter is not specified, all properties on the transition are returned. (optional)
-   * @param workflowMode The workflow status. Set to *live* for active and inactive workflows, or *draft* for draft workflows. (optional, default to live)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<WorkflowTransitionProperty> getWorkflowTransitionPropertiesWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getWorkflowTransitionPropertiesRequestBuilder(transitionId, workflowName, includeReservedKeys, key, workflowMode, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getWorkflowTransitionProperties", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowTransitionProperty>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (key != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("key", key));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowTransitionProperty responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowTransitionProperty>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<WorkflowTransitionProperty>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getWorkflowTransitionPropertiesRequestBuilder(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'transitionId' is set
-    if (transitionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'transitionId' when calling getWorkflowTransitionProperties");
-    }
-    // verify the required parameter 'workflowName' is set
-    if (workflowName == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowName' when calling getWorkflowTransitionProperties");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflow/transitions/{transitionId}/properties"
-        .replace("{transitionId}", ApiClient.urlEncode(transitionId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "includeReservedKeys";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeReservedKeys", includeReservedKeys));
-    localVarQueryParameterBaseName = "key";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("key", key));
-    localVarQueryParameterBaseName = "workflowName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowName", workflowName));
-    localVarQueryParameterBaseName = "workflowMode";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowMode", workflowMode));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); update transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Updates a workflow transition by changing the property value. Trying to update a property that does not exist results in a new property being added to the transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The key of the property being updated, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowTransitionProperty  (required)
-   * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
-   * @return WorkflowTransitionProperty
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public WorkflowTransitionProperty updateWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode) throws ApiException {
-    return updateWorkflowTransitionProperty(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, null);
-  }
-
-  /**
-   * Update workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); update transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Updates a workflow transition by changing the property value. Trying to update a property that does not exist results in a new property being added to the transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The key of the property being updated, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowTransitionProperty  (required)
-   * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowTransitionProperty
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public WorkflowTransitionProperty updateWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowTransitionProperty> localVarResponse = updateWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); update transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Updates a workflow transition by changing the property value. Trying to update a property that does not exist results in a new property being added to the transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The key of the property being updated, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowTransitionProperty  (required)
-   * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
-   * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<WorkflowTransitionProperty> updateWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode) throws ApiException {
-    return updateWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, null);
-  }
-
-  /**
-   * Update workflow transition property
-   * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); update transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Updates a workflow transition by changing the property value. Trying to update a property that does not exist results in a new property being added to the transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
-   * @param key The key of the property being updated, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
-   * @param workflowName The name of the workflow that the transition belongs to. (required)
-   * @param workflowTransitionProperty  (required)
-   * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<WorkflowTransitionProperty> updateWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateWorkflowTransitionPropertyRequestBuilder(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateWorkflowTransitionProperty", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowTransitionProperty>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (workflowName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowName", workflowName));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowTransitionProperty responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowTransitionProperty>() {});
-        
-        localVarResponse.body().close();
+        if (workflowMode != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowMode", workflowMode));
+        }
 
-        return new ApiResponse<WorkflowTransitionProperty>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
 
-  private HttpRequest.Builder updateWorkflowTransitionPropertyRequestBuilder(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'transitionId' is set
-    if (transitionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'transitionId' when calling updateWorkflowTransitionProperty");
-    }
-    // verify the required parameter 'key' is set
-    if (key == null) {
-      throw new ApiException(400, "Missing the required parameter 'key' when calling updateWorkflowTransitionProperty");
-    }
-    // verify the required parameter 'workflowName' is set
-    if (workflowName == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowName' when calling updateWorkflowTransitionProperty");
-    }
-    // verify the required parameter 'workflowTransitionProperty' is set
-    if (workflowTransitionProperty == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowTransitionProperty' when calling updateWorkflowTransitionProperty");
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @Deprecated
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createWorkflowTransitionPropertyValidateBeforeCall(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'transitionId' is set
+        if (transitionId == null) {
+            throw new ApiException("Missing the required parameter 'transitionId' when calling createWorkflowTransitionProperty(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/workflow/transitions/{transitionId}/properties"
-        .replace("{transitionId}", ApiClient.urlEncode(transitionId.toString()));
+        // verify the required parameter 'key' is set
+        if (key == null) {
+            throw new ApiException("Missing the required parameter 'key' when calling createWorkflowTransitionProperty(Async)");
+        }
 
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "key";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("key", key));
-    localVarQueryParameterBaseName = "workflowName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowName", workflowName));
-    localVarQueryParameterBaseName = "workflowMode";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowMode", workflowMode));
+        // verify the required parameter 'workflowName' is set
+        if (workflowName == null) {
+            throw new ApiException("Missing the required parameter 'workflowName' when calling createWorkflowTransitionProperty(Async)");
+        }
 
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        // verify the required parameter 'workflowTransitionProperty' is set
+        if (workflowTransitionProperty == null) {
+            throw new ApiException("Missing the required parameter 'workflowTransitionProperty' when calling createWorkflowTransitionProperty(Async)");
+        }
+
+        return createWorkflowTransitionPropertyCall(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, _callback);
+
     }
 
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
+    /**
+     * Create workflow transition property
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); add transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Adds a property to a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The key of the property being added, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowTransitionProperty  (required)
+     * @param workflowMode The workflow status. Set to *live* for inactive workflows or *draft* for draft workflows. Active workflows cannot be edited. (optional, default to live)
+     * @return WorkflowTransitionProperty
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a workflow property with the same key is present on the transition. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public WorkflowTransitionProperty createWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode) throws ApiException {
+        ApiResponse<WorkflowTransitionProperty> localVarResp = createWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowTransitionProperty, workflowMode);
+        return localVarResp.getData();
+    }
 
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowTransitionProperty);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create workflow transition property
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); add transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Adds a property to a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The key of the property being added, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowTransitionProperty  (required)
+     * @param workflowMode The workflow status. Set to *live* for inactive workflows or *draft* for draft workflows. Active workflows cannot be edited. (optional, default to live)
+     * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a workflow property with the same key is present on the transition. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<WorkflowTransitionProperty> createWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode) throws ApiException {
+        okhttp3.Call localVarCall = createWorkflowTransitionPropertyValidateBeforeCall(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, null);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionProperty>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create workflow transition property (asynchronously)
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); add transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Adds a property to a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The key of the property being added, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowTransitionProperty  (required)
+     * @param workflowMode The workflow status. Set to *live* for inactive workflows or *draft* for draft workflows. Active workflows cannot be edited. (optional, default to live)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a workflow property with the same key is present on the transition. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call createWorkflowTransitionPropertyAsync(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, final ApiCallback<WorkflowTransitionProperty> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createWorkflowTransitionPropertyValidateBeforeCall(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionProperty>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteWorkflowTransitionProperty
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The name of the transition property to delete, also known as the name of the property. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 304 </td><td> Returned if no changes were made by the request. For example, trying to delete a property that cannot be found. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call deleteWorkflowTransitionPropertyCall(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflow/transitions/{transitionId}/properties"
+            .replace("{" + "transitionId" + "}", localVarApiClient.escapeString(transitionId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (key != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("key", key));
+        }
+
+        if (workflowName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowName", workflowName));
+        }
+
+        if (workflowMode != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowMode", workflowMode));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @Deprecated
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteWorkflowTransitionPropertyValidateBeforeCall(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'transitionId' is set
+        if (transitionId == null) {
+            throw new ApiException("Missing the required parameter 'transitionId' when calling deleteWorkflowTransitionProperty(Async)");
+        }
+
+        // verify the required parameter 'key' is set
+        if (key == null) {
+            throw new ApiException("Missing the required parameter 'key' when calling deleteWorkflowTransitionProperty(Async)");
+        }
+
+        // verify the required parameter 'workflowName' is set
+        if (workflowName == null) {
+            throw new ApiException("Missing the required parameter 'workflowName' when calling deleteWorkflowTransitionProperty(Async)");
+        }
+
+        return deleteWorkflowTransitionPropertyCall(transitionId, key, workflowName, workflowMode, _callback);
+
+    }
+
+    /**
+     * Delete workflow transition property
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); delete transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Deletes a property from a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The name of the transition property to delete, also known as the name of the property. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 304 </td><td> Returned if no changes were made by the request. For example, trying to delete a property that cannot be found. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public void deleteWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode) throws ApiException {
+        deleteWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowMode);
+    }
+
+    /**
+     * Delete workflow transition property
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); delete transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Deletes a property from a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The name of the transition property to delete, also known as the name of the property. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 304 </td><td> Returned if no changes were made by the request. For example, trying to delete a property that cannot be found. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<Void> deleteWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode) throws ApiException {
+        okhttp3.Call localVarCall = deleteWorkflowTransitionPropertyValidateBeforeCall(transitionId, key, workflowName, workflowMode, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete workflow transition property (asynchronously)
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); delete transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Deletes a property from a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The name of the transition property to delete, also known as the name of the property. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 304 </td><td> Returned if no changes were made by the request. For example, trying to delete a property that cannot be found. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call deleteWorkflowTransitionPropertyAsync(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable String workflowMode, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteWorkflowTransitionPropertyValidateBeforeCall(transitionId, key, workflowName, workflowMode, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getWorkflowTransitionProperties
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira administration console. The ID is shown next to the transition. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param includeReservedKeys Some properties with keys that have the *jira.* prefix are reserved, which means they are not editable. To include these properties in the results, set this parameter to *true*. (optional, default to false)
+     * @param key The key of the property being returned, also known as the name of the property. If this parameter is not specified, all properties on the transition are returned. (optional)
+     * @param workflowMode The workflow status. Set to *live* for active and inactive workflows, or *draft* for draft workflows. (optional, default to live)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have admin permission </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition or property is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call getWorkflowTransitionPropertiesCall(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflow/transitions/{transitionId}/properties"
+            .replace("{" + "transitionId" + "}", localVarApiClient.escapeString(transitionId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (includeReservedKeys != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeReservedKeys", includeReservedKeys));
+        }
+
+        if (key != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("key", key));
+        }
+
+        if (workflowName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowName", workflowName));
+        }
+
+        if (workflowMode != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowMode", workflowMode));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @Deprecated
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getWorkflowTransitionPropertiesValidateBeforeCall(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'transitionId' is set
+        if (transitionId == null) {
+            throw new ApiException("Missing the required parameter 'transitionId' when calling getWorkflowTransitionProperties(Async)");
+        }
+
+        // verify the required parameter 'workflowName' is set
+        if (workflowName == null) {
+            throw new ApiException("Missing the required parameter 'workflowName' when calling getWorkflowTransitionProperties(Async)");
+        }
+
+        return getWorkflowTransitionPropertiesCall(transitionId, workflowName, includeReservedKeys, key, workflowMode, _callback);
+
+    }
+
+    /**
+     * Get workflow transition properties
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); fetch transition properties from [Bulk get workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-post) instead.  Returns the properties on a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira administration console. The ID is shown next to the transition. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param includeReservedKeys Some properties with keys that have the *jira.* prefix are reserved, which means they are not editable. To include these properties in the results, set this parameter to *true*. (optional, default to false)
+     * @param key The key of the property being returned, also known as the name of the property. If this parameter is not specified, all properties on the transition are returned. (optional)
+     * @param workflowMode The workflow status. Set to *live* for active and inactive workflows, or *draft* for draft workflows. (optional, default to live)
+     * @return WorkflowTransitionProperty
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have admin permission </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition or property is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public WorkflowTransitionProperty getWorkflowTransitionProperties(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode) throws ApiException {
+        ApiResponse<WorkflowTransitionProperty> localVarResp = getWorkflowTransitionPropertiesWithHttpInfo(transitionId, workflowName, includeReservedKeys, key, workflowMode);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get workflow transition properties
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); fetch transition properties from [Bulk get workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-post) instead.  Returns the properties on a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira administration console. The ID is shown next to the transition. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param includeReservedKeys Some properties with keys that have the *jira.* prefix are reserved, which means they are not editable. To include these properties in the results, set this parameter to *true*. (optional, default to false)
+     * @param key The key of the property being returned, also known as the name of the property. If this parameter is not specified, all properties on the transition are returned. (optional)
+     * @param workflowMode The workflow status. Set to *live* for active and inactive workflows, or *draft* for draft workflows. (optional, default to live)
+     * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have admin permission </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition or property is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<WorkflowTransitionProperty> getWorkflowTransitionPropertiesWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode) throws ApiException {
+        okhttp3.Call localVarCall = getWorkflowTransitionPropertiesValidateBeforeCall(transitionId, workflowName, includeReservedKeys, key, workflowMode, null);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionProperty>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get workflow transition properties (asynchronously)
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); fetch transition properties from [Bulk get workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-post) instead.  Returns the properties on a workflow transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira administration console. The ID is shown next to the transition. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param includeReservedKeys Some properties with keys that have the *jira.* prefix are reserved, which means they are not editable. To include these properties in the results, set this parameter to *true*. (optional, default to false)
+     * @param key The key of the property being returned, also known as the name of the property. If this parameter is not specified, all properties on the transition are returned. (optional)
+     * @param workflowMode The workflow status. Set to *live* for active and inactive workflows, or *draft* for draft workflows. (optional, default to live)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have admin permission </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition or property is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call getWorkflowTransitionPropertiesAsync(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean includeReservedKeys, @javax.annotation.Nullable String key, @javax.annotation.Nullable String workflowMode, final ApiCallback<WorkflowTransitionProperty> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getWorkflowTransitionPropertiesValidateBeforeCall(transitionId, workflowName, includeReservedKeys, key, workflowMode, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionProperty>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateWorkflowTransitionProperty
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The key of the property being updated, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowTransitionProperty  (required)
+     * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 304 </td><td> Returned if no changes were made by the request. For example, attempting to update a property with its current value. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call updateWorkflowTransitionPropertyCall(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = workflowTransitionProperty;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflow/transitions/{transitionId}/properties"
+            .replace("{" + "transitionId" + "}", localVarApiClient.escapeString(transitionId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (key != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("key", key));
+        }
+
+        if (workflowName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowName", workflowName));
+        }
+
+        if (workflowMode != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowMode", workflowMode));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @Deprecated
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateWorkflowTransitionPropertyValidateBeforeCall(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'transitionId' is set
+        if (transitionId == null) {
+            throw new ApiException("Missing the required parameter 'transitionId' when calling updateWorkflowTransitionProperty(Async)");
+        }
+
+        // verify the required parameter 'key' is set
+        if (key == null) {
+            throw new ApiException("Missing the required parameter 'key' when calling updateWorkflowTransitionProperty(Async)");
+        }
+
+        // verify the required parameter 'workflowName' is set
+        if (workflowName == null) {
+            throw new ApiException("Missing the required parameter 'workflowName' when calling updateWorkflowTransitionProperty(Async)");
+        }
+
+        // verify the required parameter 'workflowTransitionProperty' is set
+        if (workflowTransitionProperty == null) {
+            throw new ApiException("Missing the required parameter 'workflowTransitionProperty' when calling updateWorkflowTransitionProperty(Async)");
+        }
+
+        return updateWorkflowTransitionPropertyCall(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, _callback);
+
+    }
+
+    /**
+     * Update workflow transition property
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); update transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Updates a workflow transition by changing the property value. Trying to update a property that does not exist results in a new property being added to the transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The key of the property being updated, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowTransitionProperty  (required)
+     * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
+     * @return WorkflowTransitionProperty
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 304 </td><td> Returned if no changes were made by the request. For example, attempting to update a property with its current value. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public WorkflowTransitionProperty updateWorkflowTransitionProperty(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode) throws ApiException {
+        ApiResponse<WorkflowTransitionProperty> localVarResp = updateWorkflowTransitionPropertyWithHttpInfo(transitionId, key, workflowName, workflowTransitionProperty, workflowMode);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update workflow transition property
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); update transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Updates a workflow transition by changing the property value. Trying to update a property that does not exist results in a new property being added to the transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The key of the property being updated, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowTransitionProperty  (required)
+     * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
+     * @return ApiResponse&lt;WorkflowTransitionProperty&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 304 </td><td> Returned if no changes were made by the request. For example, attempting to update a property with its current value. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<WorkflowTransitionProperty> updateWorkflowTransitionPropertyWithHttpInfo(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode) throws ApiException {
+        okhttp3.Call localVarCall = updateWorkflowTransitionPropertyValidateBeforeCall(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, null);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionProperty>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update workflow transition property (asynchronously)
+     * This will be removed on [June 1, 2026](https://developer.atlassian.com/cloud/jira/platform/changelog/#CHANGE-2570); update transition properties using [Bulk update workflows](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflows/#api-rest-api-3-workflows-update-post) instead.  Updates a workflow transition by changing the property value. Trying to update a property that does not exist results in a new property being added to the transition. Transition properties are used to change the behavior of a transition. For more information, see [Transition properties](https://confluence.atlassian.com/x/zIhKLg#Advancedworkflowconfiguration-transitionproperties) and [Workflow properties](https://confluence.atlassian.com/x/JYlKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param transitionId The ID of the transition. To get the ID, view the workflow in text mode in the Jira admin settings. The ID is shown next to the transition. (required)
+     * @param key The key of the property being updated, also known as the name of the property. Set this to the same value as the &#x60;key&#x60; defined in the request body. (required)
+     * @param workflowName The name of the workflow that the transition belongs to. (required)
+     * @param workflowTransitionProperty  (required)
+     * @param workflowMode The workflow status. Set to &#x60;live&#x60; for inactive workflows or &#x60;draft&#x60; for draft workflows. Active workflows cannot be edited. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 304 </td><td> Returned if no changes were made by the request. For example, attempting to update a property with its current value. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow transition is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call updateWorkflowTransitionPropertyAsync(@javax.annotation.Nonnull Long transitionId, @javax.annotation.Nonnull String key, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull WorkflowTransitionProperty workflowTransitionProperty, @javax.annotation.Nullable String workflowMode, final ApiCallback<WorkflowTransitionProperty> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateWorkflowTransitionPropertyValidateBeforeCall(transitionId, key, workflowName, workflowTransitionProperty, workflowMode, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionProperty>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

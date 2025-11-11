@@ -13,47 +13,60 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraComponentField;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraMultiSelectComponentField
  */
-@JsonPropertyOrder({
-  JiraMultiSelectComponentField.JSON_PROPERTY_BULK_EDIT_MULTI_SELECT_FIELD_OPTION,
-  JiraMultiSelectComponentField.JSON_PROPERTY_COMPONENTS,
-  JiraMultiSelectComponentField.JSON_PROPERTY_FIELD_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraMultiSelectComponentField {
   /**
    * Gets or Sets bulkEditMultiSelectFieldOption
    */
+  @JsonAdapter(BulkEditMultiSelectFieldOptionEnum.Adapter.class)
   public enum BulkEditMultiSelectFieldOptionEnum {
-    ADD(String.valueOf("ADD")),
+    ADD("ADD"),
     
-    REMOVE(String.valueOf("REMOVE")),
+    REMOVE("REMOVE"),
     
-    REPLACE(String.valueOf("REPLACE")),
+    REPLACE("REPLACE"),
     
-    REMOVE_ALL(String.valueOf("REMOVE_ALL"));
+    REMOVE_ALL("REMOVE_ALL");
 
     private String value;
 
@@ -61,7 +74,6 @@ public class JiraMultiSelectComponentField {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -71,7 +83,6 @@ public class JiraMultiSelectComponentField {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static BulkEditMultiSelectFieldOptionEnum fromValue(String value) {
       for (BulkEditMultiSelectFieldOptionEnum b : BulkEditMultiSelectFieldOptionEnum.values()) {
         if (b.value.equals(value)) {
@@ -80,21 +91,42 @@ public class JiraMultiSelectComponentField {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<BulkEditMultiSelectFieldOptionEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final BulkEditMultiSelectFieldOptionEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public BulkEditMultiSelectFieldOptionEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return BulkEditMultiSelectFieldOptionEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      BulkEditMultiSelectFieldOptionEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_BULK_EDIT_MULTI_SELECT_FIELD_OPTION = "bulkEditMultiSelectFieldOption";
+  public static final String SERIALIZED_NAME_BULK_EDIT_MULTI_SELECT_FIELD_OPTION = "bulkEditMultiSelectFieldOption";
+  @SerializedName(SERIALIZED_NAME_BULK_EDIT_MULTI_SELECT_FIELD_OPTION)
   @javax.annotation.Nonnull
   private BulkEditMultiSelectFieldOptionEnum bulkEditMultiSelectFieldOption;
 
-  public static final String JSON_PROPERTY_COMPONENTS = "components";
+  public static final String SERIALIZED_NAME_COMPONENTS = "components";
+  @SerializedName(SERIALIZED_NAME_COMPONENTS)
   @javax.annotation.Nonnull
   private List<JiraComponentField> components = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_FIELD_ID = "fieldId";
+  public static final String SERIALIZED_NAME_FIELD_ID = "fieldId";
+  @SerializedName(SERIALIZED_NAME_FIELD_ID)
   @javax.annotation.Nonnull
   private String fieldId;
 
-  public JiraMultiSelectComponentField() { 
+  public JiraMultiSelectComponentField() {
   }
 
   public JiraMultiSelectComponentField bulkEditMultiSelectFieldOption(@javax.annotation.Nonnull BulkEditMultiSelectFieldOptionEnum bulkEditMultiSelectFieldOption) {
@@ -107,15 +139,10 @@ public class JiraMultiSelectComponentField {
    * @return bulkEditMultiSelectFieldOption
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_BULK_EDIT_MULTI_SELECT_FIELD_OPTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public BulkEditMultiSelectFieldOptionEnum getBulkEditMultiSelectFieldOption() {
     return bulkEditMultiSelectFieldOption;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BULK_EDIT_MULTI_SELECT_FIELD_OPTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setBulkEditMultiSelectFieldOption(@javax.annotation.Nonnull BulkEditMultiSelectFieldOptionEnum bulkEditMultiSelectFieldOption) {
     this.bulkEditMultiSelectFieldOption = bulkEditMultiSelectFieldOption;
   }
@@ -139,15 +166,10 @@ public class JiraMultiSelectComponentField {
    * @return components
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_COMPONENTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<JiraComponentField> getComponents() {
     return components;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_COMPONENTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setComponents(@javax.annotation.Nonnull List<JiraComponentField> components) {
     this.components = components;
   }
@@ -163,23 +185,16 @@ public class JiraMultiSelectComponentField {
    * @return fieldId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getFieldId() {
     return fieldId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFieldId(@javax.annotation.Nonnull String fieldId) {
     this.fieldId = fieldId;
   }
 
 
-  /**
-   * Return true if this JiraMultiSelectComponentField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -221,59 +236,113 @@ public class JiraMultiSelectComponentField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("bulkEditMultiSelectFieldOption", "components", "fieldId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("bulkEditMultiSelectFieldOption", "components", "fieldId"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraMultiSelectComponentField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `bulkEditMultiSelectFieldOption` to the URL query string
-    if (getBulkEditMultiSelectFieldOption() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbulkEditMultiSelectFieldOption%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBulkEditMultiSelectFieldOption()))));
-    }
-
-    // add `components` to the URL query string
-    if (getComponents() != null) {
-      for (int i = 0; i < getComponents().size(); i++) {
-        if (getComponents().get(i) != null) {
-          joiner.add(getComponents().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scomponents%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraMultiSelectComponentField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraMultiSelectComponentField is not found in the empty JSON string", JiraMultiSelectComponentField.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `fieldId` to the URL query string
-    if (getFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldId()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraMultiSelectComponentField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraMultiSelectComponentField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraMultiSelectComponentField.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("bulkEditMultiSelectFieldOption").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `bulkEditMultiSelectFieldOption` to be a primitive type in the JSON string but got `%s`", jsonObj.get("bulkEditMultiSelectFieldOption").toString()));
+      }
+      // validate the required field `bulkEditMultiSelectFieldOption`
+      BulkEditMultiSelectFieldOptionEnum.validateJsonElement(jsonObj.get("bulkEditMultiSelectFieldOption"));
+      // ensure the json data is an array
+      if (!jsonObj.get("components").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `components` to be an array in the JSON string but got `%s`", jsonObj.get("components").toString()));
+      }
+
+      JsonArray jsonArraycomponents = jsonObj.getAsJsonArray("components");
+      // validate the required field `components` (array)
+      for (int i = 0; i < jsonArraycomponents.size(); i++) {
+        JiraComponentField.validateJsonElement(jsonArraycomponents.get(i));
+      };
+      if (!jsonObj.get("fieldId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraMultiSelectComponentField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraMultiSelectComponentField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraMultiSelectComponentField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraMultiSelectComponentField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraMultiSelectComponentField>() {
+           @Override
+           public void write(JsonWriter out, JiraMultiSelectComponentField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraMultiSelectComponentField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JiraMultiSelectComponentField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraMultiSelectComponentField
+   * @throws IOException if the JSON string is invalid with respect to JiraMultiSelectComponentField
+   */
+  public static JiraMultiSelectComponentField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraMultiSelectComponentField.class);
+  }
+
+  /**
+   * Convert an instance of JiraMultiSelectComponentField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

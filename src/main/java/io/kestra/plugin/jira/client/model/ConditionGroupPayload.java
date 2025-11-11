@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.RulePayload;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The payload for creating a condition group in a workflow
  */
-@JsonPropertyOrder({
-  ConditionGroupPayload.JSON_PROPERTY_CONDITION_GROUP,
-  ConditionGroupPayload.JSON_PROPERTY_CONDITIONS,
-  ConditionGroupPayload.JSON_PROPERTY_OPERATION
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ConditionGroupPayload {
-  public static final String JSON_PROPERTY_CONDITION_GROUP = "conditionGroup";
+  public static final String SERIALIZED_NAME_CONDITION_GROUP = "conditionGroup";
+  @SerializedName(SERIALIZED_NAME_CONDITION_GROUP)
   @javax.annotation.Nullable
   private List<ConditionGroupPayload> conditionGroup = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CONDITIONS = "conditions";
+  public static final String SERIALIZED_NAME_CONDITIONS = "conditions";
+  @SerializedName(SERIALIZED_NAME_CONDITIONS)
   @javax.annotation.Nullable
   private List<RulePayload> conditions = new ArrayList<>();
 
   /**
    * Determines how the conditions in the group are evaluated. Accepts either &#x60;ANY&#x60; or &#x60;ALL&#x60;. If &#x60;ANY&#x60; is used, at least one condition in the group must be true for the group to evaluate to true. If &#x60;ALL&#x60; is used, all conditions in the group must be true for the group to evaluate to true.
    */
+  @JsonAdapter(OperationEnum.Adapter.class)
   public enum OperationEnum {
-    ANY(String.valueOf("ANY")),
+    ANY("ANY"),
     
-    ALL(String.valueOf("ALL"));
+    ALL("ALL");
 
     private String value;
 
@@ -65,7 +80,6 @@ public class ConditionGroupPayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -75,7 +89,6 @@ public class ConditionGroupPayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static OperationEnum fromValue(String value) {
       for (OperationEnum b : OperationEnum.values()) {
         if (b.value.equals(value)) {
@@ -84,13 +97,32 @@ public class ConditionGroupPayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<OperationEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final OperationEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public OperationEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return OperationEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      OperationEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_OPERATION = "operation";
+  public static final String SERIALIZED_NAME_OPERATION = "operation";
+  @SerializedName(SERIALIZED_NAME_OPERATION)
   @javax.annotation.Nullable
   private OperationEnum operation;
 
-  public ConditionGroupPayload() { 
+  public ConditionGroupPayload() {
   }
 
   public ConditionGroupPayload conditionGroup(@javax.annotation.Nullable List<ConditionGroupPayload> conditionGroup) {
@@ -111,15 +143,10 @@ public class ConditionGroupPayload {
    * @return conditionGroup
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONDITION_GROUP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ConditionGroupPayload> getConditionGroup() {
     return conditionGroup;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONDITION_GROUP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConditionGroup(@javax.annotation.Nullable List<ConditionGroupPayload> conditionGroup) {
     this.conditionGroup = conditionGroup;
   }
@@ -143,15 +170,10 @@ public class ConditionGroupPayload {
    * @return conditions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<RulePayload> getConditions() {
     return conditions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConditions(@javax.annotation.Nullable List<RulePayload> conditions) {
     this.conditions = conditions;
   }
@@ -167,23 +189,16 @@ public class ConditionGroupPayload {
    * @return operation
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OperationEnum getOperation() {
     return operation;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPERATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOperation(@javax.annotation.Nullable OperationEnum operation) {
     this.operation = operation;
   }
 
 
-  /**
-   * Return true if this ConditionGroupPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -225,64 +240,123 @@ public class ConditionGroupPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("conditionGroup", "conditions", "operation"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ConditionGroupPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `conditionGroup` to the URL query string
-    if (getConditionGroup() != null) {
-      for (int i = 0; i < getConditionGroup().size(); i++) {
-        if (getConditionGroup().get(i) != null) {
-          joiner.add(getConditionGroup().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sconditionGroup%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ConditionGroupPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ConditionGroupPayload is not found in the empty JSON string", ConditionGroupPayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `conditions` to the URL query string
-    if (getConditions() != null) {
-      for (int i = 0; i < getConditions().size(); i++) {
-        if (getConditions().get(i) != null) {
-          joiner.add(getConditions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sconditions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ConditionGroupPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ConditionGroupPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("conditionGroup") != null && !jsonObj.get("conditionGroup").isJsonNull()) {
+        JsonArray jsonArrayconditionGroup = jsonObj.getAsJsonArray("conditionGroup");
+        if (jsonArrayconditionGroup != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("conditionGroup").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `conditionGroup` to be an array in the JSON string but got `%s`", jsonObj.get("conditionGroup").toString()));
+          }
 
-    // add `operation` to the URL query string
-    if (getOperation() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soperation%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperation()))));
-    }
+          // validate the optional field `conditionGroup` (array)
+          for (int i = 0; i < jsonArrayconditionGroup.size(); i++) {
+            ConditionGroupPayload.validateJsonElement(jsonArrayconditionGroup.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("conditions") != null && !jsonObj.get("conditions").isJsonNull()) {
+        JsonArray jsonArrayconditions = jsonObj.getAsJsonArray("conditions");
+        if (jsonArrayconditions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("conditions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `conditions` to be an array in the JSON string but got `%s`", jsonObj.get("conditions").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `conditions` (array)
+          for (int i = 0; i < jsonArrayconditions.size(); i++) {
+            RulePayload.validateJsonElement(jsonArrayconditions.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("operation") != null && !jsonObj.get("operation").isJsonNull()) && !jsonObj.get("operation").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `operation` to be a primitive type in the JSON string but got `%s`", jsonObj.get("operation").toString()));
+      }
+      // validate the optional field `operation`
+      if (jsonObj.get("operation") != null && !jsonObj.get("operation").isJsonNull()) {
+        OperationEnum.validateJsonElement(jsonObj.get("operation"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ConditionGroupPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ConditionGroupPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ConditionGroupPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ConditionGroupPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ConditionGroupPayload>() {
+           @Override
+           public void write(JsonWriter out, ConditionGroupPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ConditionGroupPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ConditionGroupPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ConditionGroupPayload
+   * @throws IOException if the JSON string is invalid with respect to ConditionGroupPayload
+   */
+  public static ConditionGroupPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ConditionGroupPayload.class);
+  }
+
+  /**
+   * Convert an instance of ConditionGroupPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

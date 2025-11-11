@@ -13,88 +13,103 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * ProjectLandingPageInfo
  */
-@JsonPropertyOrder({
-  ProjectLandingPageInfo.JSON_PROPERTY_ATTRIBUTES,
-  ProjectLandingPageInfo.JSON_PROPERTY_BOARD_ID,
-  ProjectLandingPageInfo.JSON_PROPERTY_BOARD_NAME,
-  ProjectLandingPageInfo.JSON_PROPERTY_PROJECT_KEY,
-  ProjectLandingPageInfo.JSON_PROPERTY_PROJECT_TYPE,
-  ProjectLandingPageInfo.JSON_PROPERTY_QUEUE_CATEGORY,
-  ProjectLandingPageInfo.JSON_PROPERTY_QUEUE_ID,
-  ProjectLandingPageInfo.JSON_PROPERTY_QUEUE_NAME,
-  ProjectLandingPageInfo.JSON_PROPERTY_SIMPLE_BOARD,
-  ProjectLandingPageInfo.JSON_PROPERTY_SIMPLIFIED,
-  ProjectLandingPageInfo.JSON_PROPERTY_URL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectLandingPageInfo {
-  public static final String JSON_PROPERTY_ATTRIBUTES = "attributes";
+  public static final String SERIALIZED_NAME_ATTRIBUTES = "attributes";
+  @SerializedName(SERIALIZED_NAME_ATTRIBUTES)
   @javax.annotation.Nullable
   private Map<String, String> attributes = new HashMap<>();
 
-  public static final String JSON_PROPERTY_BOARD_ID = "boardId";
+  public static final String SERIALIZED_NAME_BOARD_ID = "boardId";
+  @SerializedName(SERIALIZED_NAME_BOARD_ID)
   @javax.annotation.Nullable
   private Long boardId;
 
-  public static final String JSON_PROPERTY_BOARD_NAME = "boardName";
+  public static final String SERIALIZED_NAME_BOARD_NAME = "boardName";
+  @SerializedName(SERIALIZED_NAME_BOARD_NAME)
   @javax.annotation.Nullable
   private String boardName;
 
-  public static final String JSON_PROPERTY_PROJECT_KEY = "projectKey";
+  public static final String SERIALIZED_NAME_PROJECT_KEY = "projectKey";
+  @SerializedName(SERIALIZED_NAME_PROJECT_KEY)
   @javax.annotation.Nullable
   private String projectKey;
 
-  public static final String JSON_PROPERTY_PROJECT_TYPE = "projectType";
+  public static final String SERIALIZED_NAME_PROJECT_TYPE = "projectType";
+  @SerializedName(SERIALIZED_NAME_PROJECT_TYPE)
   @javax.annotation.Nullable
   private String projectType;
 
-  public static final String JSON_PROPERTY_QUEUE_CATEGORY = "queueCategory";
+  public static final String SERIALIZED_NAME_QUEUE_CATEGORY = "queueCategory";
+  @SerializedName(SERIALIZED_NAME_QUEUE_CATEGORY)
   @javax.annotation.Nullable
   private String queueCategory;
 
-  public static final String JSON_PROPERTY_QUEUE_ID = "queueId";
+  public static final String SERIALIZED_NAME_QUEUE_ID = "queueId";
+  @SerializedName(SERIALIZED_NAME_QUEUE_ID)
   @javax.annotation.Nullable
   private Long queueId;
 
-  public static final String JSON_PROPERTY_QUEUE_NAME = "queueName";
+  public static final String SERIALIZED_NAME_QUEUE_NAME = "queueName";
+  @SerializedName(SERIALIZED_NAME_QUEUE_NAME)
   @javax.annotation.Nullable
   private String queueName;
 
-  public static final String JSON_PROPERTY_SIMPLE_BOARD = "simpleBoard";
+  public static final String SERIALIZED_NAME_SIMPLE_BOARD = "simpleBoard";
+  @SerializedName(SERIALIZED_NAME_SIMPLE_BOARD)
   @javax.annotation.Nullable
   private Boolean simpleBoard;
 
-  public static final String JSON_PROPERTY_SIMPLIFIED = "simplified";
+  public static final String SERIALIZED_NAME_SIMPLIFIED = "simplified";
+  @SerializedName(SERIALIZED_NAME_SIMPLIFIED)
   @javax.annotation.Nullable
   private Boolean simplified;
 
-  public static final String JSON_PROPERTY_URL = "url";
+  public static final String SERIALIZED_NAME_URL = "url";
+  @SerializedName(SERIALIZED_NAME_URL)
   @javax.annotation.Nullable
   private String url;
 
-  public ProjectLandingPageInfo() { 
+  public ProjectLandingPageInfo() {
   }
 
   public ProjectLandingPageInfo attributes(@javax.annotation.Nullable Map<String, String> attributes) {
@@ -115,15 +130,10 @@ public class ProjectLandingPageInfo {
    * @return attributes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ATTRIBUTES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getAttributes() {
     return attributes;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ATTRIBUTES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAttributes(@javax.annotation.Nullable Map<String, String> attributes) {
     this.attributes = attributes;
   }
@@ -139,15 +149,10 @@ public class ProjectLandingPageInfo {
    * @return boardId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BOARD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getBoardId() {
     return boardId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BOARD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBoardId(@javax.annotation.Nullable Long boardId) {
     this.boardId = boardId;
   }
@@ -163,15 +168,10 @@ public class ProjectLandingPageInfo {
    * @return boardName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BOARD_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBoardName() {
     return boardName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BOARD_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBoardName(@javax.annotation.Nullable String boardName) {
     this.boardName = boardName;
   }
@@ -187,15 +187,10 @@ public class ProjectLandingPageInfo {
    * @return projectKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProjectKey() {
     return projectKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectKey(@javax.annotation.Nullable String projectKey) {
     this.projectKey = projectKey;
   }
@@ -211,15 +206,10 @@ public class ProjectLandingPageInfo {
    * @return projectType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProjectType() {
     return projectType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectType(@javax.annotation.Nullable String projectType) {
     this.projectType = projectType;
   }
@@ -235,15 +225,10 @@ public class ProjectLandingPageInfo {
    * @return queueCategory
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getQueueCategory() {
     return queueCategory;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueueCategory(@javax.annotation.Nullable String queueCategory) {
     this.queueCategory = queueCategory;
   }
@@ -259,15 +244,10 @@ public class ProjectLandingPageInfo {
    * @return queueId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getQueueId() {
     return queueId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueueId(@javax.annotation.Nullable Long queueId) {
     this.queueId = queueId;
   }
@@ -283,15 +263,10 @@ public class ProjectLandingPageInfo {
    * @return queueName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getQueueName() {
     return queueName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueueName(@javax.annotation.Nullable String queueName) {
     this.queueName = queueName;
   }
@@ -307,15 +282,10 @@ public class ProjectLandingPageInfo {
    * @return simpleBoard
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIMPLE_BOARD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSimpleBoard() {
     return simpleBoard;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SIMPLE_BOARD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSimpleBoard(@javax.annotation.Nullable Boolean simpleBoard) {
     this.simpleBoard = simpleBoard;
   }
@@ -331,15 +301,10 @@ public class ProjectLandingPageInfo {
    * @return simplified
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIMPLIFIED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSimplified() {
     return simplified;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SIMPLIFIED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSimplified(@javax.annotation.Nullable Boolean simplified) {
     this.simplified = simplified;
   }
@@ -355,23 +320,16 @@ public class ProjectLandingPageInfo {
    * @return url
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUrl() {
     return url;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUrl(@javax.annotation.Nullable String url) {
     this.url = url;
   }
 
 
-  /**
-   * Return true if this ProjectLandingPageInfo object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -429,98 +387,106 @@ public class ProjectLandingPageInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("attributes", "boardId", "boardName", "projectKey", "projectType", "queueCategory", "queueId", "queueName", "simpleBoard", "simplified", "url"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectLandingPageInfo
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `attributes` to the URL query string
-    if (getAttributes() != null) {
-      for (String _key : getAttributes().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sattributes%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getAttributes().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getAttributes().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectLandingPageInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectLandingPageInfo is not found in the empty JSON string", ProjectLandingPageInfo.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `boardId` to the URL query string
-    if (getBoardId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sboardId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBoardId()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectLandingPageInfo.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectLandingPageInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("boardName") != null && !jsonObj.get("boardName").isJsonNull()) && !jsonObj.get("boardName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `boardName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("boardName").toString()));
+      }
+      if ((jsonObj.get("projectKey") != null && !jsonObj.get("projectKey").isJsonNull()) && !jsonObj.get("projectKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectKey").toString()));
+      }
+      if ((jsonObj.get("projectType") != null && !jsonObj.get("projectType").isJsonNull()) && !jsonObj.get("projectType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectType").toString()));
+      }
+      if ((jsonObj.get("queueCategory") != null && !jsonObj.get("queueCategory").isJsonNull()) && !jsonObj.get("queueCategory").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `queueCategory` to be a primitive type in the JSON string but got `%s`", jsonObj.get("queueCategory").toString()));
+      }
+      if ((jsonObj.get("queueName") != null && !jsonObj.get("queueName").isJsonNull()) && !jsonObj.get("queueName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `queueName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("queueName").toString()));
+      }
+      if ((jsonObj.get("url") != null && !jsonObj.get("url").isJsonNull()) && !jsonObj.get("url").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("url").toString()));
+      }
+  }
 
-    // add `boardName` to the URL query string
-    if (getBoardName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sboardName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBoardName()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectLandingPageInfo.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectLandingPageInfo' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectLandingPageInfo> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectLandingPageInfo.class));
 
-    // add `projectKey` to the URL query string
-    if (getProjectKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectKey()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<ProjectLandingPageInfo>() {
+           @Override
+           public void write(JsonWriter out, ProjectLandingPageInfo value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `projectType` to the URL query string
-    if (getProjectType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectType()))));
-    }
+           @Override
+           public ProjectLandingPageInfo read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `queueCategory` to the URL query string
-    if (getQueueCategory() != null) {
-      joiner.add(String.format(Locale.ROOT, "%squeueCategory%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQueueCategory()))));
+       }.nullSafe();
     }
+  }
 
-    // add `queueId` to the URL query string
-    if (getQueueId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%squeueId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQueueId()))));
-    }
+  /**
+   * Create an instance of ProjectLandingPageInfo given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectLandingPageInfo
+   * @throws IOException if the JSON string is invalid with respect to ProjectLandingPageInfo
+   */
+  public static ProjectLandingPageInfo fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectLandingPageInfo.class);
+  }
 
-    // add `queueName` to the URL query string
-    if (getQueueName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%squeueName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQueueName()))));
-    }
-
-    // add `simpleBoard` to the URL query string
-    if (getSimpleBoard() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssimpleBoard%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSimpleBoard()))));
-    }
-
-    // add `simplified` to the URL query string
-    if (getSimplified() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssimplified%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSimplified()))));
-    }
-
-    // add `url` to the URL query string
-    if (getUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%surl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectLandingPageInfo to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,70 +13,84 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SuggestedIssue;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A type of issue suggested for use in auto-completion.
  */
-@JsonPropertyOrder({
-  IssuePickerSuggestionsIssueType.JSON_PROPERTY_ID,
-  IssuePickerSuggestionsIssueType.JSON_PROPERTY_ISSUES,
-  IssuePickerSuggestionsIssueType.JSON_PROPERTY_LABEL,
-  IssuePickerSuggestionsIssueType.JSON_PROPERTY_MSG,
-  IssuePickerSuggestionsIssueType.JSON_PROPERTY_SUB
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssuePickerSuggestionsIssueType {
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_ISSUES = "issues";
+  public static final String SERIALIZED_NAME_ISSUES = "issues";
+  @SerializedName(SERIALIZED_NAME_ISSUES)
   @javax.annotation.Nullable
   private List<SuggestedIssue> issues = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_LABEL = "label";
+  public static final String SERIALIZED_NAME_LABEL = "label";
+  @SerializedName(SERIALIZED_NAME_LABEL)
   @javax.annotation.Nullable
   private String label;
 
-  public static final String JSON_PROPERTY_MSG = "msg";
+  public static final String SERIALIZED_NAME_MSG = "msg";
+  @SerializedName(SERIALIZED_NAME_MSG)
   @javax.annotation.Nullable
   private String msg;
 
-  public static final String JSON_PROPERTY_SUB = "sub";
+  public static final String SERIALIZED_NAME_SUB = "sub";
+  @SerializedName(SERIALIZED_NAME_SUB)
   @javax.annotation.Nullable
   private String sub;
 
-  public IssuePickerSuggestionsIssueType() { 
+  public IssuePickerSuggestionsIssueType() {
   }
 
-  @JsonCreator
   public IssuePickerSuggestionsIssueType(
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_ISSUES) List<SuggestedIssue> issues, 
-    @JsonProperty(JSON_PROPERTY_LABEL) String label, 
-    @JsonProperty(JSON_PROPERTY_MSG) String msg, 
-    @JsonProperty(JSON_PROPERTY_SUB) String sub
+     String id, 
+     List<SuggestedIssue> issues, 
+     String label, 
+     String msg, 
+     String sub
   ) {
-  this();
+    this();
     this.id = id;
     this.issues = issues;
     this.label = label;
@@ -89,12 +103,9 @@ public class IssuePickerSuggestionsIssueType {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -103,12 +114,9 @@ public class IssuePickerSuggestionsIssueType {
    * @return issues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SuggestedIssue> getIssues() {
     return issues;
   }
-
 
 
 
@@ -117,12 +125,9 @@ public class IssuePickerSuggestionsIssueType {
    * @return label
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LABEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLabel() {
     return label;
   }
-
 
 
 
@@ -131,12 +136,9 @@ public class IssuePickerSuggestionsIssueType {
    * @return msg
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MSG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMsg() {
     return msg;
   }
-
 
 
 
@@ -145,8 +147,6 @@ public class IssuePickerSuggestionsIssueType {
    * @return sub
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUB, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSub() {
     return sub;
   }
@@ -154,9 +154,6 @@ public class IssuePickerSuggestionsIssueType {
 
 
 
-  /**
-   * Return true if this IssuePickerSuggestionsIssueType object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,69 +199,114 @@ public class IssuePickerSuggestionsIssueType {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("id", "issues", "label", "msg", "sub"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssuePickerSuggestionsIssueType
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `issues` to the URL query string
-    if (getIssues() != null) {
-      for (int i = 0; i < getIssues().size(); i++) {
-        if (getIssues().get(i) != null) {
-          joiner.add(getIssues().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissues%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssuePickerSuggestionsIssueType.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssuePickerSuggestionsIssueType is not found in the empty JSON string", IssuePickerSuggestionsIssueType.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `label` to the URL query string
-    if (getLabel() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slabel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLabel()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssuePickerSuggestionsIssueType.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssuePickerSuggestionsIssueType` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (jsonObj.get("issues") != null && !jsonObj.get("issues").isJsonNull()) {
+        JsonArray jsonArrayissues = jsonObj.getAsJsonArray("issues");
+        if (jsonArrayissues != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issues").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issues` to be an array in the JSON string but got `%s`", jsonObj.get("issues").toString()));
+          }
 
-    // add `msg` to the URL query string
-    if (getMsg() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smsg%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMsg()))));
-    }
+          // validate the optional field `issues` (array)
+          for (int i = 0; i < jsonArrayissues.size(); i++) {
+            SuggestedIssue.validateJsonElement(jsonArrayissues.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("label") != null && !jsonObj.get("label").isJsonNull()) && !jsonObj.get("label").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `label` to be a primitive type in the JSON string but got `%s`", jsonObj.get("label").toString()));
+      }
+      if ((jsonObj.get("msg") != null && !jsonObj.get("msg").isJsonNull()) && !jsonObj.get("msg").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `msg` to be a primitive type in the JSON string but got `%s`", jsonObj.get("msg").toString()));
+      }
+      if ((jsonObj.get("sub") != null && !jsonObj.get("sub").isJsonNull()) && !jsonObj.get("sub").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `sub` to be a primitive type in the JSON string but got `%s`", jsonObj.get("sub").toString()));
+      }
+  }
 
-    // add `sub` to the URL query string
-    if (getSub() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssub%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSub()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssuePickerSuggestionsIssueType.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssuePickerSuggestionsIssueType' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssuePickerSuggestionsIssueType> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssuePickerSuggestionsIssueType.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<IssuePickerSuggestionsIssueType>() {
+           @Override
+           public void write(JsonWriter out, IssuePickerSuggestionsIssueType value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssuePickerSuggestionsIssueType read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssuePickerSuggestionsIssueType given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssuePickerSuggestionsIssueType
+   * @throws IOException if the JSON string is invalid with respect to IssuePickerSuggestionsIssueType
+   */
+  public static IssuePickerSuggestionsIssueType fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssuePickerSuggestionsIssueType.class);
+  }
+
+  /**
+   * Convert an instance of IssuePickerSuggestionsIssueType to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

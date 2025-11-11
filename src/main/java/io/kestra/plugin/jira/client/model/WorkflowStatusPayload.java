@@ -13,50 +13,65 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectCreateResourceIdentifier;
 import io.kestra.plugin.jira.client.model.WorkflowStatusLayoutPayload;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The statuses to be used in the workflow
  */
-@JsonPropertyOrder({
-  WorkflowStatusPayload.JSON_PROPERTY_LAYOUT,
-  WorkflowStatusPayload.JSON_PROPERTY_PCRI,
-  WorkflowStatusPayload.JSON_PROPERTY_PROPERTIES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowStatusPayload {
-  public static final String JSON_PROPERTY_LAYOUT = "layout";
+  public static final String SERIALIZED_NAME_LAYOUT = "layout";
+  @SerializedName(SERIALIZED_NAME_LAYOUT)
   @javax.annotation.Nullable
   private WorkflowStatusLayoutPayload layout;
 
-  public static final String JSON_PROPERTY_PCRI = "pcri";
+  public static final String SERIALIZED_NAME_PCRI = "pcri";
+  @SerializedName(SERIALIZED_NAME_PCRI)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier pcri;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private Map<String, String> properties = new HashMap<>();
 
-  public WorkflowStatusPayload() { 
+  public WorkflowStatusPayload() {
   }
 
   public WorkflowStatusPayload layout(@javax.annotation.Nullable WorkflowStatusLayoutPayload layout) {
@@ -69,15 +84,10 @@ public class WorkflowStatusPayload {
    * @return layout
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkflowStatusLayoutPayload getLayout() {
     return layout;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLayout(@javax.annotation.Nullable WorkflowStatusLayoutPayload layout) {
     this.layout = layout;
   }
@@ -93,15 +103,10 @@ public class WorkflowStatusPayload {
    * @return pcri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getPcri() {
     return pcri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPcri(@javax.annotation.Nullable ProjectCreateResourceIdentifier pcri) {
     this.pcri = pcri;
   }
@@ -125,23 +130,16 @@ public class WorkflowStatusPayload {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable Map<String, String> properties) {
     this.properties = properties;
   }
 
 
-  /**
-   * Return true if this WorkflowStatusPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -183,58 +181,96 @@ public class WorkflowStatusPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("layout", "pcri", "properties"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowStatusPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `layout` to the URL query string
-    if (getLayout() != null) {
-      joiner.add(getLayout().toUrlQueryString(prefix + "layout" + suffix));
-    }
-
-    // add `pcri` to the URL query string
-    if (getPcri() != null) {
-      joiner.add(getPcri().toUrlQueryString(prefix + "pcri" + suffix));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowStatusPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowStatusPayload is not found in the empty JSON string", WorkflowStatusPayload.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowStatusPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowStatusPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `layout`
+      if (jsonObj.get("layout") != null && !jsonObj.get("layout").isJsonNull()) {
+        WorkflowStatusLayoutPayload.validateJsonElement(jsonObj.get("layout"));
+      }
+      // validate the optional field `pcri`
+      if (jsonObj.get("pcri") != null && !jsonObj.get("pcri").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("pcri"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowStatusPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowStatusPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowStatusPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowStatusPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowStatusPayload>() {
+           @Override
+           public void write(JsonWriter out, WorkflowStatusPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowStatusPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowStatusPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowStatusPayload
+   * @throws IOException if the JSON string is invalid with respect to WorkflowStatusPayload
+   */
+  public static WorkflowStatusPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowStatusPayload.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowStatusPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

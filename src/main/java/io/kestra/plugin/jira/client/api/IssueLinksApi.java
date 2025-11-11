@@ -10,481 +10,487 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.IssueLink;
 import io.kestra.plugin.jira.client.model.LinkIssueRequestJsonBean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueLinksApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueLinksApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueLinksApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for deleteIssueLink
+     * @param linkId The ID of the issue link. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue link ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the issue link is not found.  *  the user doesn&#39;t have the required permissions. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call deleteIssueLinkCall(@javax.annotation.Nonnull String linkId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueLinksApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueLinksApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Delete issue link
-   * Deletes an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-   * @param linkId The ID of the issue link. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteIssueLink(@javax.annotation.Nonnull String linkId) throws ApiException {
-    deleteIssueLink(linkId, null);
-  }
-
-  /**
-   * Delete issue link
-   * Deletes an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-   * @param linkId The ID of the issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteIssueLink(@javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    deleteIssueLinkWithHttpInfo(linkId, headers);
-  }
-
-  /**
-   * Delete issue link
-   * Deletes an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-   * @param linkId The ID of the issue link. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String linkId) throws ApiException {
-    return deleteIssueLinkWithHttpInfo(linkId, null);
-  }
-
-  /**
-   * Delete issue link
-   * Deletes an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-   * @param linkId The ID of the issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteIssueLinkRequestBuilder(linkId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteIssueLink", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteIssueLinkRequestBuilder(@javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'linkId' is set
-    if (linkId == null) {
-      throw new ApiException(400, "Missing the required parameter 'linkId' when calling deleteIssueLink");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issueLink/{linkId}"
-        .replace("{linkId}", ApiClient.urlEncode(linkId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue link
-   * Returns an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the linked issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-   * @param linkId The ID of the issue link. (required)
-   * @return IssueLink
-   * @throws ApiException if fails to make API call
-   */
-  public IssueLink getIssueLink(@javax.annotation.Nonnull String linkId) throws ApiException {
-    return getIssueLink(linkId, null);
-  }
-
-  /**
-   * Get issue link
-   * Returns an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the linked issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-   * @param linkId The ID of the issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @return IssueLink
-   * @throws ApiException if fails to make API call
-   */
-  public IssueLink getIssueLink(@javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    ApiResponse<IssueLink> localVarResponse = getIssueLinkWithHttpInfo(linkId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue link
-   * Returns an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the linked issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-   * @param linkId The ID of the issue link. (required)
-   * @return ApiResponse&lt;IssueLink&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueLink> getIssueLinkWithHttpInfo(@javax.annotation.Nonnull String linkId) throws ApiException {
-    return getIssueLinkWithHttpInfo(linkId, null);
-  }
-
-  /**
-   * Get issue link
-   * Returns an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the linked issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
-   * @param linkId The ID of the issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;IssueLink&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueLink> getIssueLinkWithHttpInfo(@javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueLinkRequestBuilder(linkId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueLink", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<IssueLink>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        IssueLink responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<IssueLink>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<IssueLink>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issueLink/{linkId}"
+            .replace("{" + "linkId" + "}", localVarApiClient.escapeString(linkId.toString()));
 
-  private HttpRequest.Builder getIssueLinkRequestBuilder(@javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'linkId' is set
-    if (linkId == null) {
-      throw new ApiException(400, "Missing the required parameter 'linkId' when calling getIssueLink");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issueLink/{linkId}"
-        .replace("{linkId}", ApiClient.urlEncode(linkId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create issue link
-   * Creates a link between two issues. Use this operation to indicate a relationship between two issues and optionally add a comment to the from (outward) issue. To use this resource the site must have [Issue Linking](https://confluence.atlassian.com/x/yoXKM) enabled.  This resource returns nothing on the creation of an issue link. To obtain the ID of the issue link, use &#x60;https://your-domain.atlassian.net/rest/api/3/issue/[linked issue key]?fields&#x3D;issuelinks&#x60;.  If the link request duplicates a link, the response indicates that the issue link was created. If the request included a comment, the comment is added.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues to be linked,  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) on the project containing the from (outward) issue,  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param linkIssueRequestJsonBean The issue link request. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object linkIssues(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean) throws ApiException {
-    return linkIssues(linkIssueRequestJsonBean, null);
-  }
-
-  /**
-   * Create issue link
-   * Creates a link between two issues. Use this operation to indicate a relationship between two issues and optionally add a comment to the from (outward) issue. To use this resource the site must have [Issue Linking](https://confluence.atlassian.com/x/yoXKM) enabled.  This resource returns nothing on the creation of an issue link. To obtain the ID of the issue link, use &#x60;https://your-domain.atlassian.net/rest/api/3/issue/[linked issue key]?fields&#x3D;issuelinks&#x60;.  If the link request duplicates a link, the response indicates that the issue link was created. If the request included a comment, the comment is added.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues to be linked,  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) on the project containing the from (outward) issue,  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param linkIssueRequestJsonBean The issue link request. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object linkIssues(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = linkIssuesWithHttpInfo(linkIssueRequestJsonBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create issue link
-   * Creates a link between two issues. Use this operation to indicate a relationship between two issues and optionally add a comment to the from (outward) issue. To use this resource the site must have [Issue Linking](https://confluence.atlassian.com/x/yoXKM) enabled.  This resource returns nothing on the creation of an issue link. To obtain the ID of the issue link, use &#x60;https://your-domain.atlassian.net/rest/api/3/issue/[linked issue key]?fields&#x3D;issuelinks&#x60;.  If the link request duplicates a link, the response indicates that the issue link was created. If the request included a comment, the comment is added.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues to be linked,  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) on the project containing the from (outward) issue,  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param linkIssueRequestJsonBean The issue link request. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> linkIssuesWithHttpInfo(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean) throws ApiException {
-    return linkIssuesWithHttpInfo(linkIssueRequestJsonBean, null);
-  }
-
-  /**
-   * Create issue link
-   * Creates a link between two issues. Use this operation to indicate a relationship between two issues and optionally add a comment to the from (outward) issue. To use this resource the site must have [Issue Linking](https://confluence.atlassian.com/x/yoXKM) enabled.  This resource returns nothing on the creation of an issue link. To obtain the ID of the issue link, use &#x60;https://your-domain.atlassian.net/rest/api/3/issue/[linked issue key]?fields&#x3D;issuelinks&#x60;.  If the link request duplicates a link, the response indicates that the issue link was created. If the request included a comment, the comment is added.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues to be linked,  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) on the project containing the from (outward) issue,  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param linkIssueRequestJsonBean The issue link request. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> linkIssuesWithHttpInfo(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = linkIssuesRequestBuilder(linkIssueRequestJsonBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("linkIssues", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder linkIssuesRequestBuilder(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'linkIssueRequestJsonBean' is set
-    if (linkIssueRequestJsonBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'linkIssueRequestJsonBean' when calling linkIssues");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteIssueLinkValidateBeforeCall(@javax.annotation.Nonnull String linkId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'linkId' is set
+        if (linkId == null) {
+            throw new ApiException("Missing the required parameter 'linkId' when calling deleteIssueLink(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/issueLink";
+        return deleteIssueLinkCall(linkId, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(linkIssueRequestJsonBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete issue link
+     * Deletes an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
+     * @param linkId The ID of the issue link. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue link ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the issue link is not found.  *  the user doesn&#39;t have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteIssueLink(@javax.annotation.Nonnull String linkId) throws ApiException {
+        deleteIssueLinkWithHttpInfo(linkId);
+    }
+
+    /**
+     * Delete issue link
+     * Deletes an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
+     * @param linkId The ID of the issue link. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue link ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the issue link is not found.  *  the user doesn&#39;t have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String linkId) throws ApiException {
+        okhttp3.Call localVarCall = deleteIssueLinkValidateBeforeCall(linkId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete issue link (asynchronously)
+     * Deletes an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  Browse project [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues in the link.  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one of the projects containing issues in the link.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
+     * @param linkId The ID of the issue link. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue link ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the issue link is not found.  *  the user doesn&#39;t have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteIssueLinkAsync(@javax.annotation.Nonnull String linkId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteIssueLinkValidateBeforeCall(linkId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueLink
+     * @param linkId The ID of the issue link. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue link ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the issue link is not found.  *  the user doesn&#39;t have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueLinkCall(@javax.annotation.Nonnull String linkId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issueLink/{linkId}"
+            .replace("{" + "linkId" + "}", localVarApiClient.escapeString(linkId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueLinkValidateBeforeCall(@javax.annotation.Nonnull String linkId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'linkId' is set
+        if (linkId == null) {
+            throw new ApiException("Missing the required parameter 'linkId' when calling getIssueLink(Async)");
+        }
+
+        return getIssueLinkCall(linkId, _callback);
+
+    }
+
+    /**
+     * Get issue link
+     * Returns an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the linked issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
+     * @param linkId The ID of the issue link. (required)
+     * @return IssueLink
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue link ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the issue link is not found.  *  the user doesn&#39;t have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public IssueLink getIssueLink(@javax.annotation.Nonnull String linkId) throws ApiException {
+        ApiResponse<IssueLink> localVarResp = getIssueLinkWithHttpInfo(linkId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue link
+     * Returns an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the linked issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
+     * @param linkId The ID of the issue link. (required)
+     * @return ApiResponse&lt;IssueLink&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue link ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the issue link is not found.  *  the user doesn&#39;t have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<IssueLink> getIssueLinkWithHttpInfo(@javax.annotation.Nonnull String linkId) throws ApiException {
+        okhttp3.Call localVarCall = getIssueLinkValidateBeforeCall(linkId, null);
+        Type localVarReturnType = new TypeToken<IssueLink>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue link (asynchronously)
+     * Returns an issue link.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the linked issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, permission to view both of the issues.
+     * @param linkId The ID of the issue link. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue link ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the issue link is not found.  *  the user doesn&#39;t have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueLinkAsync(@javax.annotation.Nonnull String linkId, final ApiCallback<IssueLink> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueLinkValidateBeforeCall(linkId, _callback);
+        Type localVarReturnType = new TypeToken<IssueLink>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for linkIssues
+     * @param linkIssueRequestJsonBean The issue link request. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the comment is not created. The response contains an error message indicating why the comment wasn&#39;t created. The issue link is also not created. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the user cannot view one or both of the issues. For example, the user doesn&#39;t have *Browse project* project permission for a project containing one of the issues.  *  the user does not have *link issues* project permission.  *  either of the link issues are not found.  *  the issue link type is not found. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit for issue links has been breached. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call linkIssuesCall(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = linkIssueRequestJsonBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issueLink";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call linkIssuesValidateBeforeCall(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'linkIssueRequestJsonBean' is set
+        if (linkIssueRequestJsonBean == null) {
+            throw new ApiException("Missing the required parameter 'linkIssueRequestJsonBean' when calling linkIssues(Async)");
+        }
+
+        return linkIssuesCall(linkIssueRequestJsonBean, _callback);
+
+    }
+
+    /**
+     * Create issue link
+     * Creates a link between two issues. Use this operation to indicate a relationship between two issues and optionally add a comment to the from (outward) issue. To use this resource the site must have [Issue Linking](https://confluence.atlassian.com/x/yoXKM) enabled.  This resource returns nothing on the creation of an issue link. To obtain the ID of the issue link, use &#x60;https://your-domain.atlassian.net/rest/api/3/issue/[linked issue key]?fields&#x3D;issuelinks&#x60;.  If the link request duplicates a link, the response indicates that the issue link was created. If the request included a comment, the comment is added.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues to be linked,  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) on the project containing the from (outward) issue,  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param linkIssueRequestJsonBean The issue link request. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the comment is not created. The response contains an error message indicating why the comment wasn&#39;t created. The issue link is also not created. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the user cannot view one or both of the issues. For example, the user doesn&#39;t have *Browse project* project permission for a project containing one of the issues.  *  the user does not have *link issues* project permission.  *  either of the link issues are not found.  *  the issue link type is not found. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit for issue links has been breached. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object linkIssues(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean) throws ApiException {
+        ApiResponse<Object> localVarResp = linkIssuesWithHttpInfo(linkIssueRequestJsonBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Create issue link
+     * Creates a link between two issues. Use this operation to indicate a relationship between two issues and optionally add a comment to the from (outward) issue. To use this resource the site must have [Issue Linking](https://confluence.atlassian.com/x/yoXKM) enabled.  This resource returns nothing on the creation of an issue link. To obtain the ID of the issue link, use &#x60;https://your-domain.atlassian.net/rest/api/3/issue/[linked issue key]?fields&#x3D;issuelinks&#x60;.  If the link request duplicates a link, the response indicates that the issue link was created. If the request included a comment, the comment is added.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues to be linked,  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) on the project containing the from (outward) issue,  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param linkIssueRequestJsonBean The issue link request. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the comment is not created. The response contains an error message indicating why the comment wasn&#39;t created. The issue link is also not created. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the user cannot view one or both of the issues. For example, the user doesn&#39;t have *Browse project* project permission for a project containing one of the issues.  *  the user does not have *link issues* project permission.  *  either of the link issues are not found.  *  the issue link type is not found. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit for issue links has been breached. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> linkIssuesWithHttpInfo(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean) throws ApiException {
+        okhttp3.Call localVarCall = linkIssuesValidateBeforeCall(linkIssueRequestJsonBean, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create issue link (asynchronously)
+     * Creates a link between two issues. Use this operation to indicate a relationship between two issues and optionally add a comment to the from (outward) issue. To use this resource the site must have [Issue Linking](https://confluence.atlassian.com/x/yoXKM) enabled.  This resource returns nothing on the creation of an issue link. To obtain the ID of the issue link, use &#x60;https://your-domain.atlassian.net/rest/api/3/issue/[linked issue key]?fields&#x3D;issuelinks&#x60;.  If the link request duplicates a link, the response indicates that the issue link was created. If the request included a comment, the comment is added.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse project* [project permission](https://confluence.atlassian.com/x/yodKLg) for all the projects containing the issues to be linked,  *  *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) on the project containing the from (outward) issue,  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param linkIssueRequestJsonBean The issue link request. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the comment is not created. The response contains an error message indicating why the comment wasn&#39;t created. The issue link is also not created. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  issue linking is disabled.  *  the user cannot view one or both of the issues. For example, the user doesn&#39;t have *Browse project* project permission for a project containing one of the issues.  *  the user does not have *link issues* project permission.  *  either of the link issues are not found.  *  the issue link type is not found. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit for issue links has been breached. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call linkIssuesAsync(@javax.annotation.Nonnull LinkIssueRequestJsonBean linkIssueRequestJsonBean, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = linkIssuesValidateBeforeCall(linkIssueRequestJsonBean, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

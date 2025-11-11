@@ -13,44 +13,59 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JQLQueryWithUnknownUsers;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The converted JQL queries.
  */
-@JsonPropertyOrder({
-  ConvertedJQLQueries.JSON_PROPERTY_QUERIES_WITH_UNKNOWN_USERS,
-  ConvertedJQLQueries.JSON_PROPERTY_QUERY_STRINGS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ConvertedJQLQueries {
-  public static final String JSON_PROPERTY_QUERIES_WITH_UNKNOWN_USERS = "queriesWithUnknownUsers";
+  public static final String SERIALIZED_NAME_QUERIES_WITH_UNKNOWN_USERS = "queriesWithUnknownUsers";
+  @SerializedName(SERIALIZED_NAME_QUERIES_WITH_UNKNOWN_USERS)
   @javax.annotation.Nullable
   private List<JQLQueryWithUnknownUsers> queriesWithUnknownUsers = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_QUERY_STRINGS = "queryStrings";
+  public static final String SERIALIZED_NAME_QUERY_STRINGS = "queryStrings";
+  @SerializedName(SERIALIZED_NAME_QUERY_STRINGS)
   @javax.annotation.Nullable
   private List<String> queryStrings = new ArrayList<>();
 
-  public ConvertedJQLQueries() { 
+  public ConvertedJQLQueries() {
   }
 
   public ConvertedJQLQueries queriesWithUnknownUsers(@javax.annotation.Nullable List<JQLQueryWithUnknownUsers> queriesWithUnknownUsers) {
@@ -71,15 +86,10 @@ public class ConvertedJQLQueries {
    * @return queriesWithUnknownUsers
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUERIES_WITH_UNKNOWN_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JQLQueryWithUnknownUsers> getQueriesWithUnknownUsers() {
     return queriesWithUnknownUsers;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUERIES_WITH_UNKNOWN_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueriesWithUnknownUsers(@javax.annotation.Nullable List<JQLQueryWithUnknownUsers> queriesWithUnknownUsers) {
     this.queriesWithUnknownUsers = queriesWithUnknownUsers;
   }
@@ -103,23 +113,16 @@ public class ConvertedJQLQueries {
    * @return queryStrings
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUERY_STRINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getQueryStrings() {
     return queryStrings;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUERY_STRINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueryStrings(@javax.annotation.Nullable List<String> queryStrings) {
     this.queryStrings = queryStrings;
   }
 
 
-  /**
-   * Return true if this ConvertedJQLQueries object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -159,58 +162,106 @@ public class ConvertedJQLQueries {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("queriesWithUnknownUsers", "queryStrings"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ConvertedJQLQueries
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `queriesWithUnknownUsers` to the URL query string
-    if (getQueriesWithUnknownUsers() != null) {
-      for (int i = 0; i < getQueriesWithUnknownUsers().size(); i++) {
-        if (getQueriesWithUnknownUsers().get(i) != null) {
-          joiner.add(getQueriesWithUnknownUsers().get(i).toUrlQueryString(String.format(Locale.ROOT, "%squeriesWithUnknownUsers%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ConvertedJQLQueries.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ConvertedJQLQueries is not found in the empty JSON string", ConvertedJQLQueries.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `queryStrings` to the URL query string
-    if (getQueryStrings() != null) {
-      for (int i = 0; i < getQueryStrings().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%squeryStrings%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getQueryStrings().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ConvertedJQLQueries.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ConvertedJQLQueries` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("queriesWithUnknownUsers") != null && !jsonObj.get("queriesWithUnknownUsers").isJsonNull()) {
+        JsonArray jsonArrayqueriesWithUnknownUsers = jsonObj.getAsJsonArray("queriesWithUnknownUsers");
+        if (jsonArrayqueriesWithUnknownUsers != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("queriesWithUnknownUsers").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `queriesWithUnknownUsers` to be an array in the JSON string but got `%s`", jsonObj.get("queriesWithUnknownUsers").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `queriesWithUnknownUsers` (array)
+          for (int i = 0; i < jsonArrayqueriesWithUnknownUsers.size(); i++) {
+            JQLQueryWithUnknownUsers.validateJsonElement(jsonArrayqueriesWithUnknownUsers.get(i));
+          };
+        }
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("queryStrings") != null && !jsonObj.get("queryStrings").isJsonNull() && !jsonObj.get("queryStrings").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `queryStrings` to be an array in the JSON string but got `%s`", jsonObj.get("queryStrings").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ConvertedJQLQueries.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ConvertedJQLQueries' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ConvertedJQLQueries> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ConvertedJQLQueries.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ConvertedJQLQueries>() {
+           @Override
+           public void write(JsonWriter out, ConvertedJQLQueries value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ConvertedJQLQueries read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ConvertedJQLQueries given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ConvertedJQLQueries
+   * @throws IOException if the JSON string is invalid with respect to ConvertedJQLQueries
+   */
+  public static ConvertedJQLQueries fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ConvertedJQLQueries.class);
+  }
+
+  /**
+   * Convert an instance of ConvertedJQLQueries to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

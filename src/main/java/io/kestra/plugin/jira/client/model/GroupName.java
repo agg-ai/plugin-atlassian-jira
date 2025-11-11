@@ -13,62 +13,74 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a group.
  */
-@JsonPropertyOrder({
-  GroupName.JSON_PROPERTY_GROUP_ID,
-  GroupName.JSON_PROPERTY_NAME,
-  GroupName.JSON_PROPERTY_SELF
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class GroupName {
-  public static final String JSON_PROPERTY_GROUP_ID = "groupId";
-  private JsonNullable<String> groupId = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_GROUP_ID = "groupId";
+  @SerializedName(SERIALIZED_NAME_GROUP_ID)
+  @javax.annotation.Nullable
+  private String groupId;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public GroupName() { 
+  public GroupName() {
   }
 
-  @JsonCreator
   public GroupName(
-    @JsonProperty(JSON_PROPERTY_SELF) URI self
+     URI self
   ) {
-  this();
+    this();
     this.self = self;
   }
 
   public GroupName groupId(@javax.annotation.Nullable String groupId) {
-    this.groupId = JsonNullable.<String>of(groupId);
+    this.groupId = groupId;
     return this;
   }
 
@@ -77,25 +89,12 @@ public class GroupName {
    * @return groupId
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getGroupId() {
-        return groupId.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getGroupId_JsonNullable() {
     return groupId;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_GROUP_ID)
-  public void setGroupId_JsonNullable(JsonNullable<String> groupId) {
-    this.groupId = groupId;
   }
 
   public void setGroupId(@javax.annotation.Nullable String groupId) {
-    this.groupId = JsonNullable.<String>of(groupId);
+    this.groupId = groupId;
   }
 
 
@@ -109,15 +108,10 @@ public class GroupName {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -128,8 +122,6 @@ public class GroupName {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
@@ -137,9 +129,6 @@ public class GroupName {
 
 
 
-  /**
-   * Return true if this GroupName object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -149,7 +138,7 @@ public class GroupName {
       return false;
     }
     GroupName groupName = (GroupName) o;
-    return equalsNullable(this.groupId, groupName.groupId) &&
+    return Objects.equals(this.groupId, groupName.groupId) &&
         Objects.equals(this.name, groupName.name) &&
         Objects.equals(this.self, groupName.self);
   }
@@ -160,7 +149,7 @@ public class GroupName {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(groupId), name, self);
+    return Objects.hash(groupId, name, self);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -192,54 +181,97 @@ public class GroupName {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("groupId", "name", "self"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to GroupName
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!GroupName.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in GroupName is not found in the empty JSON string", GroupName.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!GroupName.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `GroupName` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("groupId") != null && !jsonObj.get("groupId").isJsonNull()) && !jsonObj.get("groupId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groupId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("groupId").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!GroupName.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'GroupName' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<GroupName> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(GroupName.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<GroupName>() {
+           @Override
+           public void write(JsonWriter out, GroupName value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public GroupName read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of GroupName given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of GroupName
+   * @throws IOException if the JSON string is invalid with respect to GroupName
+   */
+  public static GroupName fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, GroupName.class);
+  }
 
-    // add `groupId` to the URL query string
-    if (getGroupId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sgroupId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of GroupName to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

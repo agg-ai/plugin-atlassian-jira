@@ -13,70 +13,83 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ServiceRegistryTier;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * ServiceRegistry
  */
-@JsonPropertyOrder({
-  ServiceRegistry.JSON_PROPERTY_DESCRIPTION,
-  ServiceRegistry.JSON_PROPERTY_ID,
-  ServiceRegistry.JSON_PROPERTY_NAME,
-  ServiceRegistry.JSON_PROPERTY_ORGANIZATION_ID,
-  ServiceRegistry.JSON_PROPERTY_REVISION,
-  ServiceRegistry.JSON_PROPERTY_SERVICE_TIER
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ServiceRegistry {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
-  private JsonNullable<String> description = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
+  @javax.annotation.Nullable
+  private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private UUID id;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_ORGANIZATION_ID = "organizationId";
+  public static final String SERIALIZED_NAME_ORGANIZATION_ID = "organizationId";
+  @SerializedName(SERIALIZED_NAME_ORGANIZATION_ID)
   @javax.annotation.Nullable
   private String organizationId;
 
-  public static final String JSON_PROPERTY_REVISION = "revision";
+  public static final String SERIALIZED_NAME_REVISION = "revision";
+  @SerializedName(SERIALIZED_NAME_REVISION)
   @javax.annotation.Nullable
   private String revision;
 
-  public static final String JSON_PROPERTY_SERVICE_TIER = "serviceTier";
+  public static final String SERIALIZED_NAME_SERVICE_TIER = "serviceTier";
+  @SerializedName(SERIALIZED_NAME_SERVICE_TIER)
   @javax.annotation.Nullable
   private ServiceRegistryTier serviceTier;
 
-  public ServiceRegistry() { 
+  public ServiceRegistry() {
   }
 
   public ServiceRegistry description(@javax.annotation.Nullable String description) {
-    this.description = JsonNullable.<String>of(description);
+    this.description = description;
     return this;
   }
 
@@ -85,25 +98,12 @@ public class ServiceRegistry {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getDescription() {
-        return description.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getDescription_JsonNullable() {
     return description;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-  public void setDescription_JsonNullable(JsonNullable<String> description) {
-    this.description = description;
   }
 
   public void setDescription(@javax.annotation.Nullable String description) {
-    this.description = JsonNullable.<String>of(description);
+    this.description = description;
   }
 
 
@@ -117,15 +117,10 @@ public class ServiceRegistry {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable UUID id) {
     this.id = id;
   }
@@ -141,15 +136,10 @@ public class ServiceRegistry {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -165,15 +155,10 @@ public class ServiceRegistry {
    * @return organizationId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ORGANIZATION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOrganizationId() {
     return organizationId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ORGANIZATION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOrganizationId(@javax.annotation.Nullable String organizationId) {
     this.organizationId = organizationId;
   }
@@ -189,15 +174,10 @@ public class ServiceRegistry {
    * @return revision
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REVISION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRevision() {
     return revision;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_REVISION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRevision(@javax.annotation.Nullable String revision) {
     this.revision = revision;
   }
@@ -213,23 +193,16 @@ public class ServiceRegistry {
    * @return serviceTier
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SERVICE_TIER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ServiceRegistryTier getServiceTier() {
     return serviceTier;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SERVICE_TIER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServiceTier(@javax.annotation.Nullable ServiceRegistryTier serviceTier) {
     this.serviceTier = serviceTier;
   }
 
 
-  /**
-   * Return true if this ServiceRegistry object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -239,7 +212,7 @@ public class ServiceRegistry {
       return false;
     }
     ServiceRegistry serviceRegistry = (ServiceRegistry) o;
-    return equalsNullable(this.description, serviceRegistry.description) &&
+    return Objects.equals(this.description, serviceRegistry.description) &&
         Objects.equals(this.id, serviceRegistry.id) &&
         Objects.equals(this.name, serviceRegistry.name) &&
         Objects.equals(this.organizationId, serviceRegistry.organizationId) &&
@@ -253,7 +226,7 @@ public class ServiceRegistry {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(description), id, name, organizationId, revision, serviceTier);
+    return Objects.hash(description, id, name, organizationId, revision, serviceTier);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -288,69 +261,107 @@ public class ServiceRegistry {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "id", "name", "organizationId", "revision", "serviceTier"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ServiceRegistry
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ServiceRegistry.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ServiceRegistry is not found in the empty JSON string", ServiceRegistry.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ServiceRegistry.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ServiceRegistry` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("organizationId") != null && !jsonObj.get("organizationId").isJsonNull()) && !jsonObj.get("organizationId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `organizationId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("organizationId").toString()));
+      }
+      if ((jsonObj.get("revision") != null && !jsonObj.get("revision").isJsonNull()) && !jsonObj.get("revision").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `revision` to be a primitive type in the JSON string but got `%s`", jsonObj.get("revision").toString()));
+      }
+      // validate the optional field `serviceTier`
+      if (jsonObj.get("serviceTier") != null && !jsonObj.get("serviceTier").isJsonNull()) {
+        ServiceRegistryTier.validateJsonElement(jsonObj.get("serviceTier"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ServiceRegistry.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ServiceRegistry' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ServiceRegistry> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ServiceRegistry.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ServiceRegistry>() {
+           @Override
+           public void write(JsonWriter out, ServiceRegistry value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ServiceRegistry read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ServiceRegistry given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ServiceRegistry
+   * @throws IOException if the JSON string is invalid with respect to ServiceRegistry
+   */
+  public static ServiceRegistry fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ServiceRegistry.class);
+  }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `organizationId` to the URL query string
-    if (getOrganizationId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sorganizationId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOrganizationId()))));
-    }
-
-    // add `revision` to the URL query string
-    if (getRevision() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srevision%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRevision()))));
-    }
-
-    // add `serviceTier` to the URL query string
-    if (getServiceTier() != null) {
-      joiner.add(getServiceTier().toUrlQueryString(prefix + "serviceTier" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ServiceRegistry to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

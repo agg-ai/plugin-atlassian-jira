@@ -13,50 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * ExpandPrioritySchemePage
  */
-@JsonPropertyOrder({
-  ExpandPrioritySchemePage.JSON_PROPERTY_MAX_RESULTS,
-  ExpandPrioritySchemePage.JSON_PROPERTY_START_AT,
-  ExpandPrioritySchemePage.JSON_PROPERTY_TOTAL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ExpandPrioritySchemePage {
-  public static final String JSON_PROPERTY_MAX_RESULTS = "maxResults";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "maxResults";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nullable
   private Integer maxResults;
 
-  public static final String JSON_PROPERTY_START_AT = "startAt";
+  public static final String SERIALIZED_NAME_START_AT = "startAt";
+  @SerializedName(SERIALIZED_NAME_START_AT)
   @javax.annotation.Nullable
   private Long startAt;
 
-  public static final String JSON_PROPERTY_TOTAL = "total";
+  public static final String SERIALIZED_NAME_TOTAL = "total";
+  @SerializedName(SERIALIZED_NAME_TOTAL)
   @javax.annotation.Nullable
   private Long total;
 
-  public ExpandPrioritySchemePage() { 
+  public ExpandPrioritySchemePage() {
   }
 
   public ExpandPrioritySchemePage maxResults(@javax.annotation.Nullable Integer maxResults) {
@@ -69,15 +80,10 @@ public class ExpandPrioritySchemePage {
    * @return maxResults
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResults() {
     return maxResults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxResults(@javax.annotation.Nullable Integer maxResults) {
     this.maxResults = maxResults;
   }
@@ -93,15 +99,10 @@ public class ExpandPrioritySchemePage {
    * @return startAt
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartAt() {
     return startAt;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartAt(@javax.annotation.Nullable Long startAt) {
     this.startAt = startAt;
   }
@@ -117,15 +118,10 @@ public class ExpandPrioritySchemePage {
    * @return total
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getTotal() {
     return total;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTotal(@javax.annotation.Nullable Long total) {
     this.total = total;
   }
@@ -140,11 +136,11 @@ public class ExpandPrioritySchemePage {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the ExpandPrioritySchemePage instance itself
    */
-  @JsonAnySetter
   public ExpandPrioritySchemePage putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -154,18 +150,19 @@ public class ExpandPrioritySchemePage {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -174,9 +171,7 @@ public class ExpandPrioritySchemePage {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this ExpandPrioritySchemePage object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -220,54 +215,123 @@ public class ExpandPrioritySchemePage {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("maxResults", "startAt", "total"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ExpandPrioritySchemePage
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ExpandPrioritySchemePage.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ExpandPrioritySchemePage is not found in the empty JSON string", ExpandPrioritySchemePage.openapiRequiredFields.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ExpandPrioritySchemePage.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ExpandPrioritySchemePage' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ExpandPrioritySchemePage> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ExpandPrioritySchemePage.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ExpandPrioritySchemePage>() {
+           @Override
+           public void write(JsonWriter out, ExpandPrioritySchemePage value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ExpandPrioritySchemePage read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             ExpandPrioritySchemePage instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ExpandPrioritySchemePage given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ExpandPrioritySchemePage
+   * @throws IOException if the JSON string is invalid with respect to ExpandPrioritySchemePage
+   */
+  public static ExpandPrioritySchemePage fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ExpandPrioritySchemePage.class);
+  }
 
-    // add `maxResults` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smaxResults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
-
-    // add `startAt` to the URL query string
-    if (getStartAt() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartAt%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartAt()))));
-    }
-
-    // add `total` to the URL query string
-    if (getTotal() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stotal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTotal()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ExpandPrioritySchemePage to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

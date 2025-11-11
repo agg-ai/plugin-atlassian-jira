@@ -13,18 +13,13 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.CustomFieldPayload;
 import io.kestra.plugin.jira.client.model.FieldLayoutPayload;
 import io.kestra.plugin.jira.client.model.FieldLayoutSchemePayload;
@@ -32,69 +27,89 @@ import io.kestra.plugin.jira.client.model.IssueLayoutPayload;
 import io.kestra.plugin.jira.client.model.IssueTypeScreenSchemePayload;
 import io.kestra.plugin.jira.client.model.ScreenPayload;
 import io.kestra.plugin.jira.client.model.ScreenSchemePayload;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Defines the payload for the fields, screens, screen schemes, issue type screen schemes, field layouts, and field layout schemes
  */
-@JsonPropertyOrder({
-  FieldCapabilityPayload.JSON_PROPERTY_CUSTOM_FIELD_DEFINITIONS,
-  FieldCapabilityPayload.JSON_PROPERTY_FIELD_LAYOUT_SCHEME,
-  FieldCapabilityPayload.JSON_PROPERTY_FIELD_LAYOUTS,
-  FieldCapabilityPayload.JSON_PROPERTY_ISSUE_LAYOUTS,
-  FieldCapabilityPayload.JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME,
-  FieldCapabilityPayload.JSON_PROPERTY_SCREEN_SCHEME,
-  FieldCapabilityPayload.JSON_PROPERTY_SCREENS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FieldCapabilityPayload {
-  public static final String JSON_PROPERTY_CUSTOM_FIELD_DEFINITIONS = "customFieldDefinitions";
-  private JsonNullable<List<CustomFieldPayload>> customFieldDefinitions = JsonNullable.<List<CustomFieldPayload>>undefined();
+  public static final String SERIALIZED_NAME_CUSTOM_FIELD_DEFINITIONS = "customFieldDefinitions";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_FIELD_DEFINITIONS)
+  @javax.annotation.Nullable
+  private List<CustomFieldPayload> customFieldDefinitions;
 
-  public static final String JSON_PROPERTY_FIELD_LAYOUT_SCHEME = "fieldLayoutScheme";
-  private JsonNullable<FieldLayoutSchemePayload> fieldLayoutScheme = JsonNullable.<FieldLayoutSchemePayload>undefined();
+  public static final String SERIALIZED_NAME_FIELD_LAYOUT_SCHEME = "fieldLayoutScheme";
+  @SerializedName(SERIALIZED_NAME_FIELD_LAYOUT_SCHEME)
+  @javax.annotation.Nullable
+  private FieldLayoutSchemePayload fieldLayoutScheme;
 
-  public static final String JSON_PROPERTY_FIELD_LAYOUTS = "fieldLayouts";
-  private JsonNullable<List<FieldLayoutPayload>> fieldLayouts = JsonNullable.<List<FieldLayoutPayload>>undefined();
+  public static final String SERIALIZED_NAME_FIELD_LAYOUTS = "fieldLayouts";
+  @SerializedName(SERIALIZED_NAME_FIELD_LAYOUTS)
+  @javax.annotation.Nullable
+  private List<FieldLayoutPayload> fieldLayouts;
 
-  public static final String JSON_PROPERTY_ISSUE_LAYOUTS = "issueLayouts";
-  private JsonNullable<List<IssueLayoutPayload>> issueLayouts = JsonNullable.<List<IssueLayoutPayload>>undefined();
+  public static final String SERIALIZED_NAME_ISSUE_LAYOUTS = "issueLayouts";
+  @SerializedName(SERIALIZED_NAME_ISSUE_LAYOUTS)
+  @javax.annotation.Nullable
+  private List<IssueLayoutPayload> issueLayouts;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME = "issueTypeScreenScheme";
-  private JsonNullable<IssueTypeScreenSchemePayload> issueTypeScreenScheme = JsonNullable.<IssueTypeScreenSchemePayload>undefined();
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_SCREEN_SCHEME = "issueTypeScreenScheme";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_SCREEN_SCHEME)
+  @javax.annotation.Nullable
+  private IssueTypeScreenSchemePayload issueTypeScreenScheme;
 
-  public static final String JSON_PROPERTY_SCREEN_SCHEME = "screenScheme";
-  private JsonNullable<List<ScreenSchemePayload>> screenScheme = JsonNullable.<List<ScreenSchemePayload>>undefined();
+  public static final String SERIALIZED_NAME_SCREEN_SCHEME = "screenScheme";
+  @SerializedName(SERIALIZED_NAME_SCREEN_SCHEME)
+  @javax.annotation.Nullable
+  private List<ScreenSchemePayload> screenScheme;
 
-  public static final String JSON_PROPERTY_SCREENS = "screens";
-  private JsonNullable<List<ScreenPayload>> screens = JsonNullable.<List<ScreenPayload>>undefined();
+  public static final String SERIALIZED_NAME_SCREENS = "screens";
+  @SerializedName(SERIALIZED_NAME_SCREENS)
+  @javax.annotation.Nullable
+  private List<ScreenPayload> screens;
 
-  public FieldCapabilityPayload() { 
+  public FieldCapabilityPayload() {
   }
 
   public FieldCapabilityPayload customFieldDefinitions(@javax.annotation.Nullable List<CustomFieldPayload> customFieldDefinitions) {
-    this.customFieldDefinitions = JsonNullable.<List<CustomFieldPayload>>of(customFieldDefinitions);
+    this.customFieldDefinitions = customFieldDefinitions;
     return this;
   }
 
   public FieldCapabilityPayload addCustomFieldDefinitionsItem(CustomFieldPayload customFieldDefinitionsItem) {
-    if (this.customFieldDefinitions == null || !this.customFieldDefinitions.isPresent()) {
-      this.customFieldDefinitions = JsonNullable.<List<CustomFieldPayload>>of(new ArrayList<>());
+    if (this.customFieldDefinitions == null) {
+      this.customFieldDefinitions = new ArrayList<>();
     }
-    try {
-      this.customFieldDefinitions.get().add(customFieldDefinitionsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.customFieldDefinitions.add(customFieldDefinitionsItem);
     return this;
   }
 
@@ -103,30 +118,17 @@ public class FieldCapabilityPayload {
    * @return customFieldDefinitions
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<CustomFieldPayload> getCustomFieldDefinitions() {
-        return customFieldDefinitions.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELD_DEFINITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<CustomFieldPayload>> getCustomFieldDefinitions_JsonNullable() {
     return customFieldDefinitions;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CUSTOM_FIELD_DEFINITIONS)
-  public void setCustomFieldDefinitions_JsonNullable(JsonNullable<List<CustomFieldPayload>> customFieldDefinitions) {
-    this.customFieldDefinitions = customFieldDefinitions;
   }
 
   public void setCustomFieldDefinitions(@javax.annotation.Nullable List<CustomFieldPayload> customFieldDefinitions) {
-    this.customFieldDefinitions = JsonNullable.<List<CustomFieldPayload>>of(customFieldDefinitions);
+    this.customFieldDefinitions = customFieldDefinitions;
   }
 
 
   public FieldCapabilityPayload fieldLayoutScheme(@javax.annotation.Nullable FieldLayoutSchemePayload fieldLayoutScheme) {
-    this.fieldLayoutScheme = JsonNullable.<FieldLayoutSchemePayload>of(fieldLayoutScheme);
+    this.fieldLayoutScheme = fieldLayoutScheme;
     return this;
   }
 
@@ -135,42 +137,25 @@ public class FieldCapabilityPayload {
    * @return fieldLayoutScheme
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public FieldLayoutSchemePayload getFieldLayoutScheme() {
-        return fieldLayoutScheme.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_LAYOUT_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<FieldLayoutSchemePayload> getFieldLayoutScheme_JsonNullable() {
     return fieldLayoutScheme;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_FIELD_LAYOUT_SCHEME)
-  public void setFieldLayoutScheme_JsonNullable(JsonNullable<FieldLayoutSchemePayload> fieldLayoutScheme) {
-    this.fieldLayoutScheme = fieldLayoutScheme;
   }
 
   public void setFieldLayoutScheme(@javax.annotation.Nullable FieldLayoutSchemePayload fieldLayoutScheme) {
-    this.fieldLayoutScheme = JsonNullable.<FieldLayoutSchemePayload>of(fieldLayoutScheme);
+    this.fieldLayoutScheme = fieldLayoutScheme;
   }
 
 
   public FieldCapabilityPayload fieldLayouts(@javax.annotation.Nullable List<FieldLayoutPayload> fieldLayouts) {
-    this.fieldLayouts = JsonNullable.<List<FieldLayoutPayload>>of(fieldLayouts);
+    this.fieldLayouts = fieldLayouts;
     return this;
   }
 
   public FieldCapabilityPayload addFieldLayoutsItem(FieldLayoutPayload fieldLayoutsItem) {
-    if (this.fieldLayouts == null || !this.fieldLayouts.isPresent()) {
-      this.fieldLayouts = JsonNullable.<List<FieldLayoutPayload>>of(new ArrayList<>());
+    if (this.fieldLayouts == null) {
+      this.fieldLayouts = new ArrayList<>();
     }
-    try {
-      this.fieldLayouts.get().add(fieldLayoutsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.fieldLayouts.add(fieldLayoutsItem);
     return this;
   }
 
@@ -179,42 +164,25 @@ public class FieldCapabilityPayload {
    * @return fieldLayouts
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<FieldLayoutPayload> getFieldLayouts() {
-        return fieldLayouts.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_LAYOUTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<FieldLayoutPayload>> getFieldLayouts_JsonNullable() {
     return fieldLayouts;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_FIELD_LAYOUTS)
-  public void setFieldLayouts_JsonNullable(JsonNullable<List<FieldLayoutPayload>> fieldLayouts) {
-    this.fieldLayouts = fieldLayouts;
   }
 
   public void setFieldLayouts(@javax.annotation.Nullable List<FieldLayoutPayload> fieldLayouts) {
-    this.fieldLayouts = JsonNullable.<List<FieldLayoutPayload>>of(fieldLayouts);
+    this.fieldLayouts = fieldLayouts;
   }
 
 
   public FieldCapabilityPayload issueLayouts(@javax.annotation.Nullable List<IssueLayoutPayload> issueLayouts) {
-    this.issueLayouts = JsonNullable.<List<IssueLayoutPayload>>of(issueLayouts);
+    this.issueLayouts = issueLayouts;
     return this;
   }
 
   public FieldCapabilityPayload addIssueLayoutsItem(IssueLayoutPayload issueLayoutsItem) {
-    if (this.issueLayouts == null || !this.issueLayouts.isPresent()) {
-      this.issueLayouts = JsonNullable.<List<IssueLayoutPayload>>of(new ArrayList<>());
+    if (this.issueLayouts == null) {
+      this.issueLayouts = new ArrayList<>();
     }
-    try {
-      this.issueLayouts.get().add(issueLayoutsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.issueLayouts.add(issueLayoutsItem);
     return this;
   }
 
@@ -223,30 +191,17 @@ public class FieldCapabilityPayload {
    * @return issueLayouts
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<IssueLayoutPayload> getIssueLayouts() {
-        return issueLayouts.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_LAYOUTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<IssueLayoutPayload>> getIssueLayouts_JsonNullable() {
     return issueLayouts;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ISSUE_LAYOUTS)
-  public void setIssueLayouts_JsonNullable(JsonNullable<List<IssueLayoutPayload>> issueLayouts) {
-    this.issueLayouts = issueLayouts;
   }
 
   public void setIssueLayouts(@javax.annotation.Nullable List<IssueLayoutPayload> issueLayouts) {
-    this.issueLayouts = JsonNullable.<List<IssueLayoutPayload>>of(issueLayouts);
+    this.issueLayouts = issueLayouts;
   }
 
 
   public FieldCapabilityPayload issueTypeScreenScheme(@javax.annotation.Nullable IssueTypeScreenSchemePayload issueTypeScreenScheme) {
-    this.issueTypeScreenScheme = JsonNullable.<IssueTypeScreenSchemePayload>of(issueTypeScreenScheme);
+    this.issueTypeScreenScheme = issueTypeScreenScheme;
     return this;
   }
 
@@ -255,42 +210,25 @@ public class FieldCapabilityPayload {
    * @return issueTypeScreenScheme
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public IssueTypeScreenSchemePayload getIssueTypeScreenScheme() {
-        return issueTypeScreenScheme.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<IssueTypeScreenSchemePayload> getIssueTypeScreenScheme_JsonNullable() {
     return issueTypeScreenScheme;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME)
-  public void setIssueTypeScreenScheme_JsonNullable(JsonNullable<IssueTypeScreenSchemePayload> issueTypeScreenScheme) {
-    this.issueTypeScreenScheme = issueTypeScreenScheme;
   }
 
   public void setIssueTypeScreenScheme(@javax.annotation.Nullable IssueTypeScreenSchemePayload issueTypeScreenScheme) {
-    this.issueTypeScreenScheme = JsonNullable.<IssueTypeScreenSchemePayload>of(issueTypeScreenScheme);
+    this.issueTypeScreenScheme = issueTypeScreenScheme;
   }
 
 
   public FieldCapabilityPayload screenScheme(@javax.annotation.Nullable List<ScreenSchemePayload> screenScheme) {
-    this.screenScheme = JsonNullable.<List<ScreenSchemePayload>>of(screenScheme);
+    this.screenScheme = screenScheme;
     return this;
   }
 
   public FieldCapabilityPayload addScreenSchemeItem(ScreenSchemePayload screenSchemeItem) {
-    if (this.screenScheme == null || !this.screenScheme.isPresent()) {
-      this.screenScheme = JsonNullable.<List<ScreenSchemePayload>>of(new ArrayList<>());
+    if (this.screenScheme == null) {
+      this.screenScheme = new ArrayList<>();
     }
-    try {
-      this.screenScheme.get().add(screenSchemeItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.screenScheme.add(screenSchemeItem);
     return this;
   }
 
@@ -299,42 +237,25 @@ public class FieldCapabilityPayload {
    * @return screenScheme
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<ScreenSchemePayload> getScreenScheme() {
-        return screenScheme.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_SCREEN_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<ScreenSchemePayload>> getScreenScheme_JsonNullable() {
     return screenScheme;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SCREEN_SCHEME)
-  public void setScreenScheme_JsonNullable(JsonNullable<List<ScreenSchemePayload>> screenScheme) {
-    this.screenScheme = screenScheme;
   }
 
   public void setScreenScheme(@javax.annotation.Nullable List<ScreenSchemePayload> screenScheme) {
-    this.screenScheme = JsonNullable.<List<ScreenSchemePayload>>of(screenScheme);
+    this.screenScheme = screenScheme;
   }
 
 
   public FieldCapabilityPayload screens(@javax.annotation.Nullable List<ScreenPayload> screens) {
-    this.screens = JsonNullable.<List<ScreenPayload>>of(screens);
+    this.screens = screens;
     return this;
   }
 
   public FieldCapabilityPayload addScreensItem(ScreenPayload screensItem) {
-    if (this.screens == null || !this.screens.isPresent()) {
-      this.screens = JsonNullable.<List<ScreenPayload>>of(new ArrayList<>());
+    if (this.screens == null) {
+      this.screens = new ArrayList<>();
     }
-    try {
-      this.screens.get().add(screensItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.screens.add(screensItem);
     return this;
   }
 
@@ -343,31 +264,16 @@ public class FieldCapabilityPayload {
    * @return screens
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<ScreenPayload> getScreens() {
-        return screens.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_SCREENS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<ScreenPayload>> getScreens_JsonNullable() {
     return screens;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SCREENS)
-  public void setScreens_JsonNullable(JsonNullable<List<ScreenPayload>> screens) {
-    this.screens = screens;
   }
 
   public void setScreens(@javax.annotation.Nullable List<ScreenPayload> screens) {
-    this.screens = JsonNullable.<List<ScreenPayload>>of(screens);
+    this.screens = screens;
   }
 
 
-  /**
-   * Return true if this FieldCapabilityPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -377,13 +283,13 @@ public class FieldCapabilityPayload {
       return false;
     }
     FieldCapabilityPayload fieldCapabilityPayload = (FieldCapabilityPayload) o;
-    return equalsNullable(this.customFieldDefinitions, fieldCapabilityPayload.customFieldDefinitions) &&
-        equalsNullable(this.fieldLayoutScheme, fieldCapabilityPayload.fieldLayoutScheme) &&
-        equalsNullable(this.fieldLayouts, fieldCapabilityPayload.fieldLayouts) &&
-        equalsNullable(this.issueLayouts, fieldCapabilityPayload.issueLayouts) &&
-        equalsNullable(this.issueTypeScreenScheme, fieldCapabilityPayload.issueTypeScreenScheme) &&
-        equalsNullable(this.screenScheme, fieldCapabilityPayload.screenScheme) &&
-        equalsNullable(this.screens, fieldCapabilityPayload.screens);
+    return Objects.equals(this.customFieldDefinitions, fieldCapabilityPayload.customFieldDefinitions) &&
+        Objects.equals(this.fieldLayoutScheme, fieldCapabilityPayload.fieldLayoutScheme) &&
+        Objects.equals(this.fieldLayouts, fieldCapabilityPayload.fieldLayouts) &&
+        Objects.equals(this.issueLayouts, fieldCapabilityPayload.issueLayouts) &&
+        Objects.equals(this.issueTypeScreenScheme, fieldCapabilityPayload.issueTypeScreenScheme) &&
+        Objects.equals(this.screenScheme, fieldCapabilityPayload.screenScheme) &&
+        Objects.equals(this.screens, fieldCapabilityPayload.screens);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -392,7 +298,7 @@ public class FieldCapabilityPayload {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(customFieldDefinitions), hashCodeNullable(fieldLayoutScheme), hashCodeNullable(fieldLayouts), hashCodeNullable(issueLayouts), hashCodeNullable(issueTypeScreenScheme), hashCodeNullable(screenScheme), hashCodeNullable(screens));
+    return Objects.hash(customFieldDefinitions, fieldLayoutScheme, fieldLayouts, issueLayouts, issueTypeScreenScheme, screenScheme, screens);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -428,99 +334,166 @@ public class FieldCapabilityPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("customFieldDefinitions", "fieldLayoutScheme", "fieldLayouts", "issueLayouts", "issueTypeScreenScheme", "screenScheme", "screens"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FieldCapabilityPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `customFieldDefinitions` to the URL query string
-    if (getCustomFieldDefinitions() != null) {
-      for (int i = 0; i < getCustomFieldDefinitions().size(); i++) {
-        if (getCustomFieldDefinitions().get(i) != null) {
-          joiner.add(getCustomFieldDefinitions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scustomFieldDefinitions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FieldCapabilityPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FieldCapabilityPayload is not found in the empty JSON string", FieldCapabilityPayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `fieldLayoutScheme` to the URL query string
-    if (getFieldLayoutScheme() != null) {
-      joiner.add(getFieldLayoutScheme().toUrlQueryString(prefix + "fieldLayoutScheme" + suffix));
-    }
-
-    // add `fieldLayouts` to the URL query string
-    if (getFieldLayouts() != null) {
-      for (int i = 0; i < getFieldLayouts().size(); i++) {
-        if (getFieldLayouts().get(i) != null) {
-          joiner.add(getFieldLayouts().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sfieldLayouts%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FieldCapabilityPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FieldCapabilityPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("customFieldDefinitions") != null && !jsonObj.get("customFieldDefinitions").isJsonNull()) {
+        JsonArray jsonArraycustomFieldDefinitions = jsonObj.getAsJsonArray("customFieldDefinitions");
+        if (jsonArraycustomFieldDefinitions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("customFieldDefinitions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customFieldDefinitions` to be an array in the JSON string but got `%s`", jsonObj.get("customFieldDefinitions").toString()));
+          }
 
-    // add `issueLayouts` to the URL query string
-    if (getIssueLayouts() != null) {
-      for (int i = 0; i < getIssueLayouts().size(); i++) {
-        if (getIssueLayouts().get(i) != null) {
-          joiner.add(getIssueLayouts().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissueLayouts%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `customFieldDefinitions` (array)
+          for (int i = 0; i < jsonArraycustomFieldDefinitions.size(); i++) {
+            CustomFieldPayload.validateJsonElement(jsonArraycustomFieldDefinitions.get(i));
+          };
         }
       }
-    }
+      // validate the optional field `fieldLayoutScheme`
+      if (jsonObj.get("fieldLayoutScheme") != null && !jsonObj.get("fieldLayoutScheme").isJsonNull()) {
+        FieldLayoutSchemePayload.validateJsonElement(jsonObj.get("fieldLayoutScheme"));
+      }
+      if (jsonObj.get("fieldLayouts") != null && !jsonObj.get("fieldLayouts").isJsonNull()) {
+        JsonArray jsonArrayfieldLayouts = jsonObj.getAsJsonArray("fieldLayouts");
+        if (jsonArrayfieldLayouts != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("fieldLayouts").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldLayouts` to be an array in the JSON string but got `%s`", jsonObj.get("fieldLayouts").toString()));
+          }
 
-    // add `issueTypeScreenScheme` to the URL query string
-    if (getIssueTypeScreenScheme() != null) {
-      joiner.add(getIssueTypeScreenScheme().toUrlQueryString(prefix + "issueTypeScreenScheme" + suffix));
-    }
-
-    // add `screenScheme` to the URL query string
-    if (getScreenScheme() != null) {
-      for (int i = 0; i < getScreenScheme().size(); i++) {
-        if (getScreenScheme().get(i) != null) {
-          joiner.add(getScreenScheme().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sscreenScheme%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `fieldLayouts` (array)
+          for (int i = 0; i < jsonArrayfieldLayouts.size(); i++) {
+            FieldLayoutPayload.validateJsonElement(jsonArrayfieldLayouts.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("issueLayouts") != null && !jsonObj.get("issueLayouts").isJsonNull()) {
+        JsonArray jsonArrayissueLayouts = jsonObj.getAsJsonArray("issueLayouts");
+        if (jsonArrayissueLayouts != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issueLayouts").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueLayouts` to be an array in the JSON string but got `%s`", jsonObj.get("issueLayouts").toString()));
+          }
 
-    // add `screens` to the URL query string
-    if (getScreens() != null) {
-      for (int i = 0; i < getScreens().size(); i++) {
-        if (getScreens().get(i) != null) {
-          joiner.add(getScreens().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sscreens%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `issueLayouts` (array)
+          for (int i = 0; i < jsonArrayissueLayouts.size(); i++) {
+            IssueLayoutPayload.validateJsonElement(jsonArrayissueLayouts.get(i));
+          };
         }
       }
-    }
+      // validate the optional field `issueTypeScreenScheme`
+      if (jsonObj.get("issueTypeScreenScheme") != null && !jsonObj.get("issueTypeScreenScheme").isJsonNull()) {
+        IssueTypeScreenSchemePayload.validateJsonElement(jsonObj.get("issueTypeScreenScheme"));
+      }
+      if (jsonObj.get("screenScheme") != null && !jsonObj.get("screenScheme").isJsonNull()) {
+        JsonArray jsonArrayscreenScheme = jsonObj.getAsJsonArray("screenScheme");
+        if (jsonArrayscreenScheme != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("screenScheme").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `screenScheme` to be an array in the JSON string but got `%s`", jsonObj.get("screenScheme").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `screenScheme` (array)
+          for (int i = 0; i < jsonArrayscreenScheme.size(); i++) {
+            ScreenSchemePayload.validateJsonElement(jsonArrayscreenScheme.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("screens") != null && !jsonObj.get("screens").isJsonNull()) {
+        JsonArray jsonArrayscreens = jsonObj.getAsJsonArray("screens");
+        if (jsonArrayscreens != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("screens").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `screens` to be an array in the JSON string but got `%s`", jsonObj.get("screens").toString()));
+          }
+
+          // validate the optional field `screens` (array)
+          for (int i = 0; i < jsonArrayscreens.size(); i++) {
+            ScreenPayload.validateJsonElement(jsonArrayscreens.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FieldCapabilityPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FieldCapabilityPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FieldCapabilityPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FieldCapabilityPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<FieldCapabilityPayload>() {
+           @Override
+           public void write(JsonWriter out, FieldCapabilityPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FieldCapabilityPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FieldCapabilityPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FieldCapabilityPayload
+   * @throws IOException if the JSON string is invalid with respect to FieldCapabilityPayload
+   */
+  public static FieldCapabilityPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FieldCapabilityPayload.class);
+  }
+
+  /**
+   * Convert an instance of FieldCapabilityPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

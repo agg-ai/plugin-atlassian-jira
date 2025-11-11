@@ -13,51 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.BulkChangeOwnerDetails;
 import io.kestra.plugin.jira.client.model.PermissionDetails;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a request to bulk edit shareable entity.
  */
-@JsonPropertyOrder({
-  BulkEditShareableEntityRequest.JSON_PROPERTY_ACTION,
-  BulkEditShareableEntityRequest.JSON_PROPERTY_CHANGE_OWNER_DETAILS,
-  BulkEditShareableEntityRequest.JSON_PROPERTY_ENTITY_IDS,
-  BulkEditShareableEntityRequest.JSON_PROPERTY_EXTEND_ADMIN_PERMISSIONS,
-  BulkEditShareableEntityRequest.JSON_PROPERTY_PERMISSION_DETAILS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkEditShareableEntityRequest {
   /**
    * Allowed action for bulk edit shareable entity
    */
+  @JsonAdapter(ActionEnum.Adapter.class)
   public enum ActionEnum {
-    CHANGE_OWNER(String.valueOf("changeOwner")),
+    CHANGE_OWNER("changeOwner"),
     
-    CHANGE_PERMISSION(String.valueOf("changePermission")),
+    CHANGE_PERMISSION("changePermission"),
     
-    ADD_PERMISSION(String.valueOf("addPermission")),
+    ADD_PERMISSION("addPermission"),
     
-    REMOVE_PERMISSION(String.valueOf("removePermission"));
+    REMOVE_PERMISSION("removePermission");
 
     private String value;
 
@@ -65,7 +75,6 @@ public class BulkEditShareableEntityRequest {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -75,7 +84,6 @@ public class BulkEditShareableEntityRequest {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ActionEnum fromValue(String value) {
       for (ActionEnum b : ActionEnum.values()) {
         if (b.value.equals(value)) {
@@ -84,29 +92,52 @@ public class BulkEditShareableEntityRequest {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ActionEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ActionEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ActionEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ActionEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ActionEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ACTION = "action";
+  public static final String SERIALIZED_NAME_ACTION = "action";
+  @SerializedName(SERIALIZED_NAME_ACTION)
   @javax.annotation.Nonnull
   private ActionEnum action;
 
-  public static final String JSON_PROPERTY_CHANGE_OWNER_DETAILS = "changeOwnerDetails";
+  public static final String SERIALIZED_NAME_CHANGE_OWNER_DETAILS = "changeOwnerDetails";
+  @SerializedName(SERIALIZED_NAME_CHANGE_OWNER_DETAILS)
   @javax.annotation.Nullable
   private BulkChangeOwnerDetails changeOwnerDetails;
 
-  public static final String JSON_PROPERTY_ENTITY_IDS = "entityIds";
+  public static final String SERIALIZED_NAME_ENTITY_IDS = "entityIds";
+  @SerializedName(SERIALIZED_NAME_ENTITY_IDS)
   @javax.annotation.Nonnull
   private Set<Long> entityIds = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_EXTEND_ADMIN_PERMISSIONS = "extendAdminPermissions";
+  public static final String SERIALIZED_NAME_EXTEND_ADMIN_PERMISSIONS = "extendAdminPermissions";
+  @SerializedName(SERIALIZED_NAME_EXTEND_ADMIN_PERMISSIONS)
   @javax.annotation.Nullable
   private Boolean extendAdminPermissions;
 
-  public static final String JSON_PROPERTY_PERMISSION_DETAILS = "permissionDetails";
+  public static final String SERIALIZED_NAME_PERMISSION_DETAILS = "permissionDetails";
+  @SerializedName(SERIALIZED_NAME_PERMISSION_DETAILS)
   @javax.annotation.Nullable
   private PermissionDetails permissionDetails;
 
-  public BulkEditShareableEntityRequest() { 
+  public BulkEditShareableEntityRequest() {
   }
 
   public BulkEditShareableEntityRequest action(@javax.annotation.Nonnull ActionEnum action) {
@@ -119,15 +150,10 @@ public class BulkEditShareableEntityRequest {
    * @return action
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public ActionEnum getAction() {
     return action;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setAction(@javax.annotation.Nonnull ActionEnum action) {
     this.action = action;
   }
@@ -143,15 +169,10 @@ public class BulkEditShareableEntityRequest {
    * @return changeOwnerDetails
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CHANGE_OWNER_DETAILS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BulkChangeOwnerDetails getChangeOwnerDetails() {
     return changeOwnerDetails;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CHANGE_OWNER_DETAILS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setChangeOwnerDetails(@javax.annotation.Nullable BulkChangeOwnerDetails changeOwnerDetails) {
     this.changeOwnerDetails = changeOwnerDetails;
   }
@@ -175,16 +196,10 @@ public class BulkEditShareableEntityRequest {
    * @return entityIds
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Set<Long> getEntityIds() {
     return entityIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setEntityIds(@javax.annotation.Nonnull Set<Long> entityIds) {
     this.entityIds = entityIds;
   }
@@ -200,15 +215,10 @@ public class BulkEditShareableEntityRequest {
    * @return extendAdminPermissions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXTEND_ADMIN_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getExtendAdminPermissions() {
     return extendAdminPermissions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXTEND_ADMIN_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExtendAdminPermissions(@javax.annotation.Nullable Boolean extendAdminPermissions) {
     this.extendAdminPermissions = extendAdminPermissions;
   }
@@ -224,23 +234,16 @@ public class BulkEditShareableEntityRequest {
    * @return permissionDetails
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_DETAILS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PermissionDetails getPermissionDetails() {
     return permissionDetails;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_DETAILS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPermissionDetails(@javax.annotation.Nullable PermissionDetails permissionDetails) {
     this.permissionDetails = permissionDetails;
   }
 
 
-  /**
-   * Return true if this BulkEditShareableEntityRequest object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -286,70 +289,114 @@ public class BulkEditShareableEntityRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("action", "changeOwnerDetails", "entityIds", "extendAdminPermissions", "permissionDetails"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("action", "entityIds"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkEditShareableEntityRequest
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `action` to the URL query string
-    if (getAction() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saction%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAction()))));
-    }
-
-    // add `changeOwnerDetails` to the URL query string
-    if (getChangeOwnerDetails() != null) {
-      joiner.add(getChangeOwnerDetails().toUrlQueryString(prefix + "changeOwnerDetails" + suffix));
-    }
-
-    // add `entityIds` to the URL query string
-    if (getEntityIds() != null) {
-      int i = 0;
-      for (Long _item : getEntityIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sentityIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkEditShareableEntityRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkEditShareableEntityRequest is not found in the empty JSON string", BulkEditShareableEntityRequest.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `extendAdminPermissions` to the URL query string
-    if (getExtendAdminPermissions() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sextendAdminPermissions%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExtendAdminPermissions()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkEditShareableEntityRequest.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkEditShareableEntityRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    // add `permissionDetails` to the URL query string
-    if (getPermissionDetails() != null) {
-      joiner.add(getPermissionDetails().toUrlQueryString(prefix + "permissionDetails" + suffix));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : BulkEditShareableEntityRequest.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("action").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `action` to be a primitive type in the JSON string but got `%s`", jsonObj.get("action").toString()));
+      }
+      // validate the required field `action`
+      ActionEnum.validateJsonElement(jsonObj.get("action"));
+      // validate the optional field `changeOwnerDetails`
+      if (jsonObj.get("changeOwnerDetails") != null && !jsonObj.get("changeOwnerDetails").isJsonNull()) {
+        BulkChangeOwnerDetails.validateJsonElement(jsonObj.get("changeOwnerDetails"));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("entityIds") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("entityIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `entityIds` to be an array in the JSON string but got `%s`", jsonObj.get("entityIds").toString()));
+      }
+      // validate the optional field `permissionDetails`
+      if (jsonObj.get("permissionDetails") != null && !jsonObj.get("permissionDetails").isJsonNull()) {
+        PermissionDetails.validateJsonElement(jsonObj.get("permissionDetails"));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkEditShareableEntityRequest.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkEditShareableEntityRequest' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkEditShareableEntityRequest> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkEditShareableEntityRequest.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<BulkEditShareableEntityRequest>() {
+           @Override
+           public void write(JsonWriter out, BulkEditShareableEntityRequest value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BulkEditShareableEntityRequest read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of BulkEditShareableEntityRequest given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkEditShareableEntityRequest
+   * @throws IOException if the JSON string is invalid with respect to BulkEditShareableEntityRequest
+   */
+  public static BulkEditShareableEntityRequest fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkEditShareableEntityRequest.class);
+  }
+
+  /**
+   * Convert an instance of BulkEditShareableEntityRequest to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

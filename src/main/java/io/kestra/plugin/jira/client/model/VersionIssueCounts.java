@@ -13,71 +13,85 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.VersionUsageInCustomField;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Various counts of issues within a version.
  */
-@JsonPropertyOrder({
-  VersionIssueCounts.JSON_PROPERTY_CUSTOM_FIELD_USAGE,
-  VersionIssueCounts.JSON_PROPERTY_ISSUE_COUNT_WITH_CUSTOM_FIELDS_SHOWING_VERSION,
-  VersionIssueCounts.JSON_PROPERTY_ISSUES_AFFECTED_COUNT,
-  VersionIssueCounts.JSON_PROPERTY_ISSUES_FIXED_COUNT,
-  VersionIssueCounts.JSON_PROPERTY_SELF
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class VersionIssueCounts {
-  public static final String JSON_PROPERTY_CUSTOM_FIELD_USAGE = "customFieldUsage";
+  public static final String SERIALIZED_NAME_CUSTOM_FIELD_USAGE = "customFieldUsage";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_FIELD_USAGE)
   @javax.annotation.Nullable
   private List<VersionUsageInCustomField> customFieldUsage = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ISSUE_COUNT_WITH_CUSTOM_FIELDS_SHOWING_VERSION = "issueCountWithCustomFieldsShowingVersion";
+  public static final String SERIALIZED_NAME_ISSUE_COUNT_WITH_CUSTOM_FIELDS_SHOWING_VERSION = "issueCountWithCustomFieldsShowingVersion";
+  @SerializedName(SERIALIZED_NAME_ISSUE_COUNT_WITH_CUSTOM_FIELDS_SHOWING_VERSION)
   @javax.annotation.Nullable
   private Long issueCountWithCustomFieldsShowingVersion;
 
-  public static final String JSON_PROPERTY_ISSUES_AFFECTED_COUNT = "issuesAffectedCount";
+  public static final String SERIALIZED_NAME_ISSUES_AFFECTED_COUNT = "issuesAffectedCount";
+  @SerializedName(SERIALIZED_NAME_ISSUES_AFFECTED_COUNT)
   @javax.annotation.Nullable
   private Long issuesAffectedCount;
 
-  public static final String JSON_PROPERTY_ISSUES_FIXED_COUNT = "issuesFixedCount";
+  public static final String SERIALIZED_NAME_ISSUES_FIXED_COUNT = "issuesFixedCount";
+  @SerializedName(SERIALIZED_NAME_ISSUES_FIXED_COUNT)
   @javax.annotation.Nullable
   private Long issuesFixedCount;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public VersionIssueCounts() { 
+  public VersionIssueCounts() {
   }
 
-  @JsonCreator
   public VersionIssueCounts(
-    @JsonProperty(JSON_PROPERTY_CUSTOM_FIELD_USAGE) List<VersionUsageInCustomField> customFieldUsage, 
-    @JsonProperty(JSON_PROPERTY_ISSUE_COUNT_WITH_CUSTOM_FIELDS_SHOWING_VERSION) Long issueCountWithCustomFieldsShowingVersion, 
-    @JsonProperty(JSON_PROPERTY_ISSUES_AFFECTED_COUNT) Long issuesAffectedCount, 
-    @JsonProperty(JSON_PROPERTY_ISSUES_FIXED_COUNT) Long issuesFixedCount, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self
+     List<VersionUsageInCustomField> customFieldUsage, 
+     Long issueCountWithCustomFieldsShowingVersion, 
+     Long issuesAffectedCount, 
+     Long issuesFixedCount, 
+     URI self
   ) {
-  this();
+    this();
     this.customFieldUsage = customFieldUsage;
     this.issueCountWithCustomFieldsShowingVersion = issueCountWithCustomFieldsShowingVersion;
     this.issuesAffectedCount = issuesAffectedCount;
@@ -90,12 +104,9 @@ public class VersionIssueCounts {
    * @return customFieldUsage
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELD_USAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<VersionUsageInCustomField> getCustomFieldUsage() {
     return customFieldUsage;
   }
-
 
 
 
@@ -104,12 +115,9 @@ public class VersionIssueCounts {
    * @return issueCountWithCustomFieldsShowingVersion
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_COUNT_WITH_CUSTOM_FIELDS_SHOWING_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssueCountWithCustomFieldsShowingVersion() {
     return issueCountWithCustomFieldsShowingVersion;
   }
-
 
 
 
@@ -118,12 +126,9 @@ public class VersionIssueCounts {
    * @return issuesAffectedCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_AFFECTED_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssuesAffectedCount() {
     return issuesAffectedCount;
   }
-
 
 
 
@@ -132,12 +137,9 @@ public class VersionIssueCounts {
    * @return issuesFixedCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_FIXED_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssuesFixedCount() {
     return issuesFixedCount;
   }
-
 
 
 
@@ -146,8 +148,6 @@ public class VersionIssueCounts {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
@@ -155,9 +155,6 @@ public class VersionIssueCounts {
 
 
 
-  /**
-   * Return true if this VersionIssueCounts object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -203,69 +200,105 @@ public class VersionIssueCounts {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("customFieldUsage", "issueCountWithCustomFieldsShowingVersion", "issuesAffectedCount", "issuesFixedCount", "self"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to VersionIssueCounts
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `customFieldUsage` to the URL query string
-    if (getCustomFieldUsage() != null) {
-      for (int i = 0; i < getCustomFieldUsage().size(); i++) {
-        if (getCustomFieldUsage().get(i) != null) {
-          joiner.add(getCustomFieldUsage().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scustomFieldUsage%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!VersionIssueCounts.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in VersionIssueCounts is not found in the empty JSON string", VersionIssueCounts.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `issueCountWithCustomFieldsShowingVersion` to the URL query string
-    if (getIssueCountWithCustomFieldsShowingVersion() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueCountWithCustomFieldsShowingVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueCountWithCustomFieldsShowingVersion()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!VersionIssueCounts.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `VersionIssueCounts` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("customFieldUsage") != null && !jsonObj.get("customFieldUsage").isJsonNull()) {
+        JsonArray jsonArraycustomFieldUsage = jsonObj.getAsJsonArray("customFieldUsage");
+        if (jsonArraycustomFieldUsage != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("customFieldUsage").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customFieldUsage` to be an array in the JSON string but got `%s`", jsonObj.get("customFieldUsage").toString()));
+          }
 
-    // add `issuesAffectedCount` to the URL query string
-    if (getIssuesAffectedCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissuesAffectedCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssuesAffectedCount()))));
-    }
+          // validate the optional field `customFieldUsage` (array)
+          for (int i = 0; i < jsonArraycustomFieldUsage.size(); i++) {
+            VersionUsageInCustomField.validateJsonElement(jsonArraycustomFieldUsage.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
 
-    // add `issuesFixedCount` to the URL query string
-    if (getIssuesFixedCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissuesFixedCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssuesFixedCount()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!VersionIssueCounts.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'VersionIssueCounts' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<VersionIssueCounts> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(VersionIssueCounts.class));
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<VersionIssueCounts>() {
+           @Override
+           public void write(JsonWriter out, VersionIssueCounts value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public VersionIssueCounts read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of VersionIssueCounts given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of VersionIssueCounts
+   * @throws IOException if the JSON string is invalid with respect to VersionIssueCounts
+   */
+  public static VersionIssueCounts fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, VersionIssueCounts.class);
+  }
+
+  /**
+   * Convert an instance of VersionIssueCounts to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

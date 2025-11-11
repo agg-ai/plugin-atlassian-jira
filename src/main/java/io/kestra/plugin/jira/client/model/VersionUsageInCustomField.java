@@ -13,55 +13,69 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * List of custom fields using the version.
  */
-@JsonPropertyOrder({
-  VersionUsageInCustomField.JSON_PROPERTY_CUSTOM_FIELD_ID,
-  VersionUsageInCustomField.JSON_PROPERTY_FIELD_NAME,
-  VersionUsageInCustomField.JSON_PROPERTY_ISSUE_COUNT_WITH_VERSION_IN_CUSTOM_FIELD
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class VersionUsageInCustomField {
-  public static final String JSON_PROPERTY_CUSTOM_FIELD_ID = "customFieldId";
+  public static final String SERIALIZED_NAME_CUSTOM_FIELD_ID = "customFieldId";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_FIELD_ID)
   @javax.annotation.Nullable
   private Long customFieldId;
 
-  public static final String JSON_PROPERTY_FIELD_NAME = "fieldName";
+  public static final String SERIALIZED_NAME_FIELD_NAME = "fieldName";
+  @SerializedName(SERIALIZED_NAME_FIELD_NAME)
   @javax.annotation.Nullable
   private String fieldName;
 
-  public static final String JSON_PROPERTY_ISSUE_COUNT_WITH_VERSION_IN_CUSTOM_FIELD = "issueCountWithVersionInCustomField";
+  public static final String SERIALIZED_NAME_ISSUE_COUNT_WITH_VERSION_IN_CUSTOM_FIELD = "issueCountWithVersionInCustomField";
+  @SerializedName(SERIALIZED_NAME_ISSUE_COUNT_WITH_VERSION_IN_CUSTOM_FIELD)
   @javax.annotation.Nullable
   private Long issueCountWithVersionInCustomField;
 
-  public VersionUsageInCustomField() { 
+  public VersionUsageInCustomField() {
   }
 
-  @JsonCreator
   public VersionUsageInCustomField(
-    @JsonProperty(JSON_PROPERTY_CUSTOM_FIELD_ID) Long customFieldId, 
-    @JsonProperty(JSON_PROPERTY_FIELD_NAME) String fieldName, 
-    @JsonProperty(JSON_PROPERTY_ISSUE_COUNT_WITH_VERSION_IN_CUSTOM_FIELD) Long issueCountWithVersionInCustomField
+     Long customFieldId, 
+     String fieldName, 
+     Long issueCountWithVersionInCustomField
   ) {
-  this();
+    this();
     this.customFieldId = customFieldId;
     this.fieldName = fieldName;
     this.issueCountWithVersionInCustomField = issueCountWithVersionInCustomField;
@@ -72,12 +86,9 @@ public class VersionUsageInCustomField {
    * @return customFieldId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getCustomFieldId() {
     return customFieldId;
   }
-
 
 
 
@@ -86,12 +97,9 @@ public class VersionUsageInCustomField {
    * @return fieldName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFieldName() {
     return fieldName;
   }
-
 
 
 
@@ -100,8 +108,6 @@ public class VersionUsageInCustomField {
    * @return issueCountWithVersionInCustomField
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_COUNT_WITH_VERSION_IN_CUSTOM_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssueCountWithVersionInCustomField() {
     return issueCountWithVersionInCustomField;
   }
@@ -109,9 +115,6 @@ public class VersionUsageInCustomField {
 
 
 
-  /**
-   * Return true if this VersionUsageInCustomField object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -153,54 +156,91 @@ public class VersionUsageInCustomField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("customFieldId", "fieldName", "issueCountWithVersionInCustomField"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to VersionUsageInCustomField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!VersionUsageInCustomField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in VersionUsageInCustomField is not found in the empty JSON string", VersionUsageInCustomField.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!VersionUsageInCustomField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `VersionUsageInCustomField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("fieldName") != null && !jsonObj.get("fieldName").isJsonNull()) && !jsonObj.get("fieldName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldName").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!VersionUsageInCustomField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'VersionUsageInCustomField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<VersionUsageInCustomField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(VersionUsageInCustomField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<VersionUsageInCustomField>() {
+           @Override
+           public void write(JsonWriter out, VersionUsageInCustomField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public VersionUsageInCustomField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of VersionUsageInCustomField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of VersionUsageInCustomField
+   * @throws IOException if the JSON string is invalid with respect to VersionUsageInCustomField
+   */
+  public static VersionUsageInCustomField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, VersionUsageInCustomField.class);
+  }
 
-    // add `customFieldId` to the URL query string
-    if (getCustomFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scustomFieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustomFieldId()))));
-    }
-
-    // add `fieldName` to the URL query string
-    if (getFieldName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldName()))));
-    }
-
-    // add `issueCountWithVersionInCustomField` to the URL query string
-    if (getIssueCountWithVersionInCustomField() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueCountWithVersionInCustomField%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueCountWithVersionInCustomField()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of VersionUsageInCustomField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

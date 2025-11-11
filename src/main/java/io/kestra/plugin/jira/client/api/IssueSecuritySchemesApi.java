@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.AddSecuritySchemeLevelsRequestBean;
 import io.kestra.plugin.jira.client.model.AssociateSecuritySchemeWithProjectDetails;
@@ -36,2190 +45,2499 @@ import io.kestra.plugin.jira.client.model.TaskProgressBeanObject;
 import io.kestra.plugin.jira.client.model.UpdateIssueSecurityLevelDetails;
 import io.kestra.plugin.jira.client.model.UpdateIssueSecuritySchemeRequestBean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueSecuritySchemesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueSecuritySchemesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueSecuritySchemesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addSecurityLevel
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param addSecuritySchemeLevelsRequestBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addSecurityLevelCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueSecuritySchemesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueSecuritySchemesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Add issue security levels
-   * Adds levels and levels&#39; members to the issue security scheme. You can add up to 100 levels per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param addSecuritySchemeLevelsRequestBean  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object addSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean) throws ApiException {
-    return addSecurityLevel(schemeId, addSecuritySchemeLevelsRequestBean, null);
-  }
-
-  /**
-   * Add issue security levels
-   * Adds levels and levels&#39; members to the issue security scheme. You can add up to 100 levels per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param addSecuritySchemeLevelsRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object addSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = addSecurityLevelWithHttpInfo(schemeId, addSecuritySchemeLevelsRequestBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add issue security levels
-   * Adds levels and levels&#39; members to the issue security scheme. You can add up to 100 levels per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param addSecuritySchemeLevelsRequestBean  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> addSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean) throws ApiException {
-    return addSecurityLevelWithHttpInfo(schemeId, addSecuritySchemeLevelsRequestBean, null);
-  }
-
-  /**
-   * Add issue security levels
-   * Adds levels and levels&#39; members to the issue security scheme. You can add up to 100 levels per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param addSecuritySchemeLevelsRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> addSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addSecurityLevelRequestBuilder(schemeId, addSecuritySchemeLevelsRequestBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addSecurityLevel", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = addSecuritySchemeLevelsRequestBean;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()));
 
-  private HttpRequest.Builder addSecurityLevelRequestBuilder(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling addSecurityLevel");
-    }
-    // verify the required parameter 'addSecuritySchemeLevelsRequestBean' is set
-    if (addSecuritySchemeLevelsRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'addSecuritySchemeLevelsRequestBean' when calling addSecurityLevel");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(addSecuritySchemeLevelsRequestBean);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Add issue security level members
-   * Adds members to the issue security level. You can add up to 100 members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level. (required)
-   * @param securitySchemeMembersRequest  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object addSecurityLevelMembers(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest) throws ApiException {
-    return addSecurityLevelMembers(schemeId, levelId, securitySchemeMembersRequest, null);
-  }
-
-  /**
-   * Add issue security level members
-   * Adds members to the issue security level. You can add up to 100 members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level. (required)
-   * @param securitySchemeMembersRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object addSecurityLevelMembers(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = addSecurityLevelMembersWithHttpInfo(schemeId, levelId, securitySchemeMembersRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add issue security level members
-   * Adds members to the issue security level. You can add up to 100 members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level. (required)
-   * @param securitySchemeMembersRequest  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> addSecurityLevelMembersWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest) throws ApiException {
-    return addSecurityLevelMembersWithHttpInfo(schemeId, levelId, securitySchemeMembersRequest, null);
-  }
-
-  /**
-   * Add issue security level members
-   * Adds members to the issue security level. You can add up to 100 members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level. (required)
-   * @param securitySchemeMembersRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> addSecurityLevelMembersWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addSecurityLevelMembersRequestBuilder(schemeId, levelId, securitySchemeMembersRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addSecurityLevelMembers", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder addSecurityLevelMembersRequestBuilder(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling addSecurityLevelMembers");
-    }
-    // verify the required parameter 'levelId' is set
-    if (levelId == null) {
-      throw new ApiException(400, "Missing the required parameter 'levelId' when calling addSecurityLevelMembers");
-    }
-    // verify the required parameter 'securitySchemeMembersRequest' is set
-    if (securitySchemeMembersRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'securitySchemeMembersRequest' when calling addSecurityLevelMembers");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()))
-        .replace("{levelId}", ApiClient.urlEncode(levelId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(securitySchemeMembersRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Associate security scheme to project
-   * Associates an issue security scheme with a project and remaps security levels of issues to the new levels, if provided.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param associateSecuritySchemeWithProjectDetails  (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void associateSchemesToProjects(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails) throws ApiException {
-    associateSchemesToProjects(associateSecuritySchemeWithProjectDetails, null);
-  }
-
-  /**
-   * Associate security scheme to project
-   * Associates an issue security scheme with a project and remaps security levels of issues to the new levels, if provided.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param associateSecuritySchemeWithProjectDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void associateSchemesToProjects(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails, Map<String, String> headers) throws ApiException {
-    associateSchemesToProjectsWithHttpInfo(associateSecuritySchemeWithProjectDetails, headers);
-  }
-
-  /**
-   * Associate security scheme to project
-   * Associates an issue security scheme with a project and remaps security levels of issues to the new levels, if provided.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param associateSecuritySchemeWithProjectDetails  (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> associateSchemesToProjectsWithHttpInfo(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails) throws ApiException {
-    return associateSchemesToProjectsWithHttpInfo(associateSecuritySchemeWithProjectDetails, null);
-  }
-
-  /**
-   * Associate security scheme to project
-   * Associates an issue security scheme with a project and remaps security levels of issues to the new levels, if provided.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param associateSecuritySchemeWithProjectDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> associateSchemesToProjectsWithHttpInfo(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = associateSchemesToProjectsRequestBuilder(associateSecuritySchemeWithProjectDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("associateSchemesToProjects", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder associateSchemesToProjectsRequestBuilder(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'associateSecuritySchemeWithProjectDetails' is set
-    if (associateSecuritySchemeWithProjectDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'associateSecuritySchemeWithProjectDetails' when calling associateSchemesToProjects");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/project";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(associateSecuritySchemeWithProjectDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create issue security scheme
-   * Creates a security scheme with security scheme levels and levels&#39; members. You can create up to 100 security scheme levels and security scheme levels&#39; members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createIssueSecuritySchemeDetails  (required)
-   * @return SecuritySchemeId
-   * @throws ApiException if fails to make API call
-   */
-  public SecuritySchemeId createIssueSecurityScheme(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails) throws ApiException {
-    return createIssueSecurityScheme(createIssueSecuritySchemeDetails, null);
-  }
-
-  /**
-   * Create issue security scheme
-   * Creates a security scheme with security scheme levels and levels&#39; members. You can create up to 100 security scheme levels and security scheme levels&#39; members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createIssueSecuritySchemeDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return SecuritySchemeId
-   * @throws ApiException if fails to make API call
-   */
-  public SecuritySchemeId createIssueSecurityScheme(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<SecuritySchemeId> localVarResponse = createIssueSecuritySchemeWithHttpInfo(createIssueSecuritySchemeDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create issue security scheme
-   * Creates a security scheme with security scheme levels and levels&#39; members. You can create up to 100 security scheme levels and security scheme levels&#39; members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createIssueSecuritySchemeDetails  (required)
-   * @return ApiResponse&lt;SecuritySchemeId&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SecuritySchemeId> createIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails) throws ApiException {
-    return createIssueSecuritySchemeWithHttpInfo(createIssueSecuritySchemeDetails, null);
-  }
-
-  /**
-   * Create issue security scheme
-   * Creates a security scheme with security scheme levels and levels&#39; members. You can create up to 100 security scheme levels and security scheme levels&#39; members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createIssueSecuritySchemeDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SecuritySchemeId&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SecuritySchemeId> createIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createIssueSecuritySchemeRequestBuilder(createIssueSecuritySchemeDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createIssueSecurityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SecuritySchemeId>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SecuritySchemeId responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SecuritySchemeId>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<SecuritySchemeId>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createIssueSecuritySchemeRequestBuilder(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'createIssueSecuritySchemeDetails' is set
-    if (createIssueSecuritySchemeDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'createIssueSecuritySchemeDetails' when calling createIssueSecurityScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createIssueSecuritySchemeDetails);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete issue security scheme
-   * Deletes an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteSecurityScheme(@javax.annotation.Nonnull String schemeId) throws ApiException {
-    return deleteSecurityScheme(schemeId, null);
-  }
-
-  /**
-   * Delete issue security scheme
-   * Deletes an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteSecurityScheme(@javax.annotation.Nonnull String schemeId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deleteSecuritySchemeWithHttpInfo(schemeId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete issue security scheme
-   * Deletes an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId) throws ApiException {
-    return deleteSecuritySchemeWithHttpInfo(schemeId, null);
-  }
-
-  /**
-   * Delete issue security scheme
-   * Deletes an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteSecuritySchemeRequestBuilder(schemeId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteSecurityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addSecurityLevelValidateBeforeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling addSecurityLevel(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteSecuritySchemeRequestBuilder(@javax.annotation.Nonnull String schemeId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling deleteSecurityScheme");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue security scheme
-   * Returns an issue security scheme along with its security levels.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for a project that uses the requested issue security scheme.
-   * @param id The ID of the issue security scheme. Use the [Get issue security schemes](#api-rest-api-3-issuesecurityschemes-get) operation to get a list of issue security scheme IDs. (required)
-   * @return SecurityScheme
-   * @throws ApiException if fails to make API call
-   */
-  public SecurityScheme getIssueSecurityScheme(@javax.annotation.Nonnull Long id) throws ApiException {
-    return getIssueSecurityScheme(id, null);
-  }
-
-  /**
-   * Get issue security scheme
-   * Returns an issue security scheme along with its security levels.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for a project that uses the requested issue security scheme.
-   * @param id The ID of the issue security scheme. Use the [Get issue security schemes](#api-rest-api-3-issuesecurityschemes-get) operation to get a list of issue security scheme IDs. (required)
-   * @param headers Optional headers to include in the request
-   * @return SecurityScheme
-   * @throws ApiException if fails to make API call
-   */
-  public SecurityScheme getIssueSecurityScheme(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    ApiResponse<SecurityScheme> localVarResponse = getIssueSecuritySchemeWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue security scheme
-   * Returns an issue security scheme along with its security levels.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for a project that uses the requested issue security scheme.
-   * @param id The ID of the issue security scheme. Use the [Get issue security schemes](#api-rest-api-3-issuesecurityschemes-get) operation to get a list of issue security scheme IDs. (required)
-   * @return ApiResponse&lt;SecurityScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SecurityScheme> getIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
-    return getIssueSecuritySchemeWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get issue security scheme
-   * Returns an issue security scheme along with its security levels.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for a project that uses the requested issue security scheme.
-   * @param id The ID of the issue security scheme. Use the [Get issue security schemes](#api-rest-api-3-issuesecurityschemes-get) operation to get a list of issue security scheme IDs. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SecurityScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SecurityScheme> getIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueSecuritySchemeRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueSecurityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SecurityScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'addSecuritySchemeLevelsRequestBean' is set
+        if (addSecuritySchemeLevelsRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'addSecuritySchemeLevelsRequestBean' when calling addSecurityLevel(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SecurityScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SecurityScheme>() {});
-        
-        localVarResponse.body().close();
+        return addSecurityLevelCall(schemeId, addSecuritySchemeLevelsRequestBean, _callback);
 
-        return new ApiResponse<SecurityScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getIssueSecuritySchemeRequestBuilder(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getIssueSecurityScheme");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Add issue security levels
+     * Adds levels and levels&#39; members to the issue security scheme. You can add up to 100 levels per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param addSecuritySchemeLevelsRequestBean  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object addSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean) throws ApiException {
+        ApiResponse<Object> localVarResp = addSecurityLevelWithHttpInfo(schemeId, addSecuritySchemeLevelsRequestBean);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Add issue security levels
+     * Adds levels and levels&#39; members to the issue security scheme. You can add up to 100 levels per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param addSecuritySchemeLevelsRequestBean  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> addSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean) throws ApiException {
+        okhttp3.Call localVarCall = addSecurityLevelValidateBeforeCall(schemeId, addSecuritySchemeLevelsRequestBean, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Get issue security schemes
-   * Returns all [issue security schemes](https://confluence.atlassian.com/x/J4lKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @return SecuritySchemes
-   * @throws ApiException if fails to make API call
-   */
-  public SecuritySchemes getIssueSecuritySchemes() throws ApiException {
-    return getIssueSecuritySchemes(null);
-  }
+    /**
+     * Add issue security levels (asynchronously)
+     * Adds levels and levels&#39; members to the issue security scheme. You can add up to 100 levels per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param addSecuritySchemeLevelsRequestBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addSecurityLevelAsync(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull AddSecuritySchemeLevelsRequestBean addSecuritySchemeLevelsRequestBean, final ApiCallback<Object> _callback) throws ApiException {
 
-  /**
-   * Get issue security schemes
-   * Returns all [issue security schemes](https://confluence.atlassian.com/x/J4lKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param headers Optional headers to include in the request
-   * @return SecuritySchemes
-   * @throws ApiException if fails to make API call
-   */
-  public SecuritySchemes getIssueSecuritySchemes(Map<String, String> headers) throws ApiException {
-    ApiResponse<SecuritySchemes> localVarResponse = getIssueSecuritySchemesWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue security schemes
-   * Returns all [issue security schemes](https://confluence.atlassian.com/x/J4lKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @return ApiResponse&lt;SecuritySchemes&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SecuritySchemes> getIssueSecuritySchemesWithHttpInfo() throws ApiException {
-    return getIssueSecuritySchemesWithHttpInfo(null);
-  }
-
-  /**
-   * Get issue security schemes
-   * Returns all [issue security schemes](https://confluence.atlassian.com/x/J4lKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SecuritySchemes&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SecuritySchemes> getIssueSecuritySchemesWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueSecuritySchemesRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueSecuritySchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SecuritySchemes>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
-        }
-
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SecuritySchemes responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SecuritySchemes>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<SecuritySchemes>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
+        okhttp3.Call localVarCall = addSecurityLevelValidateBeforeCall(schemeId, addSecuritySchemeLevelsRequestBean, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+    /**
+     * Build call for addSecurityLevelMembers
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level. (required)
+     * @param securitySchemeMembersRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addSecurityLevelMembersCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  private HttpRequest.Builder getIssueSecuritySchemesRequestBuilder(Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue security level members
-   * Returns a [paginated](#pagination) list of issue security level members.  Only issue security level members in the context of classic projects are returned.  Filtering using parameters is inclusive: if you specify both security scheme IDs and level IDs, the result will include all issue security level members from the specified schemes and levels.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security level member IDs. To include multiple issue security level members separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param levelId The list of issue security level IDs. To include multiple issue security levels separate IDs with an ampersand: &#x60;levelId&#x3D;10000&amp;levelId&#x3D;10001&#x60;. (optional)
-   * @param expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;all&#x60; Returns all expandable information  *  &#x60;field&#x60; Returns information about the custom field granted the permission  *  &#x60;group&#x60; Returns information about the group that is granted the permission  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission  *  &#x60;user&#x60; Returns information about the user who is granted the permission (optional)
-   * @return PageBeanSecurityLevelMember
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanSecurityLevelMember getSecurityLevelMembers(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand) throws ApiException {
-    return getSecurityLevelMembers(startAt, maxResults, id, schemeId, levelId, expand, null);
-  }
-
-  /**
-   * Get issue security level members
-   * Returns a [paginated](#pagination) list of issue security level members.  Only issue security level members in the context of classic projects are returned.  Filtering using parameters is inclusive: if you specify both security scheme IDs and level IDs, the result will include all issue security level members from the specified schemes and levels.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security level member IDs. To include multiple issue security level members separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param levelId The list of issue security level IDs. To include multiple issue security levels separate IDs with an ampersand: &#x60;levelId&#x3D;10000&amp;levelId&#x3D;10001&#x60;. (optional)
-   * @param expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;all&#x60; Returns all expandable information  *  &#x60;field&#x60; Returns information about the custom field granted the permission  *  &#x60;group&#x60; Returns information about the group that is granted the permission  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission  *  &#x60;user&#x60; Returns information about the user who is granted the permission (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanSecurityLevelMember
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanSecurityLevelMember getSecurityLevelMembers(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanSecurityLevelMember> localVarResponse = getSecurityLevelMembersWithHttpInfo(startAt, maxResults, id, schemeId, levelId, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue security level members
-   * Returns a [paginated](#pagination) list of issue security level members.  Only issue security level members in the context of classic projects are returned.  Filtering using parameters is inclusive: if you specify both security scheme IDs and level IDs, the result will include all issue security level members from the specified schemes and levels.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security level member IDs. To include multiple issue security level members separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param levelId The list of issue security level IDs. To include multiple issue security levels separate IDs with an ampersand: &#x60;levelId&#x3D;10000&amp;levelId&#x3D;10001&#x60;. (optional)
-   * @param expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;all&#x60; Returns all expandable information  *  &#x60;field&#x60; Returns information about the custom field granted the permission  *  &#x60;group&#x60; Returns information about the group that is granted the permission  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission  *  &#x60;user&#x60; Returns information about the user who is granted the permission (optional)
-   * @return ApiResponse&lt;PageBeanSecurityLevelMember&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanSecurityLevelMember> getSecurityLevelMembersWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand) throws ApiException {
-    return getSecurityLevelMembersWithHttpInfo(startAt, maxResults, id, schemeId, levelId, expand, null);
-  }
-
-  /**
-   * Get issue security level members
-   * Returns a [paginated](#pagination) list of issue security level members.  Only issue security level members in the context of classic projects are returned.  Filtering using parameters is inclusive: if you specify both security scheme IDs and level IDs, the result will include all issue security level members from the specified schemes and levels.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security level member IDs. To include multiple issue security level members separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param levelId The list of issue security level IDs. To include multiple issue security levels separate IDs with an ampersand: &#x60;levelId&#x3D;10000&amp;levelId&#x3D;10001&#x60;. (optional)
-   * @param expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;all&#x60; Returns all expandable information  *  &#x60;field&#x60; Returns information about the custom field granted the permission  *  &#x60;group&#x60; Returns information about the group that is granted the permission  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission  *  &#x60;user&#x60; Returns information about the user who is granted the permission (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanSecurityLevelMember&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanSecurityLevelMember> getSecurityLevelMembersWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getSecurityLevelMembersRequestBuilder(startAt, maxResults, id, schemeId, levelId, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getSecurityLevelMembers", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanSecurityLevelMember>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanSecurityLevelMember responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanSecurityLevelMember>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = securitySchemeMembersRequest;
 
-        return new ApiResponse<PageBeanSecurityLevelMember>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()))
+            .replace("{" + "levelId" + "}", localVarApiClient.escapeString(levelId.toString()));
 
-  private HttpRequest.Builder getSecurityLevelMembersRequestBuilder(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/level/member";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-    localVarQueryParameterBaseName = "schemeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "schemeId", schemeId));
-    localVarQueryParameterBaseName = "levelId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "levelId", levelId));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue security levels
-   * Returns a [paginated](#pagination) list of issue security levels.  Only issue security levels in the context of classic projects are returned.  Filtering using IDs is inclusive: if you specify both security scheme IDs and level IDs, the result will include both specified issue security levels and all issue security levels from the specified schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security scheme level IDs. To include multiple issue security levels, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes, separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param onlyDefault When set to true, returns multiple default levels for each security scheme containing a default. If you provide scheme and level IDs not associated with the default, returns an empty page. The default value is false. (optional, default to false)
-   * @return PageBeanSecurityLevel
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanSecurityLevel getSecurityLevels(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault) throws ApiException {
-    return getSecurityLevels(startAt, maxResults, id, schemeId, onlyDefault, null);
-  }
-
-  /**
-   * Get issue security levels
-   * Returns a [paginated](#pagination) list of issue security levels.  Only issue security levels in the context of classic projects are returned.  Filtering using IDs is inclusive: if you specify both security scheme IDs and level IDs, the result will include both specified issue security levels and all issue security levels from the specified schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security scheme level IDs. To include multiple issue security levels, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes, separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param onlyDefault When set to true, returns multiple default levels for each security scheme containing a default. If you provide scheme and level IDs not associated with the default, returns an empty page. The default value is false. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanSecurityLevel
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanSecurityLevel getSecurityLevels(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanSecurityLevel> localVarResponse = getSecurityLevelsWithHttpInfo(startAt, maxResults, id, schemeId, onlyDefault, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue security levels
-   * Returns a [paginated](#pagination) list of issue security levels.  Only issue security levels in the context of classic projects are returned.  Filtering using IDs is inclusive: if you specify both security scheme IDs and level IDs, the result will include both specified issue security levels and all issue security levels from the specified schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security scheme level IDs. To include multiple issue security levels, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes, separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param onlyDefault When set to true, returns multiple default levels for each security scheme containing a default. If you provide scheme and level IDs not associated with the default, returns an empty page. The default value is false. (optional, default to false)
-   * @return ApiResponse&lt;PageBeanSecurityLevel&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanSecurityLevel> getSecurityLevelsWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault) throws ApiException {
-    return getSecurityLevelsWithHttpInfo(startAt, maxResults, id, schemeId, onlyDefault, null);
-  }
-
-  /**
-   * Get issue security levels
-   * Returns a [paginated](#pagination) list of issue security levels.  Only issue security levels in the context of classic projects are returned.  Filtering using IDs is inclusive: if you specify both security scheme IDs and level IDs, the result will include both specified issue security levels and all issue security levels from the specified schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security scheme level IDs. To include multiple issue security levels, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes, separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param onlyDefault When set to true, returns multiple default levels for each security scheme containing a default. If you provide scheme and level IDs not associated with the default, returns an empty page. The default value is false. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanSecurityLevel&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanSecurityLevel> getSecurityLevelsWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getSecurityLevelsRequestBuilder(startAt, maxResults, id, schemeId, onlyDefault, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getSecurityLevels", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanSecurityLevel>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanSecurityLevel responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanSecurityLevel>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanSecurityLevel>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getSecurityLevelsRequestBuilder(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/level";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-    localVarQueryParameterBaseName = "schemeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "schemeId", schemeId));
-    localVarQueryParameterBaseName = "onlyDefault";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("onlyDefault", onlyDefault));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Remove issue security level
-   * Deletes an issue security level.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level to remove. (required)
-   * @param replaceWith The ID of the issue security level that will replace the currently selected level. (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void removeLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith) throws ApiException {
-    removeLevel(schemeId, levelId, replaceWith, null);
-  }
-
-  /**
-   * Remove issue security level
-   * Deletes an issue security level.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level to remove. (required)
-   * @param replaceWith The ID of the issue security level that will replace the currently selected level. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void removeLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith, Map<String, String> headers) throws ApiException {
-    removeLevelWithHttpInfo(schemeId, levelId, replaceWith, headers);
-  }
-
-  /**
-   * Remove issue security level
-   * Deletes an issue security level.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level to remove. (required)
-   * @param replaceWith The ID of the issue security level that will replace the currently selected level. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith) throws ApiException {
-    return removeLevelWithHttpInfo(schemeId, levelId, replaceWith, null);
-  }
-
-  /**
-   * Remove issue security level
-   * Deletes an issue security level.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level to remove. (required)
-   * @param replaceWith The ID of the issue security level that will replace the currently selected level. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeLevelRequestBuilder(schemeId, levelId, replaceWith, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeLevel", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder removeLevelRequestBuilder(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling removeLevel");
-    }
-    // verify the required parameter 'levelId' is set
-    if (levelId == null) {
-      throw new ApiException(400, "Missing the required parameter 'levelId' when calling removeLevel");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()))
-        .replace("{levelId}", ApiClient.urlEncode(levelId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "replaceWith";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("replaceWith", replaceWith));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Remove member from issue security level
-   * Removes an issue security level member from an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level. (required)
-   * @param memberId The ID of the issue security level member to be removed. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeMemberFromSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId) throws ApiException {
-    return removeMemberFromSecurityLevel(schemeId, levelId, memberId, null);
-  }
-
-  /**
-   * Remove member from issue security level
-   * Removes an issue security level member from an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level. (required)
-   * @param memberId The ID of the issue security level member to be removed. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeMemberFromSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = removeMemberFromSecurityLevelWithHttpInfo(schemeId, levelId, memberId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Remove member from issue security level
-   * Removes an issue security level member from an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level. (required)
-   * @param memberId The ID of the issue security level member to be removed. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeMemberFromSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId) throws ApiException {
-    return removeMemberFromSecurityLevelWithHttpInfo(schemeId, levelId, memberId, null);
-  }
-
-  /**
-   * Remove member from issue security level
-   * Removes an issue security level member from an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme. (required)
-   * @param levelId The ID of the issue security level. (required)
-   * @param memberId The ID of the issue security level member to be removed. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeMemberFromSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeMemberFromSecurityLevelRequestBuilder(schemeId, levelId, memberId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeMemberFromSecurityLevel", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder removeMemberFromSecurityLevelRequestBuilder(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling removeMemberFromSecurityLevel");
-    }
-    // verify the required parameter 'levelId' is set
-    if (levelId == null) {
-      throw new ApiException(400, "Missing the required parameter 'levelId' when calling removeMemberFromSecurityLevel");
-    }
-    // verify the required parameter 'memberId' is set
-    if (memberId == null) {
-      throw new ApiException(400, "Missing the required parameter 'memberId' when calling removeMemberFromSecurityLevel");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member/{memberId}"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()))
-        .replace("{levelId}", ApiClient.urlEncode(levelId.toString()))
-        .replace("{memberId}", ApiClient.urlEncode(memberId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get projects using issue security schemes
-   * Returns a [paginated](#pagination) mapping of projects that are using security schemes. You can provide either one or multiple security scheme IDs or project IDs to filter by. If you don&#39;t provide any, this will return a list of all mappings. Only issue security schemes in the context of classic projects are supported. **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param issueSecuritySchemeId The list of security scheme IDs to be filtered out. (optional)
-   * @param projectId The list of project IDs to be filtered out. (optional)
-   * @return PageBeanIssueSecuritySchemeToProjectMapping
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanIssueSecuritySchemeToProjectMapping searchProjectsUsingSecuritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId) throws ApiException {
-    return searchProjectsUsingSecuritySchemes(startAt, maxResults, issueSecuritySchemeId, projectId, null);
-  }
-
-  /**
-   * Get projects using issue security schemes
-   * Returns a [paginated](#pagination) mapping of projects that are using security schemes. You can provide either one or multiple security scheme IDs or project IDs to filter by. If you don&#39;t provide any, this will return a list of all mappings. Only issue security schemes in the context of classic projects are supported. **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param issueSecuritySchemeId The list of security scheme IDs to be filtered out. (optional)
-   * @param projectId The list of project IDs to be filtered out. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanIssueSecuritySchemeToProjectMapping
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanIssueSecuritySchemeToProjectMapping searchProjectsUsingSecuritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanIssueSecuritySchemeToProjectMapping> localVarResponse = searchProjectsUsingSecuritySchemesWithHttpInfo(startAt, maxResults, issueSecuritySchemeId, projectId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get projects using issue security schemes
-   * Returns a [paginated](#pagination) mapping of projects that are using security schemes. You can provide either one or multiple security scheme IDs or project IDs to filter by. If you don&#39;t provide any, this will return a list of all mappings. Only issue security schemes in the context of classic projects are supported. **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param issueSecuritySchemeId The list of security scheme IDs to be filtered out. (optional)
-   * @param projectId The list of project IDs to be filtered out. (optional)
-   * @return ApiResponse&lt;PageBeanIssueSecuritySchemeToProjectMapping&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanIssueSecuritySchemeToProjectMapping> searchProjectsUsingSecuritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId) throws ApiException {
-    return searchProjectsUsingSecuritySchemesWithHttpInfo(startAt, maxResults, issueSecuritySchemeId, projectId, null);
-  }
-
-  /**
-   * Get projects using issue security schemes
-   * Returns a [paginated](#pagination) mapping of projects that are using security schemes. You can provide either one or multiple security scheme IDs or project IDs to filter by. If you don&#39;t provide any, this will return a list of all mappings. Only issue security schemes in the context of classic projects are supported. **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param issueSecuritySchemeId The list of security scheme IDs to be filtered out. (optional)
-   * @param projectId The list of project IDs to be filtered out. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanIssueSecuritySchemeToProjectMapping&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanIssueSecuritySchemeToProjectMapping> searchProjectsUsingSecuritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = searchProjectsUsingSecuritySchemesRequestBuilder(startAt, maxResults, issueSecuritySchemeId, projectId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("searchProjectsUsingSecuritySchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanIssueSecuritySchemeToProjectMapping>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addSecurityLevelMembersValidateBeforeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling addSecurityLevelMembers(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanIssueSecuritySchemeToProjectMapping responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanIssueSecuritySchemeToProjectMapping>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanIssueSecuritySchemeToProjectMapping>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder searchProjectsUsingSecuritySchemesRequestBuilder(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/project";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "issueSecuritySchemeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "issueSecuritySchemeId", issueSecuritySchemeId));
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "projectId", projectId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Search issue security schemes
-   * Returns a [paginated](#pagination) list of issue security schemes.   If you specify the project ID parameter, the result will contain issue security schemes and related project IDs you filter by. Use \\{@link IssueSecuritySchemeResource\\#searchProjectsUsingSecuritySchemes(String, String, Set, Set)\\} to obtain all projects related to scheme.  Only issue security schemes in the context of classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security scheme IDs. To include multiple issue security scheme IDs, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param projectId The list of project IDs. To include multiple project IDs, separate IDs with an ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
-   * @return PageBeanSecuritySchemeWithProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanSecuritySchemeWithProjects searchSecuritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId) throws ApiException {
-    return searchSecuritySchemes(startAt, maxResults, id, projectId, null);
-  }
-
-  /**
-   * Search issue security schemes
-   * Returns a [paginated](#pagination) list of issue security schemes.   If you specify the project ID parameter, the result will contain issue security schemes and related project IDs you filter by. Use \\{@link IssueSecuritySchemeResource\\#searchProjectsUsingSecuritySchemes(String, String, Set, Set)\\} to obtain all projects related to scheme.  Only issue security schemes in the context of classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security scheme IDs. To include multiple issue security scheme IDs, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param projectId The list of project IDs. To include multiple project IDs, separate IDs with an ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanSecuritySchemeWithProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanSecuritySchemeWithProjects searchSecuritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanSecuritySchemeWithProjects> localVarResponse = searchSecuritySchemesWithHttpInfo(startAt, maxResults, id, projectId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Search issue security schemes
-   * Returns a [paginated](#pagination) list of issue security schemes.   If you specify the project ID parameter, the result will contain issue security schemes and related project IDs you filter by. Use \\{@link IssueSecuritySchemeResource\\#searchProjectsUsingSecuritySchemes(String, String, Set, Set)\\} to obtain all projects related to scheme.  Only issue security schemes in the context of classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security scheme IDs. To include multiple issue security scheme IDs, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param projectId The list of project IDs. To include multiple project IDs, separate IDs with an ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
-   * @return ApiResponse&lt;PageBeanSecuritySchemeWithProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanSecuritySchemeWithProjects> searchSecuritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId) throws ApiException {
-    return searchSecuritySchemesWithHttpInfo(startAt, maxResults, id, projectId, null);
-  }
-
-  /**
-   * Search issue security schemes
-   * Returns a [paginated](#pagination) list of issue security schemes.   If you specify the project ID parameter, the result will contain issue security schemes and related project IDs you filter by. Use \\{@link IssueSecuritySchemeResource\\#searchProjectsUsingSecuritySchemes(String, String, Set, Set)\\} to obtain all projects related to scheme.  Only issue security schemes in the context of classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue security scheme IDs. To include multiple issue security scheme IDs, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param projectId The list of project IDs. To include multiple project IDs, separate IDs with an ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanSecuritySchemeWithProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanSecuritySchemeWithProjects> searchSecuritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = searchSecuritySchemesRequestBuilder(startAt, maxResults, id, projectId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("searchSecuritySchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanSecuritySchemeWithProjects>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'levelId' is set
+        if (levelId == null) {
+            throw new ApiException("Missing the required parameter 'levelId' when calling addSecurityLevelMembers(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanSecuritySchemeWithProjects responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanSecuritySchemeWithProjects>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanSecuritySchemeWithProjects>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder searchSecuritySchemesRequestBuilder(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/search";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "projectId", projectId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Set default issue security levels
-   * Sets default issue security levels for schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param setDefaultLevelsRequest  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object setDefaultLevels(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest) throws ApiException {
-    return setDefaultLevels(setDefaultLevelsRequest, null);
-  }
-
-  /**
-   * Set default issue security levels
-   * Sets default issue security levels for schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param setDefaultLevelsRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object setDefaultLevels(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = setDefaultLevelsWithHttpInfo(setDefaultLevelsRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set default issue security levels
-   * Sets default issue security levels for schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param setDefaultLevelsRequest  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> setDefaultLevelsWithHttpInfo(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest) throws ApiException {
-    return setDefaultLevelsWithHttpInfo(setDefaultLevelsRequest, null);
-  }
-
-  /**
-   * Set default issue security levels
-   * Sets default issue security levels for schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param setDefaultLevelsRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> setDefaultLevelsWithHttpInfo(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = setDefaultLevelsRequestBuilder(setDefaultLevelsRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("setDefaultLevels", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'securitySchemeMembersRequest' is set
+        if (securitySchemeMembersRequest == null) {
+            throw new ApiException("Missing the required parameter 'securitySchemeMembersRequest' when calling addSecurityLevelMembers(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        return addSecurityLevelMembersCall(schemeId, levelId, securitySchemeMembersRequest, _callback);
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder setDefaultLevelsRequestBuilder(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'setDefaultLevelsRequest' is set
-    if (setDefaultLevelsRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'setDefaultLevelsRequest' when calling setDefaultLevels");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/level/default";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setDefaultLevelsRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Add issue security level members
+     * Adds members to the issue security level. You can add up to 100 members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level. (required)
+     * @param securitySchemeMembersRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object addSecurityLevelMembers(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = addSecurityLevelMembersWithHttpInfo(schemeId, levelId, securitySchemeMembersRequest);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+
+    /**
+     * Add issue security level members
+     * Adds members to the issue security level. You can add up to 100 members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level. (required)
+     * @param securitySchemeMembersRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> addSecurityLevelMembersWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest) throws ApiException {
+        okhttp3.Call localVarCall = addSecurityLevelMembersValidateBeforeCall(schemeId, levelId, securitySchemeMembersRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Add issue security level members (asynchronously)
+     * Adds members to the issue security level. You can add up to 100 members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level. (required)
+     * @param securitySchemeMembersRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addSecurityLevelMembersAsync(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull SecuritySchemeMembersRequest securitySchemeMembersRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = addSecurityLevelMembersValidateBeforeCall(schemeId, levelId, securitySchemeMembersRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for associateSchemesToProjects
+     * @param associateSecuritySchemeWithProjectDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to remove the issue security level is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call associateSchemesToProjectsCall(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Update issue security scheme
-   * Updates the issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue security scheme. (required)
-   * @param updateIssueSecuritySchemeRequestBean  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateIssueSecurityScheme(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean) throws ApiException {
-    return updateIssueSecurityScheme(id, updateIssueSecuritySchemeRequestBean, null);
-  }
-
-  /**
-   * Update issue security scheme
-   * Updates the issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue security scheme. (required)
-   * @param updateIssueSecuritySchemeRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateIssueSecurityScheme(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateIssueSecuritySchemeWithHttpInfo(id, updateIssueSecuritySchemeRequestBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update issue security scheme
-   * Updates the issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue security scheme. (required)
-   * @param updateIssueSecuritySchemeRequestBean  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean) throws ApiException {
-    return updateIssueSecuritySchemeWithHttpInfo(id, updateIssueSecuritySchemeRequestBean, null);
-  }
-
-  /**
-   * Update issue security scheme
-   * Updates the issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue security scheme. (required)
-   * @param updateIssueSecuritySchemeRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateIssueSecuritySchemeRequestBuilder(id, updateIssueSecuritySchemeRequestBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateIssueSecurityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = associateSecuritySchemeWithProjectDetails;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/project";
 
-  private HttpRequest.Builder updateIssueSecuritySchemeRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateIssueSecurityScheme");
-    }
-    // verify the required parameter 'updateIssueSecuritySchemeRequestBean' is set
-    if (updateIssueSecuritySchemeRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateIssueSecuritySchemeRequestBean' when calling updateIssueSecurityScheme");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuesecurityschemes/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateIssueSecuritySchemeRequestBean);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update issue security level
-   * Updates the issue security level.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme level belongs to. (required)
-   * @param levelId The ID of the issue security level to update. (required)
-   * @param updateIssueSecurityLevelDetails  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails) throws ApiException {
-    return updateSecurityLevel(schemeId, levelId, updateIssueSecurityLevelDetails, null);
-  }
-
-  /**
-   * Update issue security level
-   * Updates the issue security level.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme level belongs to. (required)
-   * @param levelId The ID of the issue security level to update. (required)
-   * @param updateIssueSecurityLevelDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateSecurityLevelWithHttpInfo(schemeId, levelId, updateIssueSecurityLevelDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update issue security level
-   * Updates the issue security level.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme level belongs to. (required)
-   * @param levelId The ID of the issue security level to update. (required)
-   * @param updateIssueSecurityLevelDetails  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails) throws ApiException {
-    return updateSecurityLevelWithHttpInfo(schemeId, levelId, updateIssueSecurityLevelDetails, null);
-  }
-
-  /**
-   * Update issue security level
-   * Updates the issue security level.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the issue security scheme level belongs to. (required)
-   * @param levelId The ID of the issue security level to update. (required)
-   * @param updateIssueSecurityLevelDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateSecurityLevelRequestBuilder(schemeId, levelId, updateIssueSecurityLevelDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateSecurityLevel", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateSecurityLevelRequestBuilder(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling updateSecurityLevel");
-    }
-    // verify the required parameter 'levelId' is set
-    if (levelId == null) {
-      throw new ApiException(400, "Missing the required parameter 'levelId' when calling updateSecurityLevel");
-    }
-    // verify the required parameter 'updateIssueSecurityLevelDetails' is set
-    if (updateIssueSecurityLevelDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateIssueSecurityLevelDetails' when calling updateSecurityLevel");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call associateSchemesToProjectsValidateBeforeCall(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'associateSecuritySchemeWithProjectDetails' is set
+        if (associateSecuritySchemeWithProjectDetails == null) {
+            throw new ApiException("Missing the required parameter 'associateSecuritySchemeWithProjectDetails' when calling associateSchemesToProjects(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()))
-        .replace("{levelId}", ApiClient.urlEncode(levelId.toString()));
+        return associateSchemesToProjectsCall(associateSecuritySchemeWithProjectDetails, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateIssueSecurityLevelDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Associate security scheme to project
+     * Associates an issue security scheme with a project and remaps security levels of issues to the new levels, if provided.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param associateSecuritySchemeWithProjectDetails  (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to remove the issue security level is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void associateSchemesToProjects(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails) throws ApiException {
+        associateSchemesToProjectsWithHttpInfo(associateSecuritySchemeWithProjectDetails);
+    }
+
+    /**
+     * Associate security scheme to project
+     * Associates an issue security scheme with a project and remaps security levels of issues to the new levels, if provided.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param associateSecuritySchemeWithProjectDetails  (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to remove the issue security level is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> associateSchemesToProjectsWithHttpInfo(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails) throws ApiException {
+        okhttp3.Call localVarCall = associateSchemesToProjectsValidateBeforeCall(associateSecuritySchemeWithProjectDetails, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Associate security scheme to project (asynchronously)
+     * Associates an issue security scheme with a project and remaps security levels of issues to the new levels, if provided.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param associateSecuritySchemeWithProjectDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to remove the issue security level is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call associateSchemesToProjectsAsync(@javax.annotation.Nonnull AssociateSecuritySchemeWithProjectDetails associateSecuritySchemeWithProjectDetails, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = associateSchemesToProjectsValidateBeforeCall(associateSecuritySchemeWithProjectDetails, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for createIssueSecurityScheme
+     * @param createIssueSecuritySchemeDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createIssueSecuritySchemeCall(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = createIssueSecuritySchemeDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createIssueSecuritySchemeValidateBeforeCall(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'createIssueSecuritySchemeDetails' is set
+        if (createIssueSecuritySchemeDetails == null) {
+            throw new ApiException("Missing the required parameter 'createIssueSecuritySchemeDetails' when calling createIssueSecurityScheme(Async)");
+        }
+
+        return createIssueSecuritySchemeCall(createIssueSecuritySchemeDetails, _callback);
+
+    }
+
+    /**
+     * Create issue security scheme
+     * Creates a security scheme with security scheme levels and levels&#39; members. You can create up to 100 security scheme levels and security scheme levels&#39; members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createIssueSecuritySchemeDetails  (required)
+     * @return SecuritySchemeId
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SecuritySchemeId createIssueSecurityScheme(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails) throws ApiException {
+        ApiResponse<SecuritySchemeId> localVarResp = createIssueSecuritySchemeWithHttpInfo(createIssueSecuritySchemeDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Create issue security scheme
+     * Creates a security scheme with security scheme levels and levels&#39; members. You can create up to 100 security scheme levels and security scheme levels&#39; members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createIssueSecuritySchemeDetails  (required)
+     * @return ApiResponse&lt;SecuritySchemeId&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SecuritySchemeId> createIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails) throws ApiException {
+        okhttp3.Call localVarCall = createIssueSecuritySchemeValidateBeforeCall(createIssueSecuritySchemeDetails, null);
+        Type localVarReturnType = new TypeToken<SecuritySchemeId>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create issue security scheme (asynchronously)
+     * Creates a security scheme with security scheme levels and levels&#39; members. You can create up to 100 security scheme levels and security scheme levels&#39; members per request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createIssueSecuritySchemeDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createIssueSecuritySchemeAsync(@javax.annotation.Nonnull CreateIssueSecuritySchemeDetails createIssueSecuritySchemeDetails, final ApiCallback<SecuritySchemeId> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createIssueSecuritySchemeValidateBeforeCall(createIssueSecuritySchemeDetails, _callback);
+        Type localVarReturnType = new TypeToken<SecuritySchemeId>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteSecurityScheme
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteSecuritySchemeCall(@javax.annotation.Nonnull String schemeId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteSecuritySchemeValidateBeforeCall(@javax.annotation.Nonnull String schemeId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling deleteSecurityScheme(Async)");
+        }
+
+        return deleteSecuritySchemeCall(schemeId, _callback);
+
+    }
+
+    /**
+     * Delete issue security scheme
+     * Deletes an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deleteSecurityScheme(@javax.annotation.Nonnull String schemeId) throws ApiException {
+        ApiResponse<Object> localVarResp = deleteSecuritySchemeWithHttpInfo(schemeId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Delete issue security scheme
+     * Deletes an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deleteSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId) throws ApiException {
+        okhttp3.Call localVarCall = deleteSecuritySchemeValidateBeforeCall(schemeId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete issue security scheme (asynchronously)
+     * Deletes an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteSecuritySchemeAsync(@javax.annotation.Nonnull String schemeId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteSecuritySchemeValidateBeforeCall(schemeId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueSecurityScheme
+     * @param id The ID of the issue security scheme. Use the [Get issue security schemes](#api-rest-api-3-issuesecurityschemes-get) operation to get a list of issue security scheme IDs. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the administrator permission and the scheme is not used in any project where the user has administrative permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueSecuritySchemeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueSecuritySchemeValidateBeforeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getIssueSecurityScheme(Async)");
+        }
+
+        return getIssueSecuritySchemeCall(id, _callback);
+
+    }
+
+    /**
+     * Get issue security scheme
+     * Returns an issue security scheme along with its security levels.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for a project that uses the requested issue security scheme.
+     * @param id The ID of the issue security scheme. Use the [Get issue security schemes](#api-rest-api-3-issuesecurityschemes-get) operation to get a list of issue security scheme IDs. (required)
+     * @return SecurityScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the administrator permission and the scheme is not used in any project where the user has administrative permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SecurityScheme getIssueSecurityScheme(@javax.annotation.Nonnull Long id) throws ApiException {
+        ApiResponse<SecurityScheme> localVarResp = getIssueSecuritySchemeWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue security scheme
+     * Returns an issue security scheme along with its security levels.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for a project that uses the requested issue security scheme.
+     * @param id The ID of the issue security scheme. Use the [Get issue security schemes](#api-rest-api-3-issuesecurityschemes-get) operation to get a list of issue security scheme IDs. (required)
+     * @return ApiResponse&lt;SecurityScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the administrator permission and the scheme is not used in any project where the user has administrative permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SecurityScheme> getIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = getIssueSecuritySchemeValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<SecurityScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue security scheme (asynchronously)
+     * Returns an issue security scheme along with its security levels.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for a project that uses the requested issue security scheme.
+     * @param id The ID of the issue security scheme. Use the [Get issue security schemes](#api-rest-api-3-issuesecurityschemes-get) operation to get a list of issue security scheme IDs. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the administrator permission and the scheme is not used in any project where the user has administrative permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueSecuritySchemeAsync(@javax.annotation.Nonnull Long id, final ApiCallback<SecurityScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueSecuritySchemeValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<SecurityScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueSecuritySchemes
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer issue security schemes. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueSecuritySchemesCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueSecuritySchemesValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getIssueSecuritySchemesCall(_callback);
+
+    }
+
+    /**
+     * Get issue security schemes
+     * Returns all [issue security schemes](https://confluence.atlassian.com/x/J4lKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @return SecuritySchemes
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer issue security schemes. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SecuritySchemes getIssueSecuritySchemes() throws ApiException {
+        ApiResponse<SecuritySchemes> localVarResp = getIssueSecuritySchemesWithHttpInfo();
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue security schemes
+     * Returns all [issue security schemes](https://confluence.atlassian.com/x/J4lKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @return ApiResponse&lt;SecuritySchemes&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer issue security schemes. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SecuritySchemes> getIssueSecuritySchemesWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getIssueSecuritySchemesValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<SecuritySchemes>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue security schemes (asynchronously)
+     * Returns all [issue security schemes](https://confluence.atlassian.com/x/J4lKLg).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer issue security schemes. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueSecuritySchemesAsync(final ApiCallback<SecuritySchemes> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueSecuritySchemesValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<SecuritySchemes>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getSecurityLevelMembers
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security level member IDs. To include multiple issue security level members separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param levelId The list of issue security level IDs. To include multiple issue security levels separate IDs with an ampersand: &#x60;levelId&#x3D;10000&amp;levelId&#x3D;10001&#x60;. (optional)
+     * @param expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;all&#x60; Returns all expandable information  *  &#x60;field&#x60; Returns information about the custom field granted the permission  *  &#x60;group&#x60; Returns information about the group that is granted the permission  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission  *  &#x60;user&#x60; Returns information about the user who is granted the permission (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSecurityLevelMembersCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/level/member";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        if (schemeId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "schemeId", schemeId));
+        }
+
+        if (levelId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "levelId", levelId));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getSecurityLevelMembersValidateBeforeCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        return getSecurityLevelMembersCall(startAt, maxResults, id, schemeId, levelId, expand, _callback);
+
+    }
+
+    /**
+     * Get issue security level members
+     * Returns a [paginated](#pagination) list of issue security level members.  Only issue security level members in the context of classic projects are returned.  Filtering using parameters is inclusive: if you specify both security scheme IDs and level IDs, the result will include all issue security level members from the specified schemes and levels.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security level member IDs. To include multiple issue security level members separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param levelId The list of issue security level IDs. To include multiple issue security levels separate IDs with an ampersand: &#x60;levelId&#x3D;10000&amp;levelId&#x3D;10001&#x60;. (optional)
+     * @param expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;all&#x60; Returns all expandable information  *  &#x60;field&#x60; Returns information about the custom field granted the permission  *  &#x60;group&#x60; Returns information about the group that is granted the permission  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission  *  &#x60;user&#x60; Returns information about the user who is granted the permission (optional)
+     * @return PageBeanSecurityLevelMember
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanSecurityLevelMember getSecurityLevelMembers(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PageBeanSecurityLevelMember> localVarResp = getSecurityLevelMembersWithHttpInfo(startAt, maxResults, id, schemeId, levelId, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue security level members
+     * Returns a [paginated](#pagination) list of issue security level members.  Only issue security level members in the context of classic projects are returned.  Filtering using parameters is inclusive: if you specify both security scheme IDs and level IDs, the result will include all issue security level members from the specified schemes and levels.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security level member IDs. To include multiple issue security level members separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param levelId The list of issue security level IDs. To include multiple issue security levels separate IDs with an ampersand: &#x60;levelId&#x3D;10000&amp;levelId&#x3D;10001&#x60;. (optional)
+     * @param expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;all&#x60; Returns all expandable information  *  &#x60;field&#x60; Returns information about the custom field granted the permission  *  &#x60;group&#x60; Returns information about the group that is granted the permission  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission  *  &#x60;user&#x60; Returns information about the user who is granted the permission (optional)
+     * @return ApiResponse&lt;PageBeanSecurityLevelMember&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanSecurityLevelMember> getSecurityLevelMembersWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getSecurityLevelMembersValidateBeforeCall(startAt, maxResults, id, schemeId, levelId, expand, null);
+        Type localVarReturnType = new TypeToken<PageBeanSecurityLevelMember>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue security level members (asynchronously)
+     * Returns a [paginated](#pagination) list of issue security level members.  Only issue security level members in the context of classic projects are returned.  Filtering using parameters is inclusive: if you specify both security scheme IDs and level IDs, the result will include all issue security level members from the specified schemes and levels.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security level member IDs. To include multiple issue security level members separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param levelId The list of issue security level IDs. To include multiple issue security levels separate IDs with an ampersand: &#x60;levelId&#x3D;10000&amp;levelId&#x3D;10001&#x60;. (optional)
+     * @param expand Use expand to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;all&#x60; Returns all expandable information  *  &#x60;field&#x60; Returns information about the custom field granted the permission  *  &#x60;group&#x60; Returns information about the group that is granted the permission  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission  *  &#x60;user&#x60; Returns information about the user who is granted the permission (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSecurityLevelMembersAsync(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Set<String> levelId, @javax.annotation.Nullable String expand, final ApiCallback<PageBeanSecurityLevelMember> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getSecurityLevelMembersValidateBeforeCall(startAt, maxResults, id, schemeId, levelId, expand, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanSecurityLevelMember>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getSecurityLevels
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security scheme level IDs. To include multiple issue security levels, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes, separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param onlyDefault When set to true, returns multiple default levels for each security scheme containing a default. If you provide scheme and level IDs not associated with the default, returns an empty page. The default value is false. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSecurityLevelsCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/level";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        if (schemeId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "schemeId", schemeId));
+        }
+
+        if (onlyDefault != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("onlyDefault", onlyDefault));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getSecurityLevelsValidateBeforeCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault, final ApiCallback _callback) throws ApiException {
+        return getSecurityLevelsCall(startAt, maxResults, id, schemeId, onlyDefault, _callback);
+
+    }
+
+    /**
+     * Get issue security levels
+     * Returns a [paginated](#pagination) list of issue security levels.  Only issue security levels in the context of classic projects are returned.  Filtering using IDs is inclusive: if you specify both security scheme IDs and level IDs, the result will include both specified issue security levels and all issue security levels from the specified schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security scheme level IDs. To include multiple issue security levels, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes, separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param onlyDefault When set to true, returns multiple default levels for each security scheme containing a default. If you provide scheme and level IDs not associated with the default, returns an empty page. The default value is false. (optional, default to false)
+     * @return PageBeanSecurityLevel
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanSecurityLevel getSecurityLevels(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault) throws ApiException {
+        ApiResponse<PageBeanSecurityLevel> localVarResp = getSecurityLevelsWithHttpInfo(startAt, maxResults, id, schemeId, onlyDefault);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue security levels
+     * Returns a [paginated](#pagination) list of issue security levels.  Only issue security levels in the context of classic projects are returned.  Filtering using IDs is inclusive: if you specify both security scheme IDs and level IDs, the result will include both specified issue security levels and all issue security levels from the specified schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security scheme level IDs. To include multiple issue security levels, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes, separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param onlyDefault When set to true, returns multiple default levels for each security scheme containing a default. If you provide scheme and level IDs not associated with the default, returns an empty page. The default value is false. (optional, default to false)
+     * @return ApiResponse&lt;PageBeanSecurityLevel&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanSecurityLevel> getSecurityLevelsWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault) throws ApiException {
+        okhttp3.Call localVarCall = getSecurityLevelsValidateBeforeCall(startAt, maxResults, id, schemeId, onlyDefault, null);
+        Type localVarReturnType = new TypeToken<PageBeanSecurityLevel>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue security levels (asynchronously)
+     * Returns a [paginated](#pagination) list of issue security levels.  Only issue security levels in the context of classic projects are returned.  Filtering using IDs is inclusive: if you specify both security scheme IDs and level IDs, the result will include both specified issue security levels and all issue security levels from the specified schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security scheme level IDs. To include multiple issue security levels, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param schemeId The list of issue security scheme IDs. To include multiple issue security schemes, separate IDs with an ampersand: &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param onlyDefault When set to true, returns multiple default levels for each security scheme containing a default. If you provide scheme and level IDs not associated with the default, returns an empty page. The default value is false. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSecurityLevelsAsync(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> schemeId, @javax.annotation.Nullable Boolean onlyDefault, final ApiCallback<PageBeanSecurityLevel> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getSecurityLevelsValidateBeforeCall(startAt, maxResults, id, schemeId, onlyDefault, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanSecurityLevel>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeLevel
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level to remove. (required)
+     * @param replaceWith The ID of the issue security level that will replace the currently selected level. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security level isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to remove the issue security level is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeLevelCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()))
+            .replace("{" + "levelId" + "}", localVarApiClient.escapeString(levelId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (replaceWith != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("replaceWith", replaceWith));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeLevelValidateBeforeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling removeLevel(Async)");
+        }
+
+        // verify the required parameter 'levelId' is set
+        if (levelId == null) {
+            throw new ApiException("Missing the required parameter 'levelId' when calling removeLevel(Async)");
+        }
+
+        return removeLevelCall(schemeId, levelId, replaceWith, _callback);
+
+    }
+
+    /**
+     * Remove issue security level
+     * Deletes an issue security level.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level to remove. (required)
+     * @param replaceWith The ID of the issue security level that will replace the currently selected level. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security level isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to remove the issue security level is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void removeLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith) throws ApiException {
+        removeLevelWithHttpInfo(schemeId, levelId, replaceWith);
+    }
+
+    /**
+     * Remove issue security level
+     * Deletes an issue security level.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level to remove. (required)
+     * @param replaceWith The ID of the issue security level that will replace the currently selected level. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security level isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to remove the issue security level is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> removeLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith) throws ApiException {
+        okhttp3.Call localVarCall = removeLevelValidateBeforeCall(schemeId, levelId, replaceWith, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Remove issue security level (asynchronously)
+     * Deletes an issue security level.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level to remove. (required)
+     * @param replaceWith The ID of the issue security level that will replace the currently selected level. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security level isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to remove the issue security level is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeLevelAsync(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nullable String replaceWith, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeLevelValidateBeforeCall(schemeId, levelId, replaceWith, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeMemberFromSecurityLevel
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level. (required)
+     * @param memberId The ID of the issue security level member to be removed. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeMemberFromSecurityLevelCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member/{memberId}"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()))
+            .replace("{" + "levelId" + "}", localVarApiClient.escapeString(levelId.toString()))
+            .replace("{" + "memberId" + "}", localVarApiClient.escapeString(memberId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeMemberFromSecurityLevelValidateBeforeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling removeMemberFromSecurityLevel(Async)");
+        }
+
+        // verify the required parameter 'levelId' is set
+        if (levelId == null) {
+            throw new ApiException("Missing the required parameter 'levelId' when calling removeMemberFromSecurityLevel(Async)");
+        }
+
+        // verify the required parameter 'memberId' is set
+        if (memberId == null) {
+            throw new ApiException("Missing the required parameter 'memberId' when calling removeMemberFromSecurityLevel(Async)");
+        }
+
+        return removeMemberFromSecurityLevelCall(schemeId, levelId, memberId, _callback);
+
+    }
+
+    /**
+     * Remove member from issue security level
+     * Removes an issue security level member from an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level. (required)
+     * @param memberId The ID of the issue security level member to be removed. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object removeMemberFromSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId) throws ApiException {
+        ApiResponse<Object> localVarResp = removeMemberFromSecurityLevelWithHttpInfo(schemeId, levelId, memberId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Remove member from issue security level
+     * Removes an issue security level member from an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level. (required)
+     * @param memberId The ID of the issue security level member to be removed. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> removeMemberFromSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId) throws ApiException {
+        okhttp3.Call localVarCall = removeMemberFromSecurityLevelValidateBeforeCall(schemeId, levelId, memberId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Remove member from issue security level (asynchronously)
+     * Removes an issue security level member from an issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme. (required)
+     * @param levelId The ID of the issue security level. (required)
+     * @param memberId The ID of the issue security level member to be removed. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeMemberFromSecurityLevelAsync(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull String memberId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeMemberFromSecurityLevelValidateBeforeCall(schemeId, levelId, memberId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for searchProjectsUsingSecuritySchemes
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param issueSecuritySchemeId The list of security scheme IDs to be filtered out. (optional)
+     * @param projectId The list of project IDs to be filtered out. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the search criteria is invalid.If you specify the project ID parameter </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call searchProjectsUsingSecuritySchemesCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/project";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (issueSecuritySchemeId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "issueSecuritySchemeId", issueSecuritySchemeId));
+        }
+
+        if (projectId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "projectId", projectId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call searchProjectsUsingSecuritySchemesValidateBeforeCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId, final ApiCallback _callback) throws ApiException {
+        return searchProjectsUsingSecuritySchemesCall(startAt, maxResults, issueSecuritySchemeId, projectId, _callback);
+
+    }
+
+    /**
+     * Get projects using issue security schemes
+     * Returns a [paginated](#pagination) mapping of projects that are using security schemes. You can provide either one or multiple security scheme IDs or project IDs to filter by. If you don&#39;t provide any, this will return a list of all mappings. Only issue security schemes in the context of classic projects are supported. **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param issueSecuritySchemeId The list of security scheme IDs to be filtered out. (optional)
+     * @param projectId The list of project IDs to be filtered out. (optional)
+     * @return PageBeanIssueSecuritySchemeToProjectMapping
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the search criteria is invalid.If you specify the project ID parameter </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanIssueSecuritySchemeToProjectMapping searchProjectsUsingSecuritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId) throws ApiException {
+        ApiResponse<PageBeanIssueSecuritySchemeToProjectMapping> localVarResp = searchProjectsUsingSecuritySchemesWithHttpInfo(startAt, maxResults, issueSecuritySchemeId, projectId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get projects using issue security schemes
+     * Returns a [paginated](#pagination) mapping of projects that are using security schemes. You can provide either one or multiple security scheme IDs or project IDs to filter by. If you don&#39;t provide any, this will return a list of all mappings. Only issue security schemes in the context of classic projects are supported. **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param issueSecuritySchemeId The list of security scheme IDs to be filtered out. (optional)
+     * @param projectId The list of project IDs to be filtered out. (optional)
+     * @return ApiResponse&lt;PageBeanIssueSecuritySchemeToProjectMapping&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the search criteria is invalid.If you specify the project ID parameter </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanIssueSecuritySchemeToProjectMapping> searchProjectsUsingSecuritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId) throws ApiException {
+        okhttp3.Call localVarCall = searchProjectsUsingSecuritySchemesValidateBeforeCall(startAt, maxResults, issueSecuritySchemeId, projectId, null);
+        Type localVarReturnType = new TypeToken<PageBeanIssueSecuritySchemeToProjectMapping>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get projects using issue security schemes (asynchronously)
+     * Returns a [paginated](#pagination) mapping of projects that are using security schemes. You can provide either one or multiple security scheme IDs or project IDs to filter by. If you don&#39;t provide any, this will return a list of all mappings. Only issue security schemes in the context of classic projects are supported. **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param issueSecuritySchemeId The list of security scheme IDs to be filtered out. (optional)
+     * @param projectId The list of project IDs to be filtered out. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the search criteria is invalid.If you specify the project ID parameter </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call searchProjectsUsingSecuritySchemesAsync(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> issueSecuritySchemeId, @javax.annotation.Nullable Set<String> projectId, final ApiCallback<PageBeanIssueSecuritySchemeToProjectMapping> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = searchProjectsUsingSecuritySchemesValidateBeforeCall(startAt, maxResults, issueSecuritySchemeId, projectId, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanIssueSecuritySchemeToProjectMapping>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for searchSecuritySchemes
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security scheme IDs. To include multiple issue security scheme IDs, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param projectId The list of project IDs. To include multiple project IDs, separate IDs with an ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call searchSecuritySchemesCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/search";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        if (projectId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "projectId", projectId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call searchSecuritySchemesValidateBeforeCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId, final ApiCallback _callback) throws ApiException {
+        return searchSecuritySchemesCall(startAt, maxResults, id, projectId, _callback);
+
+    }
+
+    /**
+     * Search issue security schemes
+     * Returns a [paginated](#pagination) list of issue security schemes.   If you specify the project ID parameter, the result will contain issue security schemes and related project IDs you filter by. Use \\{@link IssueSecuritySchemeResource\\#searchProjectsUsingSecuritySchemes(String, String, Set, Set)\\} to obtain all projects related to scheme.  Only issue security schemes in the context of classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security scheme IDs. To include multiple issue security scheme IDs, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param projectId The list of project IDs. To include multiple project IDs, separate IDs with an ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
+     * @return PageBeanSecuritySchemeWithProjects
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanSecuritySchemeWithProjects searchSecuritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId) throws ApiException {
+        ApiResponse<PageBeanSecuritySchemeWithProjects> localVarResp = searchSecuritySchemesWithHttpInfo(startAt, maxResults, id, projectId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Search issue security schemes
+     * Returns a [paginated](#pagination) list of issue security schemes.   If you specify the project ID parameter, the result will contain issue security schemes and related project IDs you filter by. Use \\{@link IssueSecuritySchemeResource\\#searchProjectsUsingSecuritySchemes(String, String, Set, Set)\\} to obtain all projects related to scheme.  Only issue security schemes in the context of classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security scheme IDs. To include multiple issue security scheme IDs, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param projectId The list of project IDs. To include multiple project IDs, separate IDs with an ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
+     * @return ApiResponse&lt;PageBeanSecuritySchemeWithProjects&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanSecuritySchemeWithProjects> searchSecuritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId) throws ApiException {
+        okhttp3.Call localVarCall = searchSecuritySchemesValidateBeforeCall(startAt, maxResults, id, projectId, null);
+        Type localVarReturnType = new TypeToken<PageBeanSecuritySchemeWithProjects>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Search issue security schemes (asynchronously)
+     * Returns a [paginated](#pagination) list of issue security schemes.   If you specify the project ID parameter, the result will contain issue security schemes and related project IDs you filter by. Use \\{@link IssueSecuritySchemeResource\\#searchProjectsUsingSecuritySchemes(String, String, Set, Set)\\} to obtain all projects related to scheme.  Only issue security schemes in the context of classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue security scheme IDs. To include multiple issue security scheme IDs, separate IDs with an ampersand: &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param projectId The list of project IDs. To include multiple project IDs, separate IDs with an ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call searchSecuritySchemesAsync(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<String> id, @javax.annotation.Nullable Set<String> projectId, final ApiCallback<PageBeanSecuritySchemeWithProjects> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = searchSecuritySchemesValidateBeforeCall(startAt, maxResults, id, projectId, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanSecuritySchemeWithProjects>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for setDefaultLevels
+     * @param setDefaultLevelsRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setDefaultLevelsCall(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = setDefaultLevelsRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/level/default";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call setDefaultLevelsValidateBeforeCall(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'setDefaultLevelsRequest' is set
+        if (setDefaultLevelsRequest == null) {
+            throw new ApiException("Missing the required parameter 'setDefaultLevelsRequest' when calling setDefaultLevels(Async)");
+        }
+
+        return setDefaultLevelsCall(setDefaultLevelsRequest, _callback);
+
+    }
+
+    /**
+     * Set default issue security levels
+     * Sets default issue security levels for schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param setDefaultLevelsRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object setDefaultLevels(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = setDefaultLevelsWithHttpInfo(setDefaultLevelsRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set default issue security levels
+     * Sets default issue security levels for schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param setDefaultLevelsRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> setDefaultLevelsWithHttpInfo(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest) throws ApiException {
+        okhttp3.Call localVarCall = setDefaultLevelsValidateBeforeCall(setDefaultLevelsRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set default issue security levels (asynchronously)
+     * Sets default issue security levels for schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param setDefaultLevelsRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setDefaultLevelsAsync(@javax.annotation.Nonnull SetDefaultLevelsRequest setDefaultLevelsRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = setDefaultLevelsValidateBeforeCall(setDefaultLevelsRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateIssueSecurityScheme
+     * @param id The ID of the issue security scheme. (required)
+     * @param updateIssueSecuritySchemeRequestBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateIssueSecuritySchemeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = updateIssueSecuritySchemeRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateIssueSecuritySchemeValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateIssueSecurityScheme(Async)");
+        }
+
+        // verify the required parameter 'updateIssueSecuritySchemeRequestBean' is set
+        if (updateIssueSecuritySchemeRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'updateIssueSecuritySchemeRequestBean' when calling updateIssueSecurityScheme(Async)");
+        }
+
+        return updateIssueSecuritySchemeCall(id, updateIssueSecuritySchemeRequestBean, _callback);
+
+    }
+
+    /**
+     * Update issue security scheme
+     * Updates the issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue security scheme. (required)
+     * @param updateIssueSecuritySchemeRequestBean  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateIssueSecurityScheme(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean) throws ApiException {
+        ApiResponse<Object> localVarResp = updateIssueSecuritySchemeWithHttpInfo(id, updateIssueSecuritySchemeRequestBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update issue security scheme
+     * Updates the issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue security scheme. (required)
+     * @param updateIssueSecuritySchemeRequestBean  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean) throws ApiException {
+        okhttp3.Call localVarCall = updateIssueSecuritySchemeValidateBeforeCall(id, updateIssueSecuritySchemeRequestBean, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update issue security scheme (asynchronously)
+     * Updates the issue security scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue security scheme. (required)
+     * @param updateIssueSecuritySchemeRequestBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security scheme isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateIssueSecuritySchemeAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateIssueSecuritySchemeRequestBean updateIssueSecuritySchemeRequestBean, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateIssueSecuritySchemeValidateBeforeCall(id, updateIssueSecuritySchemeRequestBean, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateSecurityLevel
+     * @param schemeId The ID of the issue security scheme level belongs to. (required)
+     * @param levelId The ID of the issue security level to update. (required)
+     * @param updateIssueSecurityLevelDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security level isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateSecurityLevelCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = updateIssueSecurityLevelDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()))
+            .replace("{" + "levelId" + "}", localVarApiClient.escapeString(levelId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateSecurityLevelValidateBeforeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling updateSecurityLevel(Async)");
+        }
+
+        // verify the required parameter 'levelId' is set
+        if (levelId == null) {
+            throw new ApiException("Missing the required parameter 'levelId' when calling updateSecurityLevel(Async)");
+        }
+
+        // verify the required parameter 'updateIssueSecurityLevelDetails' is set
+        if (updateIssueSecurityLevelDetails == null) {
+            throw new ApiException("Missing the required parameter 'updateIssueSecurityLevelDetails' when calling updateSecurityLevel(Async)");
+        }
+
+        return updateSecurityLevelCall(schemeId, levelId, updateIssueSecurityLevelDetails, _callback);
+
+    }
+
+    /**
+     * Update issue security level
+     * Updates the issue security level.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme level belongs to. (required)
+     * @param levelId The ID of the issue security level to update. (required)
+     * @param updateIssueSecurityLevelDetails  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security level isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateSecurityLevel(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails) throws ApiException {
+        ApiResponse<Object> localVarResp = updateSecurityLevelWithHttpInfo(schemeId, levelId, updateIssueSecurityLevelDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update issue security level
+     * Updates the issue security level.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme level belongs to. (required)
+     * @param levelId The ID of the issue security level to update. (required)
+     * @param updateIssueSecurityLevelDetails  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security level isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateSecurityLevelWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails) throws ApiException {
+        okhttp3.Call localVarCall = updateSecurityLevelValidateBeforeCall(schemeId, levelId, updateIssueSecurityLevelDetails, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update issue security level (asynchronously)
+     * Updates the issue security level.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the issue security scheme level belongs to. (required)
+     * @param levelId The ID of the issue security level to update. (required)
+     * @param updateIssueSecurityLevelDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue security level isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateSecurityLevelAsync(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nonnull String levelId, @javax.annotation.Nonnull UpdateIssueSecurityLevelDetails updateIssueSecurityLevelDetails, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateSecurityLevelValidateBeforeCall(schemeId, levelId, updateIssueSecurityLevelDetails, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

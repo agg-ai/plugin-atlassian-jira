@@ -13,79 +13,94 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * SimplifiedHierarchyLevel
  */
-@JsonPropertyOrder({
-  SimplifiedHierarchyLevel.JSON_PROPERTY_ABOVE_LEVEL_ID,
-  SimplifiedHierarchyLevel.JSON_PROPERTY_BELOW_LEVEL_ID,
-  SimplifiedHierarchyLevel.JSON_PROPERTY_EXTERNAL_UUID,
-  SimplifiedHierarchyLevel.JSON_PROPERTY_HIERARCHY_LEVEL_NUMBER,
-  SimplifiedHierarchyLevel.JSON_PROPERTY_ID,
-  SimplifiedHierarchyLevel.JSON_PROPERTY_ISSUE_TYPE_IDS,
-  SimplifiedHierarchyLevel.JSON_PROPERTY_LEVEL,
-  SimplifiedHierarchyLevel.JSON_PROPERTY_NAME,
-  SimplifiedHierarchyLevel.JSON_PROPERTY_PROJECT_CONFIGURATION_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SimplifiedHierarchyLevel {
-  public static final String JSON_PROPERTY_ABOVE_LEVEL_ID = "aboveLevelId";
+  public static final String SERIALIZED_NAME_ABOVE_LEVEL_ID = "aboveLevelId";
+  @SerializedName(SERIALIZED_NAME_ABOVE_LEVEL_ID)
   @javax.annotation.Nullable
   private Long aboveLevelId;
 
-  public static final String JSON_PROPERTY_BELOW_LEVEL_ID = "belowLevelId";
+  public static final String SERIALIZED_NAME_BELOW_LEVEL_ID = "belowLevelId";
+  @SerializedName(SERIALIZED_NAME_BELOW_LEVEL_ID)
   @javax.annotation.Nullable
   private Long belowLevelId;
 
-  public static final String JSON_PROPERTY_EXTERNAL_UUID = "externalUuid";
+  public static final String SERIALIZED_NAME_EXTERNAL_UUID = "externalUuid";
+  @SerializedName(SERIALIZED_NAME_EXTERNAL_UUID)
   @javax.annotation.Nullable
   private UUID externalUuid;
 
-  public static final String JSON_PROPERTY_HIERARCHY_LEVEL_NUMBER = "hierarchyLevelNumber";
+  public static final String SERIALIZED_NAME_HIERARCHY_LEVEL_NUMBER = "hierarchyLevelNumber";
+  @SerializedName(SERIALIZED_NAME_HIERARCHY_LEVEL_NUMBER)
   @javax.annotation.Nullable
   private Integer hierarchyLevelNumber;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_IDS = "issueTypeIds";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_IDS = "issueTypeIds";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_IDS)
   @javax.annotation.Nullable
   private List<Long> issueTypeIds = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_LEVEL = "level";
+  public static final String SERIALIZED_NAME_LEVEL = "level";
+  @SerializedName(SERIALIZED_NAME_LEVEL)
   @javax.annotation.Nullable
   private Integer level;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PROJECT_CONFIGURATION_ID = "projectConfigurationId";
+  public static final String SERIALIZED_NAME_PROJECT_CONFIGURATION_ID = "projectConfigurationId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_CONFIGURATION_ID)
   @javax.annotation.Nullable
   private Long projectConfigurationId;
 
-  public SimplifiedHierarchyLevel() { 
+  public SimplifiedHierarchyLevel() {
   }
 
   public SimplifiedHierarchyLevel aboveLevelId(@javax.annotation.Nullable Long aboveLevelId) {
@@ -98,15 +113,10 @@ public class SimplifiedHierarchyLevel {
    * @return aboveLevelId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ABOVE_LEVEL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getAboveLevelId() {
     return aboveLevelId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ABOVE_LEVEL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAboveLevelId(@javax.annotation.Nullable Long aboveLevelId) {
     this.aboveLevelId = aboveLevelId;
   }
@@ -122,15 +132,10 @@ public class SimplifiedHierarchyLevel {
    * @return belowLevelId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BELOW_LEVEL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getBelowLevelId() {
     return belowLevelId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BELOW_LEVEL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBelowLevelId(@javax.annotation.Nullable Long belowLevelId) {
     this.belowLevelId = belowLevelId;
   }
@@ -146,15 +151,10 @@ public class SimplifiedHierarchyLevel {
    * @return externalUuid
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_UUID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getExternalUuid() {
     return externalUuid;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_UUID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExternalUuid(@javax.annotation.Nullable UUID externalUuid) {
     this.externalUuid = externalUuid;
   }
@@ -170,15 +170,10 @@ public class SimplifiedHierarchyLevel {
    * @return hierarchyLevelNumber
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HIERARCHY_LEVEL_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getHierarchyLevelNumber() {
     return hierarchyLevelNumber;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_HIERARCHY_LEVEL_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHierarchyLevelNumber(@javax.annotation.Nullable Integer hierarchyLevelNumber) {
     this.hierarchyLevelNumber = hierarchyLevelNumber;
   }
@@ -194,15 +189,10 @@ public class SimplifiedHierarchyLevel {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable Long id) {
     this.id = id;
   }
@@ -226,15 +216,10 @@ public class SimplifiedHierarchyLevel {
    * @return issueTypeIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Long> getIssueTypeIds() {
     return issueTypeIds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeIds(@javax.annotation.Nullable List<Long> issueTypeIds) {
     this.issueTypeIds = issueTypeIds;
   }
@@ -250,15 +235,10 @@ public class SimplifiedHierarchyLevel {
    * @return level
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getLevel() {
     return level;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLevel(@javax.annotation.Nullable Integer level) {
     this.level = level;
   }
@@ -274,15 +254,10 @@ public class SimplifiedHierarchyLevel {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -298,23 +273,16 @@ public class SimplifiedHierarchyLevel {
    * @return projectConfigurationId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_CONFIGURATION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getProjectConfigurationId() {
     return projectConfigurationId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_CONFIGURATION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectConfigurationId(@javax.annotation.Nullable Long projectConfigurationId) {
     this.projectConfigurationId = projectConfigurationId;
   }
 
 
-  /**
-   * Return true if this SimplifiedHierarchyLevel object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -368,88 +336,98 @@ public class SimplifiedHierarchyLevel {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("aboveLevelId", "belowLevelId", "externalUuid", "hierarchyLevelNumber", "id", "issueTypeIds", "level", "name", "projectConfigurationId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SimplifiedHierarchyLevel
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `aboveLevelId` to the URL query string
-    if (getAboveLevelId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saboveLevelId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAboveLevelId()))));
-    }
-
-    // add `belowLevelId` to the URL query string
-    if (getBelowLevelId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbelowLevelId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBelowLevelId()))));
-    }
-
-    // add `externalUuid` to the URL query string
-    if (getExternalUuid() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexternalUuid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExternalUuid()))));
-    }
-
-    // add `hierarchyLevelNumber` to the URL query string
-    if (getHierarchyLevelNumber() != null) {
-      joiner.add(String.format(Locale.ROOT, "%shierarchyLevelNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHierarchyLevelNumber()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `issueTypeIds` to the URL query string
-    if (getIssueTypeIds() != null) {
-      for (int i = 0; i < getIssueTypeIds().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sissueTypeIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getIssueTypeIds().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SimplifiedHierarchyLevel.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SimplifiedHierarchyLevel is not found in the empty JSON string", SimplifiedHierarchyLevel.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `level` to the URL query string
-    if (getLevel() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLevel()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SimplifiedHierarchyLevel.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SimplifiedHierarchyLevel` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("externalUuid") != null && !jsonObj.get("externalUuid").isJsonNull()) && !jsonObj.get("externalUuid").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `externalUuid` to be a primitive type in the JSON string but got `%s`", jsonObj.get("externalUuid").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("issueTypeIds") != null && !jsonObj.get("issueTypeIds").isJsonNull() && !jsonObj.get("issueTypeIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypeIds` to be an array in the JSON string but got `%s`", jsonObj.get("issueTypeIds").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+  }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SimplifiedHierarchyLevel.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SimplifiedHierarchyLevel' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SimplifiedHierarchyLevel> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SimplifiedHierarchyLevel.class));
 
-    // add `projectConfigurationId` to the URL query string
-    if (getProjectConfigurationId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectConfigurationId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectConfigurationId()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<SimplifiedHierarchyLevel>() {
+           @Override
+           public void write(JsonWriter out, SimplifiedHierarchyLevel value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public SimplifiedHierarchyLevel read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of SimplifiedHierarchyLevel given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SimplifiedHierarchyLevel
+   * @throws IOException if the JSON string is invalid with respect to SimplifiedHierarchyLevel
+   */
+  public static SimplifiedHierarchyLevel fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SimplifiedHierarchyLevel.class);
+  }
+
+  /**
+   * Convert an instance of SimplifiedHierarchyLevel to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

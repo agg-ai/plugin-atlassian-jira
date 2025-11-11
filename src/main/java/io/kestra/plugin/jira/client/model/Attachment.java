@@ -13,97 +13,107 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.UserDetails;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about an attachment.
  */
-@JsonPropertyOrder({
-  Attachment.JSON_PROPERTY_AUTHOR,
-  Attachment.JSON_PROPERTY_CONTENT,
-  Attachment.JSON_PROPERTY_CREATED,
-  Attachment.JSON_PROPERTY_FILENAME,
-  Attachment.JSON_PROPERTY_ID,
-  Attachment.JSON_PROPERTY_MIME_TYPE,
-  Attachment.JSON_PROPERTY_SELF,
-  Attachment.JSON_PROPERTY_SIZE,
-  Attachment.JSON_PROPERTY_THUMBNAIL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Attachment {
-  public static final String JSON_PROPERTY_AUTHOR = "author";
+  public static final String SERIALIZED_NAME_AUTHOR = "author";
+  @SerializedName(SERIALIZED_NAME_AUTHOR)
   @javax.annotation.Nullable
   private UserDetails author;
 
-  public static final String JSON_PROPERTY_CONTENT = "content";
+  public static final String SERIALIZED_NAME_CONTENT = "content";
+  @SerializedName(SERIALIZED_NAME_CONTENT)
   @javax.annotation.Nullable
   private String content;
 
-  public static final String JSON_PROPERTY_CREATED = "created";
+  public static final String SERIALIZED_NAME_CREATED = "created";
+  @SerializedName(SERIALIZED_NAME_CREATED)
   @javax.annotation.Nullable
   private OffsetDateTime created;
 
-  public static final String JSON_PROPERTY_FILENAME = "filename";
+  public static final String SERIALIZED_NAME_FILENAME = "filename";
+  @SerializedName(SERIALIZED_NAME_FILENAME)
   @javax.annotation.Nullable
   private String filename;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_MIME_TYPE = "mimeType";
+  public static final String SERIALIZED_NAME_MIME_TYPE = "mimeType";
+  @SerializedName(SERIALIZED_NAME_MIME_TYPE)
   @javax.annotation.Nullable
   private String mimeType;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public static final String JSON_PROPERTY_SIZE = "size";
+  public static final String SERIALIZED_NAME_SIZE = "size";
+  @SerializedName(SERIALIZED_NAME_SIZE)
   @javax.annotation.Nullable
   private Long size;
 
-  public static final String JSON_PROPERTY_THUMBNAIL = "thumbnail";
+  public static final String SERIALIZED_NAME_THUMBNAIL = "thumbnail";
+  @SerializedName(SERIALIZED_NAME_THUMBNAIL)
   @javax.annotation.Nullable
   private String thumbnail;
 
-  public Attachment() { 
+  public Attachment() {
   }
 
-  @JsonCreator
   public Attachment(
-    @JsonProperty(JSON_PROPERTY_AUTHOR) UserDetails author, 
-    @JsonProperty(JSON_PROPERTY_CONTENT) String content, 
-    @JsonProperty(JSON_PROPERTY_CREATED) OffsetDateTime created, 
-    @JsonProperty(JSON_PROPERTY_FILENAME) String filename, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_MIME_TYPE) String mimeType, 
-    @JsonProperty(JSON_PROPERTY_SELF) String self, 
-    @JsonProperty(JSON_PROPERTY_SIZE) Long size, 
-    @JsonProperty(JSON_PROPERTY_THUMBNAIL) String thumbnail
+     UserDetails author, 
+     String content, 
+     OffsetDateTime created, 
+     String filename, 
+     String id, 
+     String mimeType, 
+     String self, 
+     Long size, 
+     String thumbnail
   ) {
-  this();
+    this();
     this.author = author;
     this.content = content;
     this.created = created;
@@ -120,12 +130,9 @@ public class Attachment {
    * @return author
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserDetails getAuthor() {
     return author;
   }
-
 
 
 
@@ -134,12 +141,9 @@ public class Attachment {
    * @return content
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONTENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getContent() {
     return content;
   }
-
 
 
 
@@ -148,12 +152,9 @@ public class Attachment {
    * @return created
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getCreated() {
     return created;
   }
-
 
 
 
@@ -162,12 +163,9 @@ public class Attachment {
    * @return filename
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FILENAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFilename() {
     return filename;
   }
-
 
 
 
@@ -176,12 +174,9 @@ public class Attachment {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -190,12 +185,9 @@ public class Attachment {
    * @return mimeType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MIME_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMimeType() {
     return mimeType;
   }
-
 
 
 
@@ -204,12 +196,9 @@ public class Attachment {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
-
 
 
 
@@ -218,12 +207,9 @@ public class Attachment {
    * @return size
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSize() {
     return size;
   }
-
 
 
 
@@ -232,12 +218,9 @@ public class Attachment {
    * @return thumbnail
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_THUMBNAIL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getThumbnail() {
     return thumbnail;
   }
-
 
 
   /**
@@ -250,11 +233,11 @@ public class Attachment {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the Attachment instance itself
    */
-  @JsonAnySetter
   public Attachment putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -264,18 +247,19 @@ public class Attachment {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -284,9 +268,7 @@ public class Attachment {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this Attachment object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -342,84 +324,145 @@ public class Attachment {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("author", "content", "created", "filename", "id", "mimeType", "self", "size", "thumbnail"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Attachment
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Attachment.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Attachment is not found in the empty JSON string", Attachment.openapiRequiredFields.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `author`
+      if (jsonObj.get("author") != null && !jsonObj.get("author").isJsonNull()) {
+        UserDetails.validateJsonElement(jsonObj.get("author"));
+      }
+      if ((jsonObj.get("content") != null && !jsonObj.get("content").isJsonNull()) && !jsonObj.get("content").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `content` to be a primitive type in the JSON string but got `%s`", jsonObj.get("content").toString()));
+      }
+      if ((jsonObj.get("filename") != null && !jsonObj.get("filename").isJsonNull()) && !jsonObj.get("filename").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `filename` to be a primitive type in the JSON string but got `%s`", jsonObj.get("filename").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("mimeType") != null && !jsonObj.get("mimeType").isJsonNull()) && !jsonObj.get("mimeType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `mimeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("mimeType").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("thumbnail") != null && !jsonObj.get("thumbnail").isJsonNull()) && !jsonObj.get("thumbnail").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `thumbnail` to be a primitive type in the JSON string but got `%s`", jsonObj.get("thumbnail").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Attachment.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Attachment' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Attachment> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Attachment.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Attachment>() {
+           @Override
+           public void write(JsonWriter out, Attachment value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Attachment read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             Attachment instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of Attachment given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Attachment
+   * @throws IOException if the JSON string is invalid with respect to Attachment
+   */
+  public static Attachment fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Attachment.class);
+  }
 
-    // add `author` to the URL query string
-    if (getAuthor() != null) {
-      joiner.add(getAuthor().toUrlQueryString(prefix + "author" + suffix));
-    }
-
-    // add `content` to the URL query string
-    if (getContent() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContent()))));
-    }
-
-    // add `created` to the URL query string
-    if (getCreated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreated()))));
-    }
-
-    // add `filename` to the URL query string
-    if (getFilename() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfilename%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFilename()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `mimeType` to the URL query string
-    if (getMimeType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smimeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMimeType()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `size` to the URL query string
-    if (getSize() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-    }
-
-    // add `thumbnail` to the URL query string
-    if (getThumbnail() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sthumbnail%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getThumbnail()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of Attachment to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

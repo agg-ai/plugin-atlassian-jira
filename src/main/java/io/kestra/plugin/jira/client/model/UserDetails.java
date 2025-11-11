@@ -13,97 +13,111 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.AvatarUrlsBean;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * User details permitted by the user&#39;s Atlassian Account privacy settings. However, be aware of these exceptions:   *  User record deleted from Atlassian: This occurs as the result of a right to be forgotten request. In this case, &#x60;displayName&#x60; provides an indication and other parameters have default values or are blank (for example, email is blank).  *  User record corrupted: This occurs as a results of events such as a server import and can only happen to deleted users. In this case, &#x60;accountId&#x60; returns *unknown* and all other parameters have fallback values.  *  User record unavailable: This usually occurs due to an internal service outage. In this case, all parameters have fallback values.
  */
-@JsonPropertyOrder({
-  UserDetails.JSON_PROPERTY_ACCOUNT_ID,
-  UserDetails.JSON_PROPERTY_ACCOUNT_TYPE,
-  UserDetails.JSON_PROPERTY_ACTIVE,
-  UserDetails.JSON_PROPERTY_AVATAR_URLS,
-  UserDetails.JSON_PROPERTY_DISPLAY_NAME,
-  UserDetails.JSON_PROPERTY_EMAIL_ADDRESS,
-  UserDetails.JSON_PROPERTY_KEY,
-  UserDetails.JSON_PROPERTY_NAME,
-  UserDetails.JSON_PROPERTY_SELF,
-  UserDetails.JSON_PROPERTY_TIME_ZONE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class UserDetails {
-  public static final String JSON_PROPERTY_ACCOUNT_ID = "accountId";
+  public static final String SERIALIZED_NAME_ACCOUNT_ID = "accountId";
+  @SerializedName(SERIALIZED_NAME_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String accountId;
 
-  public static final String JSON_PROPERTY_ACCOUNT_TYPE = "accountType";
+  public static final String SERIALIZED_NAME_ACCOUNT_TYPE = "accountType";
+  @SerializedName(SERIALIZED_NAME_ACCOUNT_TYPE)
   @javax.annotation.Nullable
   private String accountType;
 
-  public static final String JSON_PROPERTY_ACTIVE = "active";
+  public static final String SERIALIZED_NAME_ACTIVE = "active";
+  @SerializedName(SERIALIZED_NAME_ACTIVE)
   @javax.annotation.Nullable
   private Boolean active;
 
-  public static final String JSON_PROPERTY_AVATAR_URLS = "avatarUrls";
+  public static final String SERIALIZED_NAME_AVATAR_URLS = "avatarUrls";
+  @SerializedName(SERIALIZED_NAME_AVATAR_URLS)
   @javax.annotation.Nullable
   private AvatarUrlsBean avatarUrls;
 
-  public static final String JSON_PROPERTY_DISPLAY_NAME = "displayName";
+  public static final String SERIALIZED_NAME_DISPLAY_NAME = "displayName";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_NAME)
   @javax.annotation.Nullable
   private String displayName;
 
-  public static final String JSON_PROPERTY_EMAIL_ADDRESS = "emailAddress";
+  public static final String SERIALIZED_NAME_EMAIL_ADDRESS = "emailAddress";
+  @SerializedName(SERIALIZED_NAME_EMAIL_ADDRESS)
   @javax.annotation.Nullable
   private String emailAddress;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public static final String JSON_PROPERTY_TIME_ZONE = "timeZone";
+  public static final String SERIALIZED_NAME_TIME_ZONE = "timeZone";
+  @SerializedName(SERIALIZED_NAME_TIME_ZONE)
   @javax.annotation.Nullable
   private String timeZone;
 
-  public UserDetails() { 
+  public UserDetails() {
   }
 
-  @JsonCreator
   public UserDetails(
-    @JsonProperty(JSON_PROPERTY_ACCOUNT_TYPE) String accountType, 
-    @JsonProperty(JSON_PROPERTY_ACTIVE) Boolean active, 
-    @JsonProperty(JSON_PROPERTY_AVATAR_URLS) AvatarUrlsBean avatarUrls, 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME) String displayName, 
-    @JsonProperty(JSON_PROPERTY_EMAIL_ADDRESS) String emailAddress, 
-    @JsonProperty(JSON_PROPERTY_KEY) String key, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_SELF) String self, 
-    @JsonProperty(JSON_PROPERTY_TIME_ZONE) String timeZone
+     String accountType, 
+     Boolean active, 
+     AvatarUrlsBean avatarUrls, 
+     String displayName, 
+     String emailAddress, 
+     String key, 
+     String name, 
+     String self, 
+     String timeZone
   ) {
-  this();
+    this();
     this.accountType = accountType;
     this.active = active;
     this.avatarUrls = avatarUrls;
@@ -125,15 +139,10 @@ public class UserDetails {
    * @return accountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAccountId() {
     return accountId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAccountId(@javax.annotation.Nullable String accountId) {
     this.accountId = accountId;
   }
@@ -144,12 +153,9 @@ public class UserDetails {
    * @return accountType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAccountType() {
     return accountType;
   }
-
 
 
 
@@ -158,12 +164,9 @@ public class UserDetails {
    * @return active
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTIVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getActive() {
     return active;
   }
-
 
 
 
@@ -172,12 +175,9 @@ public class UserDetails {
    * @return avatarUrls
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_URLS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AvatarUrlsBean getAvatarUrls() {
     return avatarUrls;
   }
-
 
 
 
@@ -186,12 +186,9 @@ public class UserDetails {
    * @return displayName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayName() {
     return displayName;
   }
-
 
 
 
@@ -200,12 +197,9 @@ public class UserDetails {
    * @return emailAddress
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEmailAddress() {
     return emailAddress;
   }
-
 
 
 
@@ -214,12 +208,9 @@ public class UserDetails {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
-
 
 
 
@@ -228,12 +219,9 @@ public class UserDetails {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -242,12 +230,9 @@ public class UserDetails {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
-
 
 
 
@@ -256,8 +241,6 @@ public class UserDetails {
    * @return timeZone
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_ZONE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTimeZone() {
     return timeZone;
   }
@@ -265,9 +248,6 @@ public class UserDetails {
 
 
 
-  /**
-   * Return true if this UserDetails object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -323,89 +303,116 @@ public class UserDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("accountId", "accountType", "active", "avatarUrls", "displayName", "emailAddress", "key", "name", "self", "timeZone"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to UserDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!UserDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in UserDetails is not found in the empty JSON string", UserDetails.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!UserDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `UserDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("accountId") != null && !jsonObj.get("accountId").isJsonNull()) && !jsonObj.get("accountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `accountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accountId").toString()));
+      }
+      if ((jsonObj.get("accountType") != null && !jsonObj.get("accountType").isJsonNull()) && !jsonObj.get("accountType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `accountType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accountType").toString()));
+      }
+      // validate the optional field `avatarUrls`
+      if (jsonObj.get("avatarUrls") != null && !jsonObj.get("avatarUrls").isJsonNull()) {
+        AvatarUrlsBean.validateJsonElement(jsonObj.get("avatarUrls"));
+      }
+      if ((jsonObj.get("displayName") != null && !jsonObj.get("displayName").isJsonNull()) && !jsonObj.get("displayName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayName").toString()));
+      }
+      if ((jsonObj.get("emailAddress") != null && !jsonObj.get("emailAddress").isJsonNull()) && !jsonObj.get("emailAddress").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `emailAddress` to be a primitive type in the JSON string but got `%s`", jsonObj.get("emailAddress").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("timeZone") != null && !jsonObj.get("timeZone").isJsonNull()) && !jsonObj.get("timeZone").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `timeZone` to be a primitive type in the JSON string but got `%s`", jsonObj.get("timeZone").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!UserDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'UserDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<UserDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(UserDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<UserDetails>() {
+           @Override
+           public void write(JsonWriter out, UserDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public UserDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of UserDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of UserDetails
+   * @throws IOException if the JSON string is invalid with respect to UserDetails
+   */
+  public static UserDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, UserDetails.class);
+  }
 
-    // add `accountId` to the URL query string
-    if (getAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountId()))));
-    }
-
-    // add `accountType` to the URL query string
-    if (getAccountType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saccountType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountType()))));
-    }
-
-    // add `active` to the URL query string
-    if (getActive() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sactive%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getActive()))));
-    }
-
-    // add `avatarUrls` to the URL query string
-    if (getAvatarUrls() != null) {
-      joiner.add(getAvatarUrls().toUrlQueryString(prefix + "avatarUrls" + suffix));
-    }
-
-    // add `displayName` to the URL query string
-    if (getDisplayName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-    }
-
-    // add `emailAddress` to the URL query string
-    if (getEmailAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%semailAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmailAddress()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `timeZone` to the URL query string
-    if (getTimeZone() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeZone%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeZone()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of UserDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

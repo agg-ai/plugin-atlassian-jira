@@ -13,45 +13,60 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.AssociationContextObject;
 import io.kestra.plugin.jira.client.model.FieldIdentifierObject;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of field associations with projects.
  */
-@JsonPropertyOrder({
-  FieldAssociationsRequest.JSON_PROPERTY_ASSOCIATION_CONTEXTS,
-  FieldAssociationsRequest.JSON_PROPERTY_FIELDS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FieldAssociationsRequest {
-  public static final String JSON_PROPERTY_ASSOCIATION_CONTEXTS = "associationContexts";
+  public static final String SERIALIZED_NAME_ASSOCIATION_CONTEXTS = "associationContexts";
+  @SerializedName(SERIALIZED_NAME_ASSOCIATION_CONTEXTS)
   @javax.annotation.Nonnull
   private List<AssociationContextObject> associationContexts = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_FIELDS = "fields";
+  public static final String SERIALIZED_NAME_FIELDS = "fields";
+  @SerializedName(SERIALIZED_NAME_FIELDS)
   @javax.annotation.Nonnull
   private List<FieldIdentifierObject> fields = new ArrayList<>();
 
-  public FieldAssociationsRequest() { 
+  public FieldAssociationsRequest() {
   }
 
   public FieldAssociationsRequest associationContexts(@javax.annotation.Nonnull List<AssociationContextObject> associationContexts) {
@@ -72,15 +87,10 @@ public class FieldAssociationsRequest {
    * @return associationContexts
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSOCIATION_CONTEXTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<AssociationContextObject> getAssociationContexts() {
     return associationContexts;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ASSOCIATION_CONTEXTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setAssociationContexts(@javax.annotation.Nonnull List<AssociationContextObject> associationContexts) {
     this.associationContexts = associationContexts;
   }
@@ -104,23 +114,16 @@ public class FieldAssociationsRequest {
    * @return fields
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<FieldIdentifierObject> getFields() {
     return fields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFields(@javax.annotation.Nonnull List<FieldIdentifierObject> fields) {
     this.fields = fields;
   }
 
 
-  /**
-   * Return true if this FieldAssociationsRequest object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -160,59 +163,115 @@ public class FieldAssociationsRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("associationContexts", "fields"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("associationContexts", "fields"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FieldAssociationsRequest
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `associationContexts` to the URL query string
-    if (getAssociationContexts() != null) {
-      for (int i = 0; i < getAssociationContexts().size(); i++) {
-        if (getAssociationContexts().get(i) != null) {
-          joiner.add(getAssociationContexts().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sassociationContexts%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FieldAssociationsRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FieldAssociationsRequest is not found in the empty JSON string", FieldAssociationsRequest.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `fields` to the URL query string
-    if (getFields() != null) {
-      for (int i = 0; i < getFields().size(); i++) {
-        if (getFields().get(i) != null) {
-          joiner.add(getFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sfields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FieldAssociationsRequest.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FieldAssociationsRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : FieldAssociationsRequest.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the json data is an array
+      if (!jsonObj.get("associationContexts").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `associationContexts` to be an array in the JSON string but got `%s`", jsonObj.get("associationContexts").toString()));
+      }
+
+      JsonArray jsonArrayassociationContexts = jsonObj.getAsJsonArray("associationContexts");
+      // validate the required field `associationContexts` (array)
+      for (int i = 0; i < jsonArrayassociationContexts.size(); i++) {
+        AssociationContextObject.validateJsonElement(jsonArrayassociationContexts.get(i));
+      };
+      // ensure the json data is an array
+      if (!jsonObj.get("fields").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fields` to be an array in the JSON string but got `%s`", jsonObj.get("fields").toString()));
+      }
+
+      JsonArray jsonArrayfields = jsonObj.getAsJsonArray("fields");
+      // validate the required field `fields` (array)
+      for (int i = 0; i < jsonArrayfields.size(); i++) {
+        FieldIdentifierObject.validateJsonElement(jsonArrayfields.get(i));
+      };
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FieldAssociationsRequest.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FieldAssociationsRequest' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FieldAssociationsRequest> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FieldAssociationsRequest.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<FieldAssociationsRequest>() {
+           @Override
+           public void write(JsonWriter out, FieldAssociationsRequest value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FieldAssociationsRequest read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FieldAssociationsRequest given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FieldAssociationsRequest
+   * @throws IOException if the JSON string is invalid with respect to FieldAssociationsRequest
+   */
+  public static FieldAssociationsRequest fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FieldAssociationsRequest.class);
+  }
+
+  /**
+   * Convert an instance of FieldAssociationsRequest to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

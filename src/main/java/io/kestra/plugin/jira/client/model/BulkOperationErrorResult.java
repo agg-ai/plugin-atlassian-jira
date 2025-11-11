@@ -13,47 +13,62 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ErrorCollection;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * BulkOperationErrorResult
  */
-@JsonPropertyOrder({
-  BulkOperationErrorResult.JSON_PROPERTY_ELEMENT_ERRORS,
-  BulkOperationErrorResult.JSON_PROPERTY_FAILED_ELEMENT_NUMBER,
-  BulkOperationErrorResult.JSON_PROPERTY_STATUS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkOperationErrorResult {
-  public static final String JSON_PROPERTY_ELEMENT_ERRORS = "elementErrors";
+  public static final String SERIALIZED_NAME_ELEMENT_ERRORS = "elementErrors";
+  @SerializedName(SERIALIZED_NAME_ELEMENT_ERRORS)
   @javax.annotation.Nullable
   private ErrorCollection elementErrors;
 
-  public static final String JSON_PROPERTY_FAILED_ELEMENT_NUMBER = "failedElementNumber";
+  public static final String SERIALIZED_NAME_FAILED_ELEMENT_NUMBER = "failedElementNumber";
+  @SerializedName(SERIALIZED_NAME_FAILED_ELEMENT_NUMBER)
   @javax.annotation.Nullable
   private Integer failedElementNumber;
 
-  public static final String JSON_PROPERTY_STATUS = "status";
+  public static final String SERIALIZED_NAME_STATUS = "status";
+  @SerializedName(SERIALIZED_NAME_STATUS)
   @javax.annotation.Nullable
   private Integer status;
 
-  public BulkOperationErrorResult() { 
+  public BulkOperationErrorResult() {
   }
 
   public BulkOperationErrorResult elementErrors(@javax.annotation.Nullable ErrorCollection elementErrors) {
@@ -66,15 +81,10 @@ public class BulkOperationErrorResult {
    * @return elementErrors
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ELEMENT_ERRORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ErrorCollection getElementErrors() {
     return elementErrors;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ELEMENT_ERRORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setElementErrors(@javax.annotation.Nullable ErrorCollection elementErrors) {
     this.elementErrors = elementErrors;
   }
@@ -90,15 +100,10 @@ public class BulkOperationErrorResult {
    * @return failedElementNumber
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FAILED_ELEMENT_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getFailedElementNumber() {
     return failedElementNumber;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FAILED_ELEMENT_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFailedElementNumber(@javax.annotation.Nullable Integer failedElementNumber) {
     this.failedElementNumber = failedElementNumber;
   }
@@ -114,23 +119,16 @@ public class BulkOperationErrorResult {
    * @return status
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getStatus() {
     return status;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatus(@javax.annotation.Nullable Integer status) {
     this.status = status;
   }
 
 
-  /**
-   * Return true if this BulkOperationErrorResult object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -172,54 +170,92 @@ public class BulkOperationErrorResult {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("elementErrors", "failedElementNumber", "status"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkOperationErrorResult
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkOperationErrorResult.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkOperationErrorResult is not found in the empty JSON string", BulkOperationErrorResult.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkOperationErrorResult.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkOperationErrorResult` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `elementErrors`
+      if (jsonObj.get("elementErrors") != null && !jsonObj.get("elementErrors").isJsonNull()) {
+        ErrorCollection.validateJsonElement(jsonObj.get("elementErrors"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkOperationErrorResult.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkOperationErrorResult' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkOperationErrorResult> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkOperationErrorResult.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<BulkOperationErrorResult>() {
+           @Override
+           public void write(JsonWriter out, BulkOperationErrorResult value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BulkOperationErrorResult read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of BulkOperationErrorResult given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkOperationErrorResult
+   * @throws IOException if the JSON string is invalid with respect to BulkOperationErrorResult
+   */
+  public static BulkOperationErrorResult fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkOperationErrorResult.class);
+  }
 
-    // add `elementErrors` to the URL query string
-    if (getElementErrors() != null) {
-      joiner.add(getElementErrors().toUrlQueryString(prefix + "elementErrors" + suffix));
-    }
-
-    // add `failedElementNumber` to the URL query string
-    if (getFailedElementNumber() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfailedElementNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFailedElementNumber()))));
-    }
-
-    // add `status` to the URL query string
-    if (getStatus() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of BulkOperationErrorResult to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

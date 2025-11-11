@@ -13,56 +13,70 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Count of a version&#39;s unresolved issues.
  */
-@JsonPropertyOrder({
-  VersionUnresolvedIssuesCount.JSON_PROPERTY_ISSUES_COUNT,
-  VersionUnresolvedIssuesCount.JSON_PROPERTY_ISSUES_UNRESOLVED_COUNT,
-  VersionUnresolvedIssuesCount.JSON_PROPERTY_SELF
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class VersionUnresolvedIssuesCount {
-  public static final String JSON_PROPERTY_ISSUES_COUNT = "issuesCount";
+  public static final String SERIALIZED_NAME_ISSUES_COUNT = "issuesCount";
+  @SerializedName(SERIALIZED_NAME_ISSUES_COUNT)
   @javax.annotation.Nullable
   private Long issuesCount;
 
-  public static final String JSON_PROPERTY_ISSUES_UNRESOLVED_COUNT = "issuesUnresolvedCount";
+  public static final String SERIALIZED_NAME_ISSUES_UNRESOLVED_COUNT = "issuesUnresolvedCount";
+  @SerializedName(SERIALIZED_NAME_ISSUES_UNRESOLVED_COUNT)
   @javax.annotation.Nullable
   private Long issuesUnresolvedCount;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public VersionUnresolvedIssuesCount() { 
+  public VersionUnresolvedIssuesCount() {
   }
 
-  @JsonCreator
   public VersionUnresolvedIssuesCount(
-    @JsonProperty(JSON_PROPERTY_ISSUES_COUNT) Long issuesCount, 
-    @JsonProperty(JSON_PROPERTY_ISSUES_UNRESOLVED_COUNT) Long issuesUnresolvedCount, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self
+     Long issuesCount, 
+     Long issuesUnresolvedCount, 
+     URI self
   ) {
-  this();
+    this();
     this.issuesCount = issuesCount;
     this.issuesUnresolvedCount = issuesUnresolvedCount;
     this.self = self;
@@ -73,12 +87,9 @@ public class VersionUnresolvedIssuesCount {
    * @return issuesCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssuesCount() {
     return issuesCount;
   }
-
 
 
 
@@ -87,12 +98,9 @@ public class VersionUnresolvedIssuesCount {
    * @return issuesUnresolvedCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_UNRESOLVED_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssuesUnresolvedCount() {
     return issuesUnresolvedCount;
   }
-
 
 
 
@@ -101,8 +109,6 @@ public class VersionUnresolvedIssuesCount {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
@@ -110,9 +116,6 @@ public class VersionUnresolvedIssuesCount {
 
 
 
-  /**
-   * Return true if this VersionUnresolvedIssuesCount object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -154,54 +157,91 @@ public class VersionUnresolvedIssuesCount {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issuesCount", "issuesUnresolvedCount", "self"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to VersionUnresolvedIssuesCount
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!VersionUnresolvedIssuesCount.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in VersionUnresolvedIssuesCount is not found in the empty JSON string", VersionUnresolvedIssuesCount.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!VersionUnresolvedIssuesCount.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `VersionUnresolvedIssuesCount` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!VersionUnresolvedIssuesCount.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'VersionUnresolvedIssuesCount' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<VersionUnresolvedIssuesCount> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(VersionUnresolvedIssuesCount.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<VersionUnresolvedIssuesCount>() {
+           @Override
+           public void write(JsonWriter out, VersionUnresolvedIssuesCount value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public VersionUnresolvedIssuesCount read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of VersionUnresolvedIssuesCount given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of VersionUnresolvedIssuesCount
+   * @throws IOException if the JSON string is invalid with respect to VersionUnresolvedIssuesCount
+   */
+  public static VersionUnresolvedIssuesCount fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, VersionUnresolvedIssuesCount.class);
+  }
 
-    // add `issuesCount` to the URL query string
-    if (getIssuesCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissuesCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssuesCount()))));
-    }
-
-    // add `issuesUnresolvedCount` to the URL query string
-    if (getIssuesUnresolvedCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissuesUnresolvedCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssuesUnresolvedCount()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of VersionUnresolvedIssuesCount to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,41 +13,55 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * GlobalScopeBean
  */
-@JsonPropertyOrder({
-  GlobalScopeBean.JSON_PROPERTY_ATTRIBUTES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class GlobalScopeBean {
   /**
    * Gets or Sets attributes
    */
+  @JsonAdapter(AttributesEnum.Adapter.class)
   public enum AttributesEnum {
-    NOT_SELECTABLE(String.valueOf("notSelectable")),
+    NOT_SELECTABLE("notSelectable"),
     
-    DEFAULT_VALUE(String.valueOf("defaultValue"));
+    DEFAULT_VALUE("defaultValue");
 
     private String value;
 
@@ -55,7 +69,6 @@ public class GlobalScopeBean {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -65,7 +78,6 @@ public class GlobalScopeBean {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static AttributesEnum fromValue(String value) {
       for (AttributesEnum b : AttributesEnum.values()) {
         if (b.value.equals(value)) {
@@ -74,13 +86,32 @@ public class GlobalScopeBean {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<AttributesEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final AttributesEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public AttributesEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return AttributesEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      AttributesEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ATTRIBUTES = "attributes";
+  public static final String SERIALIZED_NAME_ATTRIBUTES = "attributes";
+  @SerializedName(SERIALIZED_NAME_ATTRIBUTES)
   @javax.annotation.Nullable
   private Set<AttributesEnum> attributes = new LinkedHashSet<>();
 
-  public GlobalScopeBean() { 
+  public GlobalScopeBean() {
   }
 
   public GlobalScopeBean attributes(@javax.annotation.Nullable Set<AttributesEnum> attributes) {
@@ -101,24 +132,16 @@ public class GlobalScopeBean {
    * @return attributes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ATTRIBUTES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<AttributesEnum> getAttributes() {
     return attributes;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_ATTRIBUTES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAttributes(@javax.annotation.Nullable Set<AttributesEnum> attributes) {
     this.attributes = attributes;
   }
 
 
-  /**
-   * Return true if this GlobalScopeBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -156,50 +179,92 @@ public class GlobalScopeBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("attributes"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to GlobalScopeBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `attributes` to the URL query string
-    if (getAttributes() != null) {
-      int i = 0;
-      for (AttributesEnum _item : getAttributes()) {
-        joiner.add(String.format(java.util.Locale.ROOT, "%sattributes%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item != null ? _item.getValue() : null))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!GlobalScopeBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in GlobalScopeBean is not found in the empty JSON string", GlobalScopeBean.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!GlobalScopeBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `GlobalScopeBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("attributes") != null && !jsonObj.get("attributes").isJsonNull() && !jsonObj.get("attributes").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `attributes` to be an array in the JSON string but got `%s`", jsonObj.get("attributes").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!GlobalScopeBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'GlobalScopeBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<GlobalScopeBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(GlobalScopeBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<GlobalScopeBean>() {
+           @Override
+           public void write(JsonWriter out, GlobalScopeBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public GlobalScopeBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of GlobalScopeBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of GlobalScopeBean
+   * @throws IOException if the JSON string is invalid with respect to GlobalScopeBean
+   */
+  public static GlobalScopeBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, GlobalScopeBean.class);
+  }
+
+  /**
+   * Convert an instance of GlobalScopeBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

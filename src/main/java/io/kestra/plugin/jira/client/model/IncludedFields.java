@@ -13,49 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * IncludedFields
  */
-@JsonPropertyOrder({
-  IncludedFields.JSON_PROPERTY_ACTUALLY_INCLUDED,
-  IncludedFields.JSON_PROPERTY_EXCLUDED,
-  IncludedFields.JSON_PROPERTY_INCLUDED
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IncludedFields {
-  public static final String JSON_PROPERTY_ACTUALLY_INCLUDED = "actuallyIncluded";
+  public static final String SERIALIZED_NAME_ACTUALLY_INCLUDED = "actuallyIncluded";
+  @SerializedName(SERIALIZED_NAME_ACTUALLY_INCLUDED)
   @javax.annotation.Nullable
   private Set<String> actuallyIncluded = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_EXCLUDED = "excluded";
+  public static final String SERIALIZED_NAME_EXCLUDED = "excluded";
+  @SerializedName(SERIALIZED_NAME_EXCLUDED)
   @javax.annotation.Nullable
   private Set<String> excluded = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_INCLUDED = "included";
+  public static final String SERIALIZED_NAME_INCLUDED = "included";
+  @SerializedName(SERIALIZED_NAME_INCLUDED)
   @javax.annotation.Nullable
   private Set<String> included = new LinkedHashSet<>();
 
-  public IncludedFields() { 
+  public IncludedFields() {
   }
 
   public IncludedFields actuallyIncluded(@javax.annotation.Nullable Set<String> actuallyIncluded) {
@@ -76,16 +90,10 @@ public class IncludedFields {
    * @return actuallyIncluded
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTUALLY_INCLUDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getActuallyIncluded() {
     return actuallyIncluded;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_ACTUALLY_INCLUDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setActuallyIncluded(@javax.annotation.Nullable Set<String> actuallyIncluded) {
     this.actuallyIncluded = actuallyIncluded;
   }
@@ -109,16 +117,10 @@ public class IncludedFields {
    * @return excluded
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXCLUDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getExcluded() {
     return excluded;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_EXCLUDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExcluded(@javax.annotation.Nullable Set<String> excluded) {
     this.excluded = excluded;
   }
@@ -142,24 +144,16 @@ public class IncludedFields {
    * @return included
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INCLUDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getIncluded() {
     return included;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_INCLUDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIncluded(@javax.annotation.Nullable Set<String> included) {
     this.included = included;
   }
 
 
-  /**
-   * Return true if this IncludedFields object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -201,72 +195,100 @@ public class IncludedFields {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("actuallyIncluded", "excluded", "included"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IncludedFields
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `actuallyIncluded` to the URL query string
-    if (getActuallyIncluded() != null) {
-      int i = 0;
-      for (String _item : getActuallyIncluded()) {
-        joiner.add(String.format(Locale.ROOT, "%sactuallyIncluded%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IncludedFields.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IncludedFields is not found in the empty JSON string", IncludedFields.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `excluded` to the URL query string
-    if (getExcluded() != null) {
-      int i = 0;
-      for (String _item : getExcluded()) {
-        joiner.add(String.format(Locale.ROOT, "%sexcluded%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IncludedFields.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IncludedFields` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-      i++;
-    }
-
-    // add `included` to the URL query string
-    if (getIncluded() != null) {
-      int i = 0;
-      for (String _item : getIncluded()) {
-        joiner.add(String.format(Locale.ROOT, "%sincluded%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("actuallyIncluded") != null && !jsonObj.get("actuallyIncluded").isJsonNull() && !jsonObj.get("actuallyIncluded").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `actuallyIncluded` to be an array in the JSON string but got `%s`", jsonObj.get("actuallyIncluded").toString()));
       }
-      i++;
-    }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("excluded") != null && !jsonObj.get("excluded").isJsonNull() && !jsonObj.get("excluded").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `excluded` to be an array in the JSON string but got `%s`", jsonObj.get("excluded").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("included") != null && !jsonObj.get("included").isJsonNull() && !jsonObj.get("included").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `included` to be an array in the JSON string but got `%s`", jsonObj.get("included").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IncludedFields.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IncludedFields' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IncludedFields> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IncludedFields.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IncludedFields>() {
+           @Override
+           public void write(JsonWriter out, IncludedFields value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IncludedFields read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IncludedFields given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IncludedFields
+   * @throws IOException if the JSON string is invalid with respect to IncludedFields
+   */
+  public static IncludedFields fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IncludedFields.class);
+  }
+
+  /**
+   * Convert an instance of IncludedFields to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -10,692 +10,719 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.AddFieldBean;
 import io.kestra.plugin.jira.client.model.MoveFieldBean;
 import io.kestra.plugin.jira.client.model.ScreenableField;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ScreenTabFieldsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ScreenTabFieldsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ScreenTabFieldsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addScreenTabField
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param addFieldBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addScreenTabFieldCall(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ScreenTabFieldsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ScreenTabFieldsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Add screen tab field
-   * Adds a field to a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param addFieldBean  (required)
-   * @return ScreenableField
-   * @throws ApiException if fails to make API call
-   */
-  public ScreenableField addScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean) throws ApiException {
-    return addScreenTabField(screenId, tabId, addFieldBean, null);
-  }
-
-  /**
-   * Add screen tab field
-   * Adds a field to a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param addFieldBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ScreenableField
-   * @throws ApiException if fails to make API call
-   */
-  public ScreenableField addScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<ScreenableField> localVarResponse = addScreenTabFieldWithHttpInfo(screenId, tabId, addFieldBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add screen tab field
-   * Adds a field to a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param addFieldBean  (required)
-   * @return ApiResponse&lt;ScreenableField&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ScreenableField> addScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean) throws ApiException {
-    return addScreenTabFieldWithHttpInfo(screenId, tabId, addFieldBean, null);
-  }
-
-  /**
-   * Add screen tab field
-   * Adds a field to a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param addFieldBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ScreenableField&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ScreenableField> addScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addScreenTabFieldRequestBuilder(screenId, tabId, addFieldBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addScreenTabField", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ScreenableField>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ScreenableField responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ScreenableField>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = addFieldBean;
 
-        return new ApiResponse<ScreenableField>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/screens/{screenId}/tabs/{tabId}/fields"
+            .replace("{" + "screenId" + "}", localVarApiClient.escapeString(screenId.toString()))
+            .replace("{" + "tabId" + "}", localVarApiClient.escapeString(tabId.toString()));
 
-  private HttpRequest.Builder addScreenTabFieldRequestBuilder(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'screenId' is set
-    if (screenId == null) {
-      throw new ApiException(400, "Missing the required parameter 'screenId' when calling addScreenTabField");
-    }
-    // verify the required parameter 'tabId' is set
-    if (tabId == null) {
-      throw new ApiException(400, "Missing the required parameter 'tabId' when calling addScreenTabField");
-    }
-    // verify the required parameter 'addFieldBean' is set
-    if (addFieldBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'addFieldBean' when calling addScreenTabField");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/screens/{screenId}/tabs/{tabId}/fields"
-        .replace("{screenId}", ApiClient.urlEncode(screenId.toString()))
-        .replace("{tabId}", ApiClient.urlEncode(tabId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(addFieldBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get all screen tab fields
-   * Returns all fields for a screen tab.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) when the project key is specified, providing that the screen is associated with the project through a Screen Scheme and Issue Type Screen Scheme.
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param projectKey The key of the project. (optional)
-   * @return List&lt;ScreenableField&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ScreenableField> getAllScreenTabFields(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey) throws ApiException {
-    return getAllScreenTabFields(screenId, tabId, projectKey, null);
-  }
-
-  /**
-   * Get all screen tab fields
-   * Returns all fields for a screen tab.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) when the project key is specified, providing that the screen is associated with the project through a Screen Scheme and Issue Type Screen Scheme.
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param projectKey The key of the project. (optional)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;ScreenableField&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ScreenableField> getAllScreenTabFields(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<ScreenableField>> localVarResponse = getAllScreenTabFieldsWithHttpInfo(screenId, tabId, projectKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all screen tab fields
-   * Returns all fields for a screen tab.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) when the project key is specified, providing that the screen is associated with the project through a Screen Scheme and Issue Type Screen Scheme.
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param projectKey The key of the project. (optional)
-   * @return ApiResponse&lt;List&lt;ScreenableField&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ScreenableField>> getAllScreenTabFieldsWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey) throws ApiException {
-    return getAllScreenTabFieldsWithHttpInfo(screenId, tabId, projectKey, null);
-  }
-
-  /**
-   * Get all screen tab fields
-   * Returns all fields for a screen tab.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) when the project key is specified, providing that the screen is associated with the project through a Screen Scheme and Issue Type Screen Scheme.
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param projectKey The key of the project. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;ScreenableField&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ScreenableField>> getAllScreenTabFieldsWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllScreenTabFieldsRequestBuilder(screenId, tabId, projectKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllScreenTabFields", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<ScreenableField>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<ScreenableField> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ScreenableField>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<ScreenableField>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAllScreenTabFieldsRequestBuilder(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'screenId' is set
-    if (screenId == null) {
-      throw new ApiException(400, "Missing the required parameter 'screenId' when calling getAllScreenTabFields");
-    }
-    // verify the required parameter 'tabId' is set
-    if (tabId == null) {
-      throw new ApiException(400, "Missing the required parameter 'tabId' when calling getAllScreenTabFields");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/screens/{screenId}/tabs/{tabId}/fields"
-        .replace("{screenId}", ApiClient.urlEncode(screenId.toString()))
-        .replace("{tabId}", ApiClient.urlEncode(tabId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "projectKey";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectKey", projectKey));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Move screen tab field
-   * Moves a screen tab field.  If &#x60;after&#x60; and &#x60;position&#x60; are provided in the request, &#x60;position&#x60; is ignored.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param id The ID of the field. (required)
-   * @param moveFieldBean  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object moveScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean) throws ApiException {
-    return moveScreenTabField(screenId, tabId, id, moveFieldBean, null);
-  }
-
-  /**
-   * Move screen tab field
-   * Moves a screen tab field.  If &#x60;after&#x60; and &#x60;position&#x60; are provided in the request, &#x60;position&#x60; is ignored.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param id The ID of the field. (required)
-   * @param moveFieldBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object moveScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = moveScreenTabFieldWithHttpInfo(screenId, tabId, id, moveFieldBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Move screen tab field
-   * Moves a screen tab field.  If &#x60;after&#x60; and &#x60;position&#x60; are provided in the request, &#x60;position&#x60; is ignored.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param id The ID of the field. (required)
-   * @param moveFieldBean  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> moveScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean) throws ApiException {
-    return moveScreenTabFieldWithHttpInfo(screenId, tabId, id, moveFieldBean, null);
-  }
-
-  /**
-   * Move screen tab field
-   * Moves a screen tab field.  If &#x60;after&#x60; and &#x60;position&#x60; are provided in the request, &#x60;position&#x60; is ignored.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param id The ID of the field. (required)
-   * @param moveFieldBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> moveScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = moveScreenTabFieldRequestBuilder(screenId, tabId, id, moveFieldBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("moveScreenTabField", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder moveScreenTabFieldRequestBuilder(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'screenId' is set
-    if (screenId == null) {
-      throw new ApiException(400, "Missing the required parameter 'screenId' when calling moveScreenTabField");
-    }
-    // verify the required parameter 'tabId' is set
-    if (tabId == null) {
-      throw new ApiException(400, "Missing the required parameter 'tabId' when calling moveScreenTabField");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling moveScreenTabField");
-    }
-    // verify the required parameter 'moveFieldBean' is set
-    if (moveFieldBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'moveFieldBean' when calling moveScreenTabField");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}/move"
-        .replace("{screenId}", ApiClient.urlEncode(screenId.toString()))
-        .replace("{tabId}", ApiClient.urlEncode(tabId.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(moveFieldBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Remove screen tab field
-   * Removes a field from a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param id The ID of the field. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void removeScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id) throws ApiException {
-    removeScreenTabField(screenId, tabId, id, null);
-  }
-
-  /**
-   * Remove screen tab field
-   * Removes a field from a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param id The ID of the field. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void removeScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    removeScreenTabFieldWithHttpInfo(screenId, tabId, id, headers);
-  }
-
-  /**
-   * Remove screen tab field
-   * Removes a field from a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param id The ID of the field. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id) throws ApiException {
-    return removeScreenTabFieldWithHttpInfo(screenId, tabId, id, null);
-  }
-
-  /**
-   * Remove screen tab field
-   * Removes a field from a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param screenId The ID of the screen. (required)
-   * @param tabId The ID of the screen tab. (required)
-   * @param id The ID of the field. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeScreenTabFieldRequestBuilder(screenId, tabId, id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeScreenTabField", localVarResponse);
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addScreenTabFieldValidateBeforeCall(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'screenId' is set
+        if (screenId == null) {
+            throw new ApiException("Missing the required parameter 'screenId' when calling addScreenTabField(Async)");
         }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
+
+        // verify the required parameter 'tabId' is set
+        if (tabId == null) {
+            throw new ApiException("Missing the required parameter 'tabId' when calling addScreenTabField(Async)");
         }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
 
-  private HttpRequest.Builder removeScreenTabFieldRequestBuilder(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'screenId' is set
-    if (screenId == null) {
-      throw new ApiException(400, "Missing the required parameter 'screenId' when calling removeScreenTabField");
-    }
-    // verify the required parameter 'tabId' is set
-    if (tabId == null) {
-      throw new ApiException(400, "Missing the required parameter 'tabId' when calling removeScreenTabField");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling removeScreenTabField");
+        // verify the required parameter 'addFieldBean' is set
+        if (addFieldBean == null) {
+            throw new ApiException("Missing the required parameter 'addFieldBean' when calling addScreenTabField(Async)");
+        }
+
+        return addScreenTabFieldCall(screenId, tabId, addFieldBean, _callback);
+
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}"
-        .replace("{screenId}", ApiClient.urlEncode(screenId.toString()))
-        .replace("{tabId}", ApiClient.urlEncode(tabId.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Add screen tab field
+     * Adds a field to a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param addFieldBean  (required)
+     * @return ScreenableField
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ScreenableField addScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean) throws ApiException {
+        ApiResponse<ScreenableField> localVarResp = addScreenTabFieldWithHttpInfo(screenId, tabId, addFieldBean);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Add screen tab field
+     * Adds a field to a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param addFieldBean  (required)
+     * @return ApiResponse&lt;ScreenableField&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ScreenableField> addScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean) throws ApiException {
+        okhttp3.Call localVarCall = addScreenTabFieldValidateBeforeCall(screenId, tabId, addFieldBean, null);
+        Type localVarReturnType = new TypeToken<ScreenableField>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Add screen tab field (asynchronously)
+     * Adds a field to a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param addFieldBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addScreenTabFieldAsync(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull AddFieldBean addFieldBean, final ApiCallback<ScreenableField> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = addScreenTabFieldValidateBeforeCall(screenId, tabId, addFieldBean, _callback);
+        Type localVarReturnType = new TypeToken<ScreenableField>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAllScreenTabFields
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param projectKey The key of the project. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen or screen tab is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllScreenTabFieldsCall(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/screens/{screenId}/tabs/{tabId}/fields"
+            .replace("{" + "screenId" + "}", localVarApiClient.escapeString(screenId.toString()))
+            .replace("{" + "tabId" + "}", localVarApiClient.escapeString(tabId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (projectKey != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectKey", projectKey));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllScreenTabFieldsValidateBeforeCall(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'screenId' is set
+        if (screenId == null) {
+            throw new ApiException("Missing the required parameter 'screenId' when calling getAllScreenTabFields(Async)");
+        }
+
+        // verify the required parameter 'tabId' is set
+        if (tabId == null) {
+            throw new ApiException("Missing the required parameter 'tabId' when calling getAllScreenTabFields(Async)");
+        }
+
+        return getAllScreenTabFieldsCall(screenId, tabId, projectKey, _callback);
+
+    }
+
+    /**
+     * Get all screen tab fields
+     * Returns all fields for a screen tab.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) when the project key is specified, providing that the screen is associated with the project through a Screen Scheme and Issue Type Screen Scheme.
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param projectKey The key of the project. (optional)
+     * @return List&lt;ScreenableField&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen or screen tab is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<ScreenableField> getAllScreenTabFields(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey) throws ApiException {
+        ApiResponse<List<ScreenableField>> localVarResp = getAllScreenTabFieldsWithHttpInfo(screenId, tabId, projectKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all screen tab fields
+     * Returns all fields for a screen tab.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) when the project key is specified, providing that the screen is associated with the project through a Screen Scheme and Issue Type Screen Scheme.
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param projectKey The key of the project. (optional)
+     * @return ApiResponse&lt;List&lt;ScreenableField&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen or screen tab is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<ScreenableField>> getAllScreenTabFieldsWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey) throws ApiException {
+        okhttp3.Call localVarCall = getAllScreenTabFieldsValidateBeforeCall(screenId, tabId, projectKey, null);
+        Type localVarReturnType = new TypeToken<List<ScreenableField>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all screen tab fields (asynchronously)
+     * Returns all fields for a screen tab.  **[Permissions](#permissions) required:**   *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) when the project key is specified, providing that the screen is associated with the project through a Screen Scheme and Issue Type Screen Scheme.
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param projectKey The key of the project. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen or screen tab is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllScreenTabFieldsAsync(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nullable String projectKey, final ApiCallback<List<ScreenableField>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAllScreenTabFieldsValidateBeforeCall(screenId, tabId, projectKey, _callback);
+        Type localVarReturnType = new TypeToken<List<ScreenableField>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for moveScreenTabField
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param id The ID of the field. (required)
+     * @param moveFieldBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found or the field can&#39;t be moved to the requested position. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call moveScreenTabFieldCall(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = moveFieldBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}/move"
+            .replace("{" + "screenId" + "}", localVarApiClient.escapeString(screenId.toString()))
+            .replace("{" + "tabId" + "}", localVarApiClient.escapeString(tabId.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call moveScreenTabFieldValidateBeforeCall(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'screenId' is set
+        if (screenId == null) {
+            throw new ApiException("Missing the required parameter 'screenId' when calling moveScreenTabField(Async)");
+        }
+
+        // verify the required parameter 'tabId' is set
+        if (tabId == null) {
+            throw new ApiException("Missing the required parameter 'tabId' when calling moveScreenTabField(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling moveScreenTabField(Async)");
+        }
+
+        // verify the required parameter 'moveFieldBean' is set
+        if (moveFieldBean == null) {
+            throw new ApiException("Missing the required parameter 'moveFieldBean' when calling moveScreenTabField(Async)");
+        }
+
+        return moveScreenTabFieldCall(screenId, tabId, id, moveFieldBean, _callback);
+
+    }
+
+    /**
+     * Move screen tab field
+     * Moves a screen tab field.  If &#x60;after&#x60; and &#x60;position&#x60; are provided in the request, &#x60;position&#x60; is ignored.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param id The ID of the field. (required)
+     * @param moveFieldBean  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found or the field can&#39;t be moved to the requested position. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object moveScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean) throws ApiException {
+        ApiResponse<Object> localVarResp = moveScreenTabFieldWithHttpInfo(screenId, tabId, id, moveFieldBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Move screen tab field
+     * Moves a screen tab field.  If &#x60;after&#x60; and &#x60;position&#x60; are provided in the request, &#x60;position&#x60; is ignored.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param id The ID of the field. (required)
+     * @param moveFieldBean  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found or the field can&#39;t be moved to the requested position. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> moveScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean) throws ApiException {
+        okhttp3.Call localVarCall = moveScreenTabFieldValidateBeforeCall(screenId, tabId, id, moveFieldBean, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Move screen tab field (asynchronously)
+     * Moves a screen tab field.  If &#x60;after&#x60; and &#x60;position&#x60; are provided in the request, &#x60;position&#x60; is ignored.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param id The ID of the field. (required)
+     * @param moveFieldBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found or the field can&#39;t be moved to the requested position. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call moveScreenTabFieldAsync(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull MoveFieldBean moveFieldBean, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = moveScreenTabFieldValidateBeforeCall(screenId, tabId, id, moveFieldBean, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeScreenTabField
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param id The ID of the field. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeScreenTabFieldCall(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}"
+            .replace("{" + "screenId" + "}", localVarApiClient.escapeString(screenId.toString()))
+            .replace("{" + "tabId" + "}", localVarApiClient.escapeString(tabId.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeScreenTabFieldValidateBeforeCall(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'screenId' is set
+        if (screenId == null) {
+            throw new ApiException("Missing the required parameter 'screenId' when calling removeScreenTabField(Async)");
+        }
+
+        // verify the required parameter 'tabId' is set
+        if (tabId == null) {
+            throw new ApiException("Missing the required parameter 'tabId' when calling removeScreenTabField(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling removeScreenTabField(Async)");
+        }
+
+        return removeScreenTabFieldCall(screenId, tabId, id, _callback);
+
+    }
+
+    /**
+     * Remove screen tab field
+     * Removes a field from a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param id The ID of the field. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void removeScreenTabField(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id) throws ApiException {
+        removeScreenTabFieldWithHttpInfo(screenId, tabId, id);
+    }
+
+    /**
+     * Remove screen tab field
+     * Removes a field from a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param id The ID of the field. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> removeScreenTabFieldWithHttpInfo(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = removeScreenTabFieldValidateBeforeCall(screenId, tabId, id, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Remove screen tab field (asynchronously)
+     * Removes a field from a screen tab.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param screenId The ID of the screen. (required)
+     * @param tabId The ID of the screen tab. (required)
+     * @param id The ID of the field. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the screen, screen tab, or field is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeScreenTabFieldAsync(@javax.annotation.Nonnull Long screenId, @javax.annotation.Nonnull Long tabId, @javax.annotation.Nonnull String id, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeScreenTabFieldValidateBeforeCall(screenId, tabId, id, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
 }

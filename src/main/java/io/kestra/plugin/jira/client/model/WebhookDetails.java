@@ -13,55 +13,67 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A list of webhooks.
  */
-@JsonPropertyOrder({
-  WebhookDetails.JSON_PROPERTY_EVENTS,
-  WebhookDetails.JSON_PROPERTY_FIELD_IDS_FILTER,
-  WebhookDetails.JSON_PROPERTY_ISSUE_PROPERTY_KEYS_FILTER,
-  WebhookDetails.JSON_PROPERTY_JQL_FILTER
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WebhookDetails {
   /**
    * Gets or Sets events
    */
+  @JsonAdapter(EventsEnum.Adapter.class)
   public enum EventsEnum {
-    JIRA_ISSUE_CREATED(String.valueOf("jira:issue_created")),
+    JIRA_ISSUE_CREATED("jira:issue_created"),
     
-    JIRA_ISSUE_UPDATED(String.valueOf("jira:issue_updated")),
+    JIRA_ISSUE_UPDATED("jira:issue_updated"),
     
-    JIRA_ISSUE_DELETED(String.valueOf("jira:issue_deleted")),
+    JIRA_ISSUE_DELETED("jira:issue_deleted"),
     
-    COMMENT_CREATED(String.valueOf("comment_created")),
+    COMMENT_CREATED("comment_created"),
     
-    COMMENT_UPDATED(String.valueOf("comment_updated")),
+    COMMENT_UPDATED("comment_updated"),
     
-    COMMENT_DELETED(String.valueOf("comment_deleted")),
+    COMMENT_DELETED("comment_deleted"),
     
-    ISSUE_PROPERTY_SET(String.valueOf("issue_property_set")),
+    ISSUE_PROPERTY_SET("issue_property_set"),
     
-    ISSUE_PROPERTY_DELETED(String.valueOf("issue_property_deleted"));
+    ISSUE_PROPERTY_DELETED("issue_property_deleted");
 
     private String value;
 
@@ -69,7 +81,6 @@ public class WebhookDetails {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -79,7 +90,6 @@ public class WebhookDetails {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static EventsEnum fromValue(String value) {
       for (EventsEnum b : EventsEnum.values()) {
         if (b.value.equals(value)) {
@@ -88,25 +98,47 @@ public class WebhookDetails {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<EventsEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final EventsEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public EventsEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return EventsEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      EventsEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_EVENTS = "events";
+  public static final String SERIALIZED_NAME_EVENTS = "events";
+  @SerializedName(SERIALIZED_NAME_EVENTS)
   @javax.annotation.Nonnull
   private List<EventsEnum> events = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_FIELD_IDS_FILTER = "fieldIdsFilter";
+  public static final String SERIALIZED_NAME_FIELD_IDS_FILTER = "fieldIdsFilter";
+  @SerializedName(SERIALIZED_NAME_FIELD_IDS_FILTER)
   @javax.annotation.Nullable
   private List<String> fieldIdsFilter = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ISSUE_PROPERTY_KEYS_FILTER = "issuePropertyKeysFilter";
+  public static final String SERIALIZED_NAME_ISSUE_PROPERTY_KEYS_FILTER = "issuePropertyKeysFilter";
+  @SerializedName(SERIALIZED_NAME_ISSUE_PROPERTY_KEYS_FILTER)
   @javax.annotation.Nullable
   private List<String> issuePropertyKeysFilter = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_JQL_FILTER = "jqlFilter";
+  public static final String SERIALIZED_NAME_JQL_FILTER = "jqlFilter";
+  @SerializedName(SERIALIZED_NAME_JQL_FILTER)
   @javax.annotation.Nonnull
   private String jqlFilter;
 
-  public WebhookDetails() { 
+  public WebhookDetails() {
   }
 
   public WebhookDetails events(@javax.annotation.Nonnull List<EventsEnum> events) {
@@ -127,15 +159,10 @@ public class WebhookDetails {
    * @return events
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EVENTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<EventsEnum> getEvents() {
     return events;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EVENTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setEvents(@javax.annotation.Nonnull List<EventsEnum> events) {
     this.events = events;
   }
@@ -159,15 +186,10 @@ public class WebhookDetails {
    * @return fieldIdsFilter
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_IDS_FILTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getFieldIdsFilter() {
     return fieldIdsFilter;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_IDS_FILTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldIdsFilter(@javax.annotation.Nullable List<String> fieldIdsFilter) {
     this.fieldIdsFilter = fieldIdsFilter;
   }
@@ -191,15 +213,10 @@ public class WebhookDetails {
    * @return issuePropertyKeysFilter
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_PROPERTY_KEYS_FILTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getIssuePropertyKeysFilter() {
     return issuePropertyKeysFilter;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_PROPERTY_KEYS_FILTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssuePropertyKeysFilter(@javax.annotation.Nullable List<String> issuePropertyKeysFilter) {
     this.issuePropertyKeysFilter = issuePropertyKeysFilter;
   }
@@ -215,23 +232,16 @@ public class WebhookDetails {
    * @return jqlFilter
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_JQL_FILTER, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getJqlFilter() {
     return jqlFilter;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_JQL_FILTER, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setJqlFilter(@javax.annotation.Nonnull String jqlFilter) {
     this.jqlFilter = jqlFilter;
   }
 
 
-  /**
-   * Return true if this WebhookDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -275,71 +285,112 @@ public class WebhookDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("events", "fieldIdsFilter", "issuePropertyKeysFilter", "jqlFilter"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("events", "jqlFilter"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WebhookDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `events` to the URL query string
-    if (getEvents() != null) {
-      for (int i = 0; i < getEvents().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sevents%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getEvents().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WebhookDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WebhookDetails is not found in the empty JSON string", WebhookDetails.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `fieldIdsFilter` to the URL query string
-    if (getFieldIdsFilter() != null) {
-      for (int i = 0; i < getFieldIdsFilter().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sfieldIdsFilter%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getFieldIdsFilter().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WebhookDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WebhookDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
 
-    // add `issuePropertyKeysFilter` to the URL query string
-    if (getIssuePropertyKeysFilter() != null) {
-      for (int i = 0; i < getIssuePropertyKeysFilter().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sissuePropertyKeysFilter%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getIssuePropertyKeysFilter().get(i)))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : WebhookDetails.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the required json array is present
+      if (jsonObj.get("events") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("events").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `events` to be an array in the JSON string but got `%s`", jsonObj.get("events").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("fieldIdsFilter") != null && !jsonObj.get("fieldIdsFilter").isJsonNull() && !jsonObj.get("fieldIdsFilter").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldIdsFilter` to be an array in the JSON string but got `%s`", jsonObj.get("fieldIdsFilter").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("issuePropertyKeysFilter") != null && !jsonObj.get("issuePropertyKeysFilter").isJsonNull() && !jsonObj.get("issuePropertyKeysFilter").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issuePropertyKeysFilter` to be an array in the JSON string but got `%s`", jsonObj.get("issuePropertyKeysFilter").toString()));
+      }
+      if (!jsonObj.get("jqlFilter").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `jqlFilter` to be a primitive type in the JSON string but got `%s`", jsonObj.get("jqlFilter").toString()));
+      }
+  }
 
-    // add `jqlFilter` to the URL query string
-    if (getJqlFilter() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sjqlFilter%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getJqlFilter()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WebhookDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WebhookDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WebhookDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WebhookDetails.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<WebhookDetails>() {
+           @Override
+           public void write(JsonWriter out, WebhookDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WebhookDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WebhookDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WebhookDetails
+   * @throws IOException if the JSON string is invalid with respect to WebhookDetails
+   */
+  public static WebhookDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WebhookDetails.class);
+  }
+
+  /**
+   * Convert an instance of WebhookDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

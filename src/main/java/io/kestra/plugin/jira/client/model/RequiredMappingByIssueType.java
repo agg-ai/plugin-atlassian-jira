@@ -13,44 +13,58 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The list of required status mappings by issue type.
  */
-@JsonPropertyOrder({
-  RequiredMappingByIssueType.JSON_PROPERTY_ISSUE_TYPE_ID,
-  RequiredMappingByIssueType.JSON_PROPERTY_STATUS_IDS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class RequiredMappingByIssueType {
-  public static final String JSON_PROPERTY_ISSUE_TYPE_ID = "issueTypeId";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_ID = "issueTypeId";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_ID)
   @javax.annotation.Nullable
   private String issueTypeId;
 
-  public static final String JSON_PROPERTY_STATUS_IDS = "statusIds";
+  public static final String SERIALIZED_NAME_STATUS_IDS = "statusIds";
+  @SerializedName(SERIALIZED_NAME_STATUS_IDS)
   @javax.annotation.Nullable
   private Set<String> statusIds = new LinkedHashSet<>();
 
-  public RequiredMappingByIssueType() { 
+  public RequiredMappingByIssueType() {
   }
 
   public RequiredMappingByIssueType issueTypeId(@javax.annotation.Nullable String issueTypeId) {
@@ -63,15 +77,10 @@ public class RequiredMappingByIssueType {
    * @return issueTypeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIssueTypeId() {
     return issueTypeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeId(@javax.annotation.Nullable String issueTypeId) {
     this.issueTypeId = issueTypeId;
   }
@@ -95,24 +104,16 @@ public class RequiredMappingByIssueType {
    * @return statusIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getStatusIds() {
     return statusIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_STATUS_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusIds(@javax.annotation.Nullable Set<String> statusIds) {
     this.statusIds = statusIds;
   }
 
 
-  /**
-   * Return true if this RequiredMappingByIssueType object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -152,55 +153,95 @@ public class RequiredMappingByIssueType {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueTypeId", "statusIds"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to RequiredMappingByIssueType
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `issueTypeId` to the URL query string
-    if (getIssueTypeId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueTypeId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueTypeId()))));
-    }
-
-    // add `statusIds` to the URL query string
-    if (getStatusIds() != null) {
-      int i = 0;
-      for (String _item : getStatusIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sstatusIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!RequiredMappingByIssueType.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in RequiredMappingByIssueType is not found in the empty JSON string", RequiredMappingByIssueType.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!RequiredMappingByIssueType.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `RequiredMappingByIssueType` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("issueTypeId") != null && !jsonObj.get("issueTypeId").isJsonNull()) && !jsonObj.get("issueTypeId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypeId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("issueTypeId").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("statusIds") != null && !jsonObj.get("statusIds").isJsonNull() && !jsonObj.get("statusIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusIds` to be an array in the JSON string but got `%s`", jsonObj.get("statusIds").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!RequiredMappingByIssueType.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'RequiredMappingByIssueType' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<RequiredMappingByIssueType> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(RequiredMappingByIssueType.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<RequiredMappingByIssueType>() {
+           @Override
+           public void write(JsonWriter out, RequiredMappingByIssueType value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public RequiredMappingByIssueType read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of RequiredMappingByIssueType given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of RequiredMappingByIssueType
+   * @throws IOException if the JSON string is invalid with respect to RequiredMappingByIssueType
+   */
+  public static RequiredMappingByIssueType fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, RequiredMappingByIssueType.class);
+  }
+
+  /**
+   * Convert an instance of RequiredMappingByIssueType to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

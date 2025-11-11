@@ -10,398 +10,373 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.ContainerForProjectFeatures;
 import io.kestra.plugin.jira.client.model.ProjectFeatureState;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectFeaturesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ProjectFeaturesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ProjectFeaturesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for getFeaturesForProject
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call getFeaturesForProjectCall(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ProjectFeaturesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ProjectFeaturesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Get project features
-   * Returns the list of features for a project.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @return ContainerForProjectFeatures
-   * @throws ApiException if fails to make API call
-   */
-  public ContainerForProjectFeatures getFeaturesForProject(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
-    return getFeaturesForProject(projectIdOrKey, null);
-  }
-
-  /**
-   * Get project features
-   * Returns the list of features for a project.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param headers Optional headers to include in the request
-   * @return ContainerForProjectFeatures
-   * @throws ApiException if fails to make API call
-   */
-  public ContainerForProjectFeatures getFeaturesForProject(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<ContainerForProjectFeatures> localVarResponse = getFeaturesForProjectWithHttpInfo(projectIdOrKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project features
-   * Returns the list of features for a project.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @return ApiResponse&lt;ContainerForProjectFeatures&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ContainerForProjectFeatures> getFeaturesForProjectWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
-    return getFeaturesForProjectWithHttpInfo(projectIdOrKey, null);
-  }
-
-  /**
-   * Get project features
-   * Returns the list of features for a project.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ContainerForProjectFeatures&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ContainerForProjectFeatures> getFeaturesForProjectWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getFeaturesForProjectRequestBuilder(projectIdOrKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getFeaturesForProject", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ContainerForProjectFeatures>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ContainerForProjectFeatures responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ContainerForProjectFeatures>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<ContainerForProjectFeatures>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/features"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
 
-  private HttpRequest.Builder getFeaturesForProjectRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getFeaturesForProject");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/features"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Set project feature state
-   * Sets the state of a project feature.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param featureKey The key of the feature. (required)
-   * @param projectFeatureState Details of the feature state change. (required)
-   * @return ContainerForProjectFeatures
-   * @throws ApiException if fails to make API call
-   */
-  public ContainerForProjectFeatures toggleFeatureForProject(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState) throws ApiException {
-    return toggleFeatureForProject(projectIdOrKey, featureKey, projectFeatureState, null);
-  }
-
-  /**
-   * Set project feature state
-   * Sets the state of a project feature.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param featureKey The key of the feature. (required)
-   * @param projectFeatureState Details of the feature state change. (required)
-   * @param headers Optional headers to include in the request
-   * @return ContainerForProjectFeatures
-   * @throws ApiException if fails to make API call
-   */
-  public ContainerForProjectFeatures toggleFeatureForProject(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState, Map<String, String> headers) throws ApiException {
-    ApiResponse<ContainerForProjectFeatures> localVarResponse = toggleFeatureForProjectWithHttpInfo(projectIdOrKey, featureKey, projectFeatureState, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set project feature state
-   * Sets the state of a project feature.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param featureKey The key of the feature. (required)
-   * @param projectFeatureState Details of the feature state change. (required)
-   * @return ApiResponse&lt;ContainerForProjectFeatures&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ContainerForProjectFeatures> toggleFeatureForProjectWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState) throws ApiException {
-    return toggleFeatureForProjectWithHttpInfo(projectIdOrKey, featureKey, projectFeatureState, null);
-  }
-
-  /**
-   * Set project feature state
-   * Sets the state of a project feature.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param featureKey The key of the feature. (required)
-   * @param projectFeatureState Details of the feature state change. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ContainerForProjectFeatures&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ContainerForProjectFeatures> toggleFeatureForProjectWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = toggleFeatureForProjectRequestBuilder(projectIdOrKey, featureKey, projectFeatureState, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("toggleFeatureForProject", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ContainerForProjectFeatures>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ContainerForProjectFeatures responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ContainerForProjectFeatures>() {});
-        
-        localVarResponse.body().close();
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
 
-        return new ApiResponse<ContainerForProjectFeatures>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder toggleFeatureForProjectRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling toggleFeatureForProject");
-    }
-    // verify the required parameter 'featureKey' is set
-    if (featureKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'featureKey' when calling toggleFeatureForProject");
-    }
-    // verify the required parameter 'projectFeatureState' is set
-    if (projectFeatureState == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectFeatureState' when calling toggleFeatureForProject");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getFeaturesForProjectValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getFeaturesForProject(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/features/{featureKey}"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()))
-        .replace("{featureKey}", ApiClient.urlEncode(featureKey.toString()));
+        return getFeaturesForProjectCall(projectIdOrKey, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(projectFeatureState);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Get project features
+     * Returns the list of features for a project.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @return ContainerForProjectFeatures
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ContainerForProjectFeatures getFeaturesForProject(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
+        ApiResponse<ContainerForProjectFeatures> localVarResp = getFeaturesForProjectWithHttpInfo(projectIdOrKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project features
+     * Returns the list of features for a project.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @return ApiResponse&lt;ContainerForProjectFeatures&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ContainerForProjectFeatures> getFeaturesForProjectWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
+        okhttp3.Call localVarCall = getFeaturesForProjectValidateBeforeCall(projectIdOrKey, null);
+        Type localVarReturnType = new TypeToken<ContainerForProjectFeatures>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project features (asynchronously)
+     * Returns the list of features for a project.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFeaturesForProjectAsync(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback<ContainerForProjectFeatures> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getFeaturesForProjectValidateBeforeCall(projectIdOrKey, _callback);
+        Type localVarReturnType = new TypeToken<ContainerForProjectFeatures>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for toggleFeatureForProject
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param featureKey The key of the feature. (required)
+     * @param projectFeatureState Details of the feature state change. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or project feature is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call toggleFeatureForProjectCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = projectFeatureState;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/features/{featureKey}"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()))
+            .replace("{" + "featureKey" + "}", localVarApiClient.escapeString(featureKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call toggleFeatureForProjectValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling toggleFeatureForProject(Async)");
+        }
+
+        // verify the required parameter 'featureKey' is set
+        if (featureKey == null) {
+            throw new ApiException("Missing the required parameter 'featureKey' when calling toggleFeatureForProject(Async)");
+        }
+
+        // verify the required parameter 'projectFeatureState' is set
+        if (projectFeatureState == null) {
+            throw new ApiException("Missing the required parameter 'projectFeatureState' when calling toggleFeatureForProject(Async)");
+        }
+
+        return toggleFeatureForProjectCall(projectIdOrKey, featureKey, projectFeatureState, _callback);
+
+    }
+
+    /**
+     * Set project feature state
+     * Sets the state of a project feature.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param featureKey The key of the feature. (required)
+     * @param projectFeatureState Details of the feature state change. (required)
+     * @return ContainerForProjectFeatures
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or project feature is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ContainerForProjectFeatures toggleFeatureForProject(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState) throws ApiException {
+        ApiResponse<ContainerForProjectFeatures> localVarResp = toggleFeatureForProjectWithHttpInfo(projectIdOrKey, featureKey, projectFeatureState);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set project feature state
+     * Sets the state of a project feature.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param featureKey The key of the feature. (required)
+     * @param projectFeatureState Details of the feature state change. (required)
+     * @return ApiResponse&lt;ContainerForProjectFeatures&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or project feature is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ContainerForProjectFeatures> toggleFeatureForProjectWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState) throws ApiException {
+        okhttp3.Call localVarCall = toggleFeatureForProjectValidateBeforeCall(projectIdOrKey, featureKey, projectFeatureState, null);
+        Type localVarReturnType = new TypeToken<ContainerForProjectFeatures>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set project feature state (asynchronously)
+     * Sets the state of a project feature.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param featureKey The key of the feature. (required)
+     * @param projectFeatureState Details of the feature state change. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or project feature is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call toggleFeatureForProjectAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull String featureKey, @javax.annotation.Nonnull ProjectFeatureState projectFeatureState, final ApiCallback<ContainerForProjectFeatures> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = toggleFeatureForProjectValidateBeforeCall(projectIdOrKey, featureKey, projectFeatureState, _callback);
+        Type localVarReturnType = new TypeToken<ContainerForProjectFeatures>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

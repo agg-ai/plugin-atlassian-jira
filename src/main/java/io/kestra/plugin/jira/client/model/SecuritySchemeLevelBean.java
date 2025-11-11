@@ -13,54 +13,69 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SecuritySchemeLevelMemberBean;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * SecuritySchemeLevelBean
  */
-@JsonPropertyOrder({
-  SecuritySchemeLevelBean.JSON_PROPERTY_DESCRIPTION,
-  SecuritySchemeLevelBean.JSON_PROPERTY_IS_DEFAULT,
-  SecuritySchemeLevelBean.JSON_PROPERTY_MEMBERS,
-  SecuritySchemeLevelBean.JSON_PROPERTY_NAME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SecuritySchemeLevelBean {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_IS_DEFAULT = "isDefault";
+  public static final String SERIALIZED_NAME_IS_DEFAULT = "isDefault";
+  @SerializedName(SERIALIZED_NAME_IS_DEFAULT)
   @javax.annotation.Nullable
   private Boolean isDefault;
 
-  public static final String JSON_PROPERTY_MEMBERS = "members";
+  public static final String SERIALIZED_NAME_MEMBERS = "members";
+  @SerializedName(SERIALIZED_NAME_MEMBERS)
   @javax.annotation.Nullable
   private List<SecuritySchemeLevelMemberBean> members = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
-  public SecuritySchemeLevelBean() { 
+  public SecuritySchemeLevelBean() {
   }
 
   public SecuritySchemeLevelBean description(@javax.annotation.Nullable String description) {
@@ -73,15 +88,10 @@ public class SecuritySchemeLevelBean {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -97,15 +107,10 @@ public class SecuritySchemeLevelBean {
    * @return isDefault
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsDefault() {
     return isDefault;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsDefault(@javax.annotation.Nullable Boolean isDefault) {
     this.isDefault = isDefault;
   }
@@ -129,15 +134,10 @@ public class SecuritySchemeLevelBean {
    * @return members
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MEMBERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SecuritySchemeLevelMemberBean> getMembers() {
     return members;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MEMBERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMembers(@javax.annotation.Nullable List<SecuritySchemeLevelMemberBean> members) {
     this.members = members;
   }
@@ -153,23 +153,16 @@ public class SecuritySchemeLevelBean {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
 
 
-  /**
-   * Return true if this SecuritySchemeLevelBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -213,64 +206,115 @@ public class SecuritySchemeLevelBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "isDefault", "members", "name"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("name"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SecuritySchemeLevelBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `isDefault` to the URL query string
-    if (getIsDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisDefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsDefault()))));
-    }
-
-    // add `members` to the URL query string
-    if (getMembers() != null) {
-      for (int i = 0; i < getMembers().size(); i++) {
-        if (getMembers().get(i) != null) {
-          joiner.add(getMembers().get(i).toUrlQueryString(String.format(Locale.ROOT, "%smembers%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SecuritySchemeLevelBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SecuritySchemeLevelBean is not found in the empty JSON string", SecuritySchemeLevelBean.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SecuritySchemeLevelBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SecuritySchemeLevelBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : SecuritySchemeLevelBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (jsonObj.get("members") != null && !jsonObj.get("members").isJsonNull()) {
+        JsonArray jsonArraymembers = jsonObj.getAsJsonArray("members");
+        if (jsonArraymembers != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("members").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `members` to be an array in the JSON string but got `%s`", jsonObj.get("members").toString()));
+          }
+
+          // validate the optional field `members` (array)
+          for (int i = 0; i < jsonArraymembers.size(); i++) {
+            SecuritySchemeLevelMemberBean.validateJsonElement(jsonArraymembers.get(i));
+          };
+        }
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SecuritySchemeLevelBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SecuritySchemeLevelBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SecuritySchemeLevelBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SecuritySchemeLevelBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SecuritySchemeLevelBean>() {
+           @Override
+           public void write(JsonWriter out, SecuritySchemeLevelBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SecuritySchemeLevelBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of SecuritySchemeLevelBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SecuritySchemeLevelBean
+   * @throws IOException if the JSON string is invalid with respect to SecuritySchemeLevelBean
+   */
+  public static SecuritySchemeLevelBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SecuritySchemeLevelBean.class);
+  }
+
+  /**
+   * Convert an instance of SecuritySchemeLevelBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

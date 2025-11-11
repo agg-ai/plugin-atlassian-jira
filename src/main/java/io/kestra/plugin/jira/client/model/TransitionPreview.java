@@ -13,99 +13,112 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.PreviewConditionGroupConfiguration;
 import io.kestra.plugin.jira.client.model.PreviewRuleConfiguration;
 import io.kestra.plugin.jira.client.model.PreviewTrigger;
 import io.kestra.plugin.jira.client.model.TransitionLink;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a workflow transition in preview context.
  */
-@JsonPropertyOrder({
-  TransitionPreview.JSON_PROPERTY_ACTIONS,
-  TransitionPreview.JSON_PROPERTY_CONDITIONS,
-  TransitionPreview.JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID,
-  TransitionPreview.JSON_PROPERTY_DESCRIPTION,
-  TransitionPreview.JSON_PROPERTY_ID,
-  TransitionPreview.JSON_PROPERTY_LINKS,
-  TransitionPreview.JSON_PROPERTY_NAME,
-  TransitionPreview.JSON_PROPERTY_TO_STATUS_REFERENCE,
-  TransitionPreview.JSON_PROPERTY_TRANSITION_SCREEN,
-  TransitionPreview.JSON_PROPERTY_TRIGGERS,
-  TransitionPreview.JSON_PROPERTY_TYPE,
-  TransitionPreview.JSON_PROPERTY_VALIDATORS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TransitionPreview {
-  public static final String JSON_PROPERTY_ACTIONS = "actions";
+  public static final String SERIALIZED_NAME_ACTIONS = "actions";
+  @SerializedName(SERIALIZED_NAME_ACTIONS)
   @javax.annotation.Nullable
   private List<PreviewRuleConfiguration> actions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CONDITIONS = "conditions";
-  private JsonNullable<PreviewConditionGroupConfiguration> conditions = JsonNullable.<PreviewConditionGroupConfiguration>undefined();
+  public static final String SERIALIZED_NAME_CONDITIONS = "conditions";
+  @SerializedName(SERIALIZED_NAME_CONDITIONS)
+  @javax.annotation.Nullable
+  private PreviewConditionGroupConfiguration conditions;
 
-  public static final String JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID = "customIssueEventId";
+  public static final String SERIALIZED_NAME_CUSTOM_ISSUE_EVENT_ID = "customIssueEventId";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_ISSUE_EVENT_ID)
   @javax.annotation.Nullable
   private String customIssueEventId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_LINKS = "links";
+  public static final String SERIALIZED_NAME_LINKS = "links";
+  @SerializedName(SERIALIZED_NAME_LINKS)
   @javax.annotation.Nullable
   private List<TransitionLink> links = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_TO_STATUS_REFERENCE = "toStatusReference";
+  public static final String SERIALIZED_NAME_TO_STATUS_REFERENCE = "toStatusReference";
+  @SerializedName(SERIALIZED_NAME_TO_STATUS_REFERENCE)
   @javax.annotation.Nullable
   private String toStatusReference;
 
-  public static final String JSON_PROPERTY_TRANSITION_SCREEN = "transitionScreen";
-  private JsonNullable<PreviewRuleConfiguration> transitionScreen = JsonNullable.<PreviewRuleConfiguration>undefined();
+  public static final String SERIALIZED_NAME_TRANSITION_SCREEN = "transitionScreen";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_SCREEN)
+  @javax.annotation.Nullable
+  private PreviewRuleConfiguration transitionScreen;
 
-  public static final String JSON_PROPERTY_TRIGGERS = "triggers";
+  public static final String SERIALIZED_NAME_TRIGGERS = "triggers";
+  @SerializedName(SERIALIZED_NAME_TRIGGERS)
   @javax.annotation.Nullable
   private List<PreviewTrigger> triggers = new ArrayList<>();
 
   /**
    * The transition type.
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    INITIAL(String.valueOf("INITIAL")),
+    INITIAL("INITIAL"),
     
-    GLOBAL(String.valueOf("GLOBAL")),
+    GLOBAL("GLOBAL"),
     
-    DIRECTED(String.valueOf("DIRECTED"));
+    DIRECTED("DIRECTED");
 
     private String value;
 
@@ -113,7 +126,6 @@ public class TransitionPreview {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -123,7 +135,6 @@ public class TransitionPreview {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -132,17 +143,37 @@ public class TransitionPreview {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private TypeEnum type;
 
-  public static final String JSON_PROPERTY_VALIDATORS = "validators";
+  public static final String SERIALIZED_NAME_VALIDATORS = "validators";
+  @SerializedName(SERIALIZED_NAME_VALIDATORS)
   @javax.annotation.Nullable
   private List<PreviewRuleConfiguration> validators = new ArrayList<>();
 
-  public TransitionPreview() { 
+  public TransitionPreview() {
   }
 
   public TransitionPreview actions(@javax.annotation.Nullable List<PreviewRuleConfiguration> actions) {
@@ -163,22 +194,17 @@ public class TransitionPreview {
    * @return actions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<PreviewRuleConfiguration> getActions() {
     return actions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setActions(@javax.annotation.Nullable List<PreviewRuleConfiguration> actions) {
     this.actions = actions;
   }
 
 
   public TransitionPreview conditions(@javax.annotation.Nullable PreviewConditionGroupConfiguration conditions) {
-    this.conditions = JsonNullable.<PreviewConditionGroupConfiguration>of(conditions);
+    this.conditions = conditions;
     return this;
   }
 
@@ -187,25 +213,12 @@ public class TransitionPreview {
    * @return conditions
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public PreviewConditionGroupConfiguration getConditions() {
-        return conditions.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<PreviewConditionGroupConfiguration> getConditions_JsonNullable() {
     return conditions;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CONDITIONS)
-  public void setConditions_JsonNullable(JsonNullable<PreviewConditionGroupConfiguration> conditions) {
-    this.conditions = conditions;
   }
 
   public void setConditions(@javax.annotation.Nullable PreviewConditionGroupConfiguration conditions) {
-    this.conditions = JsonNullable.<PreviewConditionGroupConfiguration>of(conditions);
+    this.conditions = conditions;
   }
 
 
@@ -219,15 +232,10 @@ public class TransitionPreview {
    * @return customIssueEventId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCustomIssueEventId() {
     return customIssueEventId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomIssueEventId(@javax.annotation.Nullable String customIssueEventId) {
     this.customIssueEventId = customIssueEventId;
   }
@@ -243,15 +251,10 @@ public class TransitionPreview {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -267,15 +270,10 @@ public class TransitionPreview {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -299,15 +297,10 @@ public class TransitionPreview {
    * @return links
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LINKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TransitionLink> getLinks() {
     return links;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LINKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLinks(@javax.annotation.Nullable List<TransitionLink> links) {
     this.links = links;
   }
@@ -323,15 +316,10 @@ public class TransitionPreview {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -347,22 +335,17 @@ public class TransitionPreview {
    * @return toStatusReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TO_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getToStatusReference() {
     return toStatusReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TO_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setToStatusReference(@javax.annotation.Nullable String toStatusReference) {
     this.toStatusReference = toStatusReference;
   }
 
 
   public TransitionPreview transitionScreen(@javax.annotation.Nullable PreviewRuleConfiguration transitionScreen) {
-    this.transitionScreen = JsonNullable.<PreviewRuleConfiguration>of(transitionScreen);
+    this.transitionScreen = transitionScreen;
     return this;
   }
 
@@ -371,25 +354,12 @@ public class TransitionPreview {
    * @return transitionScreen
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public PreviewRuleConfiguration getTransitionScreen() {
-        return transitionScreen.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_SCREEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<PreviewRuleConfiguration> getTransitionScreen_JsonNullable() {
     return transitionScreen;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TRANSITION_SCREEN)
-  public void setTransitionScreen_JsonNullable(JsonNullable<PreviewRuleConfiguration> transitionScreen) {
-    this.transitionScreen = transitionScreen;
   }
 
   public void setTransitionScreen(@javax.annotation.Nullable PreviewRuleConfiguration transitionScreen) {
-    this.transitionScreen = JsonNullable.<PreviewRuleConfiguration>of(transitionScreen);
+    this.transitionScreen = transitionScreen;
   }
 
 
@@ -411,15 +381,10 @@ public class TransitionPreview {
    * @return triggers
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<PreviewTrigger> getTriggers() {
     return triggers;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTriggers(@javax.annotation.Nullable List<PreviewTrigger> triggers) {
     this.triggers = triggers;
   }
@@ -435,15 +400,10 @@ public class TransitionPreview {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable TypeEnum type) {
     this.type = type;
   }
@@ -467,23 +427,16 @@ public class TransitionPreview {
    * @return validators
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALIDATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<PreviewRuleConfiguration> getValidators() {
     return validators;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALIDATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValidators(@javax.annotation.Nullable List<PreviewRuleConfiguration> validators) {
     this.validators = validators;
   }
 
 
-  /**
-   * Return true if this TransitionPreview object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -494,14 +447,14 @@ public class TransitionPreview {
     }
     TransitionPreview transitionPreview = (TransitionPreview) o;
     return Objects.equals(this.actions, transitionPreview.actions) &&
-        equalsNullable(this.conditions, transitionPreview.conditions) &&
+        Objects.equals(this.conditions, transitionPreview.conditions) &&
         Objects.equals(this.customIssueEventId, transitionPreview.customIssueEventId) &&
         Objects.equals(this.description, transitionPreview.description) &&
         Objects.equals(this.id, transitionPreview.id) &&
         Objects.equals(this.links, transitionPreview.links) &&
         Objects.equals(this.name, transitionPreview.name) &&
         Objects.equals(this.toStatusReference, transitionPreview.toStatusReference) &&
-        equalsNullable(this.transitionScreen, transitionPreview.transitionScreen) &&
+        Objects.equals(this.transitionScreen, transitionPreview.transitionScreen) &&
         Objects.equals(this.triggers, transitionPreview.triggers) &&
         Objects.equals(this.type, transitionPreview.type) &&
         Objects.equals(this.validators, transitionPreview.validators);
@@ -513,7 +466,7 @@ public class TransitionPreview {
 
   @Override
   public int hashCode() {
-    return Objects.hash(actions, hashCodeNullable(conditions), customIssueEventId, description, id, links, name, toStatusReference, hashCodeNullable(transitionScreen), triggers, type, validators);
+    return Objects.hash(actions, conditions, customIssueEventId, description, id, links, name, toStatusReference, transitionScreen, triggers, type, validators);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -554,119 +507,174 @@ public class TransitionPreview {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("actions", "conditions", "customIssueEventId", "description", "id", "links", "name", "toStatusReference", "transitionScreen", "triggers", "type", "validators"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TransitionPreview
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `actions` to the URL query string
-    if (getActions() != null) {
-      for (int i = 0; i < getActions().size(); i++) {
-        if (getActions().get(i) != null) {
-          joiner.add(getActions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sactions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TransitionPreview.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TransitionPreview is not found in the empty JSON string", TransitionPreview.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `conditions` to the URL query string
-    if (getConditions() != null) {
-      joiner.add(getConditions().toUrlQueryString(prefix + "conditions" + suffix));
-    }
-
-    // add `customIssueEventId` to the URL query string
-    if (getCustomIssueEventId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scustomIssueEventId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustomIssueEventId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `links` to the URL query string
-    if (getLinks() != null) {
-      for (int i = 0; i < getLinks().size(); i++) {
-        if (getLinks().get(i) != null) {
-          joiner.add(getLinks().get(i).toUrlQueryString(String.format(Locale.ROOT, "%slinks%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!TransitionPreview.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `TransitionPreview` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("actions") != null && !jsonObj.get("actions").isJsonNull()) {
+        JsonArray jsonArrayactions = jsonObj.getAsJsonArray("actions");
+        if (jsonArrayactions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("actions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `actions` to be an array in the JSON string but got `%s`", jsonObj.get("actions").toString()));
+          }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `toStatusReference` to the URL query string
-    if (getToStatusReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stoStatusReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getToStatusReference()))));
-    }
-
-    // add `transitionScreen` to the URL query string
-    if (getTransitionScreen() != null) {
-      joiner.add(getTransitionScreen().toUrlQueryString(prefix + "transitionScreen" + suffix));
-    }
-
-    // add `triggers` to the URL query string
-    if (getTriggers() != null) {
-      for (int i = 0; i < getTriggers().size(); i++) {
-        if (getTriggers().get(i) != null) {
-          joiner.add(getTriggers().get(i).toUrlQueryString(String.format(Locale.ROOT, "%striggers%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `actions` (array)
+          for (int i = 0; i < jsonArrayactions.size(); i++) {
+            PreviewRuleConfiguration.validateJsonElement(jsonArrayactions.get(i));
+          };
         }
       }
-    }
+      // validate the optional field `conditions`
+      if (jsonObj.get("conditions") != null && !jsonObj.get("conditions").isJsonNull()) {
+        PreviewConditionGroupConfiguration.validateJsonElement(jsonObj.get("conditions"));
+      }
+      if ((jsonObj.get("customIssueEventId") != null && !jsonObj.get("customIssueEventId").isJsonNull()) && !jsonObj.get("customIssueEventId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customIssueEventId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("customIssueEventId").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (jsonObj.get("links") != null && !jsonObj.get("links").isJsonNull()) {
+        JsonArray jsonArraylinks = jsonObj.getAsJsonArray("links");
+        if (jsonArraylinks != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("links").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `links` to be an array in the JSON string but got `%s`", jsonObj.get("links").toString()));
+          }
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    // add `validators` to the URL query string
-    if (getValidators() != null) {
-      for (int i = 0; i < getValidators().size(); i++) {
-        if (getValidators().get(i) != null) {
-          joiner.add(getValidators().get(i).toUrlQueryString(String.format(Locale.ROOT, "%svalidators%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `links` (array)
+          for (int i = 0; i < jsonArraylinks.size(); i++) {
+            TransitionLink.validateJsonElement(jsonArraylinks.get(i));
+          };
         }
       }
-    }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("toStatusReference") != null && !jsonObj.get("toStatusReference").isJsonNull()) && !jsonObj.get("toStatusReference").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `toStatusReference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("toStatusReference").toString()));
+      }
+      // validate the optional field `transitionScreen`
+      if (jsonObj.get("transitionScreen") != null && !jsonObj.get("transitionScreen").isJsonNull()) {
+        PreviewRuleConfiguration.validateJsonElement(jsonObj.get("transitionScreen"));
+      }
+      if (jsonObj.get("triggers") != null && !jsonObj.get("triggers").isJsonNull()) {
+        JsonArray jsonArraytriggers = jsonObj.getAsJsonArray("triggers");
+        if (jsonArraytriggers != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("triggers").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `triggers` to be an array in the JSON string but got `%s`", jsonObj.get("triggers").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `triggers` (array)
+          for (int i = 0; i < jsonArraytriggers.size(); i++) {
+            PreviewTrigger.validateJsonElement(jsonArraytriggers.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the optional field `type`
+      if (jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) {
+        TypeEnum.validateJsonElement(jsonObj.get("type"));
+      }
+      if (jsonObj.get("validators") != null && !jsonObj.get("validators").isJsonNull()) {
+        JsonArray jsonArrayvalidators = jsonObj.getAsJsonArray("validators");
+        if (jsonArrayvalidators != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("validators").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `validators` to be an array in the JSON string but got `%s`", jsonObj.get("validators").toString()));
+          }
+
+          // validate the optional field `validators` (array)
+          for (int i = 0; i < jsonArrayvalidators.size(); i++) {
+            PreviewRuleConfiguration.validateJsonElement(jsonArrayvalidators.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TransitionPreview.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TransitionPreview' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TransitionPreview> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TransitionPreview.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TransitionPreview>() {
+           @Override
+           public void write(JsonWriter out, TransitionPreview value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TransitionPreview read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of TransitionPreview given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TransitionPreview
+   * @throws IOException if the JSON string is invalid with respect to TransitionPreview
+   */
+  public static TransitionPreview fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TransitionPreview.class);
+  }
+
+  /**
+   * Convert an instance of TransitionPreview to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

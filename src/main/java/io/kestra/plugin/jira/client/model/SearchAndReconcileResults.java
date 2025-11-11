@@ -13,73 +13,87 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueBean;
 import io.kestra.plugin.jira.client.model.JsonTypeBean;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The result of a JQL search with issues reconsilation.
  */
-@JsonPropertyOrder({
-  SearchAndReconcileResults.JSON_PROPERTY_IS_LAST,
-  SearchAndReconcileResults.JSON_PROPERTY_ISSUES,
-  SearchAndReconcileResults.JSON_PROPERTY_NAMES,
-  SearchAndReconcileResults.JSON_PROPERTY_NEXT_PAGE_TOKEN,
-  SearchAndReconcileResults.JSON_PROPERTY_SCHEMA
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SearchAndReconcileResults {
-  public static final String JSON_PROPERTY_IS_LAST = "isLast";
+  public static final String SERIALIZED_NAME_IS_LAST = "isLast";
+  @SerializedName(SERIALIZED_NAME_IS_LAST)
   @javax.annotation.Nullable
   private Boolean isLast;
 
-  public static final String JSON_PROPERTY_ISSUES = "issues";
+  public static final String SERIALIZED_NAME_ISSUES = "issues";
+  @SerializedName(SERIALIZED_NAME_ISSUES)
   @javax.annotation.Nullable
   private List<IssueBean> issues = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_NAMES = "names";
+  public static final String SERIALIZED_NAME_NAMES = "names";
+  @SerializedName(SERIALIZED_NAME_NAMES)
   @javax.annotation.Nullable
   private Map<String, String> names = new HashMap<>();
 
-  public static final String JSON_PROPERTY_NEXT_PAGE_TOKEN = "nextPageToken";
+  public static final String SERIALIZED_NAME_NEXT_PAGE_TOKEN = "nextPageToken";
+  @SerializedName(SERIALIZED_NAME_NEXT_PAGE_TOKEN)
   @javax.annotation.Nullable
   private String nextPageToken;
 
-  public static final String JSON_PROPERTY_SCHEMA = "schema";
+  public static final String SERIALIZED_NAME_SCHEMA = "schema";
+  @SerializedName(SERIALIZED_NAME_SCHEMA)
   @javax.annotation.Nullable
   private Map<String, JsonTypeBean> schema = new HashMap<>();
 
-  public SearchAndReconcileResults() { 
+  public SearchAndReconcileResults() {
   }
 
-  @JsonCreator
   public SearchAndReconcileResults(
-    @JsonProperty(JSON_PROPERTY_IS_LAST) Boolean isLast, 
-    @JsonProperty(JSON_PROPERTY_ISSUES) List<IssueBean> issues, 
-    @JsonProperty(JSON_PROPERTY_NAMES) Map<String, String> names, 
-    @JsonProperty(JSON_PROPERTY_NEXT_PAGE_TOKEN) String nextPageToken, 
-    @JsonProperty(JSON_PROPERTY_SCHEMA) Map<String, JsonTypeBean> schema
+     Boolean isLast, 
+     List<IssueBean> issues, 
+     Map<String, String> names, 
+     String nextPageToken, 
+     Map<String, JsonTypeBean> schema
   ) {
-  this();
+    this();
     this.isLast = isLast;
     this.issues = issues;
     this.names = names;
@@ -92,12 +106,9 @@ public class SearchAndReconcileResults {
    * @return isLast
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_LAST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsLast() {
     return isLast;
   }
-
 
 
 
@@ -106,12 +117,9 @@ public class SearchAndReconcileResults {
    * @return issues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueBean> getIssues() {
     return issues;
   }
-
 
 
 
@@ -120,12 +128,9 @@ public class SearchAndReconcileResults {
    * @return names
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getNames() {
     return names;
   }
-
 
 
 
@@ -134,12 +139,9 @@ public class SearchAndReconcileResults {
    * @return nextPageToken
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NEXT_PAGE_TOKEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNextPageToken() {
     return nextPageToken;
   }
-
 
 
 
@@ -148,8 +150,6 @@ public class SearchAndReconcileResults {
    * @return schema
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCHEMA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, JsonTypeBean> getSchema() {
     return schema;
   }
@@ -157,9 +157,6 @@ public class SearchAndReconcileResults {
 
 
 
-  /**
-   * Return true if this SearchAndReconcileResults object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -205,78 +202,105 @@ public class SearchAndReconcileResults {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("isLast", "issues", "names", "nextPageToken", "schema"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SearchAndReconcileResults
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `isLast` to the URL query string
-    if (getIsLast() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisLast%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsLast()))));
-    }
-
-    // add `issues` to the URL query string
-    if (getIssues() != null) {
-      for (int i = 0; i < getIssues().size(); i++) {
-        if (getIssues().get(i) != null) {
-          joiner.add(getIssues().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissues%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SearchAndReconcileResults.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SearchAndReconcileResults is not found in the empty JSON string", SearchAndReconcileResults.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `names` to the URL query string
-    if (getNames() != null) {
-      for (String _key : getNames().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%snames%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getNames().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getNames().get(_key)))));
-      }
-    }
-
-    // add `nextPageToken` to the URL query string
-    if (getNextPageToken() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snextPageToken%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNextPageToken()))));
-    }
-
-    // add `schema` to the URL query string
-    if (getSchema() != null) {
-      for (String _key : getSchema().keySet()) {
-        if (getSchema().get(_key) != null) {
-          joiner.add(getSchema().get(_key).toUrlQueryString(String.format(Locale.ROOT, "%sschema%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SearchAndReconcileResults.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SearchAndReconcileResults` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("issues") != null && !jsonObj.get("issues").isJsonNull()) {
+        JsonArray jsonArrayissues = jsonObj.getAsJsonArray("issues");
+        if (jsonArrayissues != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issues").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issues` to be an array in the JSON string but got `%s`", jsonObj.get("issues").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `issues` (array)
+          for (int i = 0; i < jsonArrayissues.size(); i++) {
+            IssueBean.validateJsonElement(jsonArrayissues.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("nextPageToken") != null && !jsonObj.get("nextPageToken").isJsonNull()) && !jsonObj.get("nextPageToken").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `nextPageToken` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nextPageToken").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SearchAndReconcileResults.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SearchAndReconcileResults' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SearchAndReconcileResults> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SearchAndReconcileResults.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SearchAndReconcileResults>() {
+           @Override
+           public void write(JsonWriter out, SearchAndReconcileResults value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SearchAndReconcileResults read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of SearchAndReconcileResults given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SearchAndReconcileResults
+   * @throws IOException if the JSON string is invalid with respect to SearchAndReconcileResults
+   */
+  public static SearchAndReconcileResults fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SearchAndReconcileResults.class);
+  }
+
+  /**
+   * Convert an instance of SearchAndReconcileResults to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

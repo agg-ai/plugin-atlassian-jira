@@ -13,38 +13,53 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A list of JQL queries to parse.
  */
-@JsonPropertyOrder({
-  JqlQueriesToParse.JSON_PROPERTY_QUERIES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JqlQueriesToParse {
-  public static final String JSON_PROPERTY_QUERIES = "queries";
+  public static final String SERIALIZED_NAME_QUERIES = "queries";
+  @SerializedName(SERIALIZED_NAME_QUERIES)
   @javax.annotation.Nonnull
   private List<String> queries = new ArrayList<>();
 
-  public JqlQueriesToParse() { 
+  public JqlQueriesToParse() {
   }
 
   public JqlQueriesToParse queries(@javax.annotation.Nonnull List<String> queries) {
@@ -65,23 +80,16 @@ public class JqlQueriesToParse {
    * @return queries
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_QUERIES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<String> getQueries() {
     return queries;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUERIES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setQueries(@javax.annotation.Nonnull List<String> queries) {
     this.queries = queries;
   }
 
 
-  /**
-   * Return true if this JqlQueriesToParse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -119,48 +127,101 @@ public class JqlQueriesToParse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("queries"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("queries"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JqlQueriesToParse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `queries` to the URL query string
-    if (getQueries() != null) {
-      for (int i = 0; i < getQueries().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%squeries%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getQueries().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JqlQueriesToParse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JqlQueriesToParse is not found in the empty JSON string", JqlQueriesToParse.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JqlQueriesToParse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JqlQueriesToParse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JqlQueriesToParse.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the required json array is present
+      if (jsonObj.get("queries") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("queries").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `queries` to be an array in the JSON string but got `%s`", jsonObj.get("queries").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JqlQueriesToParse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JqlQueriesToParse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JqlQueriesToParse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JqlQueriesToParse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JqlQueriesToParse>() {
+           @Override
+           public void write(JsonWriter out, JqlQueriesToParse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JqlQueriesToParse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JqlQueriesToParse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JqlQueriesToParse
+   * @throws IOException if the JSON string is invalid with respect to JqlQueriesToParse
+   */
+  public static JqlQueriesToParse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JqlQueriesToParse.class);
+  }
+
+  /**
+   * Convert an instance of JqlQueriesToParse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

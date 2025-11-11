@@ -13,73 +13,87 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ChangeDetails;
 import io.kestra.plugin.jira.client.model.HistoryMetadata;
 import io.kestra.plugin.jira.client.model.UserDetails;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A log of changes made to issue fields. Changelogs related to workflow associations are currently being deprecated.
  */
-@JsonPropertyOrder({
-  Changelog.JSON_PROPERTY_AUTHOR,
-  Changelog.JSON_PROPERTY_CREATED,
-  Changelog.JSON_PROPERTY_HISTORY_METADATA,
-  Changelog.JSON_PROPERTY_ID,
-  Changelog.JSON_PROPERTY_ITEMS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Changelog {
-  public static final String JSON_PROPERTY_AUTHOR = "author";
+  public static final String SERIALIZED_NAME_AUTHOR = "author";
+  @SerializedName(SERIALIZED_NAME_AUTHOR)
   @javax.annotation.Nullable
   private UserDetails author;
 
-  public static final String JSON_PROPERTY_CREATED = "created";
+  public static final String SERIALIZED_NAME_CREATED = "created";
+  @SerializedName(SERIALIZED_NAME_CREATED)
   @javax.annotation.Nullable
   private OffsetDateTime created;
 
-  public static final String JSON_PROPERTY_HISTORY_METADATA = "historyMetadata";
+  public static final String SERIALIZED_NAME_HISTORY_METADATA = "historyMetadata";
+  @SerializedName(SERIALIZED_NAME_HISTORY_METADATA)
   @javax.annotation.Nullable
   private HistoryMetadata historyMetadata;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_ITEMS = "items";
+  public static final String SERIALIZED_NAME_ITEMS = "items";
+  @SerializedName(SERIALIZED_NAME_ITEMS)
   @javax.annotation.Nullable
   private List<ChangeDetails> items = new ArrayList<>();
 
-  public Changelog() { 
+  public Changelog() {
   }
 
-  @JsonCreator
   public Changelog(
-    @JsonProperty(JSON_PROPERTY_AUTHOR) UserDetails author, 
-    @JsonProperty(JSON_PROPERTY_CREATED) OffsetDateTime created, 
-    @JsonProperty(JSON_PROPERTY_HISTORY_METADATA) HistoryMetadata historyMetadata, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_ITEMS) List<ChangeDetails> items
+     UserDetails author, 
+     OffsetDateTime created, 
+     HistoryMetadata historyMetadata, 
+     String id, 
+     List<ChangeDetails> items
   ) {
-  this();
+    this();
     this.author = author;
     this.created = created;
     this.historyMetadata = historyMetadata;
@@ -92,12 +106,9 @@ public class Changelog {
    * @return author
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserDetails getAuthor() {
     return author;
   }
-
 
 
 
@@ -106,12 +117,9 @@ public class Changelog {
    * @return created
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getCreated() {
     return created;
   }
-
 
 
 
@@ -120,12 +128,9 @@ public class Changelog {
    * @return historyMetadata
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HISTORY_METADATA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public HistoryMetadata getHistoryMetadata() {
     return historyMetadata;
   }
-
 
 
 
@@ -134,12 +139,9 @@ public class Changelog {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -148,8 +150,6 @@ public class Changelog {
    * @return items
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ChangeDetails> getItems() {
     return items;
   }
@@ -157,9 +157,6 @@ public class Changelog {
 
 
 
-  /**
-   * Return true if this Changelog object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -205,69 +202,109 @@ public class Changelog {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("author", "created", "historyMetadata", "id", "items"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Changelog
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `author` to the URL query string
-    if (getAuthor() != null) {
-      joiner.add(getAuthor().toUrlQueryString(prefix + "author" + suffix));
-    }
-
-    // add `created` to the URL query string
-    if (getCreated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreated()))));
-    }
-
-    // add `historyMetadata` to the URL query string
-    if (getHistoryMetadata() != null) {
-      joiner.add(String.format(Locale.ROOT, "%shistoryMetadata%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHistoryMetadata()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `items` to the URL query string
-    if (getItems() != null) {
-      for (int i = 0; i < getItems().size(); i++) {
-        if (getItems().get(i) != null) {
-          joiner.add(getItems().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sitems%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Changelog.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Changelog is not found in the empty JSON string", Changelog.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Changelog.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Changelog` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `author`
+      if (jsonObj.get("author") != null && !jsonObj.get("author").isJsonNull()) {
+        UserDetails.validateJsonElement(jsonObj.get("author"));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (jsonObj.get("items") != null && !jsonObj.get("items").isJsonNull()) {
+        JsonArray jsonArrayitems = jsonObj.getAsJsonArray("items");
+        if (jsonArrayitems != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("items").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `items` to be an array in the JSON string but got `%s`", jsonObj.get("items").toString()));
+          }
+
+          // validate the optional field `items` (array)
+          for (int i = 0; i < jsonArrayitems.size(); i++) {
+            ChangeDetails.validateJsonElement(jsonArrayitems.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Changelog.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Changelog' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Changelog> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Changelog.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Changelog>() {
+           @Override
+           public void write(JsonWriter out, Changelog value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Changelog read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of Changelog given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Changelog
+   * @throws IOException if the JSON string is invalid with respect to Changelog
+   */
+  public static Changelog fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Changelog.class);
+  }
+
+  /**
+   * Convert an instance of Changelog to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

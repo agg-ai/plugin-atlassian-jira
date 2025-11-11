@@ -13,44 +13,59 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SharePermission;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details for permissions of shareable entities
  */
-@JsonPropertyOrder({
-  PermissionDetails.JSON_PROPERTY_EDIT_PERMISSIONS,
-  PermissionDetails.JSON_PROPERTY_SHARE_PERMISSIONS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PermissionDetails {
-  public static final String JSON_PROPERTY_EDIT_PERMISSIONS = "editPermissions";
+  public static final String SERIALIZED_NAME_EDIT_PERMISSIONS = "editPermissions";
+  @SerializedName(SERIALIZED_NAME_EDIT_PERMISSIONS)
   @javax.annotation.Nonnull
   private List<SharePermission> editPermissions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SHARE_PERMISSIONS = "sharePermissions";
+  public static final String SERIALIZED_NAME_SHARE_PERMISSIONS = "sharePermissions";
+  @SerializedName(SERIALIZED_NAME_SHARE_PERMISSIONS)
   @javax.annotation.Nonnull
   private List<SharePermission> sharePermissions = new ArrayList<>();
 
-  public PermissionDetails() { 
+  public PermissionDetails() {
   }
 
   public PermissionDetails editPermissions(@javax.annotation.Nonnull List<SharePermission> editPermissions) {
@@ -71,15 +86,10 @@ public class PermissionDetails {
    * @return editPermissions
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EDIT_PERMISSIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<SharePermission> getEditPermissions() {
     return editPermissions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EDIT_PERMISSIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setEditPermissions(@javax.annotation.Nonnull List<SharePermission> editPermissions) {
     this.editPermissions = editPermissions;
   }
@@ -103,23 +113,16 @@ public class PermissionDetails {
    * @return sharePermissions
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SHARE_PERMISSIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<SharePermission> getSharePermissions() {
     return sharePermissions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SHARE_PERMISSIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSharePermissions(@javax.annotation.Nonnull List<SharePermission> sharePermissions) {
     this.sharePermissions = sharePermissions;
   }
 
 
-  /**
-   * Return true if this PermissionDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -159,59 +162,115 @@ public class PermissionDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("editPermissions", "sharePermissions"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("editPermissions", "sharePermissions"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to PermissionDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `editPermissions` to the URL query string
-    if (getEditPermissions() != null) {
-      for (int i = 0; i < getEditPermissions().size(); i++) {
-        if (getEditPermissions().get(i) != null) {
-          joiner.add(getEditPermissions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%seditPermissions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!PermissionDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in PermissionDetails is not found in the empty JSON string", PermissionDetails.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `sharePermissions` to the URL query string
-    if (getSharePermissions() != null) {
-      for (int i = 0; i < getSharePermissions().size(); i++) {
-        if (getSharePermissions().get(i) != null) {
-          joiner.add(getSharePermissions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssharePermissions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!PermissionDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `PermissionDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : PermissionDetails.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the json data is an array
+      if (!jsonObj.get("editPermissions").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `editPermissions` to be an array in the JSON string but got `%s`", jsonObj.get("editPermissions").toString()));
+      }
+
+      JsonArray jsonArrayeditPermissions = jsonObj.getAsJsonArray("editPermissions");
+      // validate the required field `editPermissions` (array)
+      for (int i = 0; i < jsonArrayeditPermissions.size(); i++) {
+        SharePermission.validateJsonElement(jsonArrayeditPermissions.get(i));
+      };
+      // ensure the json data is an array
+      if (!jsonObj.get("sharePermissions").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `sharePermissions` to be an array in the JSON string but got `%s`", jsonObj.get("sharePermissions").toString()));
+      }
+
+      JsonArray jsonArraysharePermissions = jsonObj.getAsJsonArray("sharePermissions");
+      // validate the required field `sharePermissions` (array)
+      for (int i = 0; i < jsonArraysharePermissions.size(); i++) {
+        SharePermission.validateJsonElement(jsonArraysharePermissions.get(i));
+      };
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!PermissionDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'PermissionDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<PermissionDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(PermissionDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<PermissionDetails>() {
+           @Override
+           public void write(JsonWriter out, PermissionDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public PermissionDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of PermissionDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of PermissionDetails
+   * @throws IOException if the JSON string is invalid with respect to PermissionDetails
+   */
+  public static PermissionDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, PermissionDetails.class);
+  }
+
+  /**
+   * Convert an instance of PermissionDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

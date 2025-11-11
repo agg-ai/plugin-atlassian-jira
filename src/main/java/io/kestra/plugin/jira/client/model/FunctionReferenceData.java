@@ -13,48 +13,60 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of functions that can be used in advanced searches.
  */
-@JsonPropertyOrder({
-  FunctionReferenceData.JSON_PROPERTY_DISPLAY_NAME,
-  FunctionReferenceData.JSON_PROPERTY_IS_LIST,
-  FunctionReferenceData.JSON_PROPERTY_SUPPORTS_LIST_AND_SINGLE_VALUE_OPERATORS,
-  FunctionReferenceData.JSON_PROPERTY_TYPES,
-  FunctionReferenceData.JSON_PROPERTY_VALUE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FunctionReferenceData {
-  public static final String JSON_PROPERTY_DISPLAY_NAME = "displayName";
+  public static final String SERIALIZED_NAME_DISPLAY_NAME = "displayName";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_NAME)
   @javax.annotation.Nullable
   private String displayName;
 
   /**
    * Whether the function can take a list of arguments.
    */
+  @JsonAdapter(IsListEnum.Adapter.class)
   public enum IsListEnum {
-    TRUE(String.valueOf("true")),
+    TRUE("true"),
     
-    FALSE(String.valueOf("false"));
+    FALSE("false");
 
     private String value;
 
@@ -62,7 +74,6 @@ public class FunctionReferenceData {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -72,7 +83,6 @@ public class FunctionReferenceData {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static IsListEnum fromValue(String value) {
       for (IsListEnum b : IsListEnum.values()) {
         if (b.value.equals(value)) {
@@ -81,19 +91,39 @@ public class FunctionReferenceData {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<IsListEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final IsListEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public IsListEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return IsListEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      IsListEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_IS_LIST = "isList";
+  public static final String SERIALIZED_NAME_IS_LIST = "isList";
+  @SerializedName(SERIALIZED_NAME_IS_LIST)
   @javax.annotation.Nullable
   private IsListEnum isList;
 
   /**
    * Whether the function supports both single and list value operators.
    */
+  @JsonAdapter(SupportsListAndSingleValueOperatorsEnum.Adapter.class)
   public enum SupportsListAndSingleValueOperatorsEnum {
-    TRUE(String.valueOf("true")),
+    TRUE("true"),
     
-    FALSE(String.valueOf("false"));
+    FALSE("false");
 
     private String value;
 
@@ -101,7 +131,6 @@ public class FunctionReferenceData {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -111,7 +140,6 @@ public class FunctionReferenceData {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static SupportsListAndSingleValueOperatorsEnum fromValue(String value) {
       for (SupportsListAndSingleValueOperatorsEnum b : SupportsListAndSingleValueOperatorsEnum.values()) {
         if (b.value.equals(value)) {
@@ -120,21 +148,42 @@ public class FunctionReferenceData {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<SupportsListAndSingleValueOperatorsEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final SupportsListAndSingleValueOperatorsEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public SupportsListAndSingleValueOperatorsEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return SupportsListAndSingleValueOperatorsEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      SupportsListAndSingleValueOperatorsEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_SUPPORTS_LIST_AND_SINGLE_VALUE_OPERATORS = "supportsListAndSingleValueOperators";
+  public static final String SERIALIZED_NAME_SUPPORTS_LIST_AND_SINGLE_VALUE_OPERATORS = "supportsListAndSingleValueOperators";
+  @SerializedName(SERIALIZED_NAME_SUPPORTS_LIST_AND_SINGLE_VALUE_OPERATORS)
   @javax.annotation.Nullable
   private SupportsListAndSingleValueOperatorsEnum supportsListAndSingleValueOperators;
 
-  public static final String JSON_PROPERTY_TYPES = "types";
+  public static final String SERIALIZED_NAME_TYPES = "types";
+  @SerializedName(SERIALIZED_NAME_TYPES)
   @javax.annotation.Nullable
   private List<String> types = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_VALUE = "value";
+  public static final String SERIALIZED_NAME_VALUE = "value";
+  @SerializedName(SERIALIZED_NAME_VALUE)
   @javax.annotation.Nullable
   private String value;
 
-  public FunctionReferenceData() { 
+  public FunctionReferenceData() {
   }
 
   public FunctionReferenceData displayName(@javax.annotation.Nullable String displayName) {
@@ -147,15 +196,10 @@ public class FunctionReferenceData {
    * @return displayName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayName() {
     return displayName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayName(@javax.annotation.Nullable String displayName) {
     this.displayName = displayName;
   }
@@ -171,15 +215,10 @@ public class FunctionReferenceData {
    * @return isList
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_LIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IsListEnum getIsList() {
     return isList;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_LIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsList(@javax.annotation.Nullable IsListEnum isList) {
     this.isList = isList;
   }
@@ -195,15 +234,10 @@ public class FunctionReferenceData {
    * @return supportsListAndSingleValueOperators
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LIST_AND_SINGLE_VALUE_OPERATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SupportsListAndSingleValueOperatorsEnum getSupportsListAndSingleValueOperators() {
     return supportsListAndSingleValueOperators;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LIST_AND_SINGLE_VALUE_OPERATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsListAndSingleValueOperators(@javax.annotation.Nullable SupportsListAndSingleValueOperatorsEnum supportsListAndSingleValueOperators) {
     this.supportsListAndSingleValueOperators = supportsListAndSingleValueOperators;
   }
@@ -227,15 +261,10 @@ public class FunctionReferenceData {
    * @return types
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getTypes() {
     return types;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypes(@javax.annotation.Nullable List<String> types) {
     this.types = types;
   }
@@ -251,23 +280,16 @@ public class FunctionReferenceData {
    * @return value
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getValue() {
     return value;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValue(@javax.annotation.Nullable String value) {
     this.value = value;
   }
 
 
-  /**
-   * Return true if this FunctionReferenceData object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -313,68 +335,112 @@ public class FunctionReferenceData {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("displayName", "isList", "supportsListAndSingleValueOperators", "types", "value"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FunctionReferenceData
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `displayName` to the URL query string
-    if (getDisplayName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-    }
-
-    // add `isList` to the URL query string
-    if (getIsList() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisList%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsList()))));
-    }
-
-    // add `supportsListAndSingleValueOperators` to the URL query string
-    if (getSupportsListAndSingleValueOperators() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssupportsListAndSingleValueOperators%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsListAndSingleValueOperators()))));
-    }
-
-    // add `types` to the URL query string
-    if (getTypes() != null) {
-      for (int i = 0; i < getTypes().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%stypes%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getTypes().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FunctionReferenceData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FunctionReferenceData is not found in the empty JSON string", FunctionReferenceData.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `value` to the URL query string
-    if (getValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FunctionReferenceData.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FunctionReferenceData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("displayName") != null && !jsonObj.get("displayName").isJsonNull()) && !jsonObj.get("displayName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayName").toString()));
+      }
+      if ((jsonObj.get("isList") != null && !jsonObj.get("isList").isJsonNull()) && !jsonObj.get("isList").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `isList` to be a primitive type in the JSON string but got `%s`", jsonObj.get("isList").toString()));
+      }
+      // validate the optional field `isList`
+      if (jsonObj.get("isList") != null && !jsonObj.get("isList").isJsonNull()) {
+        IsListEnum.validateJsonElement(jsonObj.get("isList"));
+      }
+      if ((jsonObj.get("supportsListAndSingleValueOperators") != null && !jsonObj.get("supportsListAndSingleValueOperators").isJsonNull()) && !jsonObj.get("supportsListAndSingleValueOperators").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `supportsListAndSingleValueOperators` to be a primitive type in the JSON string but got `%s`", jsonObj.get("supportsListAndSingleValueOperators").toString()));
+      }
+      // validate the optional field `supportsListAndSingleValueOperators`
+      if (jsonObj.get("supportsListAndSingleValueOperators") != null && !jsonObj.get("supportsListAndSingleValueOperators").isJsonNull()) {
+        SupportsListAndSingleValueOperatorsEnum.validateJsonElement(jsonObj.get("supportsListAndSingleValueOperators"));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("types") != null && !jsonObj.get("types").isJsonNull() && !jsonObj.get("types").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `types` to be an array in the JSON string but got `%s`", jsonObj.get("types").toString()));
+      }
+      if ((jsonObj.get("value") != null && !jsonObj.get("value").isJsonNull()) && !jsonObj.get("value").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `value` to be a primitive type in the JSON string but got `%s`", jsonObj.get("value").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FunctionReferenceData.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FunctionReferenceData' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FunctionReferenceData> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FunctionReferenceData.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<FunctionReferenceData>() {
+           @Override
+           public void write(JsonWriter out, FunctionReferenceData value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FunctionReferenceData read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FunctionReferenceData given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FunctionReferenceData
+   * @throws IOException if the JSON string is invalid with respect to FunctionReferenceData
+   */
+  public static FunctionReferenceData fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FunctionReferenceData.class);
+  }
+
+  /**
+   * Convert an instance of FunctionReferenceData to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

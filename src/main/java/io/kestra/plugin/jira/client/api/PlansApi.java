@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.CreatePlanRequest;
 import io.kestra.plugin.jira.client.model.DuplicatePlanRequest;
@@ -24,1052 +33,1106 @@ import io.kestra.plugin.jira.client.model.ErrorCollection;
 import io.kestra.plugin.jira.client.model.GetPlanResponse;
 import io.kestra.plugin.jira.client.model.PageWithCursorGetPlanResponseForPage;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PlansApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public PlansApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public PlansApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for archivePlan
+     * @param planId The ID of the plan. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call archivePlanCall(@javax.annotation.Nonnull Long planId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public PlansApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public PlansApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Archive plan
-   * Archives a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object archivePlan(@javax.annotation.Nonnull Long planId) throws ApiException {
-    return archivePlan(planId, null);
-  }
-
-  /**
-   * Archive plan
-   * Archives a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object archivePlan(@javax.annotation.Nonnull Long planId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = archivePlanWithHttpInfo(planId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Archive plan
-   * Archives a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> archivePlanWithHttpInfo(@javax.annotation.Nonnull Long planId) throws ApiException {
-    return archivePlanWithHttpInfo(planId, null);
-  }
-
-  /**
-   * Archive plan
-   * Archives a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> archivePlanWithHttpInfo(@javax.annotation.Nonnull Long planId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = archivePlanRequestBuilder(planId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("archivePlan", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/archive"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()));
 
-  private HttpRequest.Builder archivePlanRequestBuilder(@javax.annotation.Nonnull Long planId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling archivePlan");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/archive"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create plan
-   * Creates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createPlanRequest  (required)
-   * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @return Long
-   * @throws ApiException if fails to make API call
-   */
-  public Long createPlan(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
-    return createPlan(createPlanRequest, useGroupId, null);
-  }
-
-  /**
-   * Create plan
-   * Creates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createPlanRequest  (required)
-   * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return Long
-   * @throws ApiException if fails to make API call
-   */
-  public Long createPlan(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Long> localVarResponse = createPlanWithHttpInfo(createPlanRequest, useGroupId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create plan
-   * Creates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createPlanRequest  (required)
-   * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @return ApiResponse&lt;Long&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Long> createPlanWithHttpInfo(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
-    return createPlanWithHttpInfo(createPlanRequest, useGroupId, null);
-  }
-
-  /**
-   * Create plan
-   * Creates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createPlanRequest  (required)
-   * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Long&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Long> createPlanWithHttpInfo(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createPlanRequestBuilder(createPlanRequest, useGroupId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createPlan", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Long>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Long responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Long>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Long>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createPlanRequestBuilder(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'createPlanRequest' is set
-    if (createPlanRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'createPlanRequest' when calling createPlan");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "useGroupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("useGroupId", useGroupId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createPlanRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Duplicate plan
-   * Duplicates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param duplicatePlanRequest  (required)
-   * @return Long
-   * @throws ApiException if fails to make API call
-   */
-  public Long duplicatePlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest) throws ApiException {
-    return duplicatePlan(planId, duplicatePlanRequest, null);
-  }
-
-  /**
-   * Duplicate plan
-   * Duplicates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param duplicatePlanRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Long
-   * @throws ApiException if fails to make API call
-   */
-  public Long duplicatePlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Long> localVarResponse = duplicatePlanWithHttpInfo(planId, duplicatePlanRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Duplicate plan
-   * Duplicates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param duplicatePlanRequest  (required)
-   * @return ApiResponse&lt;Long&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Long> duplicatePlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest) throws ApiException {
-    return duplicatePlanWithHttpInfo(planId, duplicatePlanRequest, null);
-  }
-
-  /**
-   * Duplicate plan
-   * Duplicates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param duplicatePlanRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Long&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Long> duplicatePlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = duplicatePlanRequestBuilder(planId, duplicatePlanRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("duplicatePlan", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Long>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Long responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Long>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Long>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder duplicatePlanRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling duplicatePlan");
-    }
-    // verify the required parameter 'duplicatePlanRequest' is set
-    if (duplicatePlanRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'duplicatePlanRequest' when calling duplicatePlan");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/duplicate"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(duplicatePlanRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get plan
-   * Returns a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param useGroupId Whether to return group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @return GetPlanResponse
-   * @throws ApiException if fails to make API call
-   */
-  public GetPlanResponse getPlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
-    return getPlan(planId, useGroupId, null);
-  }
-
-  /**
-   * Get plan
-   * Returns a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param useGroupId Whether to return group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return GetPlanResponse
-   * @throws ApiException if fails to make API call
-   */
-  public GetPlanResponse getPlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    ApiResponse<GetPlanResponse> localVarResponse = getPlanWithHttpInfo(planId, useGroupId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get plan
-   * Returns a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param useGroupId Whether to return group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @return ApiResponse&lt;GetPlanResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetPlanResponse> getPlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
-    return getPlanWithHttpInfo(planId, useGroupId, null);
-  }
-
-  /**
-   * Get plan
-   * Returns a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param useGroupId Whether to return group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;GetPlanResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetPlanResponse> getPlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getPlanRequestBuilder(planId, useGroupId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getPlan", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<GetPlanResponse>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call archivePlanValidateBeforeCall(@javax.annotation.Nonnull Long planId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling archivePlan(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        GetPlanResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<GetPlanResponse>() {});
-        
-        localVarResponse.body().close();
+        return archivePlanCall(planId, _callback);
 
-        return new ApiResponse<GetPlanResponse>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getPlanRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling getPlan");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "useGroupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("useGroupId", useGroupId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Archive plan
+     * Archives a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object archivePlan(@javax.annotation.Nonnull Long planId) throws ApiException {
+        ApiResponse<Object> localVarResp = archivePlanWithHttpInfo(planId);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Archive plan
+     * Archives a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> archivePlanWithHttpInfo(@javax.annotation.Nonnull Long planId) throws ApiException {
+        okhttp3.Call localVarCall = archivePlanValidateBeforeCall(planId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Archive plan (asynchronously)
+     * Archives a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call archivePlanAsync(@javax.annotation.Nonnull Long planId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = archivePlanValidateBeforeCall(planId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for createPlan
+     * @param createPlanRequest  (required)
+     * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createPlanCall(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get plans paginated
-   * Returns a [paginated](#pagination) list of plans.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param includeTrashed Whether to include trashed plans in the results. (optional, default to false)
-   * @param includeArchived Whether to include archived plans in the results. (optional, default to false)
-   * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
-   * @param maxResults The maximum number of plans to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
-   * @return PageWithCursorGetPlanResponseForPage
-   * @throws ApiException if fails to make API call
-   */
-  public PageWithCursorGetPlanResponseForPage getPlans(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getPlans(includeTrashed, includeArchived, cursor, maxResults, null);
-  }
-
-  /**
-   * Get plans paginated
-   * Returns a [paginated](#pagination) list of plans.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param includeTrashed Whether to include trashed plans in the results. (optional, default to false)
-   * @param includeArchived Whether to include archived plans in the results. (optional, default to false)
-   * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
-   * @param maxResults The maximum number of plans to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return PageWithCursorGetPlanResponseForPage
-   * @throws ApiException if fails to make API call
-   */
-  public PageWithCursorGetPlanResponseForPage getPlans(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageWithCursorGetPlanResponseForPage> localVarResponse = getPlansWithHttpInfo(includeTrashed, includeArchived, cursor, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get plans paginated
-   * Returns a [paginated](#pagination) list of plans.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param includeTrashed Whether to include trashed plans in the results. (optional, default to false)
-   * @param includeArchived Whether to include archived plans in the results. (optional, default to false)
-   * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
-   * @param maxResults The maximum number of plans to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
-   * @return ApiResponse&lt;PageWithCursorGetPlanResponseForPage&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageWithCursorGetPlanResponseForPage> getPlansWithHttpInfo(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getPlansWithHttpInfo(includeTrashed, includeArchived, cursor, maxResults, null);
-  }
-
-  /**
-   * Get plans paginated
-   * Returns a [paginated](#pagination) list of plans.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param includeTrashed Whether to include trashed plans in the results. (optional, default to false)
-   * @param includeArchived Whether to include archived plans in the results. (optional, default to false)
-   * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
-   * @param maxResults The maximum number of plans to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageWithCursorGetPlanResponseForPage&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageWithCursorGetPlanResponseForPage> getPlansWithHttpInfo(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getPlansRequestBuilder(includeTrashed, includeArchived, cursor, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getPlans", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageWithCursorGetPlanResponseForPage>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageWithCursorGetPlanResponseForPage responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageWithCursorGetPlanResponseForPage>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = createPlanRequest;
 
-        return new ApiResponse<PageWithCursorGetPlanResponseForPage>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan";
 
-  private HttpRequest.Builder getPlansRequestBuilder(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "includeTrashed";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeTrashed", includeTrashed));
-    localVarQueryParameterBaseName = "includeArchived";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeArchived", includeArchived));
-    localVarQueryParameterBaseName = "cursor";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("cursor", cursor));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Trash plan
-   * Moves a plan to trash.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object trashPlan(@javax.annotation.Nonnull Long planId) throws ApiException {
-    return trashPlan(planId, null);
-  }
-
-  /**
-   * Trash plan
-   * Moves a plan to trash.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object trashPlan(@javax.annotation.Nonnull Long planId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = trashPlanWithHttpInfo(planId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Trash plan
-   * Moves a plan to trash.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> trashPlanWithHttpInfo(@javax.annotation.Nonnull Long planId) throws ApiException {
-    return trashPlanWithHttpInfo(planId, null);
-  }
-
-  /**
-   * Trash plan
-   * Moves a plan to trash.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> trashPlanWithHttpInfo(@javax.annotation.Nonnull Long planId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = trashPlanRequestBuilder(planId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("trashPlan", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (useGroupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("useGroupId", useGroupId));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder trashPlanRequestBuilder(@javax.annotation.Nonnull Long planId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling trashPlan");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/trash"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update plan
-   * Updates any of the following details of a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  leadAccountId  *  scheduling           *  estimation with StoryPoints, Days or Hours as possible values      *  startDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  endDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  inferredDates with None, SprintDates or ReleaseDates as possible values      *  dependencies with Sequential or Concurrent as possible values  *  issueSources           *  type with Board, Project or Filter as possible values      *  value  *  exclusionRules           *  numberOfDaysToShowCompletedIssues      *  issueIds      *  workStatusIds      *  workStatusCategoryIds      *  issueTypeIds      *  releaseIds  *  crossProjectReleases           *  name      *  releaseIds  *  customFields           *  customFieldId      *  filter  *  permissions           *  type with View or Edit as possible values      *  holder                   *  type with Group or AccountId as possible values          *  value  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param body  (required)
-   * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updatePlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
-    return updatePlan(planId, body, useGroupId, null);
-  }
-
-  /**
-   * Update plan
-   * Updates any of the following details of a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  leadAccountId  *  scheduling           *  estimation with StoryPoints, Days or Hours as possible values      *  startDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  endDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  inferredDates with None, SprintDates or ReleaseDates as possible values      *  dependencies with Sequential or Concurrent as possible values  *  issueSources           *  type with Board, Project or Filter as possible values      *  value  *  exclusionRules           *  numberOfDaysToShowCompletedIssues      *  issueIds      *  workStatusIds      *  workStatusCategoryIds      *  issueTypeIds      *  releaseIds  *  crossProjectReleases           *  name      *  releaseIds  *  customFields           *  customFieldId      *  filter  *  permissions           *  type with View or Edit as possible values      *  holder                   *  type with Group or AccountId as possible values          *  value  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param body  (required)
-   * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updatePlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updatePlanWithHttpInfo(planId, body, useGroupId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update plan
-   * Updates any of the following details of a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  leadAccountId  *  scheduling           *  estimation with StoryPoints, Days or Hours as possible values      *  startDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  endDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  inferredDates with None, SprintDates or ReleaseDates as possible values      *  dependencies with Sequential or Concurrent as possible values  *  issueSources           *  type with Board, Project or Filter as possible values      *  value  *  exclusionRules           *  numberOfDaysToShowCompletedIssues      *  issueIds      *  workStatusIds      *  workStatusCategoryIds      *  issueTypeIds      *  releaseIds  *  crossProjectReleases           *  name      *  releaseIds  *  customFields           *  customFieldId      *  filter  *  permissions           *  type with View or Edit as possible values      *  holder                   *  type with Group or AccountId as possible values          *  value  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param body  (required)
-   * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updatePlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
-    return updatePlanWithHttpInfo(planId, body, useGroupId, null);
-  }
-
-  /**
-   * Update plan
-   * Updates any of the following details of a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  leadAccountId  *  scheduling           *  estimation with StoryPoints, Days or Hours as possible values      *  startDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  endDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  inferredDates with None, SprintDates or ReleaseDates as possible values      *  dependencies with Sequential or Concurrent as possible values  *  issueSources           *  type with Board, Project or Filter as possible values      *  value  *  exclusionRules           *  numberOfDaysToShowCompletedIssues      *  issueIds      *  workStatusIds      *  workStatusCategoryIds      *  issueTypeIds      *  releaseIds  *  crossProjectReleases           *  name      *  releaseIds  *  customFields           *  customFieldId      *  filter  *  permissions           *  type with View or Edit as possible values      *  holder                   *  type with Group or AccountId as possible values          *  value  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param body  (required)
-   * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updatePlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updatePlanRequestBuilder(planId, body, useGroupId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updatePlan", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updatePlanRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling updatePlan");
-    }
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling updatePlan");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createPlanValidateBeforeCall(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'createPlanRequest' is set
+        if (createPlanRequest == null) {
+            throw new ApiException("Missing the required parameter 'createPlanRequest' when calling createPlan(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/plans/plan/{planId}"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()));
+        return createPlanCall(createPlanRequest, useGroupId, _callback);
 
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "useGroupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("useGroupId", useGroupId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    localVarRequestBuilder.header("Content-Type", "application/json-patch+json");
-    localVarRequestBuilder.header("Accept", "application/json");
+    /**
+     * Create plan
+     * Creates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createPlanRequest  (required)
+     * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @return Long
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Long createPlan(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
+        ApiResponse<Long> localVarResp = createPlanWithHttpInfo(createPlanRequest, useGroupId);
+        return localVarResp.getData();
+    }
 
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create plan
+     * Creates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createPlanRequest  (required)
+     * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @return ApiResponse&lt;Long&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Long> createPlanWithHttpInfo(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
+        okhttp3.Call localVarCall = createPlanValidateBeforeCall(createPlanRequest, useGroupId, null);
+        Type localVarReturnType = new TypeToken<Long>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create plan (asynchronously)
+     * Creates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createPlanRequest  (required)
+     * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createPlanAsync(@javax.annotation.Nonnull CreatePlanRequest createPlanRequest, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback<Long> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createPlanValidateBeforeCall(createPlanRequest, useGroupId, _callback);
+        Type localVarReturnType = new TypeToken<Long>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for duplicatePlan
+     * @param planId The ID of the plan. (required)
+     * @param duplicatePlanRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan to duplicate is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan to duplicate is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call duplicatePlanCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = duplicatePlanRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/duplicate"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call duplicatePlanValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling duplicatePlan(Async)");
+        }
+
+        // verify the required parameter 'duplicatePlanRequest' is set
+        if (duplicatePlanRequest == null) {
+            throw new ApiException("Missing the required parameter 'duplicatePlanRequest' when calling duplicatePlan(Async)");
+        }
+
+        return duplicatePlanCall(planId, duplicatePlanRequest, _callback);
+
+    }
+
+    /**
+     * Duplicate plan
+     * Duplicates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param duplicatePlanRequest  (required)
+     * @return Long
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan to duplicate is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan to duplicate is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Long duplicatePlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest) throws ApiException {
+        ApiResponse<Long> localVarResp = duplicatePlanWithHttpInfo(planId, duplicatePlanRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Duplicate plan
+     * Duplicates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param duplicatePlanRequest  (required)
+     * @return ApiResponse&lt;Long&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan to duplicate is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan to duplicate is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Long> duplicatePlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest) throws ApiException {
+        okhttp3.Call localVarCall = duplicatePlanValidateBeforeCall(planId, duplicatePlanRequest, null);
+        Type localVarReturnType = new TypeToken<Long>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Duplicate plan (asynchronously)
+     * Duplicates a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param duplicatePlanRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan to duplicate is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan to duplicate is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call duplicatePlanAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull DuplicatePlanRequest duplicatePlanRequest, final ApiCallback<Long> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = duplicatePlanValidateBeforeCall(planId, duplicatePlanRequest, _callback);
+        Type localVarReturnType = new TypeToken<Long>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getPlan
+     * @param planId The ID of the plan. (required)
+     * @param useGroupId Whether to return group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPlanCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (useGroupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("useGroupId", useGroupId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getPlanValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling getPlan(Async)");
+        }
+
+        return getPlanCall(planId, useGroupId, _callback);
+
+    }
+
+    /**
+     * Get plan
+     * Returns a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param useGroupId Whether to return group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @return GetPlanResponse
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public GetPlanResponse getPlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
+        ApiResponse<GetPlanResponse> localVarResp = getPlanWithHttpInfo(planId, useGroupId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get plan
+     * Returns a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param useGroupId Whether to return group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @return ApiResponse&lt;GetPlanResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<GetPlanResponse> getPlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
+        okhttp3.Call localVarCall = getPlanValidateBeforeCall(planId, useGroupId, null);
+        Type localVarReturnType = new TypeToken<GetPlanResponse>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get plan (asynchronously)
+     * Returns a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param useGroupId Whether to return group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPlanAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback<GetPlanResponse> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getPlanValidateBeforeCall(planId, useGroupId, _callback);
+        Type localVarReturnType = new TypeToken<GetPlanResponse>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getPlans
+     * @param includeTrashed Whether to include trashed plans in the results. (optional, default to false)
+     * @param includeArchived Whether to include archived plans in the results. (optional, default to false)
+     * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
+     * @param maxResults The maximum number of plans to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPlansCall(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (includeTrashed != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeTrashed", includeTrashed));
+        }
+
+        if (includeArchived != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeArchived", includeArchived));
+        }
+
+        if (cursor != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cursor", cursor));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getPlansValidateBeforeCall(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        return getPlansCall(includeTrashed, includeArchived, cursor, maxResults, _callback);
+
+    }
+
+    /**
+     * Get plans paginated
+     * Returns a [paginated](#pagination) list of plans.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param includeTrashed Whether to include trashed plans in the results. (optional, default to false)
+     * @param includeArchived Whether to include archived plans in the results. (optional, default to false)
+     * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
+     * @param maxResults The maximum number of plans to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
+     * @return PageWithCursorGetPlanResponseForPage
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageWithCursorGetPlanResponseForPage getPlans(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageWithCursorGetPlanResponseForPage> localVarResp = getPlansWithHttpInfo(includeTrashed, includeArchived, cursor, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get plans paginated
+     * Returns a [paginated](#pagination) list of plans.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param includeTrashed Whether to include trashed plans in the results. (optional, default to false)
+     * @param includeArchived Whether to include archived plans in the results. (optional, default to false)
+     * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
+     * @param maxResults The maximum number of plans to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
+     * @return ApiResponse&lt;PageWithCursorGetPlanResponseForPage&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageWithCursorGetPlanResponseForPage> getPlansWithHttpInfo(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getPlansValidateBeforeCall(includeTrashed, includeArchived, cursor, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageWithCursorGetPlanResponseForPage>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get plans paginated (asynchronously)
+     * Returns a [paginated](#pagination) list of plans.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param includeTrashed Whether to include trashed plans in the results. (optional, default to false)
+     * @param includeArchived Whether to include archived plans in the results. (optional, default to false)
+     * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
+     * @param maxResults The maximum number of plans to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPlansAsync(@javax.annotation.Nullable Boolean includeTrashed, @javax.annotation.Nullable Boolean includeArchived, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageWithCursorGetPlanResponseForPage> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getPlansValidateBeforeCall(includeTrashed, includeArchived, cursor, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageWithCursorGetPlanResponseForPage>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for trashPlan
+     * @param planId The ID of the plan. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call trashPlanCall(@javax.annotation.Nonnull Long planId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/trash"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call trashPlanValidateBeforeCall(@javax.annotation.Nonnull Long planId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling trashPlan(Async)");
+        }
+
+        return trashPlanCall(planId, _callback);
+
+    }
+
+    /**
+     * Trash plan
+     * Moves a plan to trash.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object trashPlan(@javax.annotation.Nonnull Long planId) throws ApiException {
+        ApiResponse<Object> localVarResp = trashPlanWithHttpInfo(planId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Trash plan
+     * Moves a plan to trash.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> trashPlanWithHttpInfo(@javax.annotation.Nonnull Long planId) throws ApiException {
+        okhttp3.Call localVarCall = trashPlanValidateBeforeCall(planId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Trash plan (asynchronously)
+     * Moves a plan to trash.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call trashPlanAsync(@javax.annotation.Nonnull Long planId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = trashPlanValidateBeforeCall(planId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updatePlan
+     * @param planId The ID of the plan. (required)
+     * @param body  (required)
+     * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updatePlanCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = body;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (useGroupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("useGroupId", useGroupId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json-patch+json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updatePlanValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling updatePlan(Async)");
+        }
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling updatePlan(Async)");
+        }
+
+        return updatePlanCall(planId, body, useGroupId, _callback);
+
+    }
+
+    /**
+     * Update plan
+     * Updates any of the following details of a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  leadAccountId  *  scheduling           *  estimation with StoryPoints, Days or Hours as possible values      *  startDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  endDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  inferredDates with None, SprintDates or ReleaseDates as possible values      *  dependencies with Sequential or Concurrent as possible values  *  issueSources           *  type with Board, Project or Filter as possible values      *  value  *  exclusionRules           *  numberOfDaysToShowCompletedIssues      *  issueIds      *  workStatusIds      *  workStatusCategoryIds      *  issueTypeIds      *  releaseIds  *  crossProjectReleases           *  name      *  releaseIds  *  customFields           *  customFieldId      *  filter  *  permissions           *  type with View or Edit as possible values      *  holder                   *  type with Group or AccountId as possible values          *  value  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param body  (required)
+     * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updatePlan(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
+        ApiResponse<Object> localVarResp = updatePlanWithHttpInfo(planId, body, useGroupId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update plan
+     * Updates any of the following details of a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  leadAccountId  *  scheduling           *  estimation with StoryPoints, Days or Hours as possible values      *  startDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  endDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  inferredDates with None, SprintDates or ReleaseDates as possible values      *  dependencies with Sequential or Concurrent as possible values  *  issueSources           *  type with Board, Project or Filter as possible values      *  value  *  exclusionRules           *  numberOfDaysToShowCompletedIssues      *  issueIds      *  workStatusIds      *  workStatusCategoryIds      *  issueTypeIds      *  releaseIds  *  crossProjectReleases           *  name      *  releaseIds  *  customFields           *  customFieldId      *  filter  *  permissions           *  type with View or Edit as possible values      *  holder                   *  type with Group or AccountId as possible values          *  value  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param body  (required)
+     * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updatePlanWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId) throws ApiException {
+        okhttp3.Call localVarCall = updatePlanValidateBeforeCall(planId, body, useGroupId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update plan (asynchronously)
+     * Updates any of the following details of a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  leadAccountId  *  scheduling           *  estimation with StoryPoints, Days or Hours as possible values      *  startDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  endDate                   *  type with DueDate, TargetStartDate, TargetEndDate or DateCustomField as possible values          *  dateCustomFieldId      *  inferredDates with None, SprintDates or ReleaseDates as possible values      *  dependencies with Sequential or Concurrent as possible values  *  issueSources           *  type with Board, Project or Filter as possible values      *  value  *  exclusionRules           *  numberOfDaysToShowCompletedIssues      *  issueIds      *  workStatusIds      *  workStatusCategoryIds      *  issueTypeIds      *  releaseIds  *  crossProjectReleases           *  name      *  releaseIds  *  customFields           *  customFieldId      *  filter  *  permissions           *  type with View or Edit as possible values      *  holder                   *  type with Group or AccountId as possible values          *  value  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param body  (required)
+     * @param useGroupId Whether to accept group IDs instead of group names. Group names are deprecated. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updatePlanAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Object body, @javax.annotation.Nullable Boolean useGroupId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updatePlanValidateBeforeCall(planId, body, useGroupId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

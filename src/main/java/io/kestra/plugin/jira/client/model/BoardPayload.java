@@ -13,18 +13,13 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.BoardColumnPayload;
 import io.kestra.plugin.jira.client.model.BoardFeaturePayload;
 import io.kestra.plugin.jira.client.model.CardLayout;
@@ -33,51 +28,61 @@ import io.kestra.plugin.jira.client.model.ProjectCreateResourceIdentifier;
 import io.kestra.plugin.jira.client.model.QuickFilterPayload;
 import io.kestra.plugin.jira.client.model.SwimlanesPayload;
 import io.kestra.plugin.jira.client.model.WorkingDaysConfig;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The payload for creating a board
  */
-@JsonPropertyOrder({
-  BoardPayload.JSON_PROPERTY_BOARD_FILTER_J_Q_L,
-  BoardPayload.JSON_PROPERTY_CARD_COLOR_STRATEGY,
-  BoardPayload.JSON_PROPERTY_CARD_LAYOUT,
-  BoardPayload.JSON_PROPERTY_CARD_LAYOUTS,
-  BoardPayload.JSON_PROPERTY_COLUMNS,
-  BoardPayload.JSON_PROPERTY_FEATURES,
-  BoardPayload.JSON_PROPERTY_NAME,
-  BoardPayload.JSON_PROPERTY_PCRI,
-  BoardPayload.JSON_PROPERTY_QUICK_FILTERS,
-  BoardPayload.JSON_PROPERTY_SUPPORTS_SPRINT,
-  BoardPayload.JSON_PROPERTY_SWIMLANES,
-  BoardPayload.JSON_PROPERTY_WORKING_DAYS_CONFIG
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BoardPayload {
-  public static final String JSON_PROPERTY_BOARD_FILTER_J_Q_L = "boardFilterJQL";
+  public static final String SERIALIZED_NAME_BOARD_FILTER_J_Q_L = "boardFilterJQL";
+  @SerializedName(SERIALIZED_NAME_BOARD_FILTER_J_Q_L)
   @javax.annotation.Nullable
   private String boardFilterJQL;
 
   /**
    * Card color settings of the board
    */
+  @JsonAdapter(CardColorStrategyEnum.Adapter.class)
   public enum CardColorStrategyEnum {
-    ISSUE_TYPE(String.valueOf("ISSUE_TYPE")),
+    ISSUE_TYPE("ISSUE_TYPE"),
     
-    REQUEST_TYPE(String.valueOf("REQUEST_TYPE")),
+    REQUEST_TYPE("REQUEST_TYPE"),
     
-    ASSIGNEE(String.valueOf("ASSIGNEE")),
+    ASSIGNEE("ASSIGNEE"),
     
-    PRIORITY(String.valueOf("PRIORITY")),
+    PRIORITY("PRIORITY"),
     
-    NONE(String.valueOf("NONE")),
+    NONE("NONE"),
     
-    CUSTOM(String.valueOf("CUSTOM"));
+    CUSTOM("CUSTOM");
 
     private String value;
 
@@ -85,7 +90,6 @@ public class BoardPayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -95,7 +99,6 @@ public class BoardPayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static CardColorStrategyEnum fromValue(String value) {
       for (CardColorStrategyEnum b : CardColorStrategyEnum.values()) {
         if (b.value.equals(value)) {
@@ -104,53 +107,82 @@ public class BoardPayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<CardColorStrategyEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final CardColorStrategyEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public CardColorStrategyEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return CardColorStrategyEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      CardColorStrategyEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_CARD_COLOR_STRATEGY = "cardColorStrategy";
+  public static final String SERIALIZED_NAME_CARD_COLOR_STRATEGY = "cardColorStrategy";
+  @SerializedName(SERIALIZED_NAME_CARD_COLOR_STRATEGY)
   @javax.annotation.Nullable
   private CardColorStrategyEnum cardColorStrategy;
 
-  public static final String JSON_PROPERTY_CARD_LAYOUT = "cardLayout";
+  public static final String SERIALIZED_NAME_CARD_LAYOUT = "cardLayout";
+  @SerializedName(SERIALIZED_NAME_CARD_LAYOUT)
   @javax.annotation.Nullable
   private CardLayout cardLayout;
 
-  public static final String JSON_PROPERTY_CARD_LAYOUTS = "cardLayouts";
+  public static final String SERIALIZED_NAME_CARD_LAYOUTS = "cardLayouts";
+  @SerializedName(SERIALIZED_NAME_CARD_LAYOUTS)
   @javax.annotation.Nullable
   private List<CardLayoutField> cardLayouts = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_COLUMNS = "columns";
+  public static final String SERIALIZED_NAME_COLUMNS = "columns";
+  @SerializedName(SERIALIZED_NAME_COLUMNS)
   @javax.annotation.Nullable
   private List<BoardColumnPayload> columns = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_FEATURES = "features";
+  public static final String SERIALIZED_NAME_FEATURES = "features";
+  @SerializedName(SERIALIZED_NAME_FEATURES)
   @javax.annotation.Nullable
   private List<BoardFeaturePayload> features = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PCRI = "pcri";
+  public static final String SERIALIZED_NAME_PCRI = "pcri";
+  @SerializedName(SERIALIZED_NAME_PCRI)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier pcri;
 
-  public static final String JSON_PROPERTY_QUICK_FILTERS = "quickFilters";
+  public static final String SERIALIZED_NAME_QUICK_FILTERS = "quickFilters";
+  @SerializedName(SERIALIZED_NAME_QUICK_FILTERS)
   @javax.annotation.Nullable
   private List<QuickFilterPayload> quickFilters = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SUPPORTS_SPRINT = "supportsSprint";
+  public static final String SERIALIZED_NAME_SUPPORTS_SPRINT = "supportsSprint";
+  @SerializedName(SERIALIZED_NAME_SUPPORTS_SPRINT)
   @javax.annotation.Nullable
   private Boolean supportsSprint = true;
 
-  public static final String JSON_PROPERTY_SWIMLANES = "swimlanes";
+  public static final String SERIALIZED_NAME_SWIMLANES = "swimlanes";
+  @SerializedName(SERIALIZED_NAME_SWIMLANES)
   @javax.annotation.Nullable
   private SwimlanesPayload swimlanes;
 
-  public static final String JSON_PROPERTY_WORKING_DAYS_CONFIG = "workingDaysConfig";
+  public static final String SERIALIZED_NAME_WORKING_DAYS_CONFIG = "workingDaysConfig";
+  @SerializedName(SERIALIZED_NAME_WORKING_DAYS_CONFIG)
   @javax.annotation.Nullable
   private WorkingDaysConfig workingDaysConfig;
 
-  public BoardPayload() { 
+  public BoardPayload() {
   }
 
   public BoardPayload boardFilterJQL(@javax.annotation.Nullable String boardFilterJQL) {
@@ -163,15 +195,10 @@ public class BoardPayload {
    * @return boardFilterJQL
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BOARD_FILTER_J_Q_L, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBoardFilterJQL() {
     return boardFilterJQL;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BOARD_FILTER_J_Q_L, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBoardFilterJQL(@javax.annotation.Nullable String boardFilterJQL) {
     this.boardFilterJQL = boardFilterJQL;
   }
@@ -187,15 +214,10 @@ public class BoardPayload {
    * @return cardColorStrategy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CARD_COLOR_STRATEGY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CardColorStrategyEnum getCardColorStrategy() {
     return cardColorStrategy;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CARD_COLOR_STRATEGY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCardColorStrategy(@javax.annotation.Nullable CardColorStrategyEnum cardColorStrategy) {
     this.cardColorStrategy = cardColorStrategy;
   }
@@ -211,15 +233,10 @@ public class BoardPayload {
    * @return cardLayout
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CARD_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CardLayout getCardLayout() {
     return cardLayout;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CARD_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCardLayout(@javax.annotation.Nullable CardLayout cardLayout) {
     this.cardLayout = cardLayout;
   }
@@ -243,15 +260,10 @@ public class BoardPayload {
    * @return cardLayouts
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CARD_LAYOUTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<CardLayoutField> getCardLayouts() {
     return cardLayouts;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CARD_LAYOUTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCardLayouts(@javax.annotation.Nullable List<CardLayoutField> cardLayouts) {
     this.cardLayouts = cardLayouts;
   }
@@ -275,15 +287,10 @@ public class BoardPayload {
    * @return columns
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COLUMNS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<BoardColumnPayload> getColumns() {
     return columns;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_COLUMNS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setColumns(@javax.annotation.Nullable List<BoardColumnPayload> columns) {
     this.columns = columns;
   }
@@ -307,15 +314,10 @@ public class BoardPayload {
    * @return features
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FEATURES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<BoardFeaturePayload> getFeatures() {
     return features;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FEATURES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFeatures(@javax.annotation.Nullable List<BoardFeaturePayload> features) {
     this.features = features;
   }
@@ -331,15 +333,10 @@ public class BoardPayload {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -355,15 +352,10 @@ public class BoardPayload {
    * @return pcri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getPcri() {
     return pcri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPcri(@javax.annotation.Nullable ProjectCreateResourceIdentifier pcri) {
     this.pcri = pcri;
   }
@@ -387,15 +379,10 @@ public class BoardPayload {
    * @return quickFilters
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUICK_FILTERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<QuickFilterPayload> getQuickFilters() {
     return quickFilters;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUICK_FILTERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQuickFilters(@javax.annotation.Nullable List<QuickFilterPayload> quickFilters) {
     this.quickFilters = quickFilters;
   }
@@ -411,15 +398,10 @@ public class BoardPayload {
    * @return supportsSprint
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_SPRINT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsSprint() {
     return supportsSprint;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_SPRINT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsSprint(@javax.annotation.Nullable Boolean supportsSprint) {
     this.supportsSprint = supportsSprint;
   }
@@ -435,15 +417,10 @@ public class BoardPayload {
    * @return swimlanes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SWIMLANES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SwimlanesPayload getSwimlanes() {
     return swimlanes;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SWIMLANES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSwimlanes(@javax.annotation.Nullable SwimlanesPayload swimlanes) {
     this.swimlanes = swimlanes;
   }
@@ -459,23 +436,16 @@ public class BoardPayload {
    * @return workingDaysConfig
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORKING_DAYS_CONFIG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkingDaysConfig getWorkingDaysConfig() {
     return workingDaysConfig;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKING_DAYS_CONFIG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkingDaysConfig(@javax.annotation.Nullable WorkingDaysConfig workingDaysConfig) {
     this.workingDaysConfig = workingDaysConfig;
   }
 
 
-  /**
-   * Return true if this BoardPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -535,119 +505,173 @@ public class BoardPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("boardFilterJQL", "cardColorStrategy", "cardLayout", "cardLayouts", "columns", "features", "name", "pcri", "quickFilters", "supportsSprint", "swimlanes", "workingDaysConfig"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BoardPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `boardFilterJQL` to the URL query string
-    if (getBoardFilterJQL() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sboardFilterJQL%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBoardFilterJQL()))));
-    }
-
-    // add `cardColorStrategy` to the URL query string
-    if (getCardColorStrategy() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scardColorStrategy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCardColorStrategy()))));
-    }
-
-    // add `cardLayout` to the URL query string
-    if (getCardLayout() != null) {
-      joiner.add(getCardLayout().toUrlQueryString(prefix + "cardLayout" + suffix));
-    }
-
-    // add `cardLayouts` to the URL query string
-    if (getCardLayouts() != null) {
-      for (int i = 0; i < getCardLayouts().size(); i++) {
-        if (getCardLayouts().get(i) != null) {
-          joiner.add(getCardLayouts().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scardLayouts%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BoardPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BoardPayload is not found in the empty JSON string", BoardPayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `columns` to the URL query string
-    if (getColumns() != null) {
-      for (int i = 0; i < getColumns().size(); i++) {
-        if (getColumns().get(i) != null) {
-          joiner.add(getColumns().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scolumns%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BoardPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BoardPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("boardFilterJQL") != null && !jsonObj.get("boardFilterJQL").isJsonNull()) && !jsonObj.get("boardFilterJQL").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `boardFilterJQL` to be a primitive type in the JSON string but got `%s`", jsonObj.get("boardFilterJQL").toString()));
+      }
+      if ((jsonObj.get("cardColorStrategy") != null && !jsonObj.get("cardColorStrategy").isJsonNull()) && !jsonObj.get("cardColorStrategy").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `cardColorStrategy` to be a primitive type in the JSON string but got `%s`", jsonObj.get("cardColorStrategy").toString()));
+      }
+      // validate the optional field `cardColorStrategy`
+      if (jsonObj.get("cardColorStrategy") != null && !jsonObj.get("cardColorStrategy").isJsonNull()) {
+        CardColorStrategyEnum.validateJsonElement(jsonObj.get("cardColorStrategy"));
+      }
+      // validate the optional field `cardLayout`
+      if (jsonObj.get("cardLayout") != null && !jsonObj.get("cardLayout").isJsonNull()) {
+        CardLayout.validateJsonElement(jsonObj.get("cardLayout"));
+      }
+      if (jsonObj.get("cardLayouts") != null && !jsonObj.get("cardLayouts").isJsonNull()) {
+        JsonArray jsonArraycardLayouts = jsonObj.getAsJsonArray("cardLayouts");
+        if (jsonArraycardLayouts != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("cardLayouts").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `cardLayouts` to be an array in the JSON string but got `%s`", jsonObj.get("cardLayouts").toString()));
+          }
 
-    // add `features` to the URL query string
-    if (getFeatures() != null) {
-      for (int i = 0; i < getFeatures().size(); i++) {
-        if (getFeatures().get(i) != null) {
-          joiner.add(getFeatures().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sfeatures%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `cardLayouts` (array)
+          for (int i = 0; i < jsonArraycardLayouts.size(); i++) {
+            CardLayoutField.validateJsonElement(jsonArraycardLayouts.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("columns") != null && !jsonObj.get("columns").isJsonNull()) {
+        JsonArray jsonArraycolumns = jsonObj.getAsJsonArray("columns");
+        if (jsonArraycolumns != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("columns").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `columns` to be an array in the JSON string but got `%s`", jsonObj.get("columns").toString()));
+          }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `pcri` to the URL query string
-    if (getPcri() != null) {
-      joiner.add(getPcri().toUrlQueryString(prefix + "pcri" + suffix));
-    }
-
-    // add `quickFilters` to the URL query string
-    if (getQuickFilters() != null) {
-      for (int i = 0; i < getQuickFilters().size(); i++) {
-        if (getQuickFilters().get(i) != null) {
-          joiner.add(getQuickFilters().get(i).toUrlQueryString(String.format(Locale.ROOT, "%squickFilters%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `columns` (array)
+          for (int i = 0; i < jsonArraycolumns.size(); i++) {
+            BoardColumnPayload.validateJsonElement(jsonArraycolumns.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("features") != null && !jsonObj.get("features").isJsonNull()) {
+        JsonArray jsonArrayfeatures = jsonObj.getAsJsonArray("features");
+        if (jsonArrayfeatures != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("features").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `features` to be an array in the JSON string but got `%s`", jsonObj.get("features").toString()));
+          }
 
-    // add `supportsSprint` to the URL query string
-    if (getSupportsSprint() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssupportsSprint%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSupportsSprint()))));
-    }
+          // validate the optional field `features` (array)
+          for (int i = 0; i < jsonArrayfeatures.size(); i++) {
+            BoardFeaturePayload.validateJsonElement(jsonArrayfeatures.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `pcri`
+      if (jsonObj.get("pcri") != null && !jsonObj.get("pcri").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("pcri"));
+      }
+      if (jsonObj.get("quickFilters") != null && !jsonObj.get("quickFilters").isJsonNull()) {
+        JsonArray jsonArrayquickFilters = jsonObj.getAsJsonArray("quickFilters");
+        if (jsonArrayquickFilters != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("quickFilters").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `quickFilters` to be an array in the JSON string but got `%s`", jsonObj.get("quickFilters").toString()));
+          }
 
-    // add `swimlanes` to the URL query string
-    if (getSwimlanes() != null) {
-      joiner.add(getSwimlanes().toUrlQueryString(prefix + "swimlanes" + suffix));
-    }
+          // validate the optional field `quickFilters` (array)
+          for (int i = 0; i < jsonArrayquickFilters.size(); i++) {
+            QuickFilterPayload.validateJsonElement(jsonArrayquickFilters.get(i));
+          };
+        }
+      }
+      // validate the optional field `swimlanes`
+      if (jsonObj.get("swimlanes") != null && !jsonObj.get("swimlanes").isJsonNull()) {
+        SwimlanesPayload.validateJsonElement(jsonObj.get("swimlanes"));
+      }
+      // validate the optional field `workingDaysConfig`
+      if (jsonObj.get("workingDaysConfig") != null && !jsonObj.get("workingDaysConfig").isJsonNull()) {
+        WorkingDaysConfig.validateJsonElement(jsonObj.get("workingDaysConfig"));
+      }
+  }
 
-    // add `workingDaysConfig` to the URL query string
-    if (getWorkingDaysConfig() != null) {
-      joiner.add(getWorkingDaysConfig().toUrlQueryString(prefix + "workingDaysConfig" + suffix));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BoardPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BoardPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BoardPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BoardPayload.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<BoardPayload>() {
+           @Override
+           public void write(JsonWriter out, BoardPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BoardPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of BoardPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BoardPayload
+   * @throws IOException if the JSON string is invalid with respect to BoardPayload
+   */
+  public static BoardPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BoardPayload.class);
+  }
+
+  /**
+   * Convert an instance of BoardPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

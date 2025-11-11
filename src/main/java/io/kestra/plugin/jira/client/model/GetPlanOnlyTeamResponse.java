@@ -13,66 +13,80 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * GetPlanOnlyTeamResponse
  */
-@JsonPropertyOrder({
-  GetPlanOnlyTeamResponse.JSON_PROPERTY_CAPACITY,
-  GetPlanOnlyTeamResponse.JSON_PROPERTY_ID,
-  GetPlanOnlyTeamResponse.JSON_PROPERTY_ISSUE_SOURCE_ID,
-  GetPlanOnlyTeamResponse.JSON_PROPERTY_MEMBER_ACCOUNT_IDS,
-  GetPlanOnlyTeamResponse.JSON_PROPERTY_NAME,
-  GetPlanOnlyTeamResponse.JSON_PROPERTY_PLANNING_STYLE,
-  GetPlanOnlyTeamResponse.JSON_PROPERTY_SPRINT_LENGTH
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class GetPlanOnlyTeamResponse {
-  public static final String JSON_PROPERTY_CAPACITY = "capacity";
+  public static final String SERIALIZED_NAME_CAPACITY = "capacity";
+  @SerializedName(SERIALIZED_NAME_CAPACITY)
   @javax.annotation.Nullable
   private Double capacity;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private Long id;
 
-  public static final String JSON_PROPERTY_ISSUE_SOURCE_ID = "issueSourceId";
+  public static final String SERIALIZED_NAME_ISSUE_SOURCE_ID = "issueSourceId";
+  @SerializedName(SERIALIZED_NAME_ISSUE_SOURCE_ID)
   @javax.annotation.Nullable
   private Long issueSourceId;
 
-  public static final String JSON_PROPERTY_MEMBER_ACCOUNT_IDS = "memberAccountIds";
+  public static final String SERIALIZED_NAME_MEMBER_ACCOUNT_IDS = "memberAccountIds";
+  @SerializedName(SERIALIZED_NAME_MEMBER_ACCOUNT_IDS)
   @javax.annotation.Nullable
   private List<String> memberAccountIds = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
   /**
    * The planning style for the plan-only team. This is \&quot;Scrum\&quot; or \&quot;Kanban\&quot;.
    */
+  @JsonAdapter(PlanningStyleEnum.Adapter.class)
   public enum PlanningStyleEnum {
-    SCRUM(String.valueOf("Scrum")),
+    SCRUM("Scrum"),
     
-    KANBAN(String.valueOf("Kanban"));
+    KANBAN("Kanban");
 
     private String value;
 
@@ -80,7 +94,6 @@ public class GetPlanOnlyTeamResponse {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -90,7 +103,6 @@ public class GetPlanOnlyTeamResponse {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static PlanningStyleEnum fromValue(String value) {
       for (PlanningStyleEnum b : PlanningStyleEnum.values()) {
         if (b.value.equals(value)) {
@@ -99,17 +111,37 @@ public class GetPlanOnlyTeamResponse {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<PlanningStyleEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final PlanningStyleEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public PlanningStyleEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return PlanningStyleEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      PlanningStyleEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_PLANNING_STYLE = "planningStyle";
+  public static final String SERIALIZED_NAME_PLANNING_STYLE = "planningStyle";
+  @SerializedName(SERIALIZED_NAME_PLANNING_STYLE)
   @javax.annotation.Nonnull
   private PlanningStyleEnum planningStyle;
 
-  public static final String JSON_PROPERTY_SPRINT_LENGTH = "sprintLength";
+  public static final String SERIALIZED_NAME_SPRINT_LENGTH = "sprintLength";
+  @SerializedName(SERIALIZED_NAME_SPRINT_LENGTH)
   @javax.annotation.Nullable
   private Long sprintLength;
 
-  public GetPlanOnlyTeamResponse() { 
+  public GetPlanOnlyTeamResponse() {
   }
 
   public GetPlanOnlyTeamResponse capacity(@javax.annotation.Nullable Double capacity) {
@@ -122,15 +154,10 @@ public class GetPlanOnlyTeamResponse {
    * @return capacity
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CAPACITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getCapacity() {
     return capacity;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CAPACITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCapacity(@javax.annotation.Nullable Double capacity) {
     this.capacity = capacity;
   }
@@ -146,15 +173,10 @@ public class GetPlanOnlyTeamResponse {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@javax.annotation.Nonnull Long id) {
     this.id = id;
   }
@@ -170,15 +192,10 @@ public class GetPlanOnlyTeamResponse {
    * @return issueSourceId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SOURCE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssueSourceId() {
     return issueSourceId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SOURCE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueSourceId(@javax.annotation.Nullable Long issueSourceId) {
     this.issueSourceId = issueSourceId;
   }
@@ -202,15 +219,10 @@ public class GetPlanOnlyTeamResponse {
    * @return memberAccountIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MEMBER_ACCOUNT_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getMemberAccountIds() {
     return memberAccountIds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MEMBER_ACCOUNT_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMemberAccountIds(@javax.annotation.Nullable List<String> memberAccountIds) {
     this.memberAccountIds = memberAccountIds;
   }
@@ -226,15 +238,10 @@ public class GetPlanOnlyTeamResponse {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -250,15 +257,10 @@ public class GetPlanOnlyTeamResponse {
    * @return planningStyle
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PLANNING_STYLE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public PlanningStyleEnum getPlanningStyle() {
     return planningStyle;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PLANNING_STYLE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setPlanningStyle(@javax.annotation.Nonnull PlanningStyleEnum planningStyle) {
     this.planningStyle = planningStyle;
   }
@@ -274,23 +276,16 @@ public class GetPlanOnlyTeamResponse {
    * @return sprintLength
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SPRINT_LENGTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSprintLength() {
     return sprintLength;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SPRINT_LENGTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSprintLength(@javax.annotation.Nullable Long sprintLength) {
     this.sprintLength = sprintLength;
   }
 
 
-  /**
-   * Return true if this GetPlanOnlyTeamResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -340,78 +335,107 @@ public class GetPlanOnlyTeamResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("capacity", "id", "issueSourceId", "memberAccountIds", "name", "planningStyle", "sprintLength"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("id", "name", "planningStyle"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to GetPlanOnlyTeamResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `capacity` to the URL query string
-    if (getCapacity() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scapacity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCapacity()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `issueSourceId` to the URL query string
-    if (getIssueSourceId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueSourceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueSourceId()))));
-    }
-
-    // add `memberAccountIds` to the URL query string
-    if (getMemberAccountIds() != null) {
-      for (int i = 0; i < getMemberAccountIds().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%smemberAccountIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getMemberAccountIds().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!GetPlanOnlyTeamResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in GetPlanOnlyTeamResponse is not found in the empty JSON string", GetPlanOnlyTeamResponse.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!GetPlanOnlyTeamResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `GetPlanOnlyTeamResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    // add `planningStyle` to the URL query string
-    if (getPlanningStyle() != null) {
-      joiner.add(String.format(Locale.ROOT, "%splanningStyle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlanningStyle()))));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : GetPlanOnlyTeamResponse.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("memberAccountIds") != null && !jsonObj.get("memberAccountIds").isJsonNull() && !jsonObj.get("memberAccountIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `memberAccountIds` to be an array in the JSON string but got `%s`", jsonObj.get("memberAccountIds").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (!jsonObj.get("planningStyle").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `planningStyle` to be a primitive type in the JSON string but got `%s`", jsonObj.get("planningStyle").toString()));
+      }
+      // validate the required field `planningStyle`
+      PlanningStyleEnum.validateJsonElement(jsonObj.get("planningStyle"));
+  }
 
-    // add `sprintLength` to the URL query string
-    if (getSprintLength() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssprintLength%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSprintLength()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!GetPlanOnlyTeamResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'GetPlanOnlyTeamResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<GetPlanOnlyTeamResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(GetPlanOnlyTeamResponse.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<GetPlanOnlyTeamResponse>() {
+           @Override
+           public void write(JsonWriter out, GetPlanOnlyTeamResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public GetPlanOnlyTeamResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of GetPlanOnlyTeamResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of GetPlanOnlyTeamResponse
+   * @throws IOException if the JSON string is invalid with respect to GetPlanOnlyTeamResponse
+   */
+  public static GetPlanOnlyTeamResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, GetPlanOnlyTeamResponse.class);
+  }
+
+  /**
+   * Convert an instance of GetPlanOnlyTeamResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,109 +13,121 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JsonTypeBean;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The metadata describing an issue field.
  */
-@JsonPropertyOrder({
-  FieldMetadata.JSON_PROPERTY_ALLOWED_VALUES,
-  FieldMetadata.JSON_PROPERTY_AUTO_COMPLETE_URL,
-  FieldMetadata.JSON_PROPERTY_CONFIGURATION,
-  FieldMetadata.JSON_PROPERTY_DEFAULT_VALUE,
-  FieldMetadata.JSON_PROPERTY_HAS_DEFAULT_VALUE,
-  FieldMetadata.JSON_PROPERTY_KEY,
-  FieldMetadata.JSON_PROPERTY_NAME,
-  FieldMetadata.JSON_PROPERTY_OPERATIONS,
-  FieldMetadata.JSON_PROPERTY_REQUIRED,
-  FieldMetadata.JSON_PROPERTY_SCHEMA
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FieldMetadata {
-  public static final String JSON_PROPERTY_ALLOWED_VALUES = "allowedValues";
+  public static final String SERIALIZED_NAME_ALLOWED_VALUES = "allowedValues";
+  @SerializedName(SERIALIZED_NAME_ALLOWED_VALUES)
   @javax.annotation.Nullable
   private List<Object> allowedValues = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_AUTO_COMPLETE_URL = "autoCompleteUrl";
+  public static final String SERIALIZED_NAME_AUTO_COMPLETE_URL = "autoCompleteUrl";
+  @SerializedName(SERIALIZED_NAME_AUTO_COMPLETE_URL)
   @javax.annotation.Nullable
   private String autoCompleteUrl;
 
-  public static final String JSON_PROPERTY_CONFIGURATION = "configuration";
+  public static final String SERIALIZED_NAME_CONFIGURATION = "configuration";
+  @SerializedName(SERIALIZED_NAME_CONFIGURATION)
   @javax.annotation.Nullable
   private Map<String, Object> _configuration = new HashMap<>();
 
-  public static final String JSON_PROPERTY_DEFAULT_VALUE = "defaultValue";
-  private JsonNullable<Object> defaultValue = JsonNullable.<Object>of(null);
+  public static final String SERIALIZED_NAME_DEFAULT_VALUE = "defaultValue";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_VALUE)
+  @javax.annotation.Nullable
+  private Object defaultValue = null;
 
-  public static final String JSON_PROPERTY_HAS_DEFAULT_VALUE = "hasDefaultValue";
+  public static final String SERIALIZED_NAME_HAS_DEFAULT_VALUE = "hasDefaultValue";
+  @SerializedName(SERIALIZED_NAME_HAS_DEFAULT_VALUE)
   @javax.annotation.Nullable
   private Boolean hasDefaultValue;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nonnull
   private String key;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
-  public static final String JSON_PROPERTY_OPERATIONS = "operations";
+  public static final String SERIALIZED_NAME_OPERATIONS = "operations";
+  @SerializedName(SERIALIZED_NAME_OPERATIONS)
   @javax.annotation.Nonnull
   private List<String> operations = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_REQUIRED = "required";
+  public static final String SERIALIZED_NAME_REQUIRED = "required";
+  @SerializedName(SERIALIZED_NAME_REQUIRED)
   @javax.annotation.Nonnull
   private Boolean required;
 
-  public static final String JSON_PROPERTY_SCHEMA = "schema";
+  public static final String SERIALIZED_NAME_SCHEMA = "schema";
+  @SerializedName(SERIALIZED_NAME_SCHEMA)
   @javax.annotation.Nonnull
   private JsonTypeBean schema;
 
-  public FieldMetadata() { 
+  public FieldMetadata() {
   }
 
-  @JsonCreator
   public FieldMetadata(
-    @JsonProperty(JSON_PROPERTY_ALLOWED_VALUES) List<Object> allowedValues, 
-    @JsonProperty(JSON_PROPERTY_AUTO_COMPLETE_URL) String autoCompleteUrl, 
-    @JsonProperty(JSON_PROPERTY_CONFIGURATION) Map<String, Object> _configuration, 
-    @JsonProperty(JSON_PROPERTY_DEFAULT_VALUE) Object defaultValue, 
-    @JsonProperty(JSON_PROPERTY_HAS_DEFAULT_VALUE) Boolean hasDefaultValue, 
-    @JsonProperty(JSON_PROPERTY_KEY) String key, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_OPERATIONS) List<String> operations, 
-    @JsonProperty(JSON_PROPERTY_REQUIRED) Boolean required, 
-    @JsonProperty(JSON_PROPERTY_SCHEMA) JsonTypeBean schema
+     List<Object> allowedValues, 
+     String autoCompleteUrl, 
+     Map<String, Object> _configuration, 
+     Object defaultValue, 
+     Boolean hasDefaultValue, 
+     String key, 
+     String name, 
+     List<String> operations, 
+     Boolean required, 
+     JsonTypeBean schema
   ) {
-  this();
+    this();
     this.allowedValues = allowedValues;
     this.autoCompleteUrl = autoCompleteUrl;
     this._configuration = _configuration;
-    this.defaultValue = defaultValue == null ? JsonNullable.<Object>undefined() : JsonNullable.of(defaultValue);
+    this.defaultValue = defaultValue;
     this.hasDefaultValue = hasDefaultValue;
     this.key = key;
     this.name = name;
@@ -129,12 +141,9 @@ public class FieldMetadata {
    * @return allowedValues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ALLOWED_VALUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Object> getAllowedValues() {
     return allowedValues;
   }
-
 
 
 
@@ -143,12 +152,9 @@ public class FieldMetadata {
    * @return autoCompleteUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTO_COMPLETE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAutoCompleteUrl() {
     return autoCompleteUrl;
   }
-
 
 
 
@@ -157,12 +163,9 @@ public class FieldMetadata {
    * @return _configuration
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getConfiguration() {
     return _configuration;
   }
-
 
 
 
@@ -171,25 +174,8 @@ public class FieldMetadata {
    * @return defaultValue
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Object getDefaultValue() {
-    
-    if (defaultValue == null) {
-      defaultValue = JsonNullable.<Object>of(null);
-    }
-    return defaultValue.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Object> getDefaultValue_JsonNullable() {
     return defaultValue;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DEFAULT_VALUE)
-  private void setDefaultValue_JsonNullable(JsonNullable<Object> defaultValue) {
-    this.defaultValue = defaultValue;
   }
 
 
@@ -199,12 +185,9 @@ public class FieldMetadata {
    * @return hasDefaultValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HAS_DEFAULT_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasDefaultValue() {
     return hasDefaultValue;
   }
-
 
 
 
@@ -213,12 +196,9 @@ public class FieldMetadata {
    * @return key
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getKey() {
     return key;
   }
-
 
 
 
@@ -227,12 +207,9 @@ public class FieldMetadata {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -241,12 +218,9 @@ public class FieldMetadata {
    * @return operations
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OPERATIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<String> getOperations() {
     return operations;
   }
-
 
 
 
@@ -255,12 +229,9 @@ public class FieldMetadata {
    * @return required
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_REQUIRED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getRequired() {
     return required;
   }
-
 
 
 
@@ -269,8 +240,6 @@ public class FieldMetadata {
    * @return schema
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SCHEMA, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JsonTypeBean getSchema() {
     return schema;
   }
@@ -278,9 +247,6 @@ public class FieldMetadata {
 
 
 
-  /**
-   * Return true if this FieldMetadata object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -293,7 +259,7 @@ public class FieldMetadata {
     return Objects.equals(this.allowedValues, fieldMetadata.allowedValues) &&
         Objects.equals(this.autoCompleteUrl, fieldMetadata.autoCompleteUrl) &&
         Objects.equals(this._configuration, fieldMetadata._configuration) &&
-        equalsNullable(this.defaultValue, fieldMetadata.defaultValue) &&
+        Objects.equals(this.defaultValue, fieldMetadata.defaultValue) &&
         Objects.equals(this.hasDefaultValue, fieldMetadata.hasDefaultValue) &&
         Objects.equals(this.key, fieldMetadata.key) &&
         Objects.equals(this.name, fieldMetadata.name) &&
@@ -308,7 +274,7 @@ public class FieldMetadata {
 
   @Override
   public int hashCode() {
-    return Objects.hash(allowedValues, autoCompleteUrl, _configuration, hashCodeNullable(defaultValue), hasDefaultValue, key, name, operations, required, schema);
+    return Objects.hash(allowedValues, autoCompleteUrl, _configuration, defaultValue, hasDefaultValue, key, name, operations, required, schema);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -347,101 +313,116 @@ public class FieldMetadata {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("allowedValues", "autoCompleteUrl", "configuration", "defaultValue", "hasDefaultValue", "key", "name", "operations", "required", "schema"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("key", "name", "operations", "required", "schema"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FieldMetadata
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `allowedValues` to the URL query string
-    if (getAllowedValues() != null) {
-      for (int i = 0; i < getAllowedValues().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sallowedValues%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getAllowedValues().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FieldMetadata.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FieldMetadata is not found in the empty JSON string", FieldMetadata.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `autoCompleteUrl` to the URL query string
-    if (getAutoCompleteUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sautoCompleteUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAutoCompleteUrl()))));
-    }
-
-    // add `configuration` to the URL query string
-    if (getConfiguration() != null) {
-      for (String _key : getConfiguration().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sconfiguration%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getConfiguration().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getConfiguration().get(_key)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FieldMetadata.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FieldMetadata` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
 
-    // add `defaultValue` to the URL query string
-    if (getDefaultValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefaultValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultValue()))));
-    }
-
-    // add `hasDefaultValue` to the URL query string
-    if (getHasDefaultValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%shasDefaultValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHasDefaultValue()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `operations` to the URL query string
-    if (getOperations() != null) {
-      for (int i = 0; i < getOperations().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%soperations%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getOperations().get(i)))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : FieldMetadata.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("allowedValues") != null && !jsonObj.get("allowedValues").isJsonNull() && !jsonObj.get("allowedValues").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `allowedValues` to be an array in the JSON string but got `%s`", jsonObj.get("allowedValues").toString()));
+      }
+      if ((jsonObj.get("autoCompleteUrl") != null && !jsonObj.get("autoCompleteUrl").isJsonNull()) && !jsonObj.get("autoCompleteUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `autoCompleteUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("autoCompleteUrl").toString()));
+      }
+      if (!jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("operations") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("operations").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `operations` to be an array in the JSON string but got `%s`", jsonObj.get("operations").toString()));
+      }
+      // validate the required field `schema`
+      JsonTypeBean.validateJsonElement(jsonObj.get("schema"));
+  }
 
-    // add `required` to the URL query string
-    if (getRequired() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srequired%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRequired()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FieldMetadata.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FieldMetadata' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FieldMetadata> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FieldMetadata.class));
 
-    // add `schema` to the URL query string
-    if (getSchema() != null) {
-      joiner.add(getSchema().toUrlQueryString(prefix + "schema" + suffix));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<FieldMetadata>() {
+           @Override
+           public void write(JsonWriter out, FieldMetadata value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public FieldMetadata read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FieldMetadata given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FieldMetadata
+   * @throws IOException if the JSON string is invalid with respect to FieldMetadata
+   */
+  public static FieldMetadata fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FieldMetadata.class);
+  }
+
+  /**
+   * Convert an instance of FieldMetadata to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

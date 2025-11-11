@@ -13,98 +13,113 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.GetCrossProjectReleaseResponse;
 import io.kestra.plugin.jira.client.model.GetCustomFieldResponse;
 import io.kestra.plugin.jira.client.model.GetExclusionRulesResponse;
 import io.kestra.plugin.jira.client.model.GetIssueSourceResponse;
 import io.kestra.plugin.jira.client.model.GetPermissionResponse;
 import io.kestra.plugin.jira.client.model.GetSchedulingResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * GetPlanResponse
  */
-@JsonPropertyOrder({
-  GetPlanResponse.JSON_PROPERTY_CROSS_PROJECT_RELEASES,
-  GetPlanResponse.JSON_PROPERTY_CUSTOM_FIELDS,
-  GetPlanResponse.JSON_PROPERTY_EXCLUSION_RULES,
-  GetPlanResponse.JSON_PROPERTY_ID,
-  GetPlanResponse.JSON_PROPERTY_ISSUE_SOURCES,
-  GetPlanResponse.JSON_PROPERTY_LAST_SAVED,
-  GetPlanResponse.JSON_PROPERTY_LEAD_ACCOUNT_ID,
-  GetPlanResponse.JSON_PROPERTY_NAME,
-  GetPlanResponse.JSON_PROPERTY_PERMISSIONS,
-  GetPlanResponse.JSON_PROPERTY_SCHEDULING,
-  GetPlanResponse.JSON_PROPERTY_STATUS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class GetPlanResponse {
-  public static final String JSON_PROPERTY_CROSS_PROJECT_RELEASES = "crossProjectReleases";
+  public static final String SERIALIZED_NAME_CROSS_PROJECT_RELEASES = "crossProjectReleases";
+  @SerializedName(SERIALIZED_NAME_CROSS_PROJECT_RELEASES)
   @javax.annotation.Nullable
   private List<GetCrossProjectReleaseResponse> crossProjectReleases = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CUSTOM_FIELDS = "customFields";
+  public static final String SERIALIZED_NAME_CUSTOM_FIELDS = "customFields";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_FIELDS)
   @javax.annotation.Nullable
   private List<GetCustomFieldResponse> customFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_EXCLUSION_RULES = "exclusionRules";
+  public static final String SERIALIZED_NAME_EXCLUSION_RULES = "exclusionRules";
+  @SerializedName(SERIALIZED_NAME_EXCLUSION_RULES)
   @javax.annotation.Nullable
   private GetExclusionRulesResponse exclusionRules;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private Long id;
 
-  public static final String JSON_PROPERTY_ISSUE_SOURCES = "issueSources";
+  public static final String SERIALIZED_NAME_ISSUE_SOURCES = "issueSources";
+  @SerializedName(SERIALIZED_NAME_ISSUE_SOURCES)
   @javax.annotation.Nullable
   private List<GetIssueSourceResponse> issueSources = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_LAST_SAVED = "lastSaved";
+  public static final String SERIALIZED_NAME_LAST_SAVED = "lastSaved";
+  @SerializedName(SERIALIZED_NAME_LAST_SAVED)
   @javax.annotation.Nullable
   private String lastSaved;
 
-  public static final String JSON_PROPERTY_LEAD_ACCOUNT_ID = "leadAccountId";
+  public static final String SERIALIZED_NAME_LEAD_ACCOUNT_ID = "leadAccountId";
+  @SerializedName(SERIALIZED_NAME_LEAD_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String leadAccountId;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PERMISSIONS = "permissions";
+  public static final String SERIALIZED_NAME_PERMISSIONS = "permissions";
+  @SerializedName(SERIALIZED_NAME_PERMISSIONS)
   @javax.annotation.Nullable
   private List<GetPermissionResponse> permissions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SCHEDULING = "scheduling";
+  public static final String SERIALIZED_NAME_SCHEDULING = "scheduling";
+  @SerializedName(SERIALIZED_NAME_SCHEDULING)
   @javax.annotation.Nonnull
   private GetSchedulingResponse scheduling;
 
   /**
    * The plan status. This is \&quot;Active\&quot;, \&quot;Trashed\&quot; or \&quot;Archived\&quot;.
    */
+  @JsonAdapter(StatusEnum.Adapter.class)
   public enum StatusEnum {
-    ACTIVE(String.valueOf("Active")),
+    ACTIVE("Active"),
     
-    TRASHED(String.valueOf("Trashed")),
+    TRASHED("Trashed"),
     
-    ARCHIVED(String.valueOf("Archived"));
+    ARCHIVED("Archived");
 
     private String value;
 
@@ -112,7 +127,6 @@ public class GetPlanResponse {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -122,7 +136,6 @@ public class GetPlanResponse {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static StatusEnum fromValue(String value) {
       for (StatusEnum b : StatusEnum.values()) {
         if (b.value.equals(value)) {
@@ -131,13 +144,32 @@ public class GetPlanResponse {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<StatusEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StatusEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return StatusEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      StatusEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_STATUS = "status";
+  public static final String SERIALIZED_NAME_STATUS = "status";
+  @SerializedName(SERIALIZED_NAME_STATUS)
   @javax.annotation.Nonnull
   private StatusEnum status;
 
-  public GetPlanResponse() { 
+  public GetPlanResponse() {
   }
 
   public GetPlanResponse crossProjectReleases(@javax.annotation.Nullable List<GetCrossProjectReleaseResponse> crossProjectReleases) {
@@ -158,15 +190,10 @@ public class GetPlanResponse {
    * @return crossProjectReleases
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CROSS_PROJECT_RELEASES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<GetCrossProjectReleaseResponse> getCrossProjectReleases() {
     return crossProjectReleases;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CROSS_PROJECT_RELEASES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCrossProjectReleases(@javax.annotation.Nullable List<GetCrossProjectReleaseResponse> crossProjectReleases) {
     this.crossProjectReleases = crossProjectReleases;
   }
@@ -190,15 +217,10 @@ public class GetPlanResponse {
    * @return customFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<GetCustomFieldResponse> getCustomFields() {
     return customFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomFields(@javax.annotation.Nullable List<GetCustomFieldResponse> customFields) {
     this.customFields = customFields;
   }
@@ -214,15 +236,10 @@ public class GetPlanResponse {
    * @return exclusionRules
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXCLUSION_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GetExclusionRulesResponse getExclusionRules() {
     return exclusionRules;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXCLUSION_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExclusionRules(@javax.annotation.Nullable GetExclusionRulesResponse exclusionRules) {
     this.exclusionRules = exclusionRules;
   }
@@ -238,15 +255,10 @@ public class GetPlanResponse {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@javax.annotation.Nonnull Long id) {
     this.id = id;
   }
@@ -270,15 +282,10 @@ public class GetPlanResponse {
    * @return issueSources
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SOURCES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<GetIssueSourceResponse> getIssueSources() {
     return issueSources;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SOURCES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueSources(@javax.annotation.Nullable List<GetIssueSourceResponse> issueSources) {
     this.issueSources = issueSources;
   }
@@ -294,15 +301,10 @@ public class GetPlanResponse {
    * @return lastSaved
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAST_SAVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLastSaved() {
     return lastSaved;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LAST_SAVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLastSaved(@javax.annotation.Nullable String lastSaved) {
     this.lastSaved = lastSaved;
   }
@@ -318,15 +320,10 @@ public class GetPlanResponse {
    * @return leadAccountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLeadAccountId() {
     return leadAccountId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLeadAccountId(@javax.annotation.Nullable String leadAccountId) {
     this.leadAccountId = leadAccountId;
   }
@@ -342,15 +339,10 @@ public class GetPlanResponse {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -374,15 +366,10 @@ public class GetPlanResponse {
    * @return permissions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<GetPermissionResponse> getPermissions() {
     return permissions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPermissions(@javax.annotation.Nullable List<GetPermissionResponse> permissions) {
     this.permissions = permissions;
   }
@@ -398,15 +385,10 @@ public class GetPlanResponse {
    * @return scheduling
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SCHEDULING, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public GetSchedulingResponse getScheduling() {
     return scheduling;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCHEDULING, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setScheduling(@javax.annotation.Nonnull GetSchedulingResponse scheduling) {
     this.scheduling = scheduling;
   }
@@ -422,23 +404,16 @@ public class GetPlanResponse {
    * @return status
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public StatusEnum getStatus() {
     return status;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStatus(@javax.annotation.Nonnull StatusEnum status) {
     this.status = status;
   }
 
 
-  /**
-   * Return true if this GetPlanResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -496,114 +471,171 @@ public class GetPlanResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("crossProjectReleases", "customFields", "exclusionRules", "id", "issueSources", "lastSaved", "leadAccountId", "name", "permissions", "scheduling", "status"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("id", "scheduling", "status"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to GetPlanResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `crossProjectReleases` to the URL query string
-    if (getCrossProjectReleases() != null) {
-      for (int i = 0; i < getCrossProjectReleases().size(); i++) {
-        if (getCrossProjectReleases().get(i) != null) {
-          joiner.add(getCrossProjectReleases().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scrossProjectReleases%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!GetPlanResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in GetPlanResponse is not found in the empty JSON string", GetPlanResponse.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `customFields` to the URL query string
-    if (getCustomFields() != null) {
-      for (int i = 0; i < getCustomFields().size(); i++) {
-        if (getCustomFields().get(i) != null) {
-          joiner.add(getCustomFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scustomFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!GetPlanResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `GetPlanResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
 
-    // add `exclusionRules` to the URL query string
-    if (getExclusionRules() != null) {
-      joiner.add(getExclusionRules().toUrlQueryString(prefix + "exclusionRules" + suffix));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `issueSources` to the URL query string
-    if (getIssueSources() != null) {
-      for (int i = 0; i < getIssueSources().size(); i++) {
-        if (getIssueSources().get(i) != null) {
-          joiner.add(getIssueSources().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissueSources%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : GetPlanResponse.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("crossProjectReleases") != null && !jsonObj.get("crossProjectReleases").isJsonNull()) {
+        JsonArray jsonArraycrossProjectReleases = jsonObj.getAsJsonArray("crossProjectReleases");
+        if (jsonArraycrossProjectReleases != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("crossProjectReleases").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `crossProjectReleases` to be an array in the JSON string but got `%s`", jsonObj.get("crossProjectReleases").toString()));
+          }
 
-    // add `lastSaved` to the URL query string
-    if (getLastSaved() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slastSaved%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastSaved()))));
-    }
-
-    // add `leadAccountId` to the URL query string
-    if (getLeadAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sleadAccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLeadAccountId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `permissions` to the URL query string
-    if (getPermissions() != null) {
-      for (int i = 0; i < getPermissions().size(); i++) {
-        if (getPermissions().get(i) != null) {
-          joiner.add(getPermissions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%spermissions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `crossProjectReleases` (array)
+          for (int i = 0; i < jsonArraycrossProjectReleases.size(); i++) {
+            GetCrossProjectReleaseResponse.validateJsonElement(jsonArraycrossProjectReleases.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("customFields") != null && !jsonObj.get("customFields").isJsonNull()) {
+        JsonArray jsonArraycustomFields = jsonObj.getAsJsonArray("customFields");
+        if (jsonArraycustomFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("customFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customFields` to be an array in the JSON string but got `%s`", jsonObj.get("customFields").toString()));
+          }
 
-    // add `scheduling` to the URL query string
-    if (getScheduling() != null) {
-      joiner.add(getScheduling().toUrlQueryString(prefix + "scheduling" + suffix));
-    }
+          // validate the optional field `customFields` (array)
+          for (int i = 0; i < jsonArraycustomFields.size(); i++) {
+            GetCustomFieldResponse.validateJsonElement(jsonArraycustomFields.get(i));
+          };
+        }
+      }
+      // validate the optional field `exclusionRules`
+      if (jsonObj.get("exclusionRules") != null && !jsonObj.get("exclusionRules").isJsonNull()) {
+        GetExclusionRulesResponse.validateJsonElement(jsonObj.get("exclusionRules"));
+      }
+      if (jsonObj.get("issueSources") != null && !jsonObj.get("issueSources").isJsonNull()) {
+        JsonArray jsonArrayissueSources = jsonObj.getAsJsonArray("issueSources");
+        if (jsonArrayissueSources != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issueSources").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueSources` to be an array in the JSON string but got `%s`", jsonObj.get("issueSources").toString()));
+          }
 
-    // add `status` to the URL query string
-    if (getStatus() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-    }
+          // validate the optional field `issueSources` (array)
+          for (int i = 0; i < jsonArrayissueSources.size(); i++) {
+            GetIssueSourceResponse.validateJsonElement(jsonArrayissueSources.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("lastSaved") != null && !jsonObj.get("lastSaved").isJsonNull()) && !jsonObj.get("lastSaved").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `lastSaved` to be a primitive type in the JSON string but got `%s`", jsonObj.get("lastSaved").toString()));
+      }
+      if ((jsonObj.get("leadAccountId") != null && !jsonObj.get("leadAccountId").isJsonNull()) && !jsonObj.get("leadAccountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `leadAccountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("leadAccountId").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (jsonObj.get("permissions") != null && !jsonObj.get("permissions").isJsonNull()) {
+        JsonArray jsonArraypermissions = jsonObj.getAsJsonArray("permissions");
+        if (jsonArraypermissions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("permissions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `permissions` to be an array in the JSON string but got `%s`", jsonObj.get("permissions").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `permissions` (array)
+          for (int i = 0; i < jsonArraypermissions.size(); i++) {
+            GetPermissionResponse.validateJsonElement(jsonArraypermissions.get(i));
+          };
+        }
+      }
+      // validate the required field `scheduling`
+      GetSchedulingResponse.validateJsonElement(jsonObj.get("scheduling"));
+      if (!jsonObj.get("status").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `status` to be a primitive type in the JSON string but got `%s`", jsonObj.get("status").toString()));
+      }
+      // validate the required field `status`
+      StatusEnum.validateJsonElement(jsonObj.get("status"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!GetPlanResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'GetPlanResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<GetPlanResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(GetPlanResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<GetPlanResponse>() {
+           @Override
+           public void write(JsonWriter out, GetPlanResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public GetPlanResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of GetPlanResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of GetPlanResponse
+   * @throws IOException if the JSON string is invalid with respect to GetPlanResponse
+   */
+  public static GetPlanResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, GetPlanResponse.class);
+  }
+
+  /**
+   * Convert an instance of GetPlanResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

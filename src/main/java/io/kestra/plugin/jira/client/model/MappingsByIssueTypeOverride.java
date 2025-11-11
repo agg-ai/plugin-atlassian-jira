@@ -13,44 +13,59 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.WorkflowAssociationStatusMapping;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Overrides, for the selected issue types, any status mappings provided in &#x60;statusMappingsByWorkflows&#x60;. Status mappings are required when the new workflow for an issue type doesn&#39;t contain all statuses that the old workflow has. Status mappings can be provided by a combination of &#x60;statusMappingsByWorkflows&#x60; and &#x60;statusMappingsByIssueTypeOverride&#x60;.
  */
-@JsonPropertyOrder({
-  MappingsByIssueTypeOverride.JSON_PROPERTY_ISSUE_TYPE_ID,
-  MappingsByIssueTypeOverride.JSON_PROPERTY_STATUS_MAPPINGS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class MappingsByIssueTypeOverride {
-  public static final String JSON_PROPERTY_ISSUE_TYPE_ID = "issueTypeId";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_ID = "issueTypeId";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_ID)
   @javax.annotation.Nonnull
   private String issueTypeId;
 
-  public static final String JSON_PROPERTY_STATUS_MAPPINGS = "statusMappings";
+  public static final String SERIALIZED_NAME_STATUS_MAPPINGS = "statusMappings";
+  @SerializedName(SERIALIZED_NAME_STATUS_MAPPINGS)
   @javax.annotation.Nonnull
   private List<WorkflowAssociationStatusMapping> statusMappings = new ArrayList<>();
 
-  public MappingsByIssueTypeOverride() { 
+  public MappingsByIssueTypeOverride() {
   }
 
   public MappingsByIssueTypeOverride issueTypeId(@javax.annotation.Nonnull String issueTypeId) {
@@ -63,15 +78,10 @@ public class MappingsByIssueTypeOverride {
    * @return issueTypeId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getIssueTypeId() {
     return issueTypeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIssueTypeId(@javax.annotation.Nonnull String issueTypeId) {
     this.issueTypeId = issueTypeId;
   }
@@ -95,23 +105,16 @@ public class MappingsByIssueTypeOverride {
    * @return statusMappings
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_STATUS_MAPPINGS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<WorkflowAssociationStatusMapping> getStatusMappings() {
     return statusMappings;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_MAPPINGS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStatusMappings(@javax.annotation.Nonnull List<WorkflowAssociationStatusMapping> statusMappings) {
     this.statusMappings = statusMappings;
   }
 
 
-  /**
-   * Return true if this MappingsByIssueTypeOverride object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -151,54 +154,108 @@ public class MappingsByIssueTypeOverride {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueTypeId", "statusMappings"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("issueTypeId", "statusMappings"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to MappingsByIssueTypeOverride
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `issueTypeId` to the URL query string
-    if (getIssueTypeId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueTypeId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueTypeId()))));
-    }
-
-    // add `statusMappings` to the URL query string
-    if (getStatusMappings() != null) {
-      for (int i = 0; i < getStatusMappings().size(); i++) {
-        if (getStatusMappings().get(i) != null) {
-          joiner.add(getStatusMappings().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sstatusMappings%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!MappingsByIssueTypeOverride.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in MappingsByIssueTypeOverride is not found in the empty JSON string", MappingsByIssueTypeOverride.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!MappingsByIssueTypeOverride.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `MappingsByIssueTypeOverride` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : MappingsByIssueTypeOverride.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("issueTypeId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypeId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("issueTypeId").toString()));
+      }
+      // ensure the json data is an array
+      if (!jsonObj.get("statusMappings").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusMappings` to be an array in the JSON string but got `%s`", jsonObj.get("statusMappings").toString()));
+      }
+
+      JsonArray jsonArraystatusMappings = jsonObj.getAsJsonArray("statusMappings");
+      // validate the required field `statusMappings` (array)
+      for (int i = 0; i < jsonArraystatusMappings.size(); i++) {
+        WorkflowAssociationStatusMapping.validateJsonElement(jsonArraystatusMappings.get(i));
+      };
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!MappingsByIssueTypeOverride.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'MappingsByIssueTypeOverride' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<MappingsByIssueTypeOverride> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(MappingsByIssueTypeOverride.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<MappingsByIssueTypeOverride>() {
+           @Override
+           public void write(JsonWriter out, MappingsByIssueTypeOverride value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public MappingsByIssueTypeOverride read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of MappingsByIssueTypeOverride given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of MappingsByIssueTypeOverride
+   * @throws IOException if the JSON string is invalid with respect to MappingsByIssueTypeOverride
+   */
+  public static MappingsByIssueTypeOverride fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, MappingsByIssueTypeOverride.class);
+  }
+
+  /**
+   * Convert an instance of MappingsByIssueTypeOverride to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

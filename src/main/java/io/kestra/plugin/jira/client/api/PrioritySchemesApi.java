@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.CreatePrioritySchemeDetails;
 import io.kestra.plugin.jira.client.model.PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects;
@@ -28,1224 +37,1298 @@ import io.kestra.plugin.jira.client.model.SuggestedMappingsRequestBean;
 import io.kestra.plugin.jira.client.model.UpdatePrioritySchemeRequestBean;
 import io.kestra.plugin.jira.client.model.UpdatePrioritySchemeResponseBean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PrioritySchemesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public PrioritySchemesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public PrioritySchemesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createPriorityScheme
+     * @param createPrioritySchemeDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is completed. </td><td>  -  </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is accepted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid.  **Mappings Validation Errors**   *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;in&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are required, add them to the mappings object. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if an action with this priority scheme is still in progress. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createPrioritySchemeCall(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public PrioritySchemesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public PrioritySchemesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create priority scheme
-   * Creates a new priority scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createPrioritySchemeDetails  (required)
-   * @return PrioritySchemeId
-   * @throws ApiException if fails to make API call
-   */
-  public PrioritySchemeId createPriorityScheme(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails) throws ApiException {
-    return createPriorityScheme(createPrioritySchemeDetails, null);
-  }
-
-  /**
-   * Create priority scheme
-   * Creates a new priority scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createPrioritySchemeDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return PrioritySchemeId
-   * @throws ApiException if fails to make API call
-   */
-  public PrioritySchemeId createPriorityScheme(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<PrioritySchemeId> localVarResponse = createPrioritySchemeWithHttpInfo(createPrioritySchemeDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create priority scheme
-   * Creates a new priority scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createPrioritySchemeDetails  (required)
-   * @return ApiResponse&lt;PrioritySchemeId&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PrioritySchemeId> createPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails) throws ApiException {
-    return createPrioritySchemeWithHttpInfo(createPrioritySchemeDetails, null);
-  }
-
-  /**
-   * Create priority scheme
-   * Creates a new priority scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createPrioritySchemeDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PrioritySchemeId&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PrioritySchemeId> createPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createPrioritySchemeRequestBuilder(createPrioritySchemeDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createPriorityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PrioritySchemeId>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PrioritySchemeId responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PrioritySchemeId>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = createPrioritySchemeDetails;
 
-        return new ApiResponse<PrioritySchemeId>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/priorityscheme";
 
-  private HttpRequest.Builder createPrioritySchemeRequestBuilder(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'createPrioritySchemeDetails' is set
-    if (createPrioritySchemeDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'createPrioritySchemeDetails' when calling createPriorityScheme");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/priorityscheme";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createPrioritySchemeDetails);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete priority scheme
-   * Deletes a priority scheme.  This operation is only available for priority schemes without any associated projects. Any associated projects must be removed from the priority scheme before this operation can be performed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The priority scheme ID. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deletePriorityScheme(@javax.annotation.Nonnull Long schemeId) throws ApiException {
-    return deletePriorityScheme(schemeId, null);
-  }
-
-  /**
-   * Delete priority scheme
-   * Deletes a priority scheme.  This operation is only available for priority schemes without any associated projects. Any associated projects must be removed from the priority scheme before this operation can be performed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The priority scheme ID. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deletePriorityScheme(@javax.annotation.Nonnull Long schemeId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deletePrioritySchemeWithHttpInfo(schemeId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete priority scheme
-   * Deletes a priority scheme.  This operation is only available for priority schemes without any associated projects. Any associated projects must be removed from the priority scheme before this operation can be performed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The priority scheme ID. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deletePrioritySchemeWithHttpInfo(@javax.annotation.Nonnull Long schemeId) throws ApiException {
-    return deletePrioritySchemeWithHttpInfo(schemeId, null);
-  }
-
-  /**
-   * Delete priority scheme
-   * Deletes a priority scheme.  This operation is only available for priority schemes without any associated projects. Any associated projects must be removed from the priority scheme before this operation can be performed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The priority scheme ID. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deletePrioritySchemeWithHttpInfo(@javax.annotation.Nonnull Long schemeId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deletePrioritySchemeRequestBuilder(schemeId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deletePriorityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deletePrioritySchemeRequestBuilder(@javax.annotation.Nonnull Long schemeId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling deletePriorityScheme");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/priorityscheme/{schemeId}"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get available priorities by priority scheme
-   * Returns a [paginated](#pagination) list of priorities available for adding to a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param query The string to query priorities on by name. (optional, default to )
-   * @param exclude A list of priority IDs to exclude from the results. (optional)
-   * @return PageBeanPriorityWithSequence
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanPriorityWithSequence getAvailablePrioritiesByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude) throws ApiException {
-    return getAvailablePrioritiesByPriorityScheme(schemeId, startAt, maxResults, query, exclude, null);
-  }
-
-  /**
-   * Get available priorities by priority scheme
-   * Returns a [paginated](#pagination) list of priorities available for adding to a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param query The string to query priorities on by name. (optional, default to )
-   * @param exclude A list of priority IDs to exclude from the results. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanPriorityWithSequence
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanPriorityWithSequence getAvailablePrioritiesByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanPriorityWithSequence> localVarResponse = getAvailablePrioritiesByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults, query, exclude, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get available priorities by priority scheme
-   * Returns a [paginated](#pagination) list of priorities available for adding to a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param query The string to query priorities on by name. (optional, default to )
-   * @param exclude A list of priority IDs to exclude from the results. (optional)
-   * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanPriorityWithSequence> getAvailablePrioritiesByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude) throws ApiException {
-    return getAvailablePrioritiesByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults, query, exclude, null);
-  }
-
-  /**
-   * Get available priorities by priority scheme
-   * Returns a [paginated](#pagination) list of priorities available for adding to a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param query The string to query priorities on by name. (optional, default to )
-   * @param exclude A list of priority IDs to exclude from the results. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanPriorityWithSequence> getAvailablePrioritiesByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAvailablePrioritiesByPrioritySchemeRequestBuilder(schemeId, startAt, maxResults, query, exclude, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAvailablePrioritiesByPriorityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanPriorityWithSequence>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanPriorityWithSequence responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanPriorityWithSequence>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanPriorityWithSequence>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAvailablePrioritiesByPrioritySchemeRequestBuilder(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling getAvailablePrioritiesByPriorityScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/priorityscheme/priorities/available";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "query";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("query", query));
-    localVarQueryParameterBaseName = "schemeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("schemeId", schemeId));
-    localVarQueryParameterBaseName = "exclude";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "exclude", exclude));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get priorities by priority scheme
-   * Returns a [paginated](#pagination) list of priorities by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return PageBeanPriorityWithSequence
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanPriorityWithSequence getPrioritiesByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults) throws ApiException {
-    return getPrioritiesByPriorityScheme(schemeId, startAt, maxResults, null);
-  }
-
-  /**
-   * Get priorities by priority scheme
-   * Returns a [paginated](#pagination) list of priorities by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanPriorityWithSequence
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanPriorityWithSequence getPrioritiesByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanPriorityWithSequence> localVarResponse = getPrioritiesByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get priorities by priority scheme
-   * Returns a [paginated](#pagination) list of priorities by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanPriorityWithSequence> getPrioritiesByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults) throws ApiException {
-    return getPrioritiesByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults, null);
-  }
-
-  /**
-   * Get priorities by priority scheme
-   * Returns a [paginated](#pagination) list of priorities by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanPriorityWithSequence> getPrioritiesByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getPrioritiesByPrioritySchemeRequestBuilder(schemeId, startAt, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getPrioritiesByPriorityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanPriorityWithSequence>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createPrioritySchemeValidateBeforeCall(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'createPrioritySchemeDetails' is set
+        if (createPrioritySchemeDetails == null) {
+            throw new ApiException("Missing the required parameter 'createPrioritySchemeDetails' when calling createPriorityScheme(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanPriorityWithSequence responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanPriorityWithSequence>() {});
-        
-        localVarResponse.body().close();
+        return createPrioritySchemeCall(createPrioritySchemeDetails, _callback);
 
-        return new ApiResponse<PageBeanPriorityWithSequence>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getPrioritiesByPrioritySchemeRequestBuilder(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling getPrioritiesByPriorityScheme");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/priorityscheme/{schemeId}/priorities"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Create priority scheme
+     * Creates a new priority scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createPrioritySchemeDetails  (required)
+     * @return PrioritySchemeId
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is completed. </td><td>  -  </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is accepted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid.  **Mappings Validation Errors**   *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;in&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are required, add them to the mappings object. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if an action with this priority scheme is still in progress. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PrioritySchemeId createPriorityScheme(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails) throws ApiException {
+        ApiResponse<PrioritySchemeId> localVarResp = createPrioritySchemeWithHttpInfo(createPrioritySchemeDetails);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Create priority scheme
+     * Creates a new priority scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createPrioritySchemeDetails  (required)
+     * @return ApiResponse&lt;PrioritySchemeId&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is completed. </td><td>  -  </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is accepted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid.  **Mappings Validation Errors**   *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;in&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are required, add them to the mappings object. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if an action with this priority scheme is still in progress. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PrioritySchemeId> createPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails) throws ApiException {
+        okhttp3.Call localVarCall = createPrioritySchemeValidateBeforeCall(createPrioritySchemeDetails, null);
+        Type localVarReturnType = new TypeToken<PrioritySchemeId>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create priority scheme (asynchronously)
+     * Creates a new priority scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createPrioritySchemeDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is completed. </td><td>  -  </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is accepted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid.  **Mappings Validation Errors**   *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;in&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are required, add them to the mappings object. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if an action with this priority scheme is still in progress. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createPrioritySchemeAsync(@javax.annotation.Nonnull CreatePrioritySchemeDetails createPrioritySchemeDetails, final ApiCallback<PrioritySchemeId> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createPrioritySchemeValidateBeforeCall(createPrioritySchemeDetails, _callback);
+        Type localVarReturnType = new TypeToken<PrioritySchemeId>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for deletePriorityScheme
+     * @param schemeId The priority scheme ID. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deletePrioritySchemeCall(@javax.annotation.Nonnull Long schemeId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get priority schemes
-   * Returns a [paginated](#pagination) list of priority schemes.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param priorityId A set of priority IDs to filter by. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;priorityId&#x3D;10000&amp;priorityId&#x3D;10001&#x60;. (optional)
-   * @param schemeId A set of priority scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param schemeName The name of scheme to search for. (optional, default to )
-   * @param onlyDefault Whether only the default priority is returned. (optional, default to false)
-   * @param orderBy The ordering to return the priority schemes by. (optional, default to +name)
-   * @param expand A comma separated list of additional information to return. \&quot;priorities\&quot; will return priorities associated with the priority scheme. \&quot;projects\&quot; will return projects associated with the priority scheme. &#x60;expand&#x3D;priorities,projects&#x60;. (optional)
-   * @return PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects getPrioritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand) throws ApiException {
-    return getPrioritySchemes(startAt, maxResults, priorityId, schemeId, schemeName, onlyDefault, orderBy, expand, null);
-  }
-
-  /**
-   * Get priority schemes
-   * Returns a [paginated](#pagination) list of priority schemes.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param priorityId A set of priority IDs to filter by. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;priorityId&#x3D;10000&amp;priorityId&#x3D;10001&#x60;. (optional)
-   * @param schemeId A set of priority scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param schemeName The name of scheme to search for. (optional, default to )
-   * @param onlyDefault Whether only the default priority is returned. (optional, default to false)
-   * @param orderBy The ordering to return the priority schemes by. (optional, default to +name)
-   * @param expand A comma separated list of additional information to return. \&quot;priorities\&quot; will return priorities associated with the priority scheme. \&quot;projects\&quot; will return projects associated with the priority scheme. &#x60;expand&#x3D;priorities,projects&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects getPrioritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects> localVarResponse = getPrioritySchemesWithHttpInfo(startAt, maxResults, priorityId, schemeId, schemeName, onlyDefault, orderBy, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get priority schemes
-   * Returns a [paginated](#pagination) list of priority schemes.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param priorityId A set of priority IDs to filter by. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;priorityId&#x3D;10000&amp;priorityId&#x3D;10001&#x60;. (optional)
-   * @param schemeId A set of priority scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param schemeName The name of scheme to search for. (optional, default to )
-   * @param onlyDefault Whether only the default priority is returned. (optional, default to false)
-   * @param orderBy The ordering to return the priority schemes by. (optional, default to +name)
-   * @param expand A comma separated list of additional information to return. \&quot;priorities\&quot; will return priorities associated with the priority scheme. \&quot;projects\&quot; will return projects associated with the priority scheme. &#x60;expand&#x3D;priorities,projects&#x60;. (optional)
-   * @return ApiResponse&lt;PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects> getPrioritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand) throws ApiException {
-    return getPrioritySchemesWithHttpInfo(startAt, maxResults, priorityId, schemeId, schemeName, onlyDefault, orderBy, expand, null);
-  }
-
-  /**
-   * Get priority schemes
-   * Returns a [paginated](#pagination) list of priority schemes.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param priorityId A set of priority IDs to filter by. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;priorityId&#x3D;10000&amp;priorityId&#x3D;10001&#x60;. (optional)
-   * @param schemeId A set of priority scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
-   * @param schemeName The name of scheme to search for. (optional, default to )
-   * @param onlyDefault Whether only the default priority is returned. (optional, default to false)
-   * @param orderBy The ordering to return the priority schemes by. (optional, default to +name)
-   * @param expand A comma separated list of additional information to return. \&quot;priorities\&quot; will return priorities associated with the priority scheme. \&quot;projects\&quot; will return projects associated with the priority scheme. &#x60;expand&#x3D;priorities,projects&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects> getPrioritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getPrioritySchemesRequestBuilder(startAt, maxResults, priorityId, schemeId, schemeName, onlyDefault, orderBy, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getPrioritySchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/priorityscheme/{schemeId}"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()));
 
-  private HttpRequest.Builder getPrioritySchemesRequestBuilder(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/priorityscheme";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "priorityId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "priorityId", priorityId));
-    localVarQueryParameterBaseName = "schemeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "schemeId", schemeId));
-    localVarQueryParameterBaseName = "schemeName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("schemeName", schemeName));
-    localVarQueryParameterBaseName = "onlyDefault";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("onlyDefault", onlyDefault));
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get projects by priority scheme
-   * Returns a [paginated](#pagination) list of projects by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param projectId The project IDs to filter by. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
-   * @param query The string to query projects on by name. (optional, default to )
-   * @return PageBeanProject
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanProject getProjectsByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query) throws ApiException {
-    return getProjectsByPriorityScheme(schemeId, startAt, maxResults, projectId, query, null);
-  }
-
-  /**
-   * Get projects by priority scheme
-   * Returns a [paginated](#pagination) list of projects by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param projectId The project IDs to filter by. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
-   * @param query The string to query projects on by name. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return PageBeanProject
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanProject getProjectsByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanProject> localVarResponse = getProjectsByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults, projectId, query, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get projects by priority scheme
-   * Returns a [paginated](#pagination) list of projects by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param projectId The project IDs to filter by. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
-   * @param query The string to query projects on by name. (optional, default to )
-   * @return ApiResponse&lt;PageBeanProject&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanProject> getProjectsByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query) throws ApiException {
-    return getProjectsByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults, projectId, query, null);
-  }
-
-  /**
-   * Get projects by priority scheme
-   * Returns a [paginated](#pagination) list of projects by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param schemeId The priority scheme ID. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param projectId The project IDs to filter by. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
-   * @param query The string to query projects on by name. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanProject&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanProject> getProjectsByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectsByPrioritySchemeRequestBuilder(schemeId, startAt, maxResults, projectId, query, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectsByPriorityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanProject>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanProject responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanProject>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanProject>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectsByPrioritySchemeRequestBuilder(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling getProjectsByPriorityScheme");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/priorityscheme/{schemeId}/projects"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "projectId", projectId));
-    localVarQueryParameterBaseName = "query";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("query", query));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Suggested priorities for mappings
-   * Returns a [paginated](#pagination) list of priorities that would require mapping, given a change in priorities or projects associated with a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param suggestedMappingsRequestBean  (required)
-   * @return PageBeanPriorityWithSequence
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanPriorityWithSequence suggestedPrioritiesForMappings(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean) throws ApiException {
-    return suggestedPrioritiesForMappings(suggestedMappingsRequestBean, null);
-  }
-
-  /**
-   * Suggested priorities for mappings
-   * Returns a [paginated](#pagination) list of priorities that would require mapping, given a change in priorities or projects associated with a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param suggestedMappingsRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanPriorityWithSequence
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanPriorityWithSequence suggestedPrioritiesForMappings(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanPriorityWithSequence> localVarResponse = suggestedPrioritiesForMappingsWithHttpInfo(suggestedMappingsRequestBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Suggested priorities for mappings
-   * Returns a [paginated](#pagination) list of priorities that would require mapping, given a change in priorities or projects associated with a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param suggestedMappingsRequestBean  (required)
-   * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanPriorityWithSequence> suggestedPrioritiesForMappingsWithHttpInfo(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean) throws ApiException {
-    return suggestedPrioritiesForMappingsWithHttpInfo(suggestedMappingsRequestBean, null);
-  }
-
-  /**
-   * Suggested priorities for mappings
-   * Returns a [paginated](#pagination) list of priorities that would require mapping, given a change in priorities or projects associated with a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param suggestedMappingsRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanPriorityWithSequence> suggestedPrioritiesForMappingsWithHttpInfo(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = suggestedPrioritiesForMappingsRequestBuilder(suggestedMappingsRequestBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("suggestedPrioritiesForMappings", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanPriorityWithSequence>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanPriorityWithSequence responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanPriorityWithSequence>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanPriorityWithSequence>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder suggestedPrioritiesForMappingsRequestBuilder(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'suggestedMappingsRequestBean' is set
-    if (suggestedMappingsRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'suggestedMappingsRequestBean' when calling suggestedPrioritiesForMappings");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/priorityscheme/mappings";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(suggestedMappingsRequestBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update priority scheme
-   * Updates a priority scheme. This includes its details, the lists of priorities and projects in it  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the priority scheme. (required)
-   * @param updatePrioritySchemeRequestBean  (required)
-   * @return UpdatePrioritySchemeResponseBean
-   * @throws ApiException if fails to make API call
-   */
-  public UpdatePrioritySchemeResponseBean updatePriorityScheme(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean) throws ApiException {
-    return updatePriorityScheme(schemeId, updatePrioritySchemeRequestBean, null);
-  }
-
-  /**
-   * Update priority scheme
-   * Updates a priority scheme. This includes its details, the lists of priorities and projects in it  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the priority scheme. (required)
-   * @param updatePrioritySchemeRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return UpdatePrioritySchemeResponseBean
-   * @throws ApiException if fails to make API call
-   */
-  public UpdatePrioritySchemeResponseBean updatePriorityScheme(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<UpdatePrioritySchemeResponseBean> localVarResponse = updatePrioritySchemeWithHttpInfo(schemeId, updatePrioritySchemeRequestBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update priority scheme
-   * Updates a priority scheme. This includes its details, the lists of priorities and projects in it  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the priority scheme. (required)
-   * @param updatePrioritySchemeRequestBean  (required)
-   * @return ApiResponse&lt;UpdatePrioritySchemeResponseBean&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<UpdatePrioritySchemeResponseBean> updatePrioritySchemeWithHttpInfo(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean) throws ApiException {
-    return updatePrioritySchemeWithHttpInfo(schemeId, updatePrioritySchemeRequestBean, null);
-  }
-
-  /**
-   * Update priority scheme
-   * Updates a priority scheme. This includes its details, the lists of priorities and projects in it  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param schemeId The ID of the priority scheme. (required)
-   * @param updatePrioritySchemeRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;UpdatePrioritySchemeResponseBean&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<UpdatePrioritySchemeResponseBean> updatePrioritySchemeWithHttpInfo(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updatePrioritySchemeRequestBuilder(schemeId, updatePrioritySchemeRequestBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updatePriorityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<UpdatePrioritySchemeResponseBean>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deletePrioritySchemeValidateBeforeCall(@javax.annotation.Nonnull Long schemeId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling deletePriorityScheme(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        UpdatePrioritySchemeResponseBean responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UpdatePrioritySchemeResponseBean>() {});
-        
-        localVarResponse.body().close();
+        return deletePrioritySchemeCall(schemeId, _callback);
 
-        return new ApiResponse<UpdatePrioritySchemeResponseBean>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updatePrioritySchemeRequestBuilder(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'schemeId' is set
-    if (schemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'schemeId' when calling updatePriorityScheme");
-    }
-    // verify the required parameter 'updatePrioritySchemeRequestBean' is set
-    if (updatePrioritySchemeRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'updatePrioritySchemeRequestBean' when calling updatePriorityScheme");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/priorityscheme/{schemeId}"
-        .replace("{schemeId}", ApiClient.urlEncode(schemeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updatePrioritySchemeRequestBean);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Delete priority scheme
+     * Deletes a priority scheme.  This operation is only available for priority schemes without any associated projects. Any associated projects must be removed from the priority scheme before this operation can be performed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The priority scheme ID. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deletePriorityScheme(@javax.annotation.Nonnull Long schemeId) throws ApiException {
+        ApiResponse<Object> localVarResp = deletePrioritySchemeWithHttpInfo(schemeId);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete priority scheme
+     * Deletes a priority scheme.  This operation is only available for priority schemes without any associated projects. Any associated projects must be removed from the priority scheme before this operation can be performed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The priority scheme ID. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deletePrioritySchemeWithHttpInfo(@javax.annotation.Nonnull Long schemeId) throws ApiException {
+        okhttp3.Call localVarCall = deletePrioritySchemeValidateBeforeCall(schemeId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete priority scheme (asynchronously)
+     * Deletes a priority scheme.  This operation is only available for priority schemes without any associated projects. Any associated projects must be removed from the priority scheme before this operation can be performed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The priority scheme ID. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deletePrioritySchemeAsync(@javax.annotation.Nonnull Long schemeId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deletePrioritySchemeValidateBeforeCall(schemeId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAvailablePrioritiesByPriorityScheme
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param query The string to query priorities on by name. (optional, default to )
+     * @param exclude A list of priority IDs to exclude from the results. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAvailablePrioritiesByPrioritySchemeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/priorityscheme/priorities/available";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (query != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("query", query));
+        }
+
+        if (schemeId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("schemeId", schemeId));
+        }
+
+        if (exclude != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "exclude", exclude));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAvailablePrioritiesByPrioritySchemeValidateBeforeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling getAvailablePrioritiesByPriorityScheme(Async)");
+        }
+
+        return getAvailablePrioritiesByPrioritySchemeCall(schemeId, startAt, maxResults, query, exclude, _callback);
+
+    }
+
+    /**
+     * Get available priorities by priority scheme
+     * Returns a [paginated](#pagination) list of priorities available for adding to a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param query The string to query priorities on by name. (optional, default to )
+     * @param exclude A list of priority IDs to exclude from the results. (optional)
+     * @return PageBeanPriorityWithSequence
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanPriorityWithSequence getAvailablePrioritiesByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude) throws ApiException {
+        ApiResponse<PageBeanPriorityWithSequence> localVarResp = getAvailablePrioritiesByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults, query, exclude);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get available priorities by priority scheme
+     * Returns a [paginated](#pagination) list of priorities available for adding to a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param query The string to query priorities on by name. (optional, default to )
+     * @param exclude A list of priority IDs to exclude from the results. (optional)
+     * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanPriorityWithSequence> getAvailablePrioritiesByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude) throws ApiException {
+        okhttp3.Call localVarCall = getAvailablePrioritiesByPrioritySchemeValidateBeforeCall(schemeId, startAt, maxResults, query, exclude, null);
+        Type localVarReturnType = new TypeToken<PageBeanPriorityWithSequence>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get available priorities by priority scheme (asynchronously)
+     * Returns a [paginated](#pagination) list of priorities available for adding to a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param query The string to query priorities on by name. (optional, default to )
+     * @param exclude A list of priority IDs to exclude from the results. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAvailablePrioritiesByPrioritySchemeAsync(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable String query, @javax.annotation.Nullable Set<String> exclude, final ApiCallback<PageBeanPriorityWithSequence> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAvailablePrioritiesByPrioritySchemeValidateBeforeCall(schemeId, startAt, maxResults, query, exclude, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanPriorityWithSequence>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getPrioritiesByPriorityScheme
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPrioritiesByPrioritySchemeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/priorityscheme/{schemeId}/priorities"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getPrioritiesByPrioritySchemeValidateBeforeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling getPrioritiesByPriorityScheme(Async)");
+        }
+
+        return getPrioritiesByPrioritySchemeCall(schemeId, startAt, maxResults, _callback);
+
+    }
+
+    /**
+     * Get priorities by priority scheme
+     * Returns a [paginated](#pagination) list of priorities by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return PageBeanPriorityWithSequence
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanPriorityWithSequence getPrioritiesByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults) throws ApiException {
+        ApiResponse<PageBeanPriorityWithSequence> localVarResp = getPrioritiesByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get priorities by priority scheme
+     * Returns a [paginated](#pagination) list of priorities by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanPriorityWithSequence> getPrioritiesByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getPrioritiesByPrioritySchemeValidateBeforeCall(schemeId, startAt, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageBeanPriorityWithSequence>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get priorities by priority scheme (asynchronously)
+     * Returns a [paginated](#pagination) list of priorities by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPrioritiesByPrioritySchemeAsync(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, final ApiCallback<PageBeanPriorityWithSequence> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getPrioritiesByPrioritySchemeValidateBeforeCall(schemeId, startAt, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanPriorityWithSequence>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getPrioritySchemes
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param priorityId A set of priority IDs to filter by. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;priorityId&#x3D;10000&amp;priorityId&#x3D;10001&#x60;. (optional)
+     * @param schemeId A set of priority scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param schemeName The name of scheme to search for. (optional, default to )
+     * @param onlyDefault Whether only the default priority is returned. (optional, default to false)
+     * @param orderBy The ordering to return the priority schemes by. (optional, default to +name)
+     * @param expand A comma separated list of additional information to return. \&quot;priorities\&quot; will return priorities associated with the priority scheme. \&quot;projects\&quot; will return projects associated with the priority scheme. &#x60;expand&#x3D;priorities,projects&#x60;. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPrioritySchemesCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/priorityscheme";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (priorityId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "priorityId", priorityId));
+        }
+
+        if (schemeId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "schemeId", schemeId));
+        }
+
+        if (schemeName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("schemeName", schemeName));
+        }
+
+        if (onlyDefault != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("onlyDefault", onlyDefault));
+        }
+
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getPrioritySchemesValidateBeforeCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        return getPrioritySchemesCall(startAt, maxResults, priorityId, schemeId, schemeName, onlyDefault, orderBy, expand, _callback);
+
+    }
+
+    /**
+     * Get priority schemes
+     * Returns a [paginated](#pagination) list of priority schemes.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param priorityId A set of priority IDs to filter by. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;priorityId&#x3D;10000&amp;priorityId&#x3D;10001&#x60;. (optional)
+     * @param schemeId A set of priority scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param schemeName The name of scheme to search for. (optional, default to )
+     * @param onlyDefault Whether only the default priority is returned. (optional, default to false)
+     * @param orderBy The ordering to return the priority schemes by. (optional, default to +name)
+     * @param expand A comma separated list of additional information to return. \&quot;priorities\&quot; will return priorities associated with the priority scheme. \&quot;projects\&quot; will return projects associated with the priority scheme. &#x60;expand&#x3D;priorities,projects&#x60;. (optional)
+     * @return PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects getPrioritySchemes(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects> localVarResp = getPrioritySchemesWithHttpInfo(startAt, maxResults, priorityId, schemeId, schemeName, onlyDefault, orderBy, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get priority schemes
+     * Returns a [paginated](#pagination) list of priority schemes.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param priorityId A set of priority IDs to filter by. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;priorityId&#x3D;10000&amp;priorityId&#x3D;10001&#x60;. (optional)
+     * @param schemeId A set of priority scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param schemeName The name of scheme to search for. (optional, default to )
+     * @param onlyDefault Whether only the default priority is returned. (optional, default to false)
+     * @param orderBy The ordering to return the priority schemes by. (optional, default to +name)
+     * @param expand A comma separated list of additional information to return. \&quot;priorities\&quot; will return priorities associated with the priority scheme. \&quot;projects\&quot; will return projects associated with the priority scheme. &#x60;expand&#x3D;priorities,projects&#x60;. (optional)
+     * @return ApiResponse&lt;PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects> getPrioritySchemesWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getPrioritySchemesValidateBeforeCall(startAt, maxResults, priorityId, schemeId, schemeName, onlyDefault, orderBy, expand, null);
+        Type localVarReturnType = new TypeToken<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get priority schemes (asynchronously)
+     * Returns a [paginated](#pagination) list of priority schemes.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param priorityId A set of priority IDs to filter by. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;priorityId&#x3D;10000&amp;priorityId&#x3D;10001&#x60;. (optional)
+     * @param schemeId A set of priority scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;schemeId&#x3D;10000&amp;schemeId&#x3D;10001&#x60;. (optional)
+     * @param schemeName The name of scheme to search for. (optional, default to )
+     * @param onlyDefault Whether only the default priority is returned. (optional, default to false)
+     * @param orderBy The ordering to return the priority schemes by. (optional, default to +name)
+     * @param expand A comma separated list of additional information to return. \&quot;priorities\&quot; will return priorities associated with the priority scheme. \&quot;projects\&quot; will return projects associated with the priority scheme. &#x60;expand&#x3D;priorities,projects&#x60;. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPrioritySchemesAsync(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> priorityId, @javax.annotation.Nullable Set<Long> schemeId, @javax.annotation.Nullable String schemeName, @javax.annotation.Nullable Boolean onlyDefault, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, final ApiCallback<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getPrioritySchemesValidateBeforeCall(startAt, maxResults, priorityId, schemeId, schemeName, onlyDefault, orderBy, expand, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanPrioritySchemeWithPaginatedPrioritiesAndProjects>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectsByPriorityScheme
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param projectId The project IDs to filter by. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
+     * @param query The string to query projects on by name. (optional, default to )
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectsByPrioritySchemeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/priorityscheme/{schemeId}/projects"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (projectId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "projectId", projectId));
+        }
+
+        if (query != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("query", query));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectsByPrioritySchemeValidateBeforeCall(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling getProjectsByPriorityScheme(Async)");
+        }
+
+        return getProjectsByPrioritySchemeCall(schemeId, startAt, maxResults, projectId, query, _callback);
+
+    }
+
+    /**
+     * Get projects by priority scheme
+     * Returns a [paginated](#pagination) list of projects by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param projectId The project IDs to filter by. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
+     * @param query The string to query projects on by name. (optional, default to )
+     * @return PageBeanProject
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanProject getProjectsByPriorityScheme(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query) throws ApiException {
+        ApiResponse<PageBeanProject> localVarResp = getProjectsByPrioritySchemeWithHttpInfo(schemeId, startAt, maxResults, projectId, query);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get projects by priority scheme
+     * Returns a [paginated](#pagination) list of projects by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param projectId The project IDs to filter by. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
+     * @param query The string to query projects on by name. (optional, default to )
+     * @return ApiResponse&lt;PageBeanProject&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanProject> getProjectsByPrioritySchemeWithHttpInfo(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query) throws ApiException {
+        okhttp3.Call localVarCall = getProjectsByPrioritySchemeValidateBeforeCall(schemeId, startAt, maxResults, projectId, query, null);
+        Type localVarReturnType = new TypeToken<PageBeanProject>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get projects by priority scheme (asynchronously)
+     * Returns a [paginated](#pagination) list of projects by scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param schemeId The priority scheme ID. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param projectId The project IDs to filter by. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (optional)
+     * @param query The string to query projects on by name. (optional, default to )
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectsByPrioritySchemeAsync(@javax.annotation.Nonnull String schemeId, @javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable Set<Long> projectId, @javax.annotation.Nullable String query, final ApiCallback<PageBeanProject> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectsByPrioritySchemeValidateBeforeCall(schemeId, startAt, maxResults, projectId, query, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanProject>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for suggestedPrioritiesForMappings
+     * @param suggestedMappingsRequestBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call suggestedPrioritiesForMappingsCall(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = suggestedMappingsRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/priorityscheme/mappings";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call suggestedPrioritiesForMappingsValidateBeforeCall(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'suggestedMappingsRequestBean' is set
+        if (suggestedMappingsRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'suggestedMappingsRequestBean' when calling suggestedPrioritiesForMappings(Async)");
+        }
+
+        return suggestedPrioritiesForMappingsCall(suggestedMappingsRequestBean, _callback);
+
+    }
+
+    /**
+     * Suggested priorities for mappings
+     * Returns a [paginated](#pagination) list of priorities that would require mapping, given a change in priorities or projects associated with a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param suggestedMappingsRequestBean  (required)
+     * @return PageBeanPriorityWithSequence
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanPriorityWithSequence suggestedPrioritiesForMappings(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean) throws ApiException {
+        ApiResponse<PageBeanPriorityWithSequence> localVarResp = suggestedPrioritiesForMappingsWithHttpInfo(suggestedMappingsRequestBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Suggested priorities for mappings
+     * Returns a [paginated](#pagination) list of priorities that would require mapping, given a change in priorities or projects associated with a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param suggestedMappingsRequestBean  (required)
+     * @return ApiResponse&lt;PageBeanPriorityWithSequence&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanPriorityWithSequence> suggestedPrioritiesForMappingsWithHttpInfo(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean) throws ApiException {
+        okhttp3.Call localVarCall = suggestedPrioritiesForMappingsValidateBeforeCall(suggestedMappingsRequestBean, null);
+        Type localVarReturnType = new TypeToken<PageBeanPriorityWithSequence>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Suggested priorities for mappings (asynchronously)
+     * Returns a [paginated](#pagination) list of priorities that would require mapping, given a change in priorities or projects associated with a priority scheme.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param suggestedMappingsRequestBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call suggestedPrioritiesForMappingsAsync(@javax.annotation.Nonnull SuggestedMappingsRequestBean suggestedMappingsRequestBean, final ApiCallback<PageBeanPriorityWithSequence> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = suggestedPrioritiesForMappingsValidateBeforeCall(suggestedMappingsRequestBean, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanPriorityWithSequence>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updatePriorityScheme
+     * @param schemeId The ID of the priority scheme. (required)
+     * @param updatePrioritySchemeRequestBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is accepted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid.  **Mappings Validation Errors**   *  &#x60;&#x60;The changes to priority schemes require mapping of priorities. Please provide a value for the &#39;in&#39; mappings object.&#x60;&#x60; Priorities are being removed and/or projects are being added to the scheme, but &#x60;&#x60;in&#x60;&#x60; mappings are not provided.  *  &#x60;&#x60;The changes to priority schemes require mapping of priorities. Please provide a value for the &#39;out&#39; mappings object.&#x60;&#x60; Projects are being removed from the scheme, but &#x60;&#x60;out&#x60;&#x60; mappings are not provided.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as keys for the &#39;in&#39; mappings object do not exist. Please provide existing priority IDs.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but do not exist. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site which are used by projects being added to the current scheme, but are not in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as values for the &#39;in&#39; mappings object do not exist. Please provide existing priority IDs used by the current priority scheme.&#x60;&#x60; The listed priority ID(s) have been provided as values for &#x60;&#x60;in&#x60;&#x60; mappings but do not exist. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as keys for the &#39;out&#39; mappings object do not exist. Please provide existing priority IDs used by the current priority scheme.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are invalid. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as values for the &#39;out&#39; mappings object do not exist. Please provide existing priority IDs used by the default scheme.&#x60;&#x60; The listed priority ID(s) have been provided as values for &#x60;&#x60;out&#x60;&#x60; mappings but are invalid. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the Default Priority Scheme, but are not in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] do not require mapping. Please remove these keys and their corresponding values from the &#39;in&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are not required, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;in&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are required, add them to the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] being mapped to are not in the current scheme. Please remove these values and their corresponding keys from the &#39;in&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are not in use by the current scheme, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] do not require mapping. Please remove these keys and their corresponding values from the &#39;out&#39; mappings object.&#x60;&#x60; The listed priority ID(s) hve been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are not required, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;out&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are required, add them to the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] being mapped to are not in the default scheme. Please remove these values and their corresponding keys from the &#39;out&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are not in use by the Default Priority Scheme, they can be removed from the mappings object. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if an action with this priority scheme is still in progress. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updatePrioritySchemeCall(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = updatePrioritySchemeRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/priorityscheme/{schemeId}"
+            .replace("{" + "schemeId" + "}", localVarApiClient.escapeString(schemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updatePrioritySchemeValidateBeforeCall(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'schemeId' is set
+        if (schemeId == null) {
+            throw new ApiException("Missing the required parameter 'schemeId' when calling updatePriorityScheme(Async)");
+        }
+
+        // verify the required parameter 'updatePrioritySchemeRequestBean' is set
+        if (updatePrioritySchemeRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'updatePrioritySchemeRequestBean' when calling updatePriorityScheme(Async)");
+        }
+
+        return updatePrioritySchemeCall(schemeId, updatePrioritySchemeRequestBean, _callback);
+
+    }
+
+    /**
+     * Update priority scheme
+     * Updates a priority scheme. This includes its details, the lists of priorities and projects in it  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the priority scheme. (required)
+     * @param updatePrioritySchemeRequestBean  (required)
+     * @return UpdatePrioritySchemeResponseBean
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is accepted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid.  **Mappings Validation Errors**   *  &#x60;&#x60;The changes to priority schemes require mapping of priorities. Please provide a value for the &#39;in&#39; mappings object.&#x60;&#x60; Priorities are being removed and/or projects are being added to the scheme, but &#x60;&#x60;in&#x60;&#x60; mappings are not provided.  *  &#x60;&#x60;The changes to priority schemes require mapping of priorities. Please provide a value for the &#39;out&#39; mappings object.&#x60;&#x60; Projects are being removed from the scheme, but &#x60;&#x60;out&#x60;&#x60; mappings are not provided.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as keys for the &#39;in&#39; mappings object do not exist. Please provide existing priority IDs.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but do not exist. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site which are used by projects being added to the current scheme, but are not in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as values for the &#39;in&#39; mappings object do not exist. Please provide existing priority IDs used by the current priority scheme.&#x60;&#x60; The listed priority ID(s) have been provided as values for &#x60;&#x60;in&#x60;&#x60; mappings but do not exist. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as keys for the &#39;out&#39; mappings object do not exist. Please provide existing priority IDs used by the current priority scheme.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are invalid. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as values for the &#39;out&#39; mappings object do not exist. Please provide existing priority IDs used by the default scheme.&#x60;&#x60; The listed priority ID(s) have been provided as values for &#x60;&#x60;out&#x60;&#x60; mappings but are invalid. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the Default Priority Scheme, but are not in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] do not require mapping. Please remove these keys and their corresponding values from the &#39;in&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are not required, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;in&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are required, add them to the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] being mapped to are not in the current scheme. Please remove these values and their corresponding keys from the &#39;in&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are not in use by the current scheme, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] do not require mapping. Please remove these keys and their corresponding values from the &#39;out&#39; mappings object.&#x60;&#x60; The listed priority ID(s) hve been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are not required, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;out&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are required, add them to the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] being mapped to are not in the default scheme. Please remove these values and their corresponding keys from the &#39;out&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are not in use by the Default Priority Scheme, they can be removed from the mappings object. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if an action with this priority scheme is still in progress. </td><td>  -  </td></tr>
+     </table>
+     */
+    public UpdatePrioritySchemeResponseBean updatePriorityScheme(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean) throws ApiException {
+        ApiResponse<UpdatePrioritySchemeResponseBean> localVarResp = updatePrioritySchemeWithHttpInfo(schemeId, updatePrioritySchemeRequestBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update priority scheme
+     * Updates a priority scheme. This includes its details, the lists of priorities and projects in it  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the priority scheme. (required)
+     * @param updatePrioritySchemeRequestBean  (required)
+     * @return ApiResponse&lt;UpdatePrioritySchemeResponseBean&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is accepted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid.  **Mappings Validation Errors**   *  &#x60;&#x60;The changes to priority schemes require mapping of priorities. Please provide a value for the &#39;in&#39; mappings object.&#x60;&#x60; Priorities are being removed and/or projects are being added to the scheme, but &#x60;&#x60;in&#x60;&#x60; mappings are not provided.  *  &#x60;&#x60;The changes to priority schemes require mapping of priorities. Please provide a value for the &#39;out&#39; mappings object.&#x60;&#x60; Projects are being removed from the scheme, but &#x60;&#x60;out&#x60;&#x60; mappings are not provided.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as keys for the &#39;in&#39; mappings object do not exist. Please provide existing priority IDs.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but do not exist. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site which are used by projects being added to the current scheme, but are not in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as values for the &#39;in&#39; mappings object do not exist. Please provide existing priority IDs used by the current priority scheme.&#x60;&#x60; The listed priority ID(s) have been provided as values for &#x60;&#x60;in&#x60;&#x60; mappings but do not exist. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as keys for the &#39;out&#39; mappings object do not exist. Please provide existing priority IDs used by the current priority scheme.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are invalid. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as values for the &#39;out&#39; mappings object do not exist. Please provide existing priority IDs used by the default scheme.&#x60;&#x60; The listed priority ID(s) have been provided as values for &#x60;&#x60;out&#x60;&#x60; mappings but are invalid. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the Default Priority Scheme, but are not in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] do not require mapping. Please remove these keys and their corresponding values from the &#39;in&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are not required, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;in&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are required, add them to the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] being mapped to are not in the current scheme. Please remove these values and their corresponding keys from the &#39;in&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are not in use by the current scheme, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] do not require mapping. Please remove these keys and their corresponding values from the &#39;out&#39; mappings object.&#x60;&#x60; The listed priority ID(s) hve been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are not required, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;out&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are required, add them to the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] being mapped to are not in the default scheme. Please remove these values and their corresponding keys from the &#39;out&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are not in use by the Default Priority Scheme, they can be removed from the mappings object. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if an action with this priority scheme is still in progress. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<UpdatePrioritySchemeResponseBean> updatePrioritySchemeWithHttpInfo(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean) throws ApiException {
+        okhttp3.Call localVarCall = updatePrioritySchemeValidateBeforeCall(schemeId, updatePrioritySchemeRequestBean, null);
+        Type localVarReturnType = new TypeToken<UpdatePrioritySchemeResponseBean>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update priority scheme (asynchronously)
+     * Updates a priority scheme. This includes its details, the lists of priorities and projects in it  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param schemeId The ID of the priority scheme. (required)
+     * @param updatePrioritySchemeRequestBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is accepted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid.  **Mappings Validation Errors**   *  &#x60;&#x60;The changes to priority schemes require mapping of priorities. Please provide a value for the &#39;in&#39; mappings object.&#x60;&#x60; Priorities are being removed and/or projects are being added to the scheme, but &#x60;&#x60;in&#x60;&#x60; mappings are not provided.  *  &#x60;&#x60;The changes to priority schemes require mapping of priorities. Please provide a value for the &#39;out&#39; mappings object.&#x60;&#x60; Projects are being removed from the scheme, but &#x60;&#x60;out&#x60;&#x60; mappings are not provided.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as keys for the &#39;in&#39; mappings object do not exist. Please provide existing priority IDs.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but do not exist. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site which are used by projects being added to the current scheme, but are not in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as values for the &#39;in&#39; mappings object do not exist. Please provide existing priority IDs used by the current priority scheme.&#x60;&#x60; The listed priority ID(s) have been provided as values for &#x60;&#x60;in&#x60;&#x60; mappings but do not exist. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as keys for the &#39;out&#39; mappings object do not exist. Please provide existing priority IDs used by the current priority scheme.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are invalid. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] provided as values for the &#39;out&#39; mappings object do not exist. Please provide existing priority IDs used by the default scheme.&#x60;&#x60; The listed priority ID(s) have been provided as values for &#x60;&#x60;out&#x60;&#x60; mappings but are invalid. Please confirm the correct priority ID(s) have been provided, they should be priorities that exist on the Jira site and are in use by the Default Priority Scheme, but are not in use by the current scheme.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] do not require mapping. Please remove these keys and their corresponding values from the &#39;in&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are not required, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;in&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are required, add them to the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] being mapped to are not in the current scheme. Please remove these values and their corresponding keys from the &#39;in&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;in&#x60;&#x60; mappings but are not in use by the current scheme, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] do not require mapping. Please remove these keys and their corresponding values from the &#39;out&#39; mappings object.&#x60;&#x60; The listed priority ID(s) hve been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are not required, they can be removed from the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] require mapping. Please provide mappings in the &#39;out&#39; mappings object, where these priorities are the keys with corresponding values.&#x60;&#x60; The listed priority ID(s) have not been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are required, add them to the mappings object.  *  &#x60;&#x60;The priorities with IDs [ID 1, ID 2, ...] being mapped to are not in the default scheme. Please remove these values and their corresponding keys from the &#39;out&#39; mappings object.&#x60;&#x60; The listed priority ID(s) have been provided as keys for &#x60;&#x60;out&#x60;&#x60; mappings but are not in use by the Default Priority Scheme, they can be removed from the mappings object. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if an action with this priority scheme is still in progress. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updatePrioritySchemeAsync(@javax.annotation.Nonnull Long schemeId, @javax.annotation.Nonnull UpdatePrioritySchemeRequestBean updatePrioritySchemeRequestBean, final ApiCallback<UpdatePrioritySchemeResponseBean> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updatePrioritySchemeValidateBeforeCall(schemeId, updatePrioritySchemeRequestBean, _callback);
+        Type localVarReturnType = new TypeToken<UpdatePrioritySchemeResponseBean>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

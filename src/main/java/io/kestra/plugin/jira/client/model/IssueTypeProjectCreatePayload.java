@@ -13,69 +13,79 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueTypeHierarchyPayload;
 import io.kestra.plugin.jira.client.model.IssueTypePayload;
 import io.kestra.plugin.jira.client.model.IssueTypeSchemePayload;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The payload for creating issue types in a project
  */
-@JsonPropertyOrder({
-  IssueTypeProjectCreatePayload.JSON_PROPERTY_ISSUE_TYPE_HIERARCHY,
-  IssueTypeProjectCreatePayload.JSON_PROPERTY_ISSUE_TYPE_SCHEME,
-  IssueTypeProjectCreatePayload.JSON_PROPERTY_ISSUE_TYPES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueTypeProjectCreatePayload {
-  public static final String JSON_PROPERTY_ISSUE_TYPE_HIERARCHY = "issueTypeHierarchy";
-  private JsonNullable<List<IssueTypeHierarchyPayload>> issueTypeHierarchy = JsonNullable.<List<IssueTypeHierarchyPayload>>undefined();
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_HIERARCHY = "issueTypeHierarchy";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_HIERARCHY)
+  @javax.annotation.Nullable
+  private List<IssueTypeHierarchyPayload> issueTypeHierarchy;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_SCHEME = "issueTypeScheme";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_SCHEME = "issueTypeScheme";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_SCHEME)
   @javax.annotation.Nullable
   private IssueTypeSchemePayload issueTypeScheme;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPES = "issueTypes";
-  private JsonNullable<List<IssueTypePayload>> issueTypes = JsonNullable.<List<IssueTypePayload>>undefined();
+  public static final String SERIALIZED_NAME_ISSUE_TYPES = "issueTypes";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPES)
+  @javax.annotation.Nullable
+  private List<IssueTypePayload> issueTypes;
 
-  public IssueTypeProjectCreatePayload() { 
+  public IssueTypeProjectCreatePayload() {
   }
 
   public IssueTypeProjectCreatePayload issueTypeHierarchy(@javax.annotation.Nullable List<IssueTypeHierarchyPayload> issueTypeHierarchy) {
-    this.issueTypeHierarchy = JsonNullable.<List<IssueTypeHierarchyPayload>>of(issueTypeHierarchy);
+    this.issueTypeHierarchy = issueTypeHierarchy;
     return this;
   }
 
   public IssueTypeProjectCreatePayload addIssueTypeHierarchyItem(IssueTypeHierarchyPayload issueTypeHierarchyItem) {
-    if (this.issueTypeHierarchy == null || !this.issueTypeHierarchy.isPresent()) {
-      this.issueTypeHierarchy = JsonNullable.<List<IssueTypeHierarchyPayload>>of(new ArrayList<>());
+    if (this.issueTypeHierarchy == null) {
+      this.issueTypeHierarchy = new ArrayList<>();
     }
-    try {
-      this.issueTypeHierarchy.get().add(issueTypeHierarchyItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.issueTypeHierarchy.add(issueTypeHierarchyItem);
     return this;
   }
 
@@ -84,25 +94,12 @@ public class IssueTypeProjectCreatePayload {
    * @return issueTypeHierarchy
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<IssueTypeHierarchyPayload> getIssueTypeHierarchy() {
-        return issueTypeHierarchy.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_HIERARCHY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<IssueTypeHierarchyPayload>> getIssueTypeHierarchy_JsonNullable() {
     return issueTypeHierarchy;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ISSUE_TYPE_HIERARCHY)
-  public void setIssueTypeHierarchy_JsonNullable(JsonNullable<List<IssueTypeHierarchyPayload>> issueTypeHierarchy) {
-    this.issueTypeHierarchy = issueTypeHierarchy;
   }
 
   public void setIssueTypeHierarchy(@javax.annotation.Nullable List<IssueTypeHierarchyPayload> issueTypeHierarchy) {
-    this.issueTypeHierarchy = JsonNullable.<List<IssueTypeHierarchyPayload>>of(issueTypeHierarchy);
+    this.issueTypeHierarchy = issueTypeHierarchy;
   }
 
 
@@ -116,34 +113,25 @@ public class IssueTypeProjectCreatePayload {
    * @return issueTypeScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IssueTypeSchemePayload getIssueTypeScheme() {
     return issueTypeScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeScheme(@javax.annotation.Nullable IssueTypeSchemePayload issueTypeScheme) {
     this.issueTypeScheme = issueTypeScheme;
   }
 
 
   public IssueTypeProjectCreatePayload issueTypes(@javax.annotation.Nullable List<IssueTypePayload> issueTypes) {
-    this.issueTypes = JsonNullable.<List<IssueTypePayload>>of(issueTypes);
+    this.issueTypes = issueTypes;
     return this;
   }
 
   public IssueTypeProjectCreatePayload addIssueTypesItem(IssueTypePayload issueTypesItem) {
-    if (this.issueTypes == null || !this.issueTypes.isPresent()) {
-      this.issueTypes = JsonNullable.<List<IssueTypePayload>>of(new ArrayList<>());
+    if (this.issueTypes == null) {
+      this.issueTypes = new ArrayList<>();
     }
-    try {
-      this.issueTypes.get().add(issueTypesItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.issueTypes.add(issueTypesItem);
     return this;
   }
 
@@ -152,31 +140,16 @@ public class IssueTypeProjectCreatePayload {
    * @return issueTypes
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<IssueTypePayload> getIssueTypes() {
-        return issueTypes.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<IssueTypePayload>> getIssueTypes_JsonNullable() {
     return issueTypes;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ISSUE_TYPES)
-  public void setIssueTypes_JsonNullable(JsonNullable<List<IssueTypePayload>> issueTypes) {
-    this.issueTypes = issueTypes;
   }
 
   public void setIssueTypes(@javax.annotation.Nullable List<IssueTypePayload> issueTypes) {
-    this.issueTypes = JsonNullable.<List<IssueTypePayload>>of(issueTypes);
+    this.issueTypes = issueTypes;
   }
 
 
-  /**
-   * Return true if this IssueTypeProjectCreatePayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -186,9 +159,9 @@ public class IssueTypeProjectCreatePayload {
       return false;
     }
     IssueTypeProjectCreatePayload issueTypeProjectCreatePayload = (IssueTypeProjectCreatePayload) o;
-    return equalsNullable(this.issueTypeHierarchy, issueTypeProjectCreatePayload.issueTypeHierarchy) &&
+    return Objects.equals(this.issueTypeHierarchy, issueTypeProjectCreatePayload.issueTypeHierarchy) &&
         Objects.equals(this.issueTypeScheme, issueTypeProjectCreatePayload.issueTypeScheme) &&
-        equalsNullable(this.issueTypes, issueTypeProjectCreatePayload.issueTypes);
+        Objects.equals(this.issueTypes, issueTypeProjectCreatePayload.issueTypes);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -197,7 +170,7 @@ public class IssueTypeProjectCreatePayload {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(issueTypeHierarchy), issueTypeScheme, hashCodeNullable(issueTypes));
+    return Objects.hash(issueTypeHierarchy, issueTypeScheme, issueTypes);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -229,64 +202,120 @@ public class IssueTypeProjectCreatePayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueTypeHierarchy", "issueTypeScheme", "issueTypes"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueTypeProjectCreatePayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `issueTypeHierarchy` to the URL query string
-    if (getIssueTypeHierarchy() != null) {
-      for (int i = 0; i < getIssueTypeHierarchy().size(); i++) {
-        if (getIssueTypeHierarchy().get(i) != null) {
-          joiner.add(getIssueTypeHierarchy().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissueTypeHierarchy%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueTypeProjectCreatePayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueTypeProjectCreatePayload is not found in the empty JSON string", IssueTypeProjectCreatePayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `issueTypeScheme` to the URL query string
-    if (getIssueTypeScheme() != null) {
-      joiner.add(getIssueTypeScheme().toUrlQueryString(prefix + "issueTypeScheme" + suffix));
-    }
-
-    // add `issueTypes` to the URL query string
-    if (getIssueTypes() != null) {
-      for (int i = 0; i < getIssueTypes().size(); i++) {
-        if (getIssueTypes().get(i) != null) {
-          joiner.add(getIssueTypes().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissueTypes%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueTypeProjectCreatePayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueTypeProjectCreatePayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("issueTypeHierarchy") != null && !jsonObj.get("issueTypeHierarchy").isJsonNull()) {
+        JsonArray jsonArrayissueTypeHierarchy = jsonObj.getAsJsonArray("issueTypeHierarchy");
+        if (jsonArrayissueTypeHierarchy != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issueTypeHierarchy").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypeHierarchy` to be an array in the JSON string but got `%s`", jsonObj.get("issueTypeHierarchy").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `issueTypeHierarchy` (array)
+          for (int i = 0; i < jsonArrayissueTypeHierarchy.size(); i++) {
+            IssueTypeHierarchyPayload.validateJsonElement(jsonArrayissueTypeHierarchy.get(i));
+          };
+        }
+      }
+      // validate the optional field `issueTypeScheme`
+      if (jsonObj.get("issueTypeScheme") != null && !jsonObj.get("issueTypeScheme").isJsonNull()) {
+        IssueTypeSchemePayload.validateJsonElement(jsonObj.get("issueTypeScheme"));
+      }
+      if (jsonObj.get("issueTypes") != null && !jsonObj.get("issueTypes").isJsonNull()) {
+        JsonArray jsonArrayissueTypes = jsonObj.getAsJsonArray("issueTypes");
+        if (jsonArrayissueTypes != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issueTypes").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypes` to be an array in the JSON string but got `%s`", jsonObj.get("issueTypes").toString()));
+          }
+
+          // validate the optional field `issueTypes` (array)
+          for (int i = 0; i < jsonArrayissueTypes.size(); i++) {
+            IssueTypePayload.validateJsonElement(jsonArrayissueTypes.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueTypeProjectCreatePayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueTypeProjectCreatePayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueTypeProjectCreatePayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueTypeProjectCreatePayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueTypeProjectCreatePayload>() {
+           @Override
+           public void write(JsonWriter out, IssueTypeProjectCreatePayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueTypeProjectCreatePayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssueTypeProjectCreatePayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueTypeProjectCreatePayload
+   * @throws IOException if the JSON string is invalid with respect to IssueTypeProjectCreatePayload
+   */
+  public static IssueTypeProjectCreatePayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueTypeProjectCreatePayload.class);
+  }
+
+  /**
+   * Convert an instance of IssueTypeProjectCreatePayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

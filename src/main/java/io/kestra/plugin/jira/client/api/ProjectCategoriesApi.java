@@ -10,714 +10,753 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.ProjectCategory;
 import io.kestra.plugin.jira.client.model.UpdatedProjectCategory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectCategoriesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ProjectCategoriesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ProjectCategoriesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createProjectCategory
+     * @param projectCategory  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;name&#x60; is not provided or exceeds 255 characters.  *  &#x60;description&#x60; exceeds 1000 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the project category name is in use. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createProjectCategoryCall(@javax.annotation.Nonnull ProjectCategory projectCategory, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ProjectCategoriesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ProjectCategoriesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create project category
-   * Creates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectCategory  (required)
-   * @return ProjectCategory
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectCategory createProjectCategory(@javax.annotation.Nonnull ProjectCategory projectCategory) throws ApiException {
-    return createProjectCategory(projectCategory, null);
-  }
-
-  /**
-   * Create project category
-   * Creates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectCategory  (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectCategory
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectCategory createProjectCategory(@javax.annotation.Nonnull ProjectCategory projectCategory, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectCategory> localVarResponse = createProjectCategoryWithHttpInfo(projectCategory, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create project category
-   * Creates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectCategory  (required)
-   * @return ApiResponse&lt;ProjectCategory&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectCategory> createProjectCategoryWithHttpInfo(@javax.annotation.Nonnull ProjectCategory projectCategory) throws ApiException {
-    return createProjectCategoryWithHttpInfo(projectCategory, null);
-  }
-
-  /**
-   * Create project category
-   * Creates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectCategory  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectCategory&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectCategory> createProjectCategoryWithHttpInfo(@javax.annotation.Nonnull ProjectCategory projectCategory, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createProjectCategoryRequestBuilder(projectCategory, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createProjectCategory", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectCategory>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectCategory responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectCategory>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = projectCategory;
 
-        return new ApiResponse<ProjectCategory>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/projectCategory";
 
-  private HttpRequest.Builder createProjectCategoryRequestBuilder(@javax.annotation.Nonnull ProjectCategory projectCategory, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectCategory' is set
-    if (projectCategory == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectCategory' when calling createProjectCategory");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/projectCategory";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(projectCategory);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get all project categories
-   * Returns all project categories.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @return List&lt;ProjectCategory&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ProjectCategory> getAllProjectCategories() throws ApiException {
-    return getAllProjectCategories(null);
-  }
-
-  /**
-   * Get all project categories
-   * Returns all project categories.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param headers Optional headers to include in the request
-   * @return List&lt;ProjectCategory&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ProjectCategory> getAllProjectCategories(Map<String, String> headers) throws ApiException {
-    ApiResponse<List<ProjectCategory>> localVarResponse = getAllProjectCategoriesWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all project categories
-   * Returns all project categories.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @return ApiResponse&lt;List&lt;ProjectCategory&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ProjectCategory>> getAllProjectCategoriesWithHttpInfo() throws ApiException {
-    return getAllProjectCategoriesWithHttpInfo(null);
-  }
-
-  /**
-   * Get all project categories
-   * Returns all project categories.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;ProjectCategory&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ProjectCategory>> getAllProjectCategoriesWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllProjectCategoriesRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllProjectCategories", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<ProjectCategory>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<ProjectCategory> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ProjectCategory>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<ProjectCategory>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAllProjectCategoriesRequestBuilder(Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/projectCategory";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project category by ID
-   * Returns a project category.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param id The ID of the project category. (required)
-   * @return ProjectCategory
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectCategory getProjectCategoryById(@javax.annotation.Nonnull Long id) throws ApiException {
-    return getProjectCategoryById(id, null);
-  }
-
-  /**
-   * Get project category by ID
-   * Returns a project category.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param id The ID of the project category. (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectCategory
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectCategory getProjectCategoryById(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectCategory> localVarResponse = getProjectCategoryByIdWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project category by ID
-   * Returns a project category.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param id The ID of the project category. (required)
-   * @return ApiResponse&lt;ProjectCategory&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectCategory> getProjectCategoryByIdWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
-    return getProjectCategoryByIdWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get project category by ID
-   * Returns a project category.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param id The ID of the project category. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectCategory&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectCategory> getProjectCategoryByIdWithHttpInfo(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectCategoryByIdRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectCategoryById", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectCategory>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectCategory responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectCategory>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ProjectCategory>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectCategoryByIdRequestBuilder(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getProjectCategoryById");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/projectCategory/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete project category
-   * Deletes a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id ID of the project category to delete. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void removeProjectCategory(@javax.annotation.Nonnull Long id) throws ApiException {
-    removeProjectCategory(id, null);
-  }
-
-  /**
-   * Delete project category
-   * Deletes a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id ID of the project category to delete. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void removeProjectCategory(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    removeProjectCategoryWithHttpInfo(id, headers);
-  }
-
-  /**
-   * Delete project category
-   * Deletes a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id ID of the project category to delete. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeProjectCategoryWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
-    return removeProjectCategoryWithHttpInfo(id, null);
-  }
-
-  /**
-   * Delete project category
-   * Deletes a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id ID of the project category to delete. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeProjectCategoryWithHttpInfo(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeProjectCategoryRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeProjectCategory", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder removeProjectCategoryRequestBuilder(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling removeProjectCategory");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/projectCategory/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update project category
-   * Updates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id  (required)
-   * @param projectCategory  (required)
-   * @return UpdatedProjectCategory
-   * @throws ApiException if fails to make API call
-   */
-  public UpdatedProjectCategory updateProjectCategory(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory) throws ApiException {
-    return updateProjectCategory(id, projectCategory, null);
-  }
-
-  /**
-   * Update project category
-   * Updates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id  (required)
-   * @param projectCategory  (required)
-   * @param headers Optional headers to include in the request
-   * @return UpdatedProjectCategory
-   * @throws ApiException if fails to make API call
-   */
-  public UpdatedProjectCategory updateProjectCategory(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory, Map<String, String> headers) throws ApiException {
-    ApiResponse<UpdatedProjectCategory> localVarResponse = updateProjectCategoryWithHttpInfo(id, projectCategory, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update project category
-   * Updates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id  (required)
-   * @param projectCategory  (required)
-   * @return ApiResponse&lt;UpdatedProjectCategory&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<UpdatedProjectCategory> updateProjectCategoryWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory) throws ApiException {
-    return updateProjectCategoryWithHttpInfo(id, projectCategory, null);
-  }
-
-  /**
-   * Update project category
-   * Updates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id  (required)
-   * @param projectCategory  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;UpdatedProjectCategory&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<UpdatedProjectCategory> updateProjectCategoryWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateProjectCategoryRequestBuilder(id, projectCategory, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateProjectCategory", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<UpdatedProjectCategory>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createProjectCategoryValidateBeforeCall(@javax.annotation.Nonnull ProjectCategory projectCategory, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectCategory' is set
+        if (projectCategory == null) {
+            throw new ApiException("Missing the required parameter 'projectCategory' when calling createProjectCategory(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        UpdatedProjectCategory responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UpdatedProjectCategory>() {});
-        
-        localVarResponse.body().close();
+        return createProjectCategoryCall(projectCategory, _callback);
 
-        return new ApiResponse<UpdatedProjectCategory>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateProjectCategoryRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateProjectCategory");
-    }
-    // verify the required parameter 'projectCategory' is set
-    if (projectCategory == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectCategory' when calling updateProjectCategory");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/projectCategory/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(projectCategory);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create project category
+     * Creates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectCategory  (required)
+     * @return ProjectCategory
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;name&#x60; is not provided or exceeds 255 characters.  *  &#x60;description&#x60; exceeds 1000 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the project category name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectCategory createProjectCategory(@javax.annotation.Nonnull ProjectCategory projectCategory) throws ApiException {
+        ApiResponse<ProjectCategory> localVarResp = createProjectCategoryWithHttpInfo(projectCategory);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create project category
+     * Creates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectCategory  (required)
+     * @return ApiResponse&lt;ProjectCategory&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;name&#x60; is not provided or exceeds 255 characters.  *  &#x60;description&#x60; exceeds 1000 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the project category name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectCategory> createProjectCategoryWithHttpInfo(@javax.annotation.Nonnull ProjectCategory projectCategory) throws ApiException {
+        okhttp3.Call localVarCall = createProjectCategoryValidateBeforeCall(projectCategory, null);
+        Type localVarReturnType = new TypeToken<ProjectCategory>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create project category (asynchronously)
+     * Creates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectCategory  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;name&#x60; is not provided or exceeds 255 characters.  *  &#x60;description&#x60; exceeds 1000 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the project category name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createProjectCategoryAsync(@javax.annotation.Nonnull ProjectCategory projectCategory, final ApiCallback<ProjectCategory> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createProjectCategoryValidateBeforeCall(projectCategory, _callback);
+        Type localVarReturnType = new TypeToken<ProjectCategory>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAllProjectCategories
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllProjectCategoriesCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/projectCategory";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllProjectCategoriesValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getAllProjectCategoriesCall(_callback);
+
+    }
+
+    /**
+     * Get all project categories
+     * Returns all project categories.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @return List&lt;ProjectCategory&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<ProjectCategory> getAllProjectCategories() throws ApiException {
+        ApiResponse<List<ProjectCategory>> localVarResp = getAllProjectCategoriesWithHttpInfo();
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all project categories
+     * Returns all project categories.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @return ApiResponse&lt;List&lt;ProjectCategory&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<ProjectCategory>> getAllProjectCategoriesWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getAllProjectCategoriesValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<List<ProjectCategory>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all project categories (asynchronously)
+     * Returns all project categories.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllProjectCategoriesAsync(final ApiCallback<List<ProjectCategory>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAllProjectCategoriesValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<List<ProjectCategory>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectCategoryById
+     * @param id The ID of the project category. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectCategoryByIdCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/projectCategory/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectCategoryByIdValidateBeforeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getProjectCategoryById(Async)");
+        }
+
+        return getProjectCategoryByIdCall(id, _callback);
+
+    }
+
+    /**
+     * Get project category by ID
+     * Returns a project category.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param id The ID of the project category. (required)
+     * @return ProjectCategory
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectCategory getProjectCategoryById(@javax.annotation.Nonnull Long id) throws ApiException {
+        ApiResponse<ProjectCategory> localVarResp = getProjectCategoryByIdWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project category by ID
+     * Returns a project category.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param id The ID of the project category. (required)
+     * @return ApiResponse&lt;ProjectCategory&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectCategory> getProjectCategoryByIdWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = getProjectCategoryByIdValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<ProjectCategory>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project category by ID (asynchronously)
+     * Returns a project category.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param id The ID of the project category. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectCategoryByIdAsync(@javax.annotation.Nonnull Long id, final ApiCallback<ProjectCategory> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectCategoryByIdValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<ProjectCategory>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeProjectCategory
+     * @param id ID of the project category to delete. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeProjectCategoryCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/projectCategory/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeProjectCategoryValidateBeforeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling removeProjectCategory(Async)");
+        }
+
+        return removeProjectCategoryCall(id, _callback);
+
+    }
+
+    /**
+     * Delete project category
+     * Deletes a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id ID of the project category to delete. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void removeProjectCategory(@javax.annotation.Nonnull Long id) throws ApiException {
+        removeProjectCategoryWithHttpInfo(id);
+    }
+
+    /**
+     * Delete project category
+     * Deletes a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id ID of the project category to delete. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> removeProjectCategoryWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = removeProjectCategoryValidateBeforeCall(id, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete project category (asynchronously)
+     * Deletes a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id ID of the project category to delete. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeProjectCategoryAsync(@javax.annotation.Nonnull Long id, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeProjectCategoryValidateBeforeCall(id, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateProjectCategory
+     * @param id  (required)
+     * @param projectCategory  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;name&#x60; has been modified and exceeds 255 characters.  *  &#x60;description&#x60; has been modified and exceeds 1000 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateProjectCategoryCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = projectCategory;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/projectCategory/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateProjectCategoryValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateProjectCategory(Async)");
+        }
+
+        // verify the required parameter 'projectCategory' is set
+        if (projectCategory == null) {
+            throw new ApiException("Missing the required parameter 'projectCategory' when calling updateProjectCategory(Async)");
+        }
+
+        return updateProjectCategoryCall(id, projectCategory, _callback);
+
+    }
+
+    /**
+     * Update project category
+     * Updates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id  (required)
+     * @param projectCategory  (required)
+     * @return UpdatedProjectCategory
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;name&#x60; has been modified and exceeds 255 characters.  *  &#x60;description&#x60; has been modified and exceeds 1000 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public UpdatedProjectCategory updateProjectCategory(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory) throws ApiException {
+        ApiResponse<UpdatedProjectCategory> localVarResp = updateProjectCategoryWithHttpInfo(id, projectCategory);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update project category
+     * Updates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id  (required)
+     * @param projectCategory  (required)
+     * @return ApiResponse&lt;UpdatedProjectCategory&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;name&#x60; has been modified and exceeds 255 characters.  *  &#x60;description&#x60; has been modified and exceeds 1000 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<UpdatedProjectCategory> updateProjectCategoryWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory) throws ApiException {
+        okhttp3.Call localVarCall = updateProjectCategoryValidateBeforeCall(id, projectCategory, null);
+        Type localVarReturnType = new TypeToken<UpdatedProjectCategory>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update project category (asynchronously)
+     * Updates a project category.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id  (required)
+     * @param projectCategory  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;name&#x60; has been modified and exceeds 255 characters.  *  &#x60;description&#x60; has been modified and exceeds 1000 characters. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project category is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateProjectCategoryAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull ProjectCategory projectCategory, final ApiCallback<UpdatedProjectCategory> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateProjectCategoryValidateBeforeCall(id, projectCategory, _callback);
+        Type localVarReturnType = new TypeToken<UpdatedProjectCategory>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

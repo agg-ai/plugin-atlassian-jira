@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The default value for a Forge date time custom field.
  */
-@JsonPropertyOrder({
-  CustomFieldContextDefaultValueForgeDateTimeField.JSON_PROPERTY_CONTEXT_ID,
-  CustomFieldContextDefaultValueForgeDateTimeField.JSON_PROPERTY_DATE_TIME,
-  CustomFieldContextDefaultValueForgeDateTimeField.JSON_PROPERTY_TYPE,
-  CustomFieldContextDefaultValueForgeDateTimeField.JSON_PROPERTY_USE_CURRENT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CustomFieldContextDefaultValueForgeDateTimeField {
-  public static final String JSON_PROPERTY_CONTEXT_ID = "contextId";
+  public static final String SERIALIZED_NAME_CONTEXT_ID = "contextId";
+  @SerializedName(SERIALIZED_NAME_CONTEXT_ID)
   @javax.annotation.Nonnull
   private String contextId;
 
-  public static final String JSON_PROPERTY_DATE_TIME = "dateTime";
+  public static final String SERIALIZED_NAME_DATE_TIME = "dateTime";
+  @SerializedName(SERIALIZED_NAME_DATE_TIME)
   @javax.annotation.Nullable
   private String dateTime;
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nonnull
   private String type;
 
-  public static final String JSON_PROPERTY_USE_CURRENT = "useCurrent";
+  public static final String SERIALIZED_NAME_USE_CURRENT = "useCurrent";
+  @SerializedName(SERIALIZED_NAME_USE_CURRENT)
   @javax.annotation.Nullable
   private Boolean useCurrent = false;
 
-  public CustomFieldContextDefaultValueForgeDateTimeField() { 
+  public CustomFieldContextDefaultValueForgeDateTimeField() {
   }
 
   public CustomFieldContextDefaultValueForgeDateTimeField contextId(@javax.annotation.Nonnull String contextId) {
@@ -70,15 +85,10 @@ public class CustomFieldContextDefaultValueForgeDateTimeField {
    * @return contextId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getContextId() {
     return contextId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setContextId(@javax.annotation.Nonnull String contextId) {
     this.contextId = contextId;
   }
@@ -94,15 +104,10 @@ public class CustomFieldContextDefaultValueForgeDateTimeField {
    * @return dateTime
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DATE_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDateTime() {
     return dateTime;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DATE_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateTime(@javax.annotation.Nullable String dateTime) {
     this.dateTime = dateTime;
   }
@@ -118,15 +123,10 @@ public class CustomFieldContextDefaultValueForgeDateTimeField {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(@javax.annotation.Nonnull String type) {
     this.type = type;
   }
@@ -142,23 +142,16 @@ public class CustomFieldContextDefaultValueForgeDateTimeField {
    * @return useCurrent
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USE_CURRENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getUseCurrent() {
     return useCurrent;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_USE_CURRENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUseCurrent(@javax.annotation.Nullable Boolean useCurrent) {
     this.useCurrent = useCurrent;
   }
 
 
-  /**
-   * Return true if this CustomFieldContextDefaultValueForgeDateTimeField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,59 +195,104 @@ public class CustomFieldContextDefaultValueForgeDateTimeField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("contextId", "dateTime", "type", "useCurrent"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("contextId", "type"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CustomFieldContextDefaultValueForgeDateTimeField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CustomFieldContextDefaultValueForgeDateTimeField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CustomFieldContextDefaultValueForgeDateTimeField is not found in the empty JSON string", CustomFieldContextDefaultValueForgeDateTimeField.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CustomFieldContextDefaultValueForgeDateTimeField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CustomFieldContextDefaultValueForgeDateTimeField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CustomFieldContextDefaultValueForgeDateTimeField.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("contextId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `contextId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("contextId").toString()));
+      }
+      if ((jsonObj.get("dateTime") != null && !jsonObj.get("dateTime").isJsonNull()) && !jsonObj.get("dateTime").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `dateTime` to be a primitive type in the JSON string but got `%s`", jsonObj.get("dateTime").toString()));
+      }
+      if (!jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CustomFieldContextDefaultValueForgeDateTimeField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CustomFieldContextDefaultValueForgeDateTimeField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CustomFieldContextDefaultValueForgeDateTimeField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueForgeDateTimeField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CustomFieldContextDefaultValueForgeDateTimeField>() {
+           @Override
+           public void write(JsonWriter out, CustomFieldContextDefaultValueForgeDateTimeField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CustomFieldContextDefaultValueForgeDateTimeField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CustomFieldContextDefaultValueForgeDateTimeField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CustomFieldContextDefaultValueForgeDateTimeField
+   * @throws IOException if the JSON string is invalid with respect to CustomFieldContextDefaultValueForgeDateTimeField
+   */
+  public static CustomFieldContextDefaultValueForgeDateTimeField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CustomFieldContextDefaultValueForgeDateTimeField.class);
+  }
 
-    // add `contextId` to the URL query string
-    if (getContextId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontextId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContextId()))));
-    }
-
-    // add `dateTime` to the URL query string
-    if (getDateTime() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdateTime%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDateTime()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    // add `useCurrent` to the URL query string
-    if (getUseCurrent() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suseCurrent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUseCurrent()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CustomFieldContextDefaultValueForgeDateTimeField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

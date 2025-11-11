@@ -13,104 +13,118 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ConditionGroupPayload;
 import io.kestra.plugin.jira.client.model.FromLayoutPayload;
 import io.kestra.plugin.jira.client.model.RulePayload;
 import io.kestra.plugin.jira.client.model.ToLayoutPayload;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The payload for creating a transition in a workflow. Can be DIRECTED, GLOBAL, SELF-LOOPED, GLOBAL LOOPED
  */
-@JsonPropertyOrder({
-  TransitionPayload.JSON_PROPERTY_ACTIONS,
-  TransitionPayload.JSON_PROPERTY_CONDITIONS,
-  TransitionPayload.JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID,
-  TransitionPayload.JSON_PROPERTY_DESCRIPTION,
-  TransitionPayload.JSON_PROPERTY_FROM,
-  TransitionPayload.JSON_PROPERTY_ID,
-  TransitionPayload.JSON_PROPERTY_NAME,
-  TransitionPayload.JSON_PROPERTY_PROPERTIES,
-  TransitionPayload.JSON_PROPERTY_TO,
-  TransitionPayload.JSON_PROPERTY_TRANSITION_SCREEN,
-  TransitionPayload.JSON_PROPERTY_TRIGGERS,
-  TransitionPayload.JSON_PROPERTY_TYPE,
-  TransitionPayload.JSON_PROPERTY_VALIDATORS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TransitionPayload {
-  public static final String JSON_PROPERTY_ACTIONS = "actions";
+  public static final String SERIALIZED_NAME_ACTIONS = "actions";
+  @SerializedName(SERIALIZED_NAME_ACTIONS)
   @javax.annotation.Nullable
   private List<RulePayload> actions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CONDITIONS = "conditions";
+  public static final String SERIALIZED_NAME_CONDITIONS = "conditions";
+  @SerializedName(SERIALIZED_NAME_CONDITIONS)
   @javax.annotation.Nullable
   private ConditionGroupPayload conditions;
 
-  public static final String JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID = "customIssueEventId";
+  public static final String SERIALIZED_NAME_CUSTOM_ISSUE_EVENT_ID = "customIssueEventId";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_ISSUE_EVENT_ID)
   @javax.annotation.Nullable
   private String customIssueEventId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_FROM = "from";
+  public static final String SERIALIZED_NAME_FROM = "from";
+  @SerializedName(SERIALIZED_NAME_FROM)
   @javax.annotation.Nullable
   private List<FromLayoutPayload> from = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Integer id;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private Map<String, String> properties = new HashMap<>();
 
-  public static final String JSON_PROPERTY_TO = "to";
+  public static final String SERIALIZED_NAME_TO = "to";
+  @SerializedName(SERIALIZED_NAME_TO)
   @javax.annotation.Nullable
   private ToLayoutPayload to;
 
-  public static final String JSON_PROPERTY_TRANSITION_SCREEN = "transitionScreen";
+  public static final String SERIALIZED_NAME_TRANSITION_SCREEN = "transitionScreen";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_SCREEN)
   @javax.annotation.Nullable
   private RulePayload transitionScreen;
 
-  public static final String JSON_PROPERTY_TRIGGERS = "triggers";
+  public static final String SERIALIZED_NAME_TRIGGERS = "triggers";
+  @SerializedName(SERIALIZED_NAME_TRIGGERS)
   @javax.annotation.Nullable
   private List<RulePayload> triggers = new ArrayList<>();
 
   /**
    * The type of the transition
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    GLOBAL(String.valueOf("global")),
+    GLOBAL("global"),
     
-    INITIAL(String.valueOf("initial")),
+    INITIAL("initial"),
     
-    DIRECTED(String.valueOf("directed"));
+    DIRECTED("directed");
 
     private String value;
 
@@ -118,7 +132,6 @@ public class TransitionPayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -128,7 +141,6 @@ public class TransitionPayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -137,17 +149,37 @@ public class TransitionPayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private TypeEnum type;
 
-  public static final String JSON_PROPERTY_VALIDATORS = "validators";
+  public static final String SERIALIZED_NAME_VALIDATORS = "validators";
+  @SerializedName(SERIALIZED_NAME_VALIDATORS)
   @javax.annotation.Nullable
   private List<RulePayload> validators = new ArrayList<>();
 
-  public TransitionPayload() { 
+  public TransitionPayload() {
   }
 
   public TransitionPayload actions(@javax.annotation.Nullable List<RulePayload> actions) {
@@ -168,15 +200,10 @@ public class TransitionPayload {
    * @return actions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<RulePayload> getActions() {
     return actions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setActions(@javax.annotation.Nullable List<RulePayload> actions) {
     this.actions = actions;
   }
@@ -192,15 +219,10 @@ public class TransitionPayload {
    * @return conditions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ConditionGroupPayload getConditions() {
     return conditions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConditions(@javax.annotation.Nullable ConditionGroupPayload conditions) {
     this.conditions = conditions;
   }
@@ -216,15 +238,10 @@ public class TransitionPayload {
    * @return customIssueEventId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCustomIssueEventId() {
     return customIssueEventId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomIssueEventId(@javax.annotation.Nullable String customIssueEventId) {
     this.customIssueEventId = customIssueEventId;
   }
@@ -240,15 +257,10 @@ public class TransitionPayload {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -272,15 +284,10 @@ public class TransitionPayload {
    * @return from
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FROM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<FromLayoutPayload> getFrom() {
     return from;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FROM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFrom(@javax.annotation.Nullable List<FromLayoutPayload> from) {
     this.from = from;
   }
@@ -296,15 +303,10 @@ public class TransitionPayload {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable Integer id) {
     this.id = id;
   }
@@ -320,15 +322,10 @@ public class TransitionPayload {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -352,15 +349,10 @@ public class TransitionPayload {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable Map<String, String> properties) {
     this.properties = properties;
   }
@@ -376,15 +368,10 @@ public class TransitionPayload {
    * @return to
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ToLayoutPayload getTo() {
     return to;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTo(@javax.annotation.Nullable ToLayoutPayload to) {
     this.to = to;
   }
@@ -400,15 +387,10 @@ public class TransitionPayload {
    * @return transitionScreen
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_SCREEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RulePayload getTransitionScreen() {
     return transitionScreen;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_SCREEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTransitionScreen(@javax.annotation.Nullable RulePayload transitionScreen) {
     this.transitionScreen = transitionScreen;
   }
@@ -432,15 +414,10 @@ public class TransitionPayload {
    * @return triggers
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<RulePayload> getTriggers() {
     return triggers;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTriggers(@javax.annotation.Nullable List<RulePayload> triggers) {
     this.triggers = triggers;
   }
@@ -456,15 +433,10 @@ public class TransitionPayload {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable TypeEnum type) {
     this.type = type;
   }
@@ -488,23 +460,16 @@ public class TransitionPayload {
    * @return validators
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALIDATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<RulePayload> getValidators() {
     return validators;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALIDATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValidators(@javax.annotation.Nullable List<RulePayload> validators) {
     this.validators = validators;
   }
 
 
-  /**
-   * Return true if this TransitionPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -566,128 +531,172 @@ public class TransitionPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("actions", "conditions", "customIssueEventId", "description", "from", "id", "name", "properties", "to", "transitionScreen", "triggers", "type", "validators"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TransitionPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `actions` to the URL query string
-    if (getActions() != null) {
-      for (int i = 0; i < getActions().size(); i++) {
-        if (getActions().get(i) != null) {
-          joiner.add(getActions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sactions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TransitionPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TransitionPayload is not found in the empty JSON string", TransitionPayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `conditions` to the URL query string
-    if (getConditions() != null) {
-      joiner.add(getConditions().toUrlQueryString(prefix + "conditions" + suffix));
-    }
-
-    // add `customIssueEventId` to the URL query string
-    if (getCustomIssueEventId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scustomIssueEventId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustomIssueEventId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `from` to the URL query string
-    if (getFrom() != null) {
-      for (int i = 0; i < getFrom().size(); i++) {
-        if (getFrom().get(i) != null) {
-          joiner.add(getFrom().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sfrom%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!TransitionPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `TransitionPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("actions") != null && !jsonObj.get("actions").isJsonNull()) {
+        JsonArray jsonArrayactions = jsonObj.getAsJsonArray("actions");
+        if (jsonArrayactions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("actions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `actions` to be an array in the JSON string but got `%s`", jsonObj.get("actions").toString()));
+          }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
-      }
-    }
-
-    // add `to` to the URL query string
-    if (getTo() != null) {
-      joiner.add(getTo().toUrlQueryString(prefix + "to" + suffix));
-    }
-
-    // add `transitionScreen` to the URL query string
-    if (getTransitionScreen() != null) {
-      joiner.add(getTransitionScreen().toUrlQueryString(prefix + "transitionScreen" + suffix));
-    }
-
-    // add `triggers` to the URL query string
-    if (getTriggers() != null) {
-      for (int i = 0; i < getTriggers().size(); i++) {
-        if (getTriggers().get(i) != null) {
-          joiner.add(getTriggers().get(i).toUrlQueryString(String.format(Locale.ROOT, "%striggers%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `actions` (array)
+          for (int i = 0; i < jsonArrayactions.size(); i++) {
+            RulePayload.validateJsonElement(jsonArrayactions.get(i));
+          };
         }
       }
-    }
+      // validate the optional field `conditions`
+      if (jsonObj.get("conditions") != null && !jsonObj.get("conditions").isJsonNull()) {
+        ConditionGroupPayload.validateJsonElement(jsonObj.get("conditions"));
+      }
+      if ((jsonObj.get("customIssueEventId") != null && !jsonObj.get("customIssueEventId").isJsonNull()) && !jsonObj.get("customIssueEventId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customIssueEventId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("customIssueEventId").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (jsonObj.get("from") != null && !jsonObj.get("from").isJsonNull()) {
+        JsonArray jsonArrayfrom = jsonObj.getAsJsonArray("from");
+        if (jsonArrayfrom != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("from").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `from` to be an array in the JSON string but got `%s`", jsonObj.get("from").toString()));
+          }
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    // add `validators` to the URL query string
-    if (getValidators() != null) {
-      for (int i = 0; i < getValidators().size(); i++) {
-        if (getValidators().get(i) != null) {
-          joiner.add(getValidators().get(i).toUrlQueryString(String.format(Locale.ROOT, "%svalidators%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `from` (array)
+          for (int i = 0; i < jsonArrayfrom.size(); i++) {
+            FromLayoutPayload.validateJsonElement(jsonArrayfrom.get(i));
+          };
         }
       }
-    }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `to`
+      if (jsonObj.get("to") != null && !jsonObj.get("to").isJsonNull()) {
+        ToLayoutPayload.validateJsonElement(jsonObj.get("to"));
+      }
+      // validate the optional field `transitionScreen`
+      if (jsonObj.get("transitionScreen") != null && !jsonObj.get("transitionScreen").isJsonNull()) {
+        RulePayload.validateJsonElement(jsonObj.get("transitionScreen"));
+      }
+      if (jsonObj.get("triggers") != null && !jsonObj.get("triggers").isJsonNull()) {
+        JsonArray jsonArraytriggers = jsonObj.getAsJsonArray("triggers");
+        if (jsonArraytriggers != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("triggers").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `triggers` to be an array in the JSON string but got `%s`", jsonObj.get("triggers").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `triggers` (array)
+          for (int i = 0; i < jsonArraytriggers.size(); i++) {
+            RulePayload.validateJsonElement(jsonArraytriggers.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the optional field `type`
+      if (jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) {
+        TypeEnum.validateJsonElement(jsonObj.get("type"));
+      }
+      if (jsonObj.get("validators") != null && !jsonObj.get("validators").isJsonNull()) {
+        JsonArray jsonArrayvalidators = jsonObj.getAsJsonArray("validators");
+        if (jsonArrayvalidators != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("validators").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `validators` to be an array in the JSON string but got `%s`", jsonObj.get("validators").toString()));
+          }
+
+          // validate the optional field `validators` (array)
+          for (int i = 0; i < jsonArrayvalidators.size(); i++) {
+            RulePayload.validateJsonElement(jsonArrayvalidators.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TransitionPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TransitionPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TransitionPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TransitionPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TransitionPayload>() {
+           @Override
+           public void write(JsonWriter out, TransitionPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TransitionPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of TransitionPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TransitionPayload
+   * @throws IOException if the JSON string is invalid with respect to TransitionPayload
+   */
+  public static TransitionPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TransitionPayload.class);
+  }
+
+  /**
+   * Convert an instance of TransitionPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

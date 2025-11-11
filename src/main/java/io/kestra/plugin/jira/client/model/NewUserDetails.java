@@ -13,87 +13,96 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The user details.
  */
-@JsonPropertyOrder({
-  NewUserDetails.JSON_PROPERTY_APPLICATION_KEYS,
-  NewUserDetails.JSON_PROPERTY_DISPLAY_NAME,
-  NewUserDetails.JSON_PROPERTY_EMAIL_ADDRESS,
-  NewUserDetails.JSON_PROPERTY_KEY,
-  NewUserDetails.JSON_PROPERTY_NAME,
-  NewUserDetails.JSON_PROPERTY_PASSWORD,
-  NewUserDetails.JSON_PROPERTY_PRODUCTS,
-  NewUserDetails.JSON_PROPERTY_SELF
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class NewUserDetails {
-  public static final String JSON_PROPERTY_APPLICATION_KEYS = "applicationKeys";
+  public static final String SERIALIZED_NAME_APPLICATION_KEYS = "applicationKeys";
+  @SerializedName(SERIALIZED_NAME_APPLICATION_KEYS)
   @javax.annotation.Nullable
   private List<String> applicationKeys = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_DISPLAY_NAME = "displayName";
+  public static final String SERIALIZED_NAME_DISPLAY_NAME = "displayName";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_NAME)
   @javax.annotation.Nullable
   private String displayName;
 
-  public static final String JSON_PROPERTY_EMAIL_ADDRESS = "emailAddress";
+  public static final String SERIALIZED_NAME_EMAIL_ADDRESS = "emailAddress";
+  @SerializedName(SERIALIZED_NAME_EMAIL_ADDRESS)
   @javax.annotation.Nonnull
   private String emailAddress;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PASSWORD = "password";
+  public static final String SERIALIZED_NAME_PASSWORD = "password";
+  @SerializedName(SERIALIZED_NAME_PASSWORD)
   @javax.annotation.Nullable
   private String password;
 
-  public static final String JSON_PROPERTY_PRODUCTS = "products";
+  public static final String SERIALIZED_NAME_PRODUCTS = "products";
+  @SerializedName(SERIALIZED_NAME_PRODUCTS)
   @javax.annotation.Nonnull
   private Set<String> products = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public NewUserDetails() { 
+  public NewUserDetails() {
   }
 
-  @JsonCreator
   public NewUserDetails(
-    @JsonProperty(JSON_PROPERTY_SELF) String self
+     String self
   ) {
-  this();
+    this();
     this.self = self;
   }
 
@@ -115,15 +124,10 @@ public class NewUserDetails {
    * @return applicationKeys
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getApplicationKeys() {
     return applicationKeys;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setApplicationKeys(@javax.annotation.Nullable List<String> applicationKeys) {
     this.applicationKeys = applicationKeys;
   }
@@ -139,15 +143,10 @@ public class NewUserDetails {
    * @return displayName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayName() {
     return displayName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayName(@javax.annotation.Nullable String displayName) {
     this.displayName = displayName;
   }
@@ -163,15 +162,10 @@ public class NewUserDetails {
    * @return emailAddress
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_ADDRESS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getEmailAddress() {
     return emailAddress;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_ADDRESS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setEmailAddress(@javax.annotation.Nonnull String emailAddress) {
     this.emailAddress = emailAddress;
   }
@@ -187,15 +181,10 @@ public class NewUserDetails {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
@@ -211,15 +200,10 @@ public class NewUserDetails {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -235,15 +219,10 @@ public class NewUserDetails {
    * @return password
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPassword() {
     return password;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPassword(@javax.annotation.Nullable String password) {
     this.password = password;
   }
@@ -267,16 +246,10 @@ public class NewUserDetails {
    * @return products
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PRODUCTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Set<String> getProducts() {
     return products;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_PRODUCTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setProducts(@javax.annotation.Nonnull Set<String> products) {
     this.products = products;
   }
@@ -287,12 +260,9 @@ public class NewUserDetails {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
-
 
 
   /**
@@ -305,11 +275,11 @@ public class NewUserDetails {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the NewUserDetails instance itself
    */
-  @JsonAnySetter
   public NewUserDetails putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -319,18 +289,19 @@ public class NewUserDetails {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -339,9 +310,7 @@ public class NewUserDetails {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this NewUserDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -395,89 +364,158 @@ public class NewUserDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("applicationKeys", "displayName", "emailAddress", "key", "name", "password", "products", "self"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("emailAddress", "products"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to NewUserDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `applicationKeys` to the URL query string
-    if (getApplicationKeys() != null) {
-      for (int i = 0; i < getApplicationKeys().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sapplicationKeys%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getApplicationKeys().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!NewUserDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in NewUserDetails is not found in the empty JSON string", NewUserDetails.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `displayName` to the URL query string
-    if (getDisplayName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-    }
-
-    // add `emailAddress` to the URL query string
-    if (getEmailAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%semailAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmailAddress()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `password` to the URL query string
-    if (getPassword() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spassword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
-    }
-
-    // add `products` to the URL query string
-    if (getProducts() != null) {
-      int i = 0;
-      for (String _item : getProducts()) {
-        joiner.add(String.format(Locale.ROOT, "%sproducts%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : NewUserDetails.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
       }
-      i++;
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("applicationKeys") != null && !jsonObj.get("applicationKeys").isJsonNull() && !jsonObj.get("applicationKeys").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `applicationKeys` to be an array in the JSON string but got `%s`", jsonObj.get("applicationKeys").toString()));
+      }
+      if ((jsonObj.get("displayName") != null && !jsonObj.get("displayName").isJsonNull()) && !jsonObj.get("displayName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayName").toString()));
+      }
+      if (!jsonObj.get("emailAddress").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `emailAddress` to be a primitive type in the JSON string but got `%s`", jsonObj.get("emailAddress").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("password") != null && !jsonObj.get("password").isJsonNull()) && !jsonObj.get("password").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `password` to be a primitive type in the JSON string but got `%s`", jsonObj.get("password").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("products") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("products").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `products` to be an array in the JSON string but got `%s`", jsonObj.get("products").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!NewUserDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'NewUserDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<NewUserDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(NewUserDetails.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<NewUserDetails>() {
+           @Override
+           public void write(JsonWriter out, NewUserDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public NewUserDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             NewUserDetails instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of NewUserDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of NewUserDetails
+   * @throws IOException if the JSON string is invalid with respect to NewUserDetails
+   */
+  public static NewUserDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, NewUserDetails.class);
+  }
+
+  /**
+   * Convert an instance of NewUserDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

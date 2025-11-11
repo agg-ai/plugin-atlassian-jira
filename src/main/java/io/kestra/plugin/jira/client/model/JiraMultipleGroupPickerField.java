@@ -13,44 +13,59 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraGroupInput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraMultipleGroupPickerField
  */
-@JsonPropertyOrder({
-  JiraMultipleGroupPickerField.JSON_PROPERTY_FIELD_ID,
-  JiraMultipleGroupPickerField.JSON_PROPERTY_GROUPS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraMultipleGroupPickerField {
-  public static final String JSON_PROPERTY_FIELD_ID = "fieldId";
+  public static final String SERIALIZED_NAME_FIELD_ID = "fieldId";
+  @SerializedName(SERIALIZED_NAME_FIELD_ID)
   @javax.annotation.Nonnull
   private String fieldId;
 
-  public static final String JSON_PROPERTY_GROUPS = "groups";
+  public static final String SERIALIZED_NAME_GROUPS = "groups";
+  @SerializedName(SERIALIZED_NAME_GROUPS)
   @javax.annotation.Nonnull
   private List<JiraGroupInput> groups = new ArrayList<>();
 
-  public JiraMultipleGroupPickerField() { 
+  public JiraMultipleGroupPickerField() {
   }
 
   public JiraMultipleGroupPickerField fieldId(@javax.annotation.Nonnull String fieldId) {
@@ -63,15 +78,10 @@ public class JiraMultipleGroupPickerField {
    * @return fieldId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getFieldId() {
     return fieldId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFieldId(@javax.annotation.Nonnull String fieldId) {
     this.fieldId = fieldId;
   }
@@ -95,23 +105,16 @@ public class JiraMultipleGroupPickerField {
    * @return groups
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<JiraGroupInput> getGroups() {
     return groups;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setGroups(@javax.annotation.Nonnull List<JiraGroupInput> groups) {
     this.groups = groups;
   }
 
 
-  /**
-   * Return true if this JiraMultipleGroupPickerField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -151,54 +154,108 @@ public class JiraMultipleGroupPickerField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("fieldId", "groups"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("fieldId", "groups"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraMultipleGroupPickerField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `fieldId` to the URL query string
-    if (getFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldId()))));
-    }
-
-    // add `groups` to the URL query string
-    if (getGroups() != null) {
-      for (int i = 0; i < getGroups().size(); i++) {
-        if (getGroups().get(i) != null) {
-          joiner.add(getGroups().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sgroups%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraMultipleGroupPickerField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraMultipleGroupPickerField is not found in the empty JSON string", JiraMultipleGroupPickerField.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraMultipleGroupPickerField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraMultipleGroupPickerField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraMultipleGroupPickerField.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("fieldId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldId").toString()));
+      }
+      // ensure the json data is an array
+      if (!jsonObj.get("groups").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groups` to be an array in the JSON string but got `%s`", jsonObj.get("groups").toString()));
+      }
+
+      JsonArray jsonArraygroups = jsonObj.getAsJsonArray("groups");
+      // validate the required field `groups` (array)
+      for (int i = 0; i < jsonArraygroups.size(); i++) {
+        JiraGroupInput.validateJsonElement(jsonArraygroups.get(i));
+      };
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraMultipleGroupPickerField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraMultipleGroupPickerField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraMultipleGroupPickerField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraMultipleGroupPickerField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraMultipleGroupPickerField>() {
+           @Override
+           public void write(JsonWriter out, JiraMultipleGroupPickerField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraMultipleGroupPickerField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JiraMultipleGroupPickerField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraMultipleGroupPickerField
+   * @throws IOException if the JSON string is invalid with respect to JiraMultipleGroupPickerField
+   */
+  public static JiraMultipleGroupPickerField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraMultipleGroupPickerField.class);
+  }
+
+  /**
+   * Convert an instance of JiraMultipleGroupPickerField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,69 +13,71 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.User;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a project component.
  */
-@JsonPropertyOrder({
-  ProjectComponent.JSON_PROPERTY_ARI,
-  ProjectComponent.JSON_PROPERTY_ASSIGNEE,
-  ProjectComponent.JSON_PROPERTY_ASSIGNEE_TYPE,
-  ProjectComponent.JSON_PROPERTY_DESCRIPTION,
-  ProjectComponent.JSON_PROPERTY_ID,
-  ProjectComponent.JSON_PROPERTY_IS_ASSIGNEE_TYPE_VALID,
-  ProjectComponent.JSON_PROPERTY_LEAD,
-  ProjectComponent.JSON_PROPERTY_LEAD_ACCOUNT_ID,
-  ProjectComponent.JSON_PROPERTY_LEAD_USER_NAME,
-  ProjectComponent.JSON_PROPERTY_METADATA,
-  ProjectComponent.JSON_PROPERTY_NAME,
-  ProjectComponent.JSON_PROPERTY_PROJECT,
-  ProjectComponent.JSON_PROPERTY_PROJECT_ID,
-  ProjectComponent.JSON_PROPERTY_REAL_ASSIGNEE,
-  ProjectComponent.JSON_PROPERTY_REAL_ASSIGNEE_TYPE,
-  ProjectComponent.JSON_PROPERTY_SELF
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectComponent {
-  public static final String JSON_PROPERTY_ARI = "ari";
+  public static final String SERIALIZED_NAME_ARI = "ari";
+  @SerializedName(SERIALIZED_NAME_ARI)
   @javax.annotation.Nullable
   private String ari;
 
-  public static final String JSON_PROPERTY_ASSIGNEE = "assignee";
+  public static final String SERIALIZED_NAME_ASSIGNEE = "assignee";
+  @SerializedName(SERIALIZED_NAME_ASSIGNEE)
   @javax.annotation.Nullable
   private User assignee;
 
   /**
    * The nominal user type used to determine the assignee for issues created with this component. See &#x60;realAssigneeType&#x60; for details on how the type of the user, and hence the user, assigned to issues is determined. Can take the following values:   *  &#x60;PROJECT_LEAD&#x60; the assignee to any issues created with this component is nominally the lead for the project the component is in.  *  &#x60;COMPONENT_LEAD&#x60; the assignee to any issues created with this component is nominally the lead for the component.  *  &#x60;UNASSIGNED&#x60; an assignee is not set for issues created with this component.  *  &#x60;PROJECT_DEFAULT&#x60; the assignee to any issues created with this component is nominally the default assignee for the project that the component is in.  Default value: &#x60;PROJECT_DEFAULT&#x60;.   Optional when creating or updating a component.
    */
+  @JsonAdapter(AssigneeTypeEnum.Adapter.class)
   public enum AssigneeTypeEnum {
-    PROJECT_DEFAULT(String.valueOf("PROJECT_DEFAULT")),
+    PROJECT_DEFAULT("PROJECT_DEFAULT"),
     
-    COMPONENT_LEAD(String.valueOf("COMPONENT_LEAD")),
+    COMPONENT_LEAD("COMPONENT_LEAD"),
     
-    PROJECT_LEAD(String.valueOf("PROJECT_LEAD")),
+    PROJECT_LEAD("PROJECT_LEAD"),
     
-    UNASSIGNED(String.valueOf("UNASSIGNED"));
+    UNASSIGNED("UNASSIGNED");
 
     private String value;
 
@@ -83,7 +85,6 @@ public class ProjectComponent {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -93,7 +94,6 @@ public class ProjectComponent {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static AssigneeTypeEnum fromValue(String value) {
       for (AssigneeTypeEnum b : AssigneeTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -102,67 +102,98 @@ public class ProjectComponent {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<AssigneeTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final AssigneeTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public AssigneeTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return AssigneeTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      AssigneeTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ASSIGNEE_TYPE = "assigneeType";
+  public static final String SERIALIZED_NAME_ASSIGNEE_TYPE = "assigneeType";
+  @SerializedName(SERIALIZED_NAME_ASSIGNEE_TYPE)
   @javax.annotation.Nullable
   private AssigneeTypeEnum assigneeType;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_IS_ASSIGNEE_TYPE_VALID = "isAssigneeTypeValid";
+  public static final String SERIALIZED_NAME_IS_ASSIGNEE_TYPE_VALID = "isAssigneeTypeValid";
+  @SerializedName(SERIALIZED_NAME_IS_ASSIGNEE_TYPE_VALID)
   @javax.annotation.Nullable
   private Boolean isAssigneeTypeValid;
 
-  public static final String JSON_PROPERTY_LEAD = "lead";
+  public static final String SERIALIZED_NAME_LEAD = "lead";
+  @SerializedName(SERIALIZED_NAME_LEAD)
   @javax.annotation.Nullable
   private User lead;
 
-  public static final String JSON_PROPERTY_LEAD_ACCOUNT_ID = "leadAccountId";
+  public static final String SERIALIZED_NAME_LEAD_ACCOUNT_ID = "leadAccountId";
+  @SerializedName(SERIALIZED_NAME_LEAD_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String leadAccountId;
 
-  public static final String JSON_PROPERTY_LEAD_USER_NAME = "leadUserName";
+  public static final String SERIALIZED_NAME_LEAD_USER_NAME = "leadUserName";
+  @SerializedName(SERIALIZED_NAME_LEAD_USER_NAME)
   @javax.annotation.Nullable
   private String leadUserName;
 
-  public static final String JSON_PROPERTY_METADATA = "metadata";
+  public static final String SERIALIZED_NAME_METADATA = "metadata";
+  @SerializedName(SERIALIZED_NAME_METADATA)
   @javax.annotation.Nullable
   private Map<String, String> metadata = new HashMap<>();
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PROJECT = "project";
+  public static final String SERIALIZED_NAME_PROJECT = "project";
+  @SerializedName(SERIALIZED_NAME_PROJECT)
   @javax.annotation.Nullable
   private String project;
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nullable
   private Long projectId;
 
-  public static final String JSON_PROPERTY_REAL_ASSIGNEE = "realAssignee";
+  public static final String SERIALIZED_NAME_REAL_ASSIGNEE = "realAssignee";
+  @SerializedName(SERIALIZED_NAME_REAL_ASSIGNEE)
   @javax.annotation.Nullable
   private User realAssignee;
 
   /**
    * The type of the assignee that is assigned to issues created with this component, when an assignee cannot be set from the &#x60;assigneeType&#x60;. For example, &#x60;assigneeType&#x60; is set to &#x60;COMPONENT_LEAD&#x60; but no component lead is set. This property is set to one of the following values:   *  &#x60;PROJECT_LEAD&#x60; when &#x60;assigneeType&#x60; is &#x60;PROJECT_LEAD&#x60; and the project lead has permission to be assigned issues in the project that the component is in.  *  &#x60;COMPONENT_LEAD&#x60; when &#x60;assignee&#x60;Type is &#x60;COMPONENT_LEAD&#x60; and the component lead has permission to be assigned issues in the project that the component is in.  *  &#x60;UNASSIGNED&#x60; when &#x60;assigneeType&#x60; is &#x60;UNASSIGNED&#x60; and Jira is configured to allow unassigned issues.  *  &#x60;PROJECT_DEFAULT&#x60; when none of the preceding cases are true.
    */
+  @JsonAdapter(RealAssigneeTypeEnum.Adapter.class)
   public enum RealAssigneeTypeEnum {
-    PROJECT_DEFAULT(String.valueOf("PROJECT_DEFAULT")),
+    PROJECT_DEFAULT("PROJECT_DEFAULT"),
     
-    COMPONENT_LEAD(String.valueOf("COMPONENT_LEAD")),
+    COMPONENT_LEAD("COMPONENT_LEAD"),
     
-    PROJECT_LEAD(String.valueOf("PROJECT_LEAD")),
+    PROJECT_LEAD("PROJECT_LEAD"),
     
-    UNASSIGNED(String.valueOf("UNASSIGNED"));
+    UNASSIGNED("UNASSIGNED");
 
     private String value;
 
@@ -170,7 +201,6 @@ public class ProjectComponent {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -180,7 +210,6 @@ public class ProjectComponent {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static RealAssigneeTypeEnum fromValue(String value) {
       for (RealAssigneeTypeEnum b : RealAssigneeTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -189,33 +218,52 @@ public class ProjectComponent {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<RealAssigneeTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final RealAssigneeTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public RealAssigneeTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return RealAssigneeTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      RealAssigneeTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_REAL_ASSIGNEE_TYPE = "realAssigneeType";
+  public static final String SERIALIZED_NAME_REAL_ASSIGNEE_TYPE = "realAssigneeType";
+  @SerializedName(SERIALIZED_NAME_REAL_ASSIGNEE_TYPE)
   @javax.annotation.Nullable
   private RealAssigneeTypeEnum realAssigneeType;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public ProjectComponent() { 
+  public ProjectComponent() {
   }
 
-  @JsonCreator
   public ProjectComponent(
-    @JsonProperty(JSON_PROPERTY_ARI) String ari, 
-    @JsonProperty(JSON_PROPERTY_ASSIGNEE) User assignee, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_IS_ASSIGNEE_TYPE_VALID) Boolean isAssigneeTypeValid, 
-    @JsonProperty(JSON_PROPERTY_LEAD) User lead, 
-    @JsonProperty(JSON_PROPERTY_METADATA) Map<String, String> metadata, 
-    @JsonProperty(JSON_PROPERTY_PROJECT_ID) Long projectId, 
-    @JsonProperty(JSON_PROPERTY_REAL_ASSIGNEE) User realAssignee, 
-    @JsonProperty(JSON_PROPERTY_REAL_ASSIGNEE_TYPE) RealAssigneeTypeEnum realAssigneeType, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self
+     String ari, 
+     User assignee, 
+     String id, 
+     Boolean isAssigneeTypeValid, 
+     User lead, 
+     Map<String, String> metadata, 
+     Long projectId, 
+     User realAssignee, 
+     RealAssigneeTypeEnum realAssigneeType, 
+     URI self
   ) {
-  this();
+    this();
     this.ari = ari;
     this.assignee = assignee;
     this.id = id;
@@ -233,12 +281,9 @@ public class ProjectComponent {
    * @return ari
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ARI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAri() {
     return ari;
   }
-
 
 
 
@@ -247,12 +292,9 @@ public class ProjectComponent {
    * @return assignee
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ASSIGNEE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getAssignee() {
     return assignee;
   }
-
 
 
 
@@ -266,15 +308,10 @@ public class ProjectComponent {
    * @return assigneeType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ASSIGNEE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AssigneeTypeEnum getAssigneeType() {
     return assigneeType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ASSIGNEE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAssigneeType(@javax.annotation.Nullable AssigneeTypeEnum assigneeType) {
     this.assigneeType = assigneeType;
   }
@@ -290,15 +327,10 @@ public class ProjectComponent {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -309,12 +341,9 @@ public class ProjectComponent {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -323,12 +352,9 @@ public class ProjectComponent {
    * @return isAssigneeTypeValid
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_ASSIGNEE_TYPE_VALID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsAssigneeTypeValid() {
     return isAssigneeTypeValid;
   }
-
 
 
 
@@ -337,12 +363,9 @@ public class ProjectComponent {
    * @return lead
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getLead() {
     return lead;
   }
-
 
 
 
@@ -356,15 +379,10 @@ public class ProjectComponent {
    * @return leadAccountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLeadAccountId() {
     return leadAccountId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLeadAccountId(@javax.annotation.Nullable String leadAccountId) {
     this.leadAccountId = leadAccountId;
   }
@@ -380,15 +398,10 @@ public class ProjectComponent {
    * @return leadUserName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD_USER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLeadUserName() {
     return leadUserName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEAD_USER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLeadUserName(@javax.annotation.Nullable String leadUserName) {
     this.leadUserName = leadUserName;
   }
@@ -399,12 +412,9 @@ public class ProjectComponent {
    * @return metadata
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getMetadata() {
     return metadata;
   }
-
 
 
 
@@ -418,15 +428,10 @@ public class ProjectComponent {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -442,15 +447,10 @@ public class ProjectComponent {
    * @return project
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProject() {
     return project;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProject(@javax.annotation.Nullable String project) {
     this.project = project;
   }
@@ -461,12 +461,9 @@ public class ProjectComponent {
    * @return projectId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getProjectId() {
     return projectId;
   }
-
 
 
 
@@ -475,12 +472,9 @@ public class ProjectComponent {
    * @return realAssignee
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REAL_ASSIGNEE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getRealAssignee() {
     return realAssignee;
   }
-
 
 
 
@@ -489,12 +483,9 @@ public class ProjectComponent {
    * @return realAssigneeType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REAL_ASSIGNEE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RealAssigneeTypeEnum getRealAssigneeType() {
     return realAssigneeType;
   }
-
 
 
 
@@ -503,8 +494,6 @@ public class ProjectComponent {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
@@ -512,9 +501,6 @@ public class ProjectComponent {
 
 
 
-  /**
-   * Return true if this ProjectComponent object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -582,123 +568,138 @@ public class ProjectComponent {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("ari", "assignee", "assigneeType", "description", "id", "isAssigneeTypeValid", "lead", "leadAccountId", "leadUserName", "metadata", "name", "project", "projectId", "realAssignee", "realAssigneeType", "self"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectComponent
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `ari` to the URL query string
-    if (getAri() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sari%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAri()))));
-    }
-
-    // add `assignee` to the URL query string
-    if (getAssignee() != null) {
-      joiner.add(getAssignee().toUrlQueryString(prefix + "assignee" + suffix));
-    }
-
-    // add `assigneeType` to the URL query string
-    if (getAssigneeType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sassigneeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssigneeType()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `isAssigneeTypeValid` to the URL query string
-    if (getIsAssigneeTypeValid() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisAssigneeTypeValid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsAssigneeTypeValid()))));
-    }
-
-    // add `lead` to the URL query string
-    if (getLead() != null) {
-      joiner.add(getLead().toUrlQueryString(prefix + "lead" + suffix));
-    }
-
-    // add `leadAccountId` to the URL query string
-    if (getLeadAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sleadAccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLeadAccountId()))));
-    }
-
-    // add `leadUserName` to the URL query string
-    if (getLeadUserName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sleadUserName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLeadUserName()))));
-    }
-
-    // add `metadata` to the URL query string
-    if (getMetadata() != null) {
-      for (String _key : getMetadata().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%smetadata%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getMetadata().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getMetadata().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectComponent.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectComponent is not found in the empty JSON string", ProjectComponent.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectComponent.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectComponent` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("ari") != null && !jsonObj.get("ari").isJsonNull()) && !jsonObj.get("ari").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `ari` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ari").toString()));
+      }
+      // validate the optional field `assignee`
+      if (jsonObj.get("assignee") != null && !jsonObj.get("assignee").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("assignee"));
+      }
+      if ((jsonObj.get("assigneeType") != null && !jsonObj.get("assigneeType").isJsonNull()) && !jsonObj.get("assigneeType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `assigneeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("assigneeType").toString()));
+      }
+      // validate the optional field `assigneeType`
+      if (jsonObj.get("assigneeType") != null && !jsonObj.get("assigneeType").isJsonNull()) {
+        AssigneeTypeEnum.validateJsonElement(jsonObj.get("assigneeType"));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      // validate the optional field `lead`
+      if (jsonObj.get("lead") != null && !jsonObj.get("lead").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("lead"));
+      }
+      if ((jsonObj.get("leadAccountId") != null && !jsonObj.get("leadAccountId").isJsonNull()) && !jsonObj.get("leadAccountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `leadAccountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("leadAccountId").toString()));
+      }
+      if ((jsonObj.get("leadUserName") != null && !jsonObj.get("leadUserName").isJsonNull()) && !jsonObj.get("leadUserName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `leadUserName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("leadUserName").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("project") != null && !jsonObj.get("project").isJsonNull()) && !jsonObj.get("project").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `project` to be a primitive type in the JSON string but got `%s`", jsonObj.get("project").toString()));
+      }
+      // validate the optional field `realAssignee`
+      if (jsonObj.get("realAssignee") != null && !jsonObj.get("realAssignee").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("realAssignee"));
+      }
+      if ((jsonObj.get("realAssigneeType") != null && !jsonObj.get("realAssigneeType").isJsonNull()) && !jsonObj.get("realAssigneeType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `realAssigneeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("realAssigneeType").toString()));
+      }
+      // validate the optional field `realAssigneeType`
+      if (jsonObj.get("realAssigneeType") != null && !jsonObj.get("realAssigneeType").isJsonNull()) {
+        RealAssigneeTypeEnum.validateJsonElement(jsonObj.get("realAssigneeType"));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
 
-    // add `project` to the URL query string
-    if (getProject() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sproject%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProject()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectComponent.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectComponent' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectComponent> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectComponent.class));
 
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<ProjectComponent>() {
+           @Override
+           public void write(JsonWriter out, ProjectComponent value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `realAssignee` to the URL query string
-    if (getRealAssignee() != null) {
-      joiner.add(getRealAssignee().toUrlQueryString(prefix + "realAssignee" + suffix));
-    }
+           @Override
+           public ProjectComponent read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `realAssigneeType` to the URL query string
-    if (getRealAssigneeType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srealAssigneeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRealAssigneeType()))));
+       }.nullSafe();
     }
+  }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+  /**
+   * Create an instance of ProjectComponent given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectComponent
+   * @throws IOException if the JSON string is invalid with respect to ProjectComponent
+   */
+  public static ProjectComponent fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectComponent.class);
+  }
 
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectComponent to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

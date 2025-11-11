@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.ErrorCollection;
 import io.kestra.plugin.jira.client.model.PageBeanWorkflowTransitionRules;
@@ -25,544 +34,523 @@ import io.kestra.plugin.jira.client.model.WorkflowTransitionRulesUpdate;
 import io.kestra.plugin.jira.client.model.WorkflowTransitionRulesUpdateErrors;
 import io.kestra.plugin.jira.client.model.WorkflowsWithTransitionRulesDetails;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowTransitionRulesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public WorkflowTransitionRulesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public WorkflowTransitionRulesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for deleteWorkflowTransitionRuleConfigurations
+     * @param workflowsWithTransitionRulesDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect app. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call deleteWorkflowTransitionRuleConfigurationsCall(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public WorkflowTransitionRulesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public WorkflowTransitionRulesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Delete workflow transition rule configurations
-   * Deletes workflow transition rules from one or more workflows. These rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling Connect app can be deleted.  **[Permissions](#permissions) required:** Only Connect apps can use this operation.
-   * @param workflowsWithTransitionRulesDetails  (required)
-   * @return WorkflowTransitionRulesUpdateErrors
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowTransitionRulesUpdateErrors deleteWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails) throws ApiException {
-    return deleteWorkflowTransitionRuleConfigurations(workflowsWithTransitionRulesDetails, null);
-  }
-
-  /**
-   * Delete workflow transition rule configurations
-   * Deletes workflow transition rules from one or more workflows. These rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling Connect app can be deleted.  **[Permissions](#permissions) required:** Only Connect apps can use this operation.
-   * @param workflowsWithTransitionRulesDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowTransitionRulesUpdateErrors
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowTransitionRulesUpdateErrors deleteWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowTransitionRulesUpdateErrors> localVarResponse = deleteWorkflowTransitionRuleConfigurationsWithHttpInfo(workflowsWithTransitionRulesDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete workflow transition rule configurations
-   * Deletes workflow transition rules from one or more workflows. These rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling Connect app can be deleted.  **[Permissions](#permissions) required:** Only Connect apps can use this operation.
-   * @param workflowsWithTransitionRulesDetails  (required)
-   * @return ApiResponse&lt;WorkflowTransitionRulesUpdateErrors&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowTransitionRulesUpdateErrors> deleteWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails) throws ApiException {
-    return deleteWorkflowTransitionRuleConfigurationsWithHttpInfo(workflowsWithTransitionRulesDetails, null);
-  }
-
-  /**
-   * Delete workflow transition rule configurations
-   * Deletes workflow transition rules from one or more workflows. These rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling Connect app can be deleted.  **[Permissions](#permissions) required:** Only Connect apps can use this operation.
-   * @param workflowsWithTransitionRulesDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowTransitionRulesUpdateErrors&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowTransitionRulesUpdateErrors> deleteWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteWorkflowTransitionRuleConfigurationsRequestBuilder(workflowsWithTransitionRulesDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteWorkflowTransitionRuleConfigurations", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowTransitionRulesUpdateErrors>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowTransitionRulesUpdateErrors responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowTransitionRulesUpdateErrors>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = workflowsWithTransitionRulesDetails;
 
-        return new ApiResponse<WorkflowTransitionRulesUpdateErrors>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflow/rule/config/delete";
 
-  private HttpRequest.Builder deleteWorkflowTransitionRuleConfigurationsRequestBuilder(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'workflowsWithTransitionRulesDetails' is set
-    if (workflowsWithTransitionRulesDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowsWithTransitionRulesDetails' when calling deleteWorkflowTransitionRuleConfigurations");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflow/rule/config/delete";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowsWithTransitionRulesDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get workflow transition rule configurations
-   * Returns a [paginated](#pagination) list of workflows with transition rules. The workflows can be filtered to return only those containing workflow transition rules:   *  of one or more transition rule types, such as [workflow post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/).  *  matching one or more transition rule keys.  Only workflows containing transition rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app are returned.  Due to server-side optimizations, workflows with an empty list of rules may be returned; these workflows can be ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
-   * @param types The types of the transition rules to return. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 10)
-   * @param keys The transition rule class keys, as defined in the Connect or the Forge app descriptor, of the transition rules to return. (optional)
-   * @param workflowNames The list of workflow names to filter by. (optional)
-   * @param withTags The list of &#x60;tags&#x60; to filter by. (optional)
-   * @param draft Whether draft or published workflows are returned. If not provided, both workflow types are returned. (optional)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;transition&#x60;, which, for each rule, returns information about the transition the rule is assigned to. (optional)
-   * @return PageBeanWorkflowTransitionRules
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanWorkflowTransitionRules getWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand) throws ApiException {
-    return getWorkflowTransitionRuleConfigurations(types, startAt, maxResults, keys, workflowNames, withTags, draft, expand, null);
-  }
-
-  /**
-   * Get workflow transition rule configurations
-   * Returns a [paginated](#pagination) list of workflows with transition rules. The workflows can be filtered to return only those containing workflow transition rules:   *  of one or more transition rule types, such as [workflow post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/).  *  matching one or more transition rule keys.  Only workflows containing transition rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app are returned.  Due to server-side optimizations, workflows with an empty list of rules may be returned; these workflows can be ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
-   * @param types The types of the transition rules to return. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 10)
-   * @param keys The transition rule class keys, as defined in the Connect or the Forge app descriptor, of the transition rules to return. (optional)
-   * @param workflowNames The list of workflow names to filter by. (optional)
-   * @param withTags The list of &#x60;tags&#x60; to filter by. (optional)
-   * @param draft Whether draft or published workflows are returned. If not provided, both workflow types are returned. (optional)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;transition&#x60;, which, for each rule, returns information about the transition the rule is assigned to. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanWorkflowTransitionRules
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanWorkflowTransitionRules getWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanWorkflowTransitionRules> localVarResponse = getWorkflowTransitionRuleConfigurationsWithHttpInfo(types, startAt, maxResults, keys, workflowNames, withTags, draft, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get workflow transition rule configurations
-   * Returns a [paginated](#pagination) list of workflows with transition rules. The workflows can be filtered to return only those containing workflow transition rules:   *  of one or more transition rule types, such as [workflow post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/).  *  matching one or more transition rule keys.  Only workflows containing transition rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app are returned.  Due to server-side optimizations, workflows with an empty list of rules may be returned; these workflows can be ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
-   * @param types The types of the transition rules to return. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 10)
-   * @param keys The transition rule class keys, as defined in the Connect or the Forge app descriptor, of the transition rules to return. (optional)
-   * @param workflowNames The list of workflow names to filter by. (optional)
-   * @param withTags The list of &#x60;tags&#x60; to filter by. (optional)
-   * @param draft Whether draft or published workflows are returned. If not provided, both workflow types are returned. (optional)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;transition&#x60;, which, for each rule, returns information about the transition the rule is assigned to. (optional)
-   * @return ApiResponse&lt;PageBeanWorkflowTransitionRules&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanWorkflowTransitionRules> getWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand) throws ApiException {
-    return getWorkflowTransitionRuleConfigurationsWithHttpInfo(types, startAt, maxResults, keys, workflowNames, withTags, draft, expand, null);
-  }
-
-  /**
-   * Get workflow transition rule configurations
-   * Returns a [paginated](#pagination) list of workflows with transition rules. The workflows can be filtered to return only those containing workflow transition rules:   *  of one or more transition rule types, such as [workflow post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/).  *  matching one or more transition rule keys.  Only workflows containing transition rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app are returned.  Due to server-side optimizations, workflows with an empty list of rules may be returned; these workflows can be ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
-   * @param types The types of the transition rules to return. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 10)
-   * @param keys The transition rule class keys, as defined in the Connect or the Forge app descriptor, of the transition rules to return. (optional)
-   * @param workflowNames The list of workflow names to filter by. (optional)
-   * @param withTags The list of &#x60;tags&#x60; to filter by. (optional)
-   * @param draft Whether draft or published workflows are returned. If not provided, both workflow types are returned. (optional)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;transition&#x60;, which, for each rule, returns information about the transition the rule is assigned to. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanWorkflowTransitionRules&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanWorkflowTransitionRules> getWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getWorkflowTransitionRuleConfigurationsRequestBuilder(types, startAt, maxResults, keys, workflowNames, withTags, draft, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getWorkflowTransitionRuleConfigurations", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanWorkflowTransitionRules>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanWorkflowTransitionRules responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanWorkflowTransitionRules>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanWorkflowTransitionRules>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getWorkflowTransitionRuleConfigurationsRequestBuilder(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'types' is set
-    if (types == null) {
-      throw new ApiException(400, "Missing the required parameter 'types' when calling getWorkflowTransitionRuleConfigurations");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflow/rule/config";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "types";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "types", types));
-    localVarQueryParameterBaseName = "keys";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "keys", keys));
-    localVarQueryParameterBaseName = "workflowNames";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "workflowNames", workflowNames));
-    localVarQueryParameterBaseName = "withTags";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "withTags", withTags));
-    localVarQueryParameterBaseName = "draft";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("draft", draft));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update workflow transition rule configurations
-   * Updates configuration of workflow transition rules. The following rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app can be updated.  To assist with app migration, this operation can be used to:   *  Disable a rule.  *  Add a &#x60;tag&#x60;. Use this to filter rules in the [Get workflow transition rule configurations](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflow-transition-rules/#api-rest-api-3-workflow-rule-config-get).  Rules are enabled if the &#x60;disabled&#x60; parameter is not provided.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
-   * @param workflowTransitionRulesUpdate  (required)
-   * @return WorkflowTransitionRulesUpdateErrors
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowTransitionRulesUpdateErrors updateWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate) throws ApiException {
-    return updateWorkflowTransitionRuleConfigurations(workflowTransitionRulesUpdate, null);
-  }
-
-  /**
-   * Update workflow transition rule configurations
-   * Updates configuration of workflow transition rules. The following rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app can be updated.  To assist with app migration, this operation can be used to:   *  Disable a rule.  *  Add a &#x60;tag&#x60;. Use this to filter rules in the [Get workflow transition rule configurations](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflow-transition-rules/#api-rest-api-3-workflow-rule-config-get).  Rules are enabled if the &#x60;disabled&#x60; parameter is not provided.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
-   * @param workflowTransitionRulesUpdate  (required)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowTransitionRulesUpdateErrors
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowTransitionRulesUpdateErrors updateWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowTransitionRulesUpdateErrors> localVarResponse = updateWorkflowTransitionRuleConfigurationsWithHttpInfo(workflowTransitionRulesUpdate, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update workflow transition rule configurations
-   * Updates configuration of workflow transition rules. The following rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app can be updated.  To assist with app migration, this operation can be used to:   *  Disable a rule.  *  Add a &#x60;tag&#x60;. Use this to filter rules in the [Get workflow transition rule configurations](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflow-transition-rules/#api-rest-api-3-workflow-rule-config-get).  Rules are enabled if the &#x60;disabled&#x60; parameter is not provided.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
-   * @param workflowTransitionRulesUpdate  (required)
-   * @return ApiResponse&lt;WorkflowTransitionRulesUpdateErrors&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowTransitionRulesUpdateErrors> updateWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate) throws ApiException {
-    return updateWorkflowTransitionRuleConfigurationsWithHttpInfo(workflowTransitionRulesUpdate, null);
-  }
-
-  /**
-   * Update workflow transition rule configurations
-   * Updates configuration of workflow transition rules. The following rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app can be updated.  To assist with app migration, this operation can be used to:   *  Disable a rule.  *  Add a &#x60;tag&#x60;. Use this to filter rules in the [Get workflow transition rule configurations](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflow-transition-rules/#api-rest-api-3-workflow-rule-config-get).  Rules are enabled if the &#x60;disabled&#x60; parameter is not provided.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
-   * @param workflowTransitionRulesUpdate  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowTransitionRulesUpdateErrors&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowTransitionRulesUpdateErrors> updateWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateWorkflowTransitionRuleConfigurationsRequestBuilder(workflowTransitionRulesUpdate, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateWorkflowTransitionRuleConfigurations", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowTransitionRulesUpdateErrors>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowTransitionRulesUpdateErrors responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowTransitionRulesUpdateErrors>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<WorkflowTransitionRulesUpdateErrors>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateWorkflowTransitionRuleConfigurationsRequestBuilder(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'workflowTransitionRulesUpdate' is set
-    if (workflowTransitionRulesUpdate == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowTransitionRulesUpdate' when calling updateWorkflowTransitionRuleConfigurations");
+        String[] localVarAuthNames = new String[] { "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteWorkflowTransitionRuleConfigurationsValidateBeforeCall(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'workflowsWithTransitionRulesDetails' is set
+        if (workflowsWithTransitionRulesDetails == null) {
+            throw new ApiException("Missing the required parameter 'workflowsWithTransitionRulesDetails' when calling deleteWorkflowTransitionRuleConfigurations(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/workflow/rule/config";
+        return deleteWorkflowTransitionRuleConfigurationsCall(workflowsWithTransitionRulesDetails, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowTransitionRulesUpdate);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete workflow transition rule configurations
+     * Deletes workflow transition rules from one or more workflows. These rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling Connect app can be deleted.  **[Permissions](#permissions) required:** Only Connect apps can use this operation.
+     * @param workflowsWithTransitionRulesDetails  (required)
+     * @return WorkflowTransitionRulesUpdateErrors
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowTransitionRulesUpdateErrors deleteWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails) throws ApiException {
+        ApiResponse<WorkflowTransitionRulesUpdateErrors> localVarResp = deleteWorkflowTransitionRuleConfigurationsWithHttpInfo(workflowsWithTransitionRulesDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Delete workflow transition rule configurations
+     * Deletes workflow transition rules from one or more workflows. These rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling Connect app can be deleted.  **[Permissions](#permissions) required:** Only Connect apps can use this operation.
+     * @param workflowsWithTransitionRulesDetails  (required)
+     * @return ApiResponse&lt;WorkflowTransitionRulesUpdateErrors&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowTransitionRulesUpdateErrors> deleteWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails) throws ApiException {
+        okhttp3.Call localVarCall = deleteWorkflowTransitionRuleConfigurationsValidateBeforeCall(workflowsWithTransitionRulesDetails, null);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionRulesUpdateErrors>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete workflow transition rule configurations (asynchronously)
+     * Deletes workflow transition rules from one or more workflows. These rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling Connect app can be deleted.  **[Permissions](#permissions) required:** Only Connect apps can use this operation.
+     * @param workflowsWithTransitionRulesDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorkflowTransitionRuleConfigurationsAsync(@javax.annotation.Nonnull WorkflowsWithTransitionRulesDetails workflowsWithTransitionRulesDetails, final ApiCallback<WorkflowTransitionRulesUpdateErrors> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteWorkflowTransitionRuleConfigurationsValidateBeforeCall(workflowsWithTransitionRulesDetails, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionRulesUpdateErrors>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getWorkflowTransitionRuleConfigurations
+     * @param types The types of the transition rules to return. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 10)
+     * @param keys The transition rule class keys, as defined in the Connect or the Forge app descriptor, of the transition rules to return. (optional)
+     * @param workflowNames The list of workflow names to filter by. (optional)
+     * @param withTags The list of &#x60;tags&#x60; to filter by. (optional)
+     * @param draft Whether draft or published workflows are returned. If not provided, both workflow types are returned. (optional)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;transition&#x60;, which, for each rule, returns information about the transition the rule is assigned to. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect or Forge app. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any transition rule type is not supported. </td><td>  -  </td></tr>
+        <tr><td> 503 </td><td> Returned if we encounter a problem while trying to access the required data. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowTransitionRuleConfigurationsCall(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflow/rule/config";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (types != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "types", types));
+        }
+
+        if (keys != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "keys", keys));
+        }
+
+        if (workflowNames != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "workflowNames", workflowNames));
+        }
+
+        if (withTags != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "withTags", withTags));
+        }
+
+        if (draft != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("draft", draft));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getWorkflowTransitionRuleConfigurationsValidateBeforeCall(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'types' is set
+        if (types == null) {
+            throw new ApiException("Missing the required parameter 'types' when calling getWorkflowTransitionRuleConfigurations(Async)");
+        }
+
+        return getWorkflowTransitionRuleConfigurationsCall(types, startAt, maxResults, keys, workflowNames, withTags, draft, expand, _callback);
+
+    }
+
+    /**
+     * Get workflow transition rule configurations
+     * Returns a [paginated](#pagination) list of workflows with transition rules. The workflows can be filtered to return only those containing workflow transition rules:   *  of one or more transition rule types, such as [workflow post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/).  *  matching one or more transition rule keys.  Only workflows containing transition rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app are returned.  Due to server-side optimizations, workflows with an empty list of rules may be returned; these workflows can be ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
+     * @param types The types of the transition rules to return. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 10)
+     * @param keys The transition rule class keys, as defined in the Connect or the Forge app descriptor, of the transition rules to return. (optional)
+     * @param workflowNames The list of workflow names to filter by. (optional)
+     * @param withTags The list of &#x60;tags&#x60; to filter by. (optional)
+     * @param draft Whether draft or published workflows are returned. If not provided, both workflow types are returned. (optional)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;transition&#x60;, which, for each rule, returns information about the transition the rule is assigned to. (optional)
+     * @return PageBeanWorkflowTransitionRules
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect or Forge app. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any transition rule type is not supported. </td><td>  -  </td></tr>
+        <tr><td> 503 </td><td> Returned if we encounter a problem while trying to access the required data. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanWorkflowTransitionRules getWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PageBeanWorkflowTransitionRules> localVarResp = getWorkflowTransitionRuleConfigurationsWithHttpInfo(types, startAt, maxResults, keys, workflowNames, withTags, draft, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get workflow transition rule configurations
+     * Returns a [paginated](#pagination) list of workflows with transition rules. The workflows can be filtered to return only those containing workflow transition rules:   *  of one or more transition rule types, such as [workflow post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/).  *  matching one or more transition rule keys.  Only workflows containing transition rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app are returned.  Due to server-side optimizations, workflows with an empty list of rules may be returned; these workflows can be ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
+     * @param types The types of the transition rules to return. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 10)
+     * @param keys The transition rule class keys, as defined in the Connect or the Forge app descriptor, of the transition rules to return. (optional)
+     * @param workflowNames The list of workflow names to filter by. (optional)
+     * @param withTags The list of &#x60;tags&#x60; to filter by. (optional)
+     * @param draft Whether draft or published workflows are returned. If not provided, both workflow types are returned. (optional)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;transition&#x60;, which, for each rule, returns information about the transition the rule is assigned to. (optional)
+     * @return ApiResponse&lt;PageBeanWorkflowTransitionRules&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect or Forge app. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any transition rule type is not supported. </td><td>  -  </td></tr>
+        <tr><td> 503 </td><td> Returned if we encounter a problem while trying to access the required data. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanWorkflowTransitionRules> getWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getWorkflowTransitionRuleConfigurationsValidateBeforeCall(types, startAt, maxResults, keys, workflowNames, withTags, draft, expand, null);
+        Type localVarReturnType = new TypeToken<PageBeanWorkflowTransitionRules>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get workflow transition rule configurations (asynchronously)
+     * Returns a [paginated](#pagination) list of workflows with transition rules. The workflows can be filtered to return only those containing workflow transition rules:   *  of one or more transition rule types, such as [workflow post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/).  *  matching one or more transition rule keys.  Only workflows containing transition rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app are returned.  Due to server-side optimizations, workflows with an empty list of rules may be returned; these workflows can be ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
+     * @param types The types of the transition rules to return. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 10)
+     * @param keys The transition rule class keys, as defined in the Connect or the Forge app descriptor, of the transition rules to return. (optional)
+     * @param workflowNames The list of workflow names to filter by. (optional)
+     * @param withTags The list of &#x60;tags&#x60; to filter by. (optional)
+     * @param draft Whether draft or published workflows are returned. If not provided, both workflow types are returned. (optional)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;transition&#x60;, which, for each rule, returns information about the transition the rule is assigned to. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect or Forge app. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any transition rule type is not supported. </td><td>  -  </td></tr>
+        <tr><td> 503 </td><td> Returned if we encounter a problem while trying to access the required data. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowTransitionRuleConfigurationsAsync(@javax.annotation.Nonnull Set<String> types, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> keys, @javax.annotation.Nullable Set<String> workflowNames, @javax.annotation.Nullable Set<String> withTags, @javax.annotation.Nullable Boolean draft, @javax.annotation.Nullable String expand, final ApiCallback<PageBeanWorkflowTransitionRules> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getWorkflowTransitionRuleConfigurationsValidateBeforeCall(types, startAt, maxResults, keys, workflowNames, withTags, draft, expand, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanWorkflowTransitionRules>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateWorkflowTransitionRuleConfigurations
+     * @param workflowTransitionRulesUpdate  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect or Forge app. </td><td>  -  </td></tr>
+        <tr><td> 503 </td><td> Returned if we encounter a problem while trying to access the required data. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateWorkflowTransitionRuleConfigurationsCall(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = workflowTransitionRulesUpdate;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflow/rule/config";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateWorkflowTransitionRuleConfigurationsValidateBeforeCall(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'workflowTransitionRulesUpdate' is set
+        if (workflowTransitionRulesUpdate == null) {
+            throw new ApiException("Missing the required parameter 'workflowTransitionRulesUpdate' when calling updateWorkflowTransitionRuleConfigurations(Async)");
+        }
+
+        return updateWorkflowTransitionRuleConfigurationsCall(workflowTransitionRulesUpdate, _callback);
+
+    }
+
+    /**
+     * Update workflow transition rule configurations
+     * Updates configuration of workflow transition rules. The following rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app can be updated.  To assist with app migration, this operation can be used to:   *  Disable a rule.  *  Add a &#x60;tag&#x60;. Use this to filter rules in the [Get workflow transition rule configurations](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflow-transition-rules/#api-rest-api-3-workflow-rule-config-get).  Rules are enabled if the &#x60;disabled&#x60; parameter is not provided.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
+     * @param workflowTransitionRulesUpdate  (required)
+     * @return WorkflowTransitionRulesUpdateErrors
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect or Forge app. </td><td>  -  </td></tr>
+        <tr><td> 503 </td><td> Returned if we encounter a problem while trying to access the required data. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowTransitionRulesUpdateErrors updateWorkflowTransitionRuleConfigurations(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate) throws ApiException {
+        ApiResponse<WorkflowTransitionRulesUpdateErrors> localVarResp = updateWorkflowTransitionRuleConfigurationsWithHttpInfo(workflowTransitionRulesUpdate);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update workflow transition rule configurations
+     * Updates configuration of workflow transition rules. The following rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app can be updated.  To assist with app migration, this operation can be used to:   *  Disable a rule.  *  Add a &#x60;tag&#x60;. Use this to filter rules in the [Get workflow transition rule configurations](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflow-transition-rules/#api-rest-api-3-workflow-rule-config-get).  Rules are enabled if the &#x60;disabled&#x60; parameter is not provided.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
+     * @param workflowTransitionRulesUpdate  (required)
+     * @return ApiResponse&lt;WorkflowTransitionRulesUpdateErrors&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect or Forge app. </td><td>  -  </td></tr>
+        <tr><td> 503 </td><td> Returned if we encounter a problem while trying to access the required data. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowTransitionRulesUpdateErrors> updateWorkflowTransitionRuleConfigurationsWithHttpInfo(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate) throws ApiException {
+        okhttp3.Call localVarCall = updateWorkflowTransitionRuleConfigurationsValidateBeforeCall(workflowTransitionRulesUpdate, null);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionRulesUpdateErrors>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update workflow transition rule configurations (asynchronously)
+     * Updates configuration of workflow transition rules. The following rule types are supported:   *  [post functions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-post-function/)  *  [conditions](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-condition/)  *  [validators](https://developer.atlassian.com/cloud/jira/platform/modules/workflow-validator/)  Only rules created by the calling [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) app can be updated.  To assist with app migration, this operation can be used to:   *  Disable a rule.  *  Add a &#x60;tag&#x60;. Use this to filter rules in the [Get workflow transition rule configurations](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-workflow-transition-rules/#api-rest-api-3-workflow-rule-config-get).  Rules are enabled if the &#x60;disabled&#x60; parameter is not provided.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) or [Forge](https://developer.atlassian.com/cloud/jira/platform/index/#forge-apps) apps can use this operation.
+     * @param workflowTransitionRulesUpdate  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect or Forge app. </td><td>  -  </td></tr>
+        <tr><td> 503 </td><td> Returned if we encounter a problem while trying to access the required data. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateWorkflowTransitionRuleConfigurationsAsync(@javax.annotation.Nonnull WorkflowTransitionRulesUpdate workflowTransitionRulesUpdate, final ApiCallback<WorkflowTransitionRulesUpdateErrors> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateWorkflowTransitionRuleConfigurationsValidateBeforeCall(workflowTransitionRulesUpdate, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowTransitionRulesUpdateErrors>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

@@ -13,56 +13,70 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Request bean for bulk changelog retrieval
  */
-@JsonPropertyOrder({
-  BulkChangelogRequestBean.JSON_PROPERTY_FIELD_IDS,
-  BulkChangelogRequestBean.JSON_PROPERTY_ISSUE_IDS_OR_KEYS,
-  BulkChangelogRequestBean.JSON_PROPERTY_MAX_RESULTS,
-  BulkChangelogRequestBean.JSON_PROPERTY_NEXT_PAGE_TOKEN
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkChangelogRequestBean {
-  public static final String JSON_PROPERTY_FIELD_IDS = "fieldIds";
+  public static final String SERIALIZED_NAME_FIELD_IDS = "fieldIds";
+  @SerializedName(SERIALIZED_NAME_FIELD_IDS)
   @javax.annotation.Nullable
   private Set<String> fieldIds = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_ISSUE_IDS_OR_KEYS = "issueIdsOrKeys";
+  public static final String SERIALIZED_NAME_ISSUE_IDS_OR_KEYS = "issueIdsOrKeys";
+  @SerializedName(SERIALIZED_NAME_ISSUE_IDS_OR_KEYS)
   @javax.annotation.Nonnull
   private List<String> issueIdsOrKeys = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MAX_RESULTS = "maxResults";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "maxResults";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nullable
   private Integer maxResults = 1000;
 
-  public static final String JSON_PROPERTY_NEXT_PAGE_TOKEN = "nextPageToken";
+  public static final String SERIALIZED_NAME_NEXT_PAGE_TOKEN = "nextPageToken";
+  @SerializedName(SERIALIZED_NAME_NEXT_PAGE_TOKEN)
   @javax.annotation.Nullable
   private String nextPageToken;
 
-  public BulkChangelogRequestBean() { 
+  public BulkChangelogRequestBean() {
   }
 
   public BulkChangelogRequestBean fieldIds(@javax.annotation.Nullable Set<String> fieldIds) {
@@ -83,16 +97,10 @@ public class BulkChangelogRequestBean {
    * @return fieldIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getFieldIds() {
     return fieldIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_FIELD_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldIds(@javax.annotation.Nullable Set<String> fieldIds) {
     this.fieldIds = fieldIds;
   }
@@ -116,15 +124,10 @@ public class BulkChangelogRequestBean {
    * @return issueIdsOrKeys
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS_OR_KEYS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<String> getIssueIdsOrKeys() {
     return issueIdsOrKeys;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS_OR_KEYS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIssueIdsOrKeys(@javax.annotation.Nonnull List<String> issueIdsOrKeys) {
     this.issueIdsOrKeys = issueIdsOrKeys;
   }
@@ -142,15 +145,10 @@ public class BulkChangelogRequestBean {
    * @return maxResults
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResults() {
     return maxResults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxResults(@javax.annotation.Nullable Integer maxResults) {
     this.maxResults = maxResults;
   }
@@ -166,23 +164,16 @@ public class BulkChangelogRequestBean {
    * @return nextPageToken
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NEXT_PAGE_TOKEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNextPageToken() {
     return nextPageToken;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NEXT_PAGE_TOKEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNextPageToken(@javax.annotation.Nullable String nextPageToken) {
     this.nextPageToken = nextPageToken;
   }
 
 
-  /**
-   * Return true if this BulkChangelogRequestBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -226,69 +217,108 @@ public class BulkChangelogRequestBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("fieldIds", "issueIdsOrKeys", "maxResults", "nextPageToken"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("issueIdsOrKeys"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkChangelogRequestBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `fieldIds` to the URL query string
-    if (getFieldIds() != null) {
-      int i = 0;
-      for (String _item : getFieldIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sfieldIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkChangelogRequestBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkChangelogRequestBean is not found in the empty JSON string", BulkChangelogRequestBean.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `issueIdsOrKeys` to the URL query string
-    if (getIssueIdsOrKeys() != null) {
-      for (int i = 0; i < getIssueIdsOrKeys().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sissueIdsOrKeys%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getIssueIdsOrKeys().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkChangelogRequestBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkChangelogRequestBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
 
-    // add `maxResults` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smaxResults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : BulkChangelogRequestBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("fieldIds") != null && !jsonObj.get("fieldIds").isJsonNull() && !jsonObj.get("fieldIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldIds` to be an array in the JSON string but got `%s`", jsonObj.get("fieldIds").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("issueIdsOrKeys") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("issueIdsOrKeys").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueIdsOrKeys` to be an array in the JSON string but got `%s`", jsonObj.get("issueIdsOrKeys").toString()));
+      }
+      if ((jsonObj.get("nextPageToken") != null && !jsonObj.get("nextPageToken").isJsonNull()) && !jsonObj.get("nextPageToken").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `nextPageToken` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nextPageToken").toString()));
+      }
+  }
 
-    // add `nextPageToken` to the URL query string
-    if (getNextPageToken() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snextPageToken%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNextPageToken()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkChangelogRequestBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkChangelogRequestBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkChangelogRequestBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkChangelogRequestBean.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<BulkChangelogRequestBean>() {
+           @Override
+           public void write(JsonWriter out, BulkChangelogRequestBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BulkChangelogRequestBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of BulkChangelogRequestBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkChangelogRequestBean
+   * @throws IOException if the JSON string is invalid with respect to BulkChangelogRequestBean
+   */
+  public static BulkChangelogRequestBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkChangelogRequestBean.class);
+  }
+
+  /**
+   * Convert an instance of BulkChangelogRequestBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

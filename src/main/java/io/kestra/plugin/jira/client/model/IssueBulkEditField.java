@@ -13,68 +13,79 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * IssueBulkEditField
  */
-@JsonPropertyOrder({
-  IssueBulkEditField.JSON_PROPERTY_DESCRIPTION,
-  IssueBulkEditField.JSON_PROPERTY_FIELD_OPTIONS,
-  IssueBulkEditField.JSON_PROPERTY_ID,
-  IssueBulkEditField.JSON_PROPERTY_IS_REQUIRED,
-  IssueBulkEditField.JSON_PROPERTY_MULTI_SELECT_FIELD_OPTIONS,
-  IssueBulkEditField.JSON_PROPERTY_NAME,
-  IssueBulkEditField.JSON_PROPERTY_SEARCH_URL,
-  IssueBulkEditField.JSON_PROPERTY_TYPE,
-  IssueBulkEditField.JSON_PROPERTY_UNAVAILABLE_MESSAGE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueBulkEditField {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_FIELD_OPTIONS = "fieldOptions";
+  public static final String SERIALIZED_NAME_FIELD_OPTIONS = "fieldOptions";
+  @SerializedName(SERIALIZED_NAME_FIELD_OPTIONS)
   @javax.annotation.Nullable
   private List<Object> fieldOptions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_IS_REQUIRED = "isRequired";
+  public static final String SERIALIZED_NAME_IS_REQUIRED = "isRequired";
+  @SerializedName(SERIALIZED_NAME_IS_REQUIRED)
   @javax.annotation.Nullable
   private Boolean isRequired;
 
   /**
    * Gets or Sets multiSelectFieldOptions
    */
+  @JsonAdapter(MultiSelectFieldOptionsEnum.Adapter.class)
   public enum MultiSelectFieldOptionsEnum {
-    ADD(String.valueOf("ADD")),
+    ADD("ADD"),
     
-    REMOVE(String.valueOf("REMOVE")),
+    REMOVE("REMOVE"),
     
-    REPLACE(String.valueOf("REPLACE")),
+    REPLACE("REPLACE"),
     
-    REMOVE_ALL(String.valueOf("REMOVE_ALL"));
+    REMOVE_ALL("REMOVE_ALL");
 
     private String value;
 
@@ -82,7 +93,6 @@ public class IssueBulkEditField {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -92,7 +102,6 @@ public class IssueBulkEditField {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static MultiSelectFieldOptionsEnum fromValue(String value) {
       for (MultiSelectFieldOptionsEnum b : MultiSelectFieldOptionsEnum.values()) {
         if (b.value.equals(value)) {
@@ -101,29 +110,52 @@ public class IssueBulkEditField {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<MultiSelectFieldOptionsEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final MultiSelectFieldOptionsEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public MultiSelectFieldOptionsEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return MultiSelectFieldOptionsEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      MultiSelectFieldOptionsEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_MULTI_SELECT_FIELD_OPTIONS = "multiSelectFieldOptions";
+  public static final String SERIALIZED_NAME_MULTI_SELECT_FIELD_OPTIONS = "multiSelectFieldOptions";
+  @SerializedName(SERIALIZED_NAME_MULTI_SELECT_FIELD_OPTIONS)
   @javax.annotation.Nullable
   private List<MultiSelectFieldOptionsEnum> multiSelectFieldOptions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_SEARCH_URL = "searchUrl";
+  public static final String SERIALIZED_NAME_SEARCH_URL = "searchUrl";
+  @SerializedName(SERIALIZED_NAME_SEARCH_URL)
   @javax.annotation.Nullable
   private String searchUrl;
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private String type;
 
-  public static final String JSON_PROPERTY_UNAVAILABLE_MESSAGE = "unavailableMessage";
+  public static final String SERIALIZED_NAME_UNAVAILABLE_MESSAGE = "unavailableMessage";
+  @SerializedName(SERIALIZED_NAME_UNAVAILABLE_MESSAGE)
   @javax.annotation.Nullable
   private String unavailableMessage;
 
-  public IssueBulkEditField() { 
+  public IssueBulkEditField() {
   }
 
   public IssueBulkEditField description(@javax.annotation.Nullable String description) {
@@ -136,15 +168,10 @@ public class IssueBulkEditField {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -168,15 +195,10 @@ public class IssueBulkEditField {
    * @return fieldOptions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Object> getFieldOptions() {
     return fieldOptions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldOptions(@javax.annotation.Nullable List<Object> fieldOptions) {
     this.fieldOptions = fieldOptions;
   }
@@ -192,15 +214,10 @@ public class IssueBulkEditField {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -216,15 +233,10 @@ public class IssueBulkEditField {
    * @return isRequired
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsRequired() {
     return isRequired;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsRequired(@javax.annotation.Nullable Boolean isRequired) {
     this.isRequired = isRequired;
   }
@@ -248,15 +260,10 @@ public class IssueBulkEditField {
    * @return multiSelectFieldOptions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MULTI_SELECT_FIELD_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<MultiSelectFieldOptionsEnum> getMultiSelectFieldOptions() {
     return multiSelectFieldOptions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MULTI_SELECT_FIELD_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMultiSelectFieldOptions(@javax.annotation.Nullable List<MultiSelectFieldOptionsEnum> multiSelectFieldOptions) {
     this.multiSelectFieldOptions = multiSelectFieldOptions;
   }
@@ -272,15 +279,10 @@ public class IssueBulkEditField {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -296,15 +298,10 @@ public class IssueBulkEditField {
    * @return searchUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSearchUrl() {
     return searchUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearchUrl(@javax.annotation.Nullable String searchUrl) {
     this.searchUrl = searchUrl;
   }
@@ -320,15 +317,10 @@ public class IssueBulkEditField {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable String type) {
     this.type = type;
   }
@@ -344,23 +336,16 @@ public class IssueBulkEditField {
    * @return unavailableMessage
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UNAVAILABLE_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUnavailableMessage() {
     return unavailableMessage;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_UNAVAILABLE_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUnavailableMessage(@javax.annotation.Nullable String unavailableMessage) {
     this.unavailableMessage = unavailableMessage;
   }
 
 
-  /**
-   * Return true if this IssueBulkEditField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -414,92 +399,114 @@ public class IssueBulkEditField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "fieldOptions", "id", "isRequired", "multiSelectFieldOptions", "name", "searchUrl", "type", "unavailableMessage"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueBulkEditField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `fieldOptions` to the URL query string
-    if (getFieldOptions() != null) {
-      for (int i = 0; i < getFieldOptions().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sfieldOptions%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getFieldOptions().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueBulkEditField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueBulkEditField is not found in the empty JSON string", IssueBulkEditField.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `isRequired` to the URL query string
-    if (getIsRequired() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisRequired%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsRequired()))));
-    }
-
-    // add `multiSelectFieldOptions` to the URL query string
-    if (getMultiSelectFieldOptions() != null) {
-      for (int i = 0; i < getMultiSelectFieldOptions().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%smultiSelectFieldOptions%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getMultiSelectFieldOptions().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueBulkEditField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueBulkEditField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("fieldOptions") != null && !jsonObj.get("fieldOptions").isJsonNull() && !jsonObj.get("fieldOptions").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldOptions` to be an array in the JSON string but got `%s`", jsonObj.get("fieldOptions").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("multiSelectFieldOptions") != null && !jsonObj.get("multiSelectFieldOptions").isJsonNull() && !jsonObj.get("multiSelectFieldOptions").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `multiSelectFieldOptions` to be an array in the JSON string but got `%s`", jsonObj.get("multiSelectFieldOptions").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("searchUrl") != null && !jsonObj.get("searchUrl").isJsonNull()) && !jsonObj.get("searchUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `searchUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("searchUrl").toString()));
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      if ((jsonObj.get("unavailableMessage") != null && !jsonObj.get("unavailableMessage").isJsonNull()) && !jsonObj.get("unavailableMessage").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `unavailableMessage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("unavailableMessage").toString()));
+      }
+  }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueBulkEditField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueBulkEditField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueBulkEditField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueBulkEditField.class));
 
-    // add `searchUrl` to the URL query string
-    if (getSearchUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssearchUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearchUrl()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<IssueBulkEditField>() {
+           @Override
+           public void write(JsonWriter out, IssueBulkEditField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
+           @Override
+           public IssueBulkEditField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `unavailableMessage` to the URL query string
-    if (getUnavailableMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sunavailableMessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUnavailableMessage()))));
+       }.nullSafe();
     }
+  }
 
-    return joiner.toString();
+  /**
+   * Create an instance of IssueBulkEditField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueBulkEditField
+   * @throws IOException if the JSON string is invalid with respect to IssueBulkEditField
+   */
+  public static IssueBulkEditField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueBulkEditField.class);
+  }
+
+  /**
+   * Convert an instance of IssueBulkEditField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

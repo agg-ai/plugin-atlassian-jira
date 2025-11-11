@@ -13,58 +13,72 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueBulkEditField;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Bulk Edit Get Fields Response.
  */
-@JsonPropertyOrder({
-  BulkEditGetFields.JSON_PROPERTY_ENDING_BEFORE,
-  BulkEditGetFields.JSON_PROPERTY_FIELDS,
-  BulkEditGetFields.JSON_PROPERTY_STARTING_AFTER
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkEditGetFields {
-  public static final String JSON_PROPERTY_ENDING_BEFORE = "endingBefore";
+  public static final String SERIALIZED_NAME_ENDING_BEFORE = "endingBefore";
+  @SerializedName(SERIALIZED_NAME_ENDING_BEFORE)
   @javax.annotation.Nullable
   private String endingBefore;
 
-  public static final String JSON_PROPERTY_FIELDS = "fields";
+  public static final String SERIALIZED_NAME_FIELDS = "fields";
+  @SerializedName(SERIALIZED_NAME_FIELDS)
   @javax.annotation.Nullable
   private List<IssueBulkEditField> fields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_STARTING_AFTER = "startingAfter";
+  public static final String SERIALIZED_NAME_STARTING_AFTER = "startingAfter";
+  @SerializedName(SERIALIZED_NAME_STARTING_AFTER)
   @javax.annotation.Nullable
   private String startingAfter;
 
-  public BulkEditGetFields() { 
+  public BulkEditGetFields() {
   }
 
-  @JsonCreator
   public BulkEditGetFields(
-    @JsonProperty(JSON_PROPERTY_ENDING_BEFORE) String endingBefore, 
-    @JsonProperty(JSON_PROPERTY_FIELDS) List<IssueBulkEditField> fields, 
-    @JsonProperty(JSON_PROPERTY_STARTING_AFTER) String startingAfter
+     String endingBefore, 
+     List<IssueBulkEditField> fields, 
+     String startingAfter
   ) {
-  this();
+    this();
     this.endingBefore = endingBefore;
     this.fields = fields;
     this.startingAfter = startingAfter;
@@ -75,12 +89,9 @@ public class BulkEditGetFields {
    * @return endingBefore
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ENDING_BEFORE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEndingBefore() {
     return endingBefore;
   }
-
 
 
 
@@ -89,12 +100,9 @@ public class BulkEditGetFields {
    * @return fields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueBulkEditField> getFields() {
     return fields;
   }
-
 
 
 
@@ -103,8 +111,6 @@ public class BulkEditGetFields {
    * @return startingAfter
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STARTING_AFTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStartingAfter() {
     return startingAfter;
   }
@@ -112,9 +118,6 @@ public class BulkEditGetFields {
 
 
 
-  /**
-   * Return true if this BulkEditGetFields object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -156,59 +159,108 @@ public class BulkEditGetFields {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("endingBefore", "fields", "startingAfter"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkEditGetFields
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `endingBefore` to the URL query string
-    if (getEndingBefore() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sendingBefore%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEndingBefore()))));
-    }
-
-    // add `fields` to the URL query string
-    if (getFields() != null) {
-      for (int i = 0; i < getFields().size(); i++) {
-        if (getFields().get(i) != null) {
-          joiner.add(getFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sfields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkEditGetFields.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkEditGetFields is not found in the empty JSON string", BulkEditGetFields.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `startingAfter` to the URL query string
-    if (getStartingAfter() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartingAfter%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartingAfter()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkEditGetFields.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkEditGetFields` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("endingBefore") != null && !jsonObj.get("endingBefore").isJsonNull()) && !jsonObj.get("endingBefore").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `endingBefore` to be a primitive type in the JSON string but got `%s`", jsonObj.get("endingBefore").toString()));
+      }
+      if (jsonObj.get("fields") != null && !jsonObj.get("fields").isJsonNull()) {
+        JsonArray jsonArrayfields = jsonObj.getAsJsonArray("fields");
+        if (jsonArrayfields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("fields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fields` to be an array in the JSON string but got `%s`", jsonObj.get("fields").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `fields` (array)
+          for (int i = 0; i < jsonArrayfields.size(); i++) {
+            IssueBulkEditField.validateJsonElement(jsonArrayfields.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("startingAfter") != null && !jsonObj.get("startingAfter").isJsonNull()) && !jsonObj.get("startingAfter").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `startingAfter` to be a primitive type in the JSON string but got `%s`", jsonObj.get("startingAfter").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkEditGetFields.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkEditGetFields' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkEditGetFields> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkEditGetFields.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<BulkEditGetFields>() {
+           @Override
+           public void write(JsonWriter out, BulkEditGetFields value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BulkEditGetFields read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of BulkEditGetFields given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkEditGetFields
+   * @throws IOException if the JSON string is invalid with respect to BulkEditGetFields
+   */
+  public static BulkEditGetFields fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkEditGetFields.class);
+  }
+
+  /**
+   * Convert an instance of BulkEditGetFields to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

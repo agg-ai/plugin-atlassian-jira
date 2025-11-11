@@ -13,78 +13,92 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The Connect provided ecosystem rules available.
  */
-@JsonPropertyOrder({
-  AvailableWorkflowConnectRule.JSON_PROPERTY_ADDON_KEY,
-  AvailableWorkflowConnectRule.JSON_PROPERTY_CREATE_URL,
-  AvailableWorkflowConnectRule.JSON_PROPERTY_DESCRIPTION,
-  AvailableWorkflowConnectRule.JSON_PROPERTY_EDIT_URL,
-  AvailableWorkflowConnectRule.JSON_PROPERTY_MODULE_KEY,
-  AvailableWorkflowConnectRule.JSON_PROPERTY_NAME,
-  AvailableWorkflowConnectRule.JSON_PROPERTY_RULE_KEY,
-  AvailableWorkflowConnectRule.JSON_PROPERTY_RULE_TYPE,
-  AvailableWorkflowConnectRule.JSON_PROPERTY_VIEW_URL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AvailableWorkflowConnectRule {
-  public static final String JSON_PROPERTY_ADDON_KEY = "addonKey";
+  public static final String SERIALIZED_NAME_ADDON_KEY = "addonKey";
+  @SerializedName(SERIALIZED_NAME_ADDON_KEY)
   @javax.annotation.Nullable
   private String addonKey;
 
-  public static final String JSON_PROPERTY_CREATE_URL = "createUrl";
+  public static final String SERIALIZED_NAME_CREATE_URL = "createUrl";
+  @SerializedName(SERIALIZED_NAME_CREATE_URL)
   @javax.annotation.Nullable
   private String createUrl;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_EDIT_URL = "editUrl";
+  public static final String SERIALIZED_NAME_EDIT_URL = "editUrl";
+  @SerializedName(SERIALIZED_NAME_EDIT_URL)
   @javax.annotation.Nullable
   private String editUrl;
 
-  public static final String JSON_PROPERTY_MODULE_KEY = "moduleKey";
+  public static final String SERIALIZED_NAME_MODULE_KEY = "moduleKey";
+  @SerializedName(SERIALIZED_NAME_MODULE_KEY)
   @javax.annotation.Nullable
   private String moduleKey;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_RULE_KEY = "ruleKey";
+  public static final String SERIALIZED_NAME_RULE_KEY = "ruleKey";
+  @SerializedName(SERIALIZED_NAME_RULE_KEY)
   @javax.annotation.Nullable
   private String ruleKey;
 
   /**
    * The rule type.
    */
+  @JsonAdapter(RuleTypeEnum.Adapter.class)
   public enum RuleTypeEnum {
-    CONDITION(String.valueOf("Condition")),
+    CONDITION("Condition"),
     
-    VALIDATOR(String.valueOf("Validator")),
+    VALIDATOR("Validator"),
     
-    FUNCTION(String.valueOf("Function")),
+    FUNCTION("Function"),
     
-    SCREEN(String.valueOf("Screen"));
+    SCREEN("Screen");
 
     private String value;
 
@@ -92,7 +106,6 @@ public class AvailableWorkflowConnectRule {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -102,7 +115,6 @@ public class AvailableWorkflowConnectRule {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static RuleTypeEnum fromValue(String value) {
       for (RuleTypeEnum b : RuleTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -111,17 +123,37 @@ public class AvailableWorkflowConnectRule {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<RuleTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final RuleTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public RuleTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return RuleTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      RuleTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_RULE_TYPE = "ruleType";
+  public static final String SERIALIZED_NAME_RULE_TYPE = "ruleType";
+  @SerializedName(SERIALIZED_NAME_RULE_TYPE)
   @javax.annotation.Nullable
   private RuleTypeEnum ruleType;
 
-  public static final String JSON_PROPERTY_VIEW_URL = "viewUrl";
+  public static final String SERIALIZED_NAME_VIEW_URL = "viewUrl";
+  @SerializedName(SERIALIZED_NAME_VIEW_URL)
   @javax.annotation.Nullable
   private String viewUrl;
 
-  public AvailableWorkflowConnectRule() { 
+  public AvailableWorkflowConnectRule() {
   }
 
   public AvailableWorkflowConnectRule addonKey(@javax.annotation.Nullable String addonKey) {
@@ -134,15 +166,10 @@ public class AvailableWorkflowConnectRule {
    * @return addonKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ADDON_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAddonKey() {
     return addonKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ADDON_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAddonKey(@javax.annotation.Nullable String addonKey) {
     this.addonKey = addonKey;
   }
@@ -158,15 +185,10 @@ public class AvailableWorkflowConnectRule {
    * @return createUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCreateUrl() {
     return createUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CREATE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCreateUrl(@javax.annotation.Nullable String createUrl) {
     this.createUrl = createUrl;
   }
@@ -182,15 +204,10 @@ public class AvailableWorkflowConnectRule {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -206,15 +223,10 @@ public class AvailableWorkflowConnectRule {
    * @return editUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EDIT_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEditUrl() {
     return editUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EDIT_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEditUrl(@javax.annotation.Nullable String editUrl) {
     this.editUrl = editUrl;
   }
@@ -230,15 +242,10 @@ public class AvailableWorkflowConnectRule {
    * @return moduleKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MODULE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getModuleKey() {
     return moduleKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MODULE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setModuleKey(@javax.annotation.Nullable String moduleKey) {
     this.moduleKey = moduleKey;
   }
@@ -254,15 +261,10 @@ public class AvailableWorkflowConnectRule {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -278,15 +280,10 @@ public class AvailableWorkflowConnectRule {
    * @return ruleKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RULE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRuleKey() {
     return ruleKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RULE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRuleKey(@javax.annotation.Nullable String ruleKey) {
     this.ruleKey = ruleKey;
   }
@@ -302,15 +299,10 @@ public class AvailableWorkflowConnectRule {
    * @return ruleType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RULE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RuleTypeEnum getRuleType() {
     return ruleType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RULE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRuleType(@javax.annotation.Nullable RuleTypeEnum ruleType) {
     this.ruleType = ruleType;
   }
@@ -326,23 +318,16 @@ public class AvailableWorkflowConnectRule {
    * @return viewUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VIEW_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getViewUrl() {
     return viewUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VIEW_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setViewUrl(@javax.annotation.Nullable String viewUrl) {
     this.viewUrl = viewUrl;
   }
 
 
-  /**
-   * Return true if this AvailableWorkflowConnectRule object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -396,84 +381,119 @@ public class AvailableWorkflowConnectRule {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("addonKey", "createUrl", "description", "editUrl", "moduleKey", "name", "ruleKey", "ruleType", "viewUrl"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AvailableWorkflowConnectRule
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AvailableWorkflowConnectRule.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AvailableWorkflowConnectRule is not found in the empty JSON string", AvailableWorkflowConnectRule.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AvailableWorkflowConnectRule.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AvailableWorkflowConnectRule` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("addonKey") != null && !jsonObj.get("addonKey").isJsonNull()) && !jsonObj.get("addonKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `addonKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("addonKey").toString()));
+      }
+      if ((jsonObj.get("createUrl") != null && !jsonObj.get("createUrl").isJsonNull()) && !jsonObj.get("createUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `createUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("createUrl").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("editUrl") != null && !jsonObj.get("editUrl").isJsonNull()) && !jsonObj.get("editUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `editUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("editUrl").toString()));
+      }
+      if ((jsonObj.get("moduleKey") != null && !jsonObj.get("moduleKey").isJsonNull()) && !jsonObj.get("moduleKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `moduleKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("moduleKey").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("ruleKey") != null && !jsonObj.get("ruleKey").isJsonNull()) && !jsonObj.get("ruleKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `ruleKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ruleKey").toString()));
+      }
+      if ((jsonObj.get("ruleType") != null && !jsonObj.get("ruleType").isJsonNull()) && !jsonObj.get("ruleType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `ruleType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ruleType").toString()));
+      }
+      // validate the optional field `ruleType`
+      if (jsonObj.get("ruleType") != null && !jsonObj.get("ruleType").isJsonNull()) {
+        RuleTypeEnum.validateJsonElement(jsonObj.get("ruleType"));
+      }
+      if ((jsonObj.get("viewUrl") != null && !jsonObj.get("viewUrl").isJsonNull()) && !jsonObj.get("viewUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `viewUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("viewUrl").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AvailableWorkflowConnectRule.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AvailableWorkflowConnectRule' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AvailableWorkflowConnectRule> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AvailableWorkflowConnectRule.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<AvailableWorkflowConnectRule>() {
+           @Override
+           public void write(JsonWriter out, AvailableWorkflowConnectRule value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public AvailableWorkflowConnectRule read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of AvailableWorkflowConnectRule given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AvailableWorkflowConnectRule
+   * @throws IOException if the JSON string is invalid with respect to AvailableWorkflowConnectRule
+   */
+  public static AvailableWorkflowConnectRule fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AvailableWorkflowConnectRule.class);
+  }
 
-    // add `addonKey` to the URL query string
-    if (getAddonKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saddonKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAddonKey()))));
-    }
-
-    // add `createUrl` to the URL query string
-    if (getCreateUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screateUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreateUrl()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `editUrl` to the URL query string
-    if (getEditUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%seditUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEditUrl()))));
-    }
-
-    // add `moduleKey` to the URL query string
-    if (getModuleKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smoduleKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModuleKey()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `ruleKey` to the URL query string
-    if (getRuleKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sruleKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRuleKey()))));
-    }
-
-    // add `ruleType` to the URL query string
-    if (getRuleType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sruleType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRuleType()))));
-    }
-
-    // add `viewUrl` to the URL query string
-    if (getViewUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sviewUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getViewUrl()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of AvailableWorkflowConnectRule to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

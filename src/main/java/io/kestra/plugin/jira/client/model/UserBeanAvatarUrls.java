@@ -13,52 +13,67 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * UserBeanAvatarUrls
  */
-@JsonPropertyOrder({
-  UserBeanAvatarUrls.JSON_PROPERTY_16X16,
-  UserBeanAvatarUrls.JSON_PROPERTY_24X24,
-  UserBeanAvatarUrls.JSON_PROPERTY_32X32,
-  UserBeanAvatarUrls.JSON_PROPERTY_48X48
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class UserBeanAvatarUrls {
-  public static final String JSON_PROPERTY_16X16 = "16x16";
+  public static final String SERIALIZED_NAME_16X16 = "16x16";
+  @SerializedName(SERIALIZED_NAME_16X16)
   @javax.annotation.Nullable
   private URI _16x16;
 
-  public static final String JSON_PROPERTY_24X24 = "24x24";
+  public static final String SERIALIZED_NAME_24X24 = "24x24";
+  @SerializedName(SERIALIZED_NAME_24X24)
   @javax.annotation.Nullable
   private URI _24x24;
 
-  public static final String JSON_PROPERTY_32X32 = "32x32";
+  public static final String SERIALIZED_NAME_32X32 = "32x32";
+  @SerializedName(SERIALIZED_NAME_32X32)
   @javax.annotation.Nullable
   private URI _32x32;
 
-  public static final String JSON_PROPERTY_48X48 = "48x48";
+  public static final String SERIALIZED_NAME_48X48 = "48x48";
+  @SerializedName(SERIALIZED_NAME_48X48)
   @javax.annotation.Nullable
   private URI _48x48;
 
-  public UserBeanAvatarUrls() { 
+  public UserBeanAvatarUrls() {
   }
 
   public UserBeanAvatarUrls _16x16(@javax.annotation.Nullable URI _16x16) {
@@ -71,15 +86,10 @@ public class UserBeanAvatarUrls {
    * @return _16x16
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_16X16, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI get16x16() {
     return _16x16;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_16X16, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void set16x16(@javax.annotation.Nullable URI _16x16) {
     this._16x16 = _16x16;
   }
@@ -95,15 +105,10 @@ public class UserBeanAvatarUrls {
    * @return _24x24
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_24X24, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI get24x24() {
     return _24x24;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_24X24, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void set24x24(@javax.annotation.Nullable URI _24x24) {
     this._24x24 = _24x24;
   }
@@ -119,15 +124,10 @@ public class UserBeanAvatarUrls {
    * @return _32x32
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_32X32, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI get32x32() {
     return _32x32;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_32X32, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void set32x32(@javax.annotation.Nullable URI _32x32) {
     this._32x32 = _32x32;
   }
@@ -143,23 +143,16 @@ public class UserBeanAvatarUrls {
    * @return _48x48
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_48X48, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI get48x48() {
     return _48x48;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_48X48, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void set48x48(@javax.annotation.Nullable URI _48x48) {
     this._48x48 = _48x48;
   }
 
 
-  /**
-   * Return true if this UserBeanAvatarUrls object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -203,59 +196,100 @@ public class UserBeanAvatarUrls {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("16x16", "24x24", "32x32", "48x48"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to UserBeanAvatarUrls
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!UserBeanAvatarUrls.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in UserBeanAvatarUrls is not found in the empty JSON string", UserBeanAvatarUrls.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!UserBeanAvatarUrls.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `UserBeanAvatarUrls` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("16x16") != null && !jsonObj.get("16x16").isJsonNull()) && !jsonObj.get("16x16").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `16x16` to be a primitive type in the JSON string but got `%s`", jsonObj.get("16x16").toString()));
+      }
+      if ((jsonObj.get("24x24") != null && !jsonObj.get("24x24").isJsonNull()) && !jsonObj.get("24x24").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `24x24` to be a primitive type in the JSON string but got `%s`", jsonObj.get("24x24").toString()));
+      }
+      if ((jsonObj.get("32x32") != null && !jsonObj.get("32x32").isJsonNull()) && !jsonObj.get("32x32").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `32x32` to be a primitive type in the JSON string but got `%s`", jsonObj.get("32x32").toString()));
+      }
+      if ((jsonObj.get("48x48") != null && !jsonObj.get("48x48").isJsonNull()) && !jsonObj.get("48x48").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `48x48` to be a primitive type in the JSON string but got `%s`", jsonObj.get("48x48").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!UserBeanAvatarUrls.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'UserBeanAvatarUrls' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<UserBeanAvatarUrls> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(UserBeanAvatarUrls.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<UserBeanAvatarUrls>() {
+           @Override
+           public void write(JsonWriter out, UserBeanAvatarUrls value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public UserBeanAvatarUrls read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of UserBeanAvatarUrls given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of UserBeanAvatarUrls
+   * @throws IOException if the JSON string is invalid with respect to UserBeanAvatarUrls
+   */
+  public static UserBeanAvatarUrls fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, UserBeanAvatarUrls.class);
+  }
 
-    // add `16x16` to the URL query string
-    if (get16x16() != null) {
-      joiner.add(String.format(Locale.ROOT, "%s16x16%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(get16x16()))));
-    }
-
-    // add `24x24` to the URL query string
-    if (get24x24() != null) {
-      joiner.add(String.format(Locale.ROOT, "%s24x24%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(get24x24()))));
-    }
-
-    // add `32x32` to the URL query string
-    if (get32x32() != null) {
-      joiner.add(String.format(Locale.ROOT, "%s32x32%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(get32x32()))));
-    }
-
-    // add `48x48` to the URL query string
-    if (get48x48() != null) {
-      joiner.add(String.format(Locale.ROOT, "%s48x48%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(get48x48()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of UserBeanAvatarUrls to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

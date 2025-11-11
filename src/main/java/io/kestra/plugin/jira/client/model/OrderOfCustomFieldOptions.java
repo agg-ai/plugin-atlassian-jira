@@ -13,50 +13,65 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * An ordered list of custom field option IDs and information on where to move them.
  */
-@JsonPropertyOrder({
-  OrderOfCustomFieldOptions.JSON_PROPERTY_AFTER,
-  OrderOfCustomFieldOptions.JSON_PROPERTY_CUSTOM_FIELD_OPTION_IDS,
-  OrderOfCustomFieldOptions.JSON_PROPERTY_POSITION
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class OrderOfCustomFieldOptions {
-  public static final String JSON_PROPERTY_AFTER = "after";
+  public static final String SERIALIZED_NAME_AFTER = "after";
+  @SerializedName(SERIALIZED_NAME_AFTER)
   @javax.annotation.Nullable
   private String after;
 
-  public static final String JSON_PROPERTY_CUSTOM_FIELD_OPTION_IDS = "customFieldOptionIds";
+  public static final String SERIALIZED_NAME_CUSTOM_FIELD_OPTION_IDS = "customFieldOptionIds";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_FIELD_OPTION_IDS)
   @javax.annotation.Nonnull
   private List<String> customFieldOptionIds = new ArrayList<>();
 
   /**
    * The position the custom field options should be moved to. Required if &#x60;after&#x60; isn&#39;t provided.
    */
+  @JsonAdapter(PositionEnum.Adapter.class)
   public enum PositionEnum {
-    FIRST(String.valueOf("First")),
+    FIRST("First"),
     
-    LAST(String.valueOf("Last"));
+    LAST("Last");
 
     private String value;
 
@@ -64,7 +79,6 @@ public class OrderOfCustomFieldOptions {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -74,7 +88,6 @@ public class OrderOfCustomFieldOptions {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static PositionEnum fromValue(String value) {
       for (PositionEnum b : PositionEnum.values()) {
         if (b.value.equals(value)) {
@@ -83,13 +96,32 @@ public class OrderOfCustomFieldOptions {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<PositionEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final PositionEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public PositionEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return PositionEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      PositionEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_POSITION = "position";
+  public static final String SERIALIZED_NAME_POSITION = "position";
+  @SerializedName(SERIALIZED_NAME_POSITION)
   @javax.annotation.Nullable
   private PositionEnum position;
 
-  public OrderOfCustomFieldOptions() { 
+  public OrderOfCustomFieldOptions() {
   }
 
   public OrderOfCustomFieldOptions after(@javax.annotation.Nullable String after) {
@@ -102,15 +134,10 @@ public class OrderOfCustomFieldOptions {
    * @return after
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AFTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAfter() {
     return after;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_AFTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAfter(@javax.annotation.Nullable String after) {
     this.after = after;
   }
@@ -134,15 +161,10 @@ public class OrderOfCustomFieldOptions {
    * @return customFieldOptionIds
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELD_OPTION_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<String> getCustomFieldOptionIds() {
     return customFieldOptionIds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELD_OPTION_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCustomFieldOptionIds(@javax.annotation.Nonnull List<String> customFieldOptionIds) {
     this.customFieldOptionIds = customFieldOptionIds;
   }
@@ -158,23 +180,16 @@ public class OrderOfCustomFieldOptions {
    * @return position
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PositionEnum getPosition() {
     return position;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPosition(@javax.annotation.Nullable PositionEnum position) {
     this.position = position;
   }
 
 
-  /**
-   * Return true if this OrderOfCustomFieldOptions object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -216,58 +231,111 @@ public class OrderOfCustomFieldOptions {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("after", "customFieldOptionIds", "position"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("customFieldOptionIds"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to OrderOfCustomFieldOptions
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `after` to the URL query string
-    if (getAfter() != null) {
-      joiner.add(String.format(Locale.ROOT, "%safter%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAfter()))));
-    }
-
-    // add `customFieldOptionIds` to the URL query string
-    if (getCustomFieldOptionIds() != null) {
-      for (int i = 0; i < getCustomFieldOptionIds().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%scustomFieldOptionIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getCustomFieldOptionIds().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!OrderOfCustomFieldOptions.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in OrderOfCustomFieldOptions is not found in the empty JSON string", OrderOfCustomFieldOptions.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `position` to the URL query string
-    if (getPosition() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sposition%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPosition()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!OrderOfCustomFieldOptions.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `OrderOfCustomFieldOptions` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : OrderOfCustomFieldOptions.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("after") != null && !jsonObj.get("after").isJsonNull()) && !jsonObj.get("after").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `after` to be a primitive type in the JSON string but got `%s`", jsonObj.get("after").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("customFieldOptionIds") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("customFieldOptionIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customFieldOptionIds` to be an array in the JSON string but got `%s`", jsonObj.get("customFieldOptionIds").toString()));
+      }
+      if ((jsonObj.get("position") != null && !jsonObj.get("position").isJsonNull()) && !jsonObj.get("position").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `position` to be a primitive type in the JSON string but got `%s`", jsonObj.get("position").toString()));
+      }
+      // validate the optional field `position`
+      if (jsonObj.get("position") != null && !jsonObj.get("position").isJsonNull()) {
+        PositionEnum.validateJsonElement(jsonObj.get("position"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!OrderOfCustomFieldOptions.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'OrderOfCustomFieldOptions' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<OrderOfCustomFieldOptions> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(OrderOfCustomFieldOptions.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<OrderOfCustomFieldOptions>() {
+           @Override
+           public void write(JsonWriter out, OrderOfCustomFieldOptions value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public OrderOfCustomFieldOptions read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of OrderOfCustomFieldOptions given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of OrderOfCustomFieldOptions
+   * @throws IOException if the JSON string is invalid with respect to OrderOfCustomFieldOptions
+   */
+  public static OrderOfCustomFieldOptions fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, OrderOfCustomFieldOptions.class);
+  }
+
+  /**
+   * Convert an instance of OrderOfCustomFieldOptions to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

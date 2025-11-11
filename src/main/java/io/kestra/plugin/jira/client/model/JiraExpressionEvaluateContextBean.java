@@ -13,76 +13,91 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.CustomContextVariable;
 import io.kestra.plugin.jira.client.model.IdOrKeyBean;
 import io.kestra.plugin.jira.client.model.JexpEvaluateCtxIssues;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraExpressionEvaluateContextBean
  */
-@JsonPropertyOrder({
-  JiraExpressionEvaluateContextBean.JSON_PROPERTY_BOARD,
-  JiraExpressionEvaluateContextBean.JSON_PROPERTY_CUSTOM,
-  JiraExpressionEvaluateContextBean.JSON_PROPERTY_CUSTOMER_REQUEST,
-  JiraExpressionEvaluateContextBean.JSON_PROPERTY_ISSUE,
-  JiraExpressionEvaluateContextBean.JSON_PROPERTY_ISSUES,
-  JiraExpressionEvaluateContextBean.JSON_PROPERTY_PROJECT,
-  JiraExpressionEvaluateContextBean.JSON_PROPERTY_SERVICE_DESK,
-  JiraExpressionEvaluateContextBean.JSON_PROPERTY_SPRINT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraExpressionEvaluateContextBean {
-  public static final String JSON_PROPERTY_BOARD = "board";
+  public static final String SERIALIZED_NAME_BOARD = "board";
+  @SerializedName(SERIALIZED_NAME_BOARD)
   @javax.annotation.Nullable
   private Long board;
 
-  public static final String JSON_PROPERTY_CUSTOM = "custom";
+  public static final String SERIALIZED_NAME_CUSTOM = "custom";
+  @SerializedName(SERIALIZED_NAME_CUSTOM)
   @javax.annotation.Nullable
   private List<CustomContextVariable> custom = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CUSTOMER_REQUEST = "customerRequest";
+  public static final String SERIALIZED_NAME_CUSTOMER_REQUEST = "customerRequest";
+  @SerializedName(SERIALIZED_NAME_CUSTOMER_REQUEST)
   @javax.annotation.Nullable
   private Long customerRequest;
 
-  public static final String JSON_PROPERTY_ISSUE = "issue";
+  public static final String SERIALIZED_NAME_ISSUE = "issue";
+  @SerializedName(SERIALIZED_NAME_ISSUE)
   @javax.annotation.Nullable
   private IdOrKeyBean issue;
 
-  public static final String JSON_PROPERTY_ISSUES = "issues";
+  public static final String SERIALIZED_NAME_ISSUES = "issues";
+  @SerializedName(SERIALIZED_NAME_ISSUES)
   @javax.annotation.Nullable
   private JexpEvaluateCtxIssues issues;
 
-  public static final String JSON_PROPERTY_PROJECT = "project";
+  public static final String SERIALIZED_NAME_PROJECT = "project";
+  @SerializedName(SERIALIZED_NAME_PROJECT)
   @javax.annotation.Nullable
   private IdOrKeyBean project;
 
-  public static final String JSON_PROPERTY_SERVICE_DESK = "serviceDesk";
+  public static final String SERIALIZED_NAME_SERVICE_DESK = "serviceDesk";
+  @SerializedName(SERIALIZED_NAME_SERVICE_DESK)
   @javax.annotation.Nullable
   private Long serviceDesk;
 
-  public static final String JSON_PROPERTY_SPRINT = "sprint";
+  public static final String SERIALIZED_NAME_SPRINT = "sprint";
+  @SerializedName(SERIALIZED_NAME_SPRINT)
   @javax.annotation.Nullable
   private Long sprint;
 
-  public JiraExpressionEvaluateContextBean() { 
+  public JiraExpressionEvaluateContextBean() {
   }
 
   public JiraExpressionEvaluateContextBean board(@javax.annotation.Nullable Long board) {
@@ -95,15 +110,10 @@ public class JiraExpressionEvaluateContextBean {
    * @return board
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BOARD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getBoard() {
     return board;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BOARD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBoard(@javax.annotation.Nullable Long board) {
     this.board = board;
   }
@@ -127,15 +137,10 @@ public class JiraExpressionEvaluateContextBean {
    * @return custom
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<CustomContextVariable> getCustom() {
     return custom;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustom(@javax.annotation.Nullable List<CustomContextVariable> custom) {
     this.custom = custom;
   }
@@ -151,15 +156,10 @@ public class JiraExpressionEvaluateContextBean {
    * @return customerRequest
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOMER_REQUEST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getCustomerRequest() {
     return customerRequest;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOMER_REQUEST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomerRequest(@javax.annotation.Nullable Long customerRequest) {
     this.customerRequest = customerRequest;
   }
@@ -175,15 +175,10 @@ public class JiraExpressionEvaluateContextBean {
    * @return issue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IdOrKeyBean getIssue() {
     return issue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssue(@javax.annotation.Nullable IdOrKeyBean issue) {
     this.issue = issue;
   }
@@ -199,15 +194,10 @@ public class JiraExpressionEvaluateContextBean {
    * @return issues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JexpEvaluateCtxIssues getIssues() {
     return issues;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssues(@javax.annotation.Nullable JexpEvaluateCtxIssues issues) {
     this.issues = issues;
   }
@@ -223,15 +213,10 @@ public class JiraExpressionEvaluateContextBean {
    * @return project
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IdOrKeyBean getProject() {
     return project;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProject(@javax.annotation.Nullable IdOrKeyBean project) {
     this.project = project;
   }
@@ -247,15 +232,10 @@ public class JiraExpressionEvaluateContextBean {
    * @return serviceDesk
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SERVICE_DESK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getServiceDesk() {
     return serviceDesk;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SERVICE_DESK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServiceDesk(@javax.annotation.Nullable Long serviceDesk) {
     this.serviceDesk = serviceDesk;
   }
@@ -271,23 +251,16 @@ public class JiraExpressionEvaluateContextBean {
    * @return sprint
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SPRINT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSprint() {
     return sprint;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SPRINT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSprint(@javax.annotation.Nullable Long sprint) {
     this.sprint = sprint;
   }
 
 
-  /**
-   * Return true if this JiraExpressionEvaluateContextBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -339,84 +312,114 @@ public class JiraExpressionEvaluateContextBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("board", "custom", "customerRequest", "issue", "issues", "project", "serviceDesk", "sprint"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraExpressionEvaluateContextBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `board` to the URL query string
-    if (getBoard() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sboard%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBoard()))));
-    }
-
-    // add `custom` to the URL query string
-    if (getCustom() != null) {
-      for (int i = 0; i < getCustom().size(); i++) {
-        if (getCustom().get(i) != null) {
-          joiner.add(getCustom().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scustom%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraExpressionEvaluateContextBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraExpressionEvaluateContextBean is not found in the empty JSON string", JiraExpressionEvaluateContextBean.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `customerRequest` to the URL query string
-    if (getCustomerRequest() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scustomerRequest%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustomerRequest()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraExpressionEvaluateContextBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraExpressionEvaluateContextBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("custom") != null && !jsonObj.get("custom").isJsonNull()) {
+        JsonArray jsonArraycustom = jsonObj.getAsJsonArray("custom");
+        if (jsonArraycustom != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("custom").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `custom` to be an array in the JSON string but got `%s`", jsonObj.get("custom").toString()));
+          }
 
-    // add `issue` to the URL query string
-    if (getIssue() != null) {
-      joiner.add(getIssue().toUrlQueryString(prefix + "issue" + suffix));
-    }
+          // validate the optional field `custom` (array)
+          for (int i = 0; i < jsonArraycustom.size(); i++) {
+            CustomContextVariable.validateJsonElement(jsonArraycustom.get(i));
+          };
+        }
+      }
+      // validate the optional field `issue`
+      if (jsonObj.get("issue") != null && !jsonObj.get("issue").isJsonNull()) {
+        IdOrKeyBean.validateJsonElement(jsonObj.get("issue"));
+      }
+      // validate the optional field `issues`
+      if (jsonObj.get("issues") != null && !jsonObj.get("issues").isJsonNull()) {
+        JexpEvaluateCtxIssues.validateJsonElement(jsonObj.get("issues"));
+      }
+      // validate the optional field `project`
+      if (jsonObj.get("project") != null && !jsonObj.get("project").isJsonNull()) {
+        IdOrKeyBean.validateJsonElement(jsonObj.get("project"));
+      }
+  }
 
-    // add `issues` to the URL query string
-    if (getIssues() != null) {
-      joiner.add(getIssues().toUrlQueryString(prefix + "issues" + suffix));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraExpressionEvaluateContextBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraExpressionEvaluateContextBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraExpressionEvaluateContextBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraExpressionEvaluateContextBean.class));
 
-    // add `project` to the URL query string
-    if (getProject() != null) {
-      joiner.add(getProject().toUrlQueryString(prefix + "project" + suffix));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<JiraExpressionEvaluateContextBean>() {
+           @Override
+           public void write(JsonWriter out, JiraExpressionEvaluateContextBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `serviceDesk` to the URL query string
-    if (getServiceDesk() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sserviceDesk%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getServiceDesk()))));
-    }
+           @Override
+           public JiraExpressionEvaluateContextBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `sprint` to the URL query string
-    if (getSprint() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssprint%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSprint()))));
+       }.nullSafe();
     }
+  }
 
-    return joiner.toString();
+  /**
+   * Create an instance of JiraExpressionEvaluateContextBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraExpressionEvaluateContextBean
+   * @throws IOException if the JSON string is invalid with respect to JiraExpressionEvaluateContextBean
+   */
+  public static JiraExpressionEvaluateContextBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraExpressionEvaluateContextBean.class);
+  }
+
+  /**
+   * Convert an instance of JiraExpressionEvaluateContextBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,48 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * ProjectArchetype
  */
-@JsonPropertyOrder({
-  ProjectArchetype.JSON_PROPERTY_REAL_TYPE,
-  ProjectArchetype.JSON_PROPERTY_STYLE,
-  ProjectArchetype.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectArchetype {
   /**
    * Gets or Sets realType
    */
+  @JsonAdapter(RealTypeEnum.Adapter.class)
   public enum RealTypeEnum {
-    BUSINESS(String.valueOf("BUSINESS")),
+    BUSINESS("BUSINESS"),
     
-    SOFTWARE(String.valueOf("SOFTWARE")),
+    SOFTWARE("SOFTWARE"),
     
-    PRODUCT_DISCOVERY(String.valueOf("PRODUCT_DISCOVERY")),
+    PRODUCT_DISCOVERY("PRODUCT_DISCOVERY"),
     
-    SERVICE_DESK(String.valueOf("SERVICE_DESK")),
+    SERVICE_DESK("SERVICE_DESK"),
     
-    CUSTOMER_SERVICE(String.valueOf("CUSTOMER_SERVICE")),
+    CUSTOMER_SERVICE("CUSTOMER_SERVICE"),
     
-    OPS(String.valueOf("OPS"));
+    OPS("OPS");
 
     private String value;
 
@@ -62,7 +75,6 @@ public class ProjectArchetype {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -72,7 +84,6 @@ public class ProjectArchetype {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static RealTypeEnum fromValue(String value) {
       for (RealTypeEnum b : RealTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -81,19 +92,39 @@ public class ProjectArchetype {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<RealTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final RealTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public RealTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return RealTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      RealTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_REAL_TYPE = "realType";
+  public static final String SERIALIZED_NAME_REAL_TYPE = "realType";
+  @SerializedName(SERIALIZED_NAME_REAL_TYPE)
   @javax.annotation.Nullable
   private RealTypeEnum realType;
 
   /**
    * Gets or Sets style
    */
+  @JsonAdapter(StyleEnum.Adapter.class)
   public enum StyleEnum {
-    CLASSIC(String.valueOf("classic")),
+    CLASSIC("classic"),
     
-    NEXT_GEN(String.valueOf("next-gen"));
+    NEXT_GEN("next-gen");
 
     private String value;
 
@@ -101,7 +132,6 @@ public class ProjectArchetype {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -111,7 +141,6 @@ public class ProjectArchetype {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static StyleEnum fromValue(String value) {
       for (StyleEnum b : StyleEnum.values()) {
         if (b.value.equals(value)) {
@@ -120,27 +149,47 @@ public class ProjectArchetype {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<StyleEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StyleEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StyleEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return StyleEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      StyleEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_STYLE = "style";
+  public static final String SERIALIZED_NAME_STYLE = "style";
+  @SerializedName(SERIALIZED_NAME_STYLE)
   @javax.annotation.Nullable
   private StyleEnum style;
 
   /**
    * Gets or Sets type
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    BUSINESS(String.valueOf("BUSINESS")),
+    BUSINESS("BUSINESS"),
     
-    SOFTWARE(String.valueOf("SOFTWARE")),
+    SOFTWARE("SOFTWARE"),
     
-    PRODUCT_DISCOVERY(String.valueOf("PRODUCT_DISCOVERY")),
+    PRODUCT_DISCOVERY("PRODUCT_DISCOVERY"),
     
-    SERVICE_DESK(String.valueOf("SERVICE_DESK")),
+    SERVICE_DESK("SERVICE_DESK"),
     
-    CUSTOMER_SERVICE(String.valueOf("CUSTOMER_SERVICE")),
+    CUSTOMER_SERVICE("CUSTOMER_SERVICE"),
     
-    OPS(String.valueOf("OPS"));
+    OPS("OPS");
 
     private String value;
 
@@ -148,7 +197,6 @@ public class ProjectArchetype {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -158,7 +206,6 @@ public class ProjectArchetype {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -167,13 +214,32 @@ public class ProjectArchetype {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private TypeEnum type;
 
-  public ProjectArchetype() { 
+  public ProjectArchetype() {
   }
 
   public ProjectArchetype realType(@javax.annotation.Nullable RealTypeEnum realType) {
@@ -186,15 +252,10 @@ public class ProjectArchetype {
    * @return realType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REAL_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RealTypeEnum getRealType() {
     return realType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_REAL_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRealType(@javax.annotation.Nullable RealTypeEnum realType) {
     this.realType = realType;
   }
@@ -210,15 +271,10 @@ public class ProjectArchetype {
    * @return style
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STYLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public StyleEnum getStyle() {
     return style;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STYLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStyle(@javax.annotation.Nullable StyleEnum style) {
     this.style = style;
   }
@@ -234,23 +290,16 @@ public class ProjectArchetype {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable TypeEnum type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this ProjectArchetype object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -292,54 +341,109 @@ public class ProjectArchetype {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("realType", "style", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectArchetype
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectArchetype.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectArchetype is not found in the empty JSON string", ProjectArchetype.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectArchetype.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectArchetype` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("realType") != null && !jsonObj.get("realType").isJsonNull()) && !jsonObj.get("realType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `realType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("realType").toString()));
+      }
+      // validate the optional field `realType`
+      if (jsonObj.get("realType") != null && !jsonObj.get("realType").isJsonNull()) {
+        RealTypeEnum.validateJsonElement(jsonObj.get("realType"));
+      }
+      if ((jsonObj.get("style") != null && !jsonObj.get("style").isJsonNull()) && !jsonObj.get("style").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `style` to be a primitive type in the JSON string but got `%s`", jsonObj.get("style").toString()));
+      }
+      // validate the optional field `style`
+      if (jsonObj.get("style") != null && !jsonObj.get("style").isJsonNull()) {
+        StyleEnum.validateJsonElement(jsonObj.get("style"));
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the optional field `type`
+      if (jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) {
+        TypeEnum.validateJsonElement(jsonObj.get("type"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectArchetype.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectArchetype' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectArchetype> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectArchetype.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ProjectArchetype>() {
+           @Override
+           public void write(JsonWriter out, ProjectArchetype value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectArchetype read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ProjectArchetype given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectArchetype
+   * @throws IOException if the JSON string is invalid with respect to ProjectArchetype
+   */
+  public static ProjectArchetype fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectArchetype.class);
+  }
 
-    // add `realType` to the URL query string
-    if (getRealType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srealType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRealType()))));
-    }
-
-    // add `style` to the URL query string
-    if (getStyle() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstyle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStyle()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectArchetype to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

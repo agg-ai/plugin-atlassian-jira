@@ -13,42 +13,57 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.StatusProjectUsagePage;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The projects using this status.
  */
-@JsonPropertyOrder({
-  StatusProjectUsageDTO.JSON_PROPERTY_PROJECTS,
-  StatusProjectUsageDTO.JSON_PROPERTY_STATUS_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class StatusProjectUsageDTO {
-  public static final String JSON_PROPERTY_PROJECTS = "projects";
+  public static final String SERIALIZED_NAME_PROJECTS = "projects";
+  @SerializedName(SERIALIZED_NAME_PROJECTS)
   @javax.annotation.Nullable
   private StatusProjectUsagePage projects;
 
-  public static final String JSON_PROPERTY_STATUS_ID = "statusId";
+  public static final String SERIALIZED_NAME_STATUS_ID = "statusId";
+  @SerializedName(SERIALIZED_NAME_STATUS_ID)
   @javax.annotation.Nullable
   private String statusId;
 
-  public StatusProjectUsageDTO() { 
+  public StatusProjectUsageDTO() {
   }
 
   public StatusProjectUsageDTO projects(@javax.annotation.Nullable StatusProjectUsagePage projects) {
@@ -61,15 +76,10 @@ public class StatusProjectUsageDTO {
    * @return projects
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public StatusProjectUsagePage getProjects() {
     return projects;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjects(@javax.annotation.Nullable StatusProjectUsagePage projects) {
     this.projects = projects;
   }
@@ -85,23 +95,16 @@ public class StatusProjectUsageDTO {
    * @return statusId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStatusId() {
     return statusId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusId(@javax.annotation.Nullable String statusId) {
     this.statusId = statusId;
   }
 
 
-  /**
-   * Return true if this StatusProjectUsageDTO object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -141,49 +144,95 @@ public class StatusProjectUsageDTO {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("projects", "statusId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to StatusProjectUsageDTO
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!StatusProjectUsageDTO.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in StatusProjectUsageDTO is not found in the empty JSON string", StatusProjectUsageDTO.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!StatusProjectUsageDTO.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `StatusProjectUsageDTO` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `projects`
+      if (jsonObj.get("projects") != null && !jsonObj.get("projects").isJsonNull()) {
+        StatusProjectUsagePage.validateJsonElement(jsonObj.get("projects"));
+      }
+      if ((jsonObj.get("statusId") != null && !jsonObj.get("statusId").isJsonNull()) && !jsonObj.get("statusId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!StatusProjectUsageDTO.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'StatusProjectUsageDTO' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<StatusProjectUsageDTO> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(StatusProjectUsageDTO.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<StatusProjectUsageDTO>() {
+           @Override
+           public void write(JsonWriter out, StatusProjectUsageDTO value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public StatusProjectUsageDTO read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of StatusProjectUsageDTO given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of StatusProjectUsageDTO
+   * @throws IOException if the JSON string is invalid with respect to StatusProjectUsageDTO
+   */
+  public static StatusProjectUsageDTO fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, StatusProjectUsageDTO.class);
+  }
 
-    // add `projects` to the URL query string
-    if (getProjects() != null) {
-      joiner.add(getProjects().toUrlQueryString(prefix + "projects" + suffix));
-    }
-
-    // add `statusId` to the URL query string
-    if (getStatusId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusId()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of StatusProjectUsageDTO to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

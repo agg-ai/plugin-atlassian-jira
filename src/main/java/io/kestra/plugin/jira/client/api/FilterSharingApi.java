@@ -10,847 +10,893 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.DefaultShareScope;
 import io.kestra.plugin.jira.client.model.SharePermission;
 import io.kestra.plugin.jira.client.model.SharePermissionInputBean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FilterSharingApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public FilterSharingApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public FilterSharingApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addSharePermission
+     * @param id The ID of the filter. (required)
+     * @param sharePermissionInputBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the request object is invalid. For example, it contains an invalid type, the ID does not match the type, or the project or group is not found.  *  the user does not own the filter.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addSharePermissionCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public FilterSharingApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public FilterSharingApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Add share permission
-   * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.  Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).  **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
-   * @param id The ID of the filter. (required)
-   * @param sharePermissionInputBean  (required)
-   * @return List&lt;SharePermission&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<SharePermission> addSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean) throws ApiException {
-    return addSharePermission(id, sharePermissionInputBean, null);
-  }
-
-  /**
-   * Add share permission
-   * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.  Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).  **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
-   * @param id The ID of the filter. (required)
-   * @param sharePermissionInputBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;SharePermission&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<SharePermission> addSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<SharePermission>> localVarResponse = addSharePermissionWithHttpInfo(id, sharePermissionInputBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add share permission
-   * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.  Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).  **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
-   * @param id The ID of the filter. (required)
-   * @param sharePermissionInputBean  (required)
-   * @return ApiResponse&lt;List&lt;SharePermission&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<SharePermission>> addSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean) throws ApiException {
-    return addSharePermissionWithHttpInfo(id, sharePermissionInputBean, null);
-  }
-
-  /**
-   * Add share permission
-   * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.  Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).  **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
-   * @param id The ID of the filter. (required)
-   * @param sharePermissionInputBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;SharePermission&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<SharePermission>> addSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addSharePermissionRequestBuilder(id, sharePermissionInputBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addSharePermission", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<SharePermission>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<SharePermission> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<SharePermission>>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = sharePermissionInputBean;
 
-        return new ApiResponse<List<SharePermission>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/filter/{id}/permission"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder addSharePermissionRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling addSharePermission");
-    }
-    // verify the required parameter 'sharePermissionInputBean' is set
-    if (sharePermissionInputBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'sharePermissionInputBean' when calling addSharePermission");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/filter/{id}/permission"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(sharePermissionInputBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete share permission
-   * Deletes a share permission from a filter.  **[Permissions](#permissions) required:** Permission to access Jira and the user must own the filter.
-   * @param id The ID of the filter. (required)
-   * @param permissionId The ID of the share permission. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId) throws ApiException {
-    deleteSharePermission(id, permissionId, null);
-  }
-
-  /**
-   * Delete share permission
-   * Deletes a share permission from a filter.  **[Permissions](#permissions) required:** Permission to access Jira and the user must own the filter.
-   * @param id The ID of the filter. (required)
-   * @param permissionId The ID of the share permission. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, Map<String, String> headers) throws ApiException {
-    deleteSharePermissionWithHttpInfo(id, permissionId, headers);
-  }
-
-  /**
-   * Delete share permission
-   * Deletes a share permission from a filter.  **[Permissions](#permissions) required:** Permission to access Jira and the user must own the filter.
-   * @param id The ID of the filter. (required)
-   * @param permissionId The ID of the share permission. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId) throws ApiException {
-    return deleteSharePermissionWithHttpInfo(id, permissionId, null);
-  }
-
-  /**
-   * Delete share permission
-   * Deletes a share permission from a filter.  **[Permissions](#permissions) required:** Permission to access Jira and the user must own the filter.
-   * @param id The ID of the filter. (required)
-   * @param permissionId The ID of the share permission. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteSharePermissionRequestBuilder(id, permissionId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteSharePermission", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteSharePermissionRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteSharePermission");
-    }
-    // verify the required parameter 'permissionId' is set
-    if (permissionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'permissionId' when calling deleteSharePermission");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/filter/{id}/permission/{permissionId}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()))
-        .replace("{permissionId}", ApiClient.urlEncode(permissionId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get default share scope
-   * Returns the default sharing settings for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @return DefaultShareScope
-   * @throws ApiException if fails to make API call
-   */
-  public DefaultShareScope getDefaultShareScope() throws ApiException {
-    return getDefaultShareScope(null);
-  }
-
-  /**
-   * Get default share scope
-   * Returns the default sharing settings for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param headers Optional headers to include in the request
-   * @return DefaultShareScope
-   * @throws ApiException if fails to make API call
-   */
-  public DefaultShareScope getDefaultShareScope(Map<String, String> headers) throws ApiException {
-    ApiResponse<DefaultShareScope> localVarResponse = getDefaultShareScopeWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get default share scope
-   * Returns the default sharing settings for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @return ApiResponse&lt;DefaultShareScope&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<DefaultShareScope> getDefaultShareScopeWithHttpInfo() throws ApiException {
-    return getDefaultShareScopeWithHttpInfo(null);
-  }
-
-  /**
-   * Get default share scope
-   * Returns the default sharing settings for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;DefaultShareScope&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<DefaultShareScope> getDefaultShareScopeWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getDefaultShareScopeRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getDefaultShareScope", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<DefaultShareScope>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        DefaultShareScope responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<DefaultShareScope>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<DefaultShareScope>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getDefaultShareScopeRequestBuilder(Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/filter/defaultShareScope";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get share permission
-   * Returns a share permission for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, a share permission is only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
-   * @param id The ID of the filter. (required)
-   * @param permissionId The ID of the share permission. (required)
-   * @return SharePermission
-   * @throws ApiException if fails to make API call
-   */
-  public SharePermission getSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId) throws ApiException {
-    return getSharePermission(id, permissionId, null);
-  }
-
-  /**
-   * Get share permission
-   * Returns a share permission for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, a share permission is only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
-   * @param id The ID of the filter. (required)
-   * @param permissionId The ID of the share permission. (required)
-   * @param headers Optional headers to include in the request
-   * @return SharePermission
-   * @throws ApiException if fails to make API call
-   */
-  public SharePermission getSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, Map<String, String> headers) throws ApiException {
-    ApiResponse<SharePermission> localVarResponse = getSharePermissionWithHttpInfo(id, permissionId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get share permission
-   * Returns a share permission for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, a share permission is only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
-   * @param id The ID of the filter. (required)
-   * @param permissionId The ID of the share permission. (required)
-   * @return ApiResponse&lt;SharePermission&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SharePermission> getSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId) throws ApiException {
-    return getSharePermissionWithHttpInfo(id, permissionId, null);
-  }
-
-  /**
-   * Get share permission
-   * Returns a share permission for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, a share permission is only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
-   * @param id The ID of the filter. (required)
-   * @param permissionId The ID of the share permission. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SharePermission&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SharePermission> getSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getSharePermissionRequestBuilder(id, permissionId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getSharePermission", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SharePermission>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SharePermission responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SharePermission>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<SharePermission>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getSharePermissionRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getSharePermission");
-    }
-    // verify the required parameter 'permissionId' is set
-    if (permissionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'permissionId' when calling getSharePermission");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/filter/{id}/permission/{permissionId}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()))
-        .replace("{permissionId}", ApiClient.urlEncode(permissionId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get share permissions
-   * Returns the share permissions for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, share permissions are only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
-   * @param id The ID of the filter. (required)
-   * @return List&lt;SharePermission&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<SharePermission> getSharePermissions(@javax.annotation.Nonnull Long id) throws ApiException {
-    return getSharePermissions(id, null);
-  }
-
-  /**
-   * Get share permissions
-   * Returns the share permissions for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, share permissions are only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
-   * @param id The ID of the filter. (required)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;SharePermission&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<SharePermission> getSharePermissions(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<SharePermission>> localVarResponse = getSharePermissionsWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get share permissions
-   * Returns the share permissions for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, share permissions are only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
-   * @param id The ID of the filter. (required)
-   * @return ApiResponse&lt;List&lt;SharePermission&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<SharePermission>> getSharePermissionsWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
-    return getSharePermissionsWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get share permissions
-   * Returns the share permissions for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, share permissions are only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
-   * @param id The ID of the filter. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;SharePermission&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<SharePermission>> getSharePermissionsWithHttpInfo(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getSharePermissionsRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getSharePermissions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<SharePermission>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addSharePermissionValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling addSharePermission(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<SharePermission> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<SharePermission>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<SharePermission>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getSharePermissionsRequestBuilder(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getSharePermissions");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/filter/{id}/permission"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Set default share scope
-   * Sets the default sharing for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param defaultShareScope  (required)
-   * @return DefaultShareScope
-   * @throws ApiException if fails to make API call
-   */
-  public DefaultShareScope setDefaultShareScope(@javax.annotation.Nonnull DefaultShareScope defaultShareScope) throws ApiException {
-    return setDefaultShareScope(defaultShareScope, null);
-  }
-
-  /**
-   * Set default share scope
-   * Sets the default sharing for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param defaultShareScope  (required)
-   * @param headers Optional headers to include in the request
-   * @return DefaultShareScope
-   * @throws ApiException if fails to make API call
-   */
-  public DefaultShareScope setDefaultShareScope(@javax.annotation.Nonnull DefaultShareScope defaultShareScope, Map<String, String> headers) throws ApiException {
-    ApiResponse<DefaultShareScope> localVarResponse = setDefaultShareScopeWithHttpInfo(defaultShareScope, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set default share scope
-   * Sets the default sharing for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param defaultShareScope  (required)
-   * @return ApiResponse&lt;DefaultShareScope&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<DefaultShareScope> setDefaultShareScopeWithHttpInfo(@javax.annotation.Nonnull DefaultShareScope defaultShareScope) throws ApiException {
-    return setDefaultShareScopeWithHttpInfo(defaultShareScope, null);
-  }
-
-  /**
-   * Set default share scope
-   * Sets the default sharing for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param defaultShareScope  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;DefaultShareScope&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<DefaultShareScope> setDefaultShareScopeWithHttpInfo(@javax.annotation.Nonnull DefaultShareScope defaultShareScope, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = setDefaultShareScopeRequestBuilder(defaultShareScope, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("setDefaultShareScope", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<DefaultShareScope>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'sharePermissionInputBean' is set
+        if (sharePermissionInputBean == null) {
+            throw new ApiException("Missing the required parameter 'sharePermissionInputBean' when calling addSharePermission(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        DefaultShareScope responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<DefaultShareScope>() {});
-        
-        localVarResponse.body().close();
+        return addSharePermissionCall(id, sharePermissionInputBean, _callback);
 
-        return new ApiResponse<DefaultShareScope>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder setDefaultShareScopeRequestBuilder(@javax.annotation.Nonnull DefaultShareScope defaultShareScope, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'defaultShareScope' is set
-    if (defaultShareScope == null) {
-      throw new ApiException(400, "Missing the required parameter 'defaultShareScope' when calling setDefaultShareScope");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/filter/defaultShareScope";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(defaultShareScope);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Add share permission
+     * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.  Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).  **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
+     * @param id The ID of the filter. (required)
+     * @param sharePermissionInputBean  (required)
+     * @return List&lt;SharePermission&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the request object is invalid. For example, it contains an invalid type, the ID does not match the type, or the project or group is not found.  *  the user does not own the filter.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<SharePermission> addSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean) throws ApiException {
+        ApiResponse<List<SharePermission>> localVarResp = addSharePermissionWithHttpInfo(id, sharePermissionInputBean);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Add share permission
+     * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.  Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).  **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
+     * @param id The ID of the filter. (required)
+     * @param sharePermissionInputBean  (required)
+     * @return ApiResponse&lt;List&lt;SharePermission&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the request object is invalid. For example, it contains an invalid type, the ID does not match the type, or the project or group is not found.  *  the user does not own the filter.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<SharePermission>> addSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean) throws ApiException {
+        okhttp3.Call localVarCall = addSharePermissionValidateBeforeCall(id, sharePermissionInputBean, null);
+        Type localVarReturnType = new TypeToken<List<SharePermission>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Add share permission (asynchronously)
+     * Add a share permissions to a filter. If you add a global share permission (one for all logged-in users or the public) it will overwrite all share permissions for the filter.  Be aware that this operation uses different objects for updating share permissions compared to [Update filter](#api-rest-api-3-filter-id-put).  **[Permissions](#permissions) required:** *Share dashboards and filters* [global permission](https://confluence.atlassian.com/x/x4dKLg) and the user must own the filter.
+     * @param id The ID of the filter. (required)
+     * @param sharePermissionInputBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the request object is invalid. For example, it contains an invalid type, the ID does not match the type, or the project or group is not found.  *  the user does not own the filter.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addSharePermissionAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull SharePermissionInputBean sharePermissionInputBean, final ApiCallback<List<SharePermission>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = addSharePermissionValidateBeforeCall(id, sharePermissionInputBean, _callback);
+        Type localVarReturnType = new TypeToken<List<SharePermission>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteSharePermission
+     * @param id The ID of the filter. (required)
+     * @param permissionId The ID of the share permission. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not own the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteSharePermissionCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/filter/{id}/permission/{permissionId}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()))
+            .replace("{" + "permissionId" + "}", localVarApiClient.escapeString(permissionId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteSharePermissionValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteSharePermission(Async)");
+        }
+
+        // verify the required parameter 'permissionId' is set
+        if (permissionId == null) {
+            throw new ApiException("Missing the required parameter 'permissionId' when calling deleteSharePermission(Async)");
+        }
+
+        return deleteSharePermissionCall(id, permissionId, _callback);
+
+    }
+
+    /**
+     * Delete share permission
+     * Deletes a share permission from a filter.  **[Permissions](#permissions) required:** Permission to access Jira and the user must own the filter.
+     * @param id The ID of the filter. (required)
+     * @param permissionId The ID of the share permission. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not own the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId) throws ApiException {
+        deleteSharePermissionWithHttpInfo(id, permissionId);
+    }
+
+    /**
+     * Delete share permission
+     * Deletes a share permission from a filter.  **[Permissions](#permissions) required:** Permission to access Jira and the user must own the filter.
+     * @param id The ID of the filter. (required)
+     * @param permissionId The ID of the share permission. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not own the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId) throws ApiException {
+        okhttp3.Call localVarCall = deleteSharePermissionValidateBeforeCall(id, permissionId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete share permission (asynchronously)
+     * Deletes a share permission from a filter.  **[Permissions](#permissions) required:** Permission to access Jira and the user must own the filter.
+     * @param id The ID of the filter. (required)
+     * @param permissionId The ID of the share permission. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not own the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteSharePermissionAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteSharePermissionValidateBeforeCall(id, permissionId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getDefaultShareScope
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getDefaultShareScopeCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/filter/defaultShareScope";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getDefaultShareScopeValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getDefaultShareScopeCall(_callback);
+
+    }
+
+    /**
+     * Get default share scope
+     * Returns the default sharing settings for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @return DefaultShareScope
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public DefaultShareScope getDefaultShareScope() throws ApiException {
+        ApiResponse<DefaultShareScope> localVarResp = getDefaultShareScopeWithHttpInfo();
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get default share scope
+     * Returns the default sharing settings for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @return ApiResponse&lt;DefaultShareScope&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<DefaultShareScope> getDefaultShareScopeWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getDefaultShareScopeValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<DefaultShareScope>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get default share scope (asynchronously)
+     * Returns the default sharing settings for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getDefaultShareScopeAsync(final ApiCallback<DefaultShareScope> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getDefaultShareScopeValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<DefaultShareScope>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getSharePermission
+     * @param id The ID of the filter. (required)
+     * @param permissionId The ID of the share permission. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the permission is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSharePermissionCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/filter/{id}/permission/{permissionId}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()))
+            .replace("{" + "permissionId" + "}", localVarApiClient.escapeString(permissionId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getSharePermissionValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getSharePermission(Async)");
+        }
+
+        // verify the required parameter 'permissionId' is set
+        if (permissionId == null) {
+            throw new ApiException("Missing the required parameter 'permissionId' when calling getSharePermission(Async)");
+        }
+
+        return getSharePermissionCall(id, permissionId, _callback);
+
+    }
+
+    /**
+     * Get share permission
+     * Returns a share permission for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, a share permission is only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
+     * @param id The ID of the filter. (required)
+     * @param permissionId The ID of the share permission. (required)
+     * @return SharePermission
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the permission is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SharePermission getSharePermission(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId) throws ApiException {
+        ApiResponse<SharePermission> localVarResp = getSharePermissionWithHttpInfo(id, permissionId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get share permission
+     * Returns a share permission for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, a share permission is only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
+     * @param id The ID of the filter. (required)
+     * @param permissionId The ID of the share permission. (required)
+     * @return ApiResponse&lt;SharePermission&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the permission is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SharePermission> getSharePermissionWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId) throws ApiException {
+        okhttp3.Call localVarCall = getSharePermissionValidateBeforeCall(id, permissionId, null);
+        Type localVarReturnType = new TypeToken<SharePermission>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get share permission (asynchronously)
+     * Returns a share permission for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, a share permission is only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
+     * @param id The ID of the filter. (required)
+     * @param permissionId The ID of the share permission. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the permission is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSharePermissionAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull Long permissionId, final ApiCallback<SharePermission> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getSharePermissionValidateBeforeCall(id, permissionId, _callback);
+        Type localVarReturnType = new TypeToken<SharePermission>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getSharePermissions
+     * @param id The ID of the filter. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSharePermissionsCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/filter/{id}/permission"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getSharePermissionsValidateBeforeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getSharePermissions(Async)");
+        }
+
+        return getSharePermissionsCall(id, _callback);
+
+    }
+
+    /**
+     * Get share permissions
+     * Returns the share permissions for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, share permissions are only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
+     * @param id The ID of the filter. (required)
+     * @return List&lt;SharePermission&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<SharePermission> getSharePermissions(@javax.annotation.Nonnull Long id) throws ApiException {
+        ApiResponse<List<SharePermission>> localVarResp = getSharePermissionsWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get share permissions
+     * Returns the share permissions for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, share permissions are only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
+     * @param id The ID of the filter. (required)
+     * @return ApiResponse&lt;List&lt;SharePermission&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<SharePermission>> getSharePermissionsWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = getSharePermissionsValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<List<SharePermission>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get share permissions (asynchronously)
+     * Returns the share permissions for a filter. A filter can be shared with groups, projects, all logged-in users, or the public. Sharing with all logged-in users or the public is known as a global share permission.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None, however, share permissions are only returned for:   *  filters owned by the user.  *  filters shared with a group that the user is a member of.  *  filters shared with a private project that the user has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for.  *  filters shared with a public project.  *  filters shared with the public.
+     * @param id The ID of the filter. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the filter is not found.  *  the user does not have permission to view the filter. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSharePermissionsAsync(@javax.annotation.Nonnull Long id, final ApiCallback<List<SharePermission>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getSharePermissionsValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<List<SharePermission>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for setDefaultShareScope
+     * @param defaultShareScope  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if an invalid scope is set. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setDefaultShareScopeCall(@javax.annotation.Nonnull DefaultShareScope defaultShareScope, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = defaultShareScope;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/filter/defaultShareScope";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call setDefaultShareScopeValidateBeforeCall(@javax.annotation.Nonnull DefaultShareScope defaultShareScope, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'defaultShareScope' is set
+        if (defaultShareScope == null) {
+            throw new ApiException("Missing the required parameter 'defaultShareScope' when calling setDefaultShareScope(Async)");
+        }
+
+        return setDefaultShareScopeCall(defaultShareScope, _callback);
+
+    }
+
+    /**
+     * Set default share scope
+     * Sets the default sharing for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param defaultShareScope  (required)
+     * @return DefaultShareScope
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if an invalid scope is set. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public DefaultShareScope setDefaultShareScope(@javax.annotation.Nonnull DefaultShareScope defaultShareScope) throws ApiException {
+        ApiResponse<DefaultShareScope> localVarResp = setDefaultShareScopeWithHttpInfo(defaultShareScope);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set default share scope
+     * Sets the default sharing for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param defaultShareScope  (required)
+     * @return ApiResponse&lt;DefaultShareScope&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if an invalid scope is set. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<DefaultShareScope> setDefaultShareScopeWithHttpInfo(@javax.annotation.Nonnull DefaultShareScope defaultShareScope) throws ApiException {
+        okhttp3.Call localVarCall = setDefaultShareScopeValidateBeforeCall(defaultShareScope, null);
+        Type localVarReturnType = new TypeToken<DefaultShareScope>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set default share scope (asynchronously)
+     * Sets the default sharing for new filters and dashboards for a user.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param defaultShareScope  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if an invalid scope is set. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setDefaultShareScopeAsync(@javax.annotation.Nonnull DefaultShareScope defaultShareScope, final ApiCallback<DefaultShareScope> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = setDefaultShareScopeValidateBeforeCall(defaultShareScope, _callback);
+        Type localVarReturnType = new TypeToken<DefaultShareScope>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

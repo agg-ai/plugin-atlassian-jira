@@ -13,41 +13,56 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * An operand that is a user-provided value.
  */
-@JsonPropertyOrder({
-  ValueOperand.JSON_PROPERTY_ENCODED_VALUE,
-  ValueOperand.JSON_PROPERTY_VALUE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ValueOperand {
-  public static final String JSON_PROPERTY_ENCODED_VALUE = "encodedValue";
+  public static final String SERIALIZED_NAME_ENCODED_VALUE = "encodedValue";
+  @SerializedName(SERIALIZED_NAME_ENCODED_VALUE)
   @javax.annotation.Nullable
   private String encodedValue;
 
-  public static final String JSON_PROPERTY_VALUE = "value";
+  public static final String SERIALIZED_NAME_VALUE = "value";
+  @SerializedName(SERIALIZED_NAME_VALUE)
   @javax.annotation.Nonnull
   private String value;
 
-  public ValueOperand() { 
+  public ValueOperand() {
   }
 
   public ValueOperand encodedValue(@javax.annotation.Nullable String encodedValue) {
@@ -60,15 +75,10 @@ public class ValueOperand {
    * @return encodedValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ENCODED_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEncodedValue() {
     return encodedValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ENCODED_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEncodedValue(@javax.annotation.Nullable String encodedValue) {
     this.encodedValue = encodedValue;
   }
@@ -84,23 +94,16 @@ public class ValueOperand {
    * @return value
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getValue() {
     return value;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setValue(@javax.annotation.Nonnull String value) {
     this.value = value;
   }
 
 
-  /**
-   * Return true if this ValueOperand object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -140,49 +143,101 @@ public class ValueOperand {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("encodedValue", "value"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("value"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ValueOperand
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ValueOperand.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ValueOperand is not found in the empty JSON string", ValueOperand.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ValueOperand.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ValueOperand` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : ValueOperand.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("encodedValue") != null && !jsonObj.get("encodedValue").isJsonNull()) && !jsonObj.get("encodedValue").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `encodedValue` to be a primitive type in the JSON string but got `%s`", jsonObj.get("encodedValue").toString()));
+      }
+      if (!jsonObj.get("value").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `value` to be a primitive type in the JSON string but got `%s`", jsonObj.get("value").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ValueOperand.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ValueOperand' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ValueOperand> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ValueOperand.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ValueOperand>() {
+           @Override
+           public void write(JsonWriter out, ValueOperand value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ValueOperand read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ValueOperand given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ValueOperand
+   * @throws IOException if the JSON string is invalid with respect to ValueOperand
+   */
+  public static ValueOperand fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ValueOperand.class);
+  }
 
-    // add `encodedValue` to the URL query string
-    if (getEncodedValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sencodedValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEncodedValue()))));
-    }
-
-    // add `value` to the URL query string
-    if (getValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ValueOperand to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

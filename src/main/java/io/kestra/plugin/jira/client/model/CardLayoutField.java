@@ -13,49 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Card layout settings of the board
  */
-@JsonPropertyOrder({
-  CardLayoutField.JSON_PROPERTY_FIELD_ID,
-  CardLayoutField.JSON_PROPERTY_ID,
-  CardLayoutField.JSON_PROPERTY_MODE,
-  CardLayoutField.JSON_PROPERTY_POSITION
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CardLayoutField {
-  public static final String JSON_PROPERTY_FIELD_ID = "fieldId";
+  public static final String SERIALIZED_NAME_FIELD_ID = "fieldId";
+  @SerializedName(SERIALIZED_NAME_FIELD_ID)
   @javax.annotation.Nullable
   private String fieldId;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
   /**
    * Gets or Sets mode
    */
+  @JsonAdapter(ModeEnum.Adapter.class)
   public enum ModeEnum {
-    PLAN(String.valueOf("PLAN")),
+    PLAN("PLAN"),
     
-    WORK(String.valueOf("WORK"));
+    WORK("WORK");
 
     private String value;
 
@@ -63,7 +77,6 @@ public class CardLayoutField {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -73,7 +86,6 @@ public class CardLayoutField {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ModeEnum fromValue(String value) {
       for (ModeEnum b : ModeEnum.values()) {
         if (b.value.equals(value)) {
@@ -82,17 +94,37 @@ public class CardLayoutField {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ModeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ModeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ModeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ModeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ModeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_MODE = "mode";
+  public static final String SERIALIZED_NAME_MODE = "mode";
+  @SerializedName(SERIALIZED_NAME_MODE)
   @javax.annotation.Nullable
   private ModeEnum mode;
 
-  public static final String JSON_PROPERTY_POSITION = "position";
+  public static final String SERIALIZED_NAME_POSITION = "position";
+  @SerializedName(SERIALIZED_NAME_POSITION)
   @javax.annotation.Nullable
   private Integer position;
 
-  public CardLayoutField() { 
+  public CardLayoutField() {
   }
 
   public CardLayoutField fieldId(@javax.annotation.Nullable String fieldId) {
@@ -105,15 +137,10 @@ public class CardLayoutField {
    * @return fieldId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFieldId() {
     return fieldId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldId(@javax.annotation.Nullable String fieldId) {
     this.fieldId = fieldId;
   }
@@ -129,15 +156,10 @@ public class CardLayoutField {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable Long id) {
     this.id = id;
   }
@@ -153,15 +175,10 @@ public class CardLayoutField {
    * @return mode
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ModeEnum getMode() {
     return mode;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMode(@javax.annotation.Nullable ModeEnum mode) {
     this.mode = mode;
   }
@@ -177,23 +194,16 @@ public class CardLayoutField {
    * @return position
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPosition() {
     return position;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPosition(@javax.annotation.Nullable Integer position) {
     this.position = position;
   }
 
 
-  /**
-   * Return true if this CardLayoutField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -237,59 +247,98 @@ public class CardLayoutField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("fieldId", "id", "mode", "position"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CardLayoutField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CardLayoutField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CardLayoutField is not found in the empty JSON string", CardLayoutField.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CardLayoutField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CardLayoutField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("fieldId") != null && !jsonObj.get("fieldId").isJsonNull()) && !jsonObj.get("fieldId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldId").toString()));
+      }
+      if ((jsonObj.get("mode") != null && !jsonObj.get("mode").isJsonNull()) && !jsonObj.get("mode").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `mode` to be a primitive type in the JSON string but got `%s`", jsonObj.get("mode").toString()));
+      }
+      // validate the optional field `mode`
+      if (jsonObj.get("mode") != null && !jsonObj.get("mode").isJsonNull()) {
+        ModeEnum.validateJsonElement(jsonObj.get("mode"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CardLayoutField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CardLayoutField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CardLayoutField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CardLayoutField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CardLayoutField>() {
+           @Override
+           public void write(JsonWriter out, CardLayoutField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CardLayoutField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CardLayoutField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CardLayoutField
+   * @throws IOException if the JSON string is invalid with respect to CardLayoutField
+   */
+  public static CardLayoutField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CardLayoutField.class);
+  }
 
-    // add `fieldId` to the URL query string
-    if (getFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldId()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `mode` to the URL query string
-    if (getMode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMode()))));
-    }
-
-    // add `position` to the URL query string
-    if (getPosition() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sposition%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPosition()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CardLayoutField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

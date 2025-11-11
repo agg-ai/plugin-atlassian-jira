@@ -13,69 +13,84 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraStatus;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * PageOfStatuses
  */
-@JsonPropertyOrder({
-  PageOfStatuses.JSON_PROPERTY_IS_LAST,
-  PageOfStatuses.JSON_PROPERTY_MAX_RESULTS,
-  PageOfStatuses.JSON_PROPERTY_NEXT_PAGE,
-  PageOfStatuses.JSON_PROPERTY_SELF,
-  PageOfStatuses.JSON_PROPERTY_START_AT,
-  PageOfStatuses.JSON_PROPERTY_TOTAL,
-  PageOfStatuses.JSON_PROPERTY_VALUES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PageOfStatuses {
-  public static final String JSON_PROPERTY_IS_LAST = "isLast";
+  public static final String SERIALIZED_NAME_IS_LAST = "isLast";
+  @SerializedName(SERIALIZED_NAME_IS_LAST)
   @javax.annotation.Nullable
   private Boolean isLast;
 
-  public static final String JSON_PROPERTY_MAX_RESULTS = "maxResults";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "maxResults";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nullable
   private Integer maxResults;
 
-  public static final String JSON_PROPERTY_NEXT_PAGE = "nextPage";
+  public static final String SERIALIZED_NAME_NEXT_PAGE = "nextPage";
+  @SerializedName(SERIALIZED_NAME_NEXT_PAGE)
   @javax.annotation.Nullable
   private String nextPage;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public static final String JSON_PROPERTY_START_AT = "startAt";
+  public static final String SERIALIZED_NAME_START_AT = "startAt";
+  @SerializedName(SERIALIZED_NAME_START_AT)
   @javax.annotation.Nullable
   private Long startAt;
 
-  public static final String JSON_PROPERTY_TOTAL = "total";
+  public static final String SERIALIZED_NAME_TOTAL = "total";
+  @SerializedName(SERIALIZED_NAME_TOTAL)
   @javax.annotation.Nullable
   private Long total;
 
-  public static final String JSON_PROPERTY_VALUES = "values";
+  public static final String SERIALIZED_NAME_VALUES = "values";
+  @SerializedName(SERIALIZED_NAME_VALUES)
   @javax.annotation.Nullable
   private List<JiraStatus> values = new ArrayList<>();
 
-  public PageOfStatuses() { 
+  public PageOfStatuses() {
   }
 
   public PageOfStatuses isLast(@javax.annotation.Nullable Boolean isLast) {
@@ -88,15 +103,10 @@ public class PageOfStatuses {
    * @return isLast
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_LAST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsLast() {
     return isLast;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_LAST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsLast(@javax.annotation.Nullable Boolean isLast) {
     this.isLast = isLast;
   }
@@ -112,15 +122,10 @@ public class PageOfStatuses {
    * @return maxResults
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResults() {
     return maxResults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxResults(@javax.annotation.Nullable Integer maxResults) {
     this.maxResults = maxResults;
   }
@@ -136,15 +141,10 @@ public class PageOfStatuses {
    * @return nextPage
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NEXT_PAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNextPage() {
     return nextPage;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NEXT_PAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNextPage(@javax.annotation.Nullable String nextPage) {
     this.nextPage = nextPage;
   }
@@ -160,15 +160,10 @@ public class PageOfStatuses {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSelf(@javax.annotation.Nullable String self) {
     this.self = self;
   }
@@ -184,15 +179,10 @@ public class PageOfStatuses {
    * @return startAt
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartAt() {
     return startAt;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartAt(@javax.annotation.Nullable Long startAt) {
     this.startAt = startAt;
   }
@@ -208,15 +198,10 @@ public class PageOfStatuses {
    * @return total
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getTotal() {
     return total;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTotal(@javax.annotation.Nullable Long total) {
     this.total = total;
   }
@@ -240,23 +225,16 @@ public class PageOfStatuses {
    * @return values
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraStatus> getValues() {
     return values;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValues(@javax.annotation.Nullable List<JiraStatus> values) {
     this.values = values;
   }
 
 
-  /**
-   * Return true if this PageOfStatuses object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -306,79 +284,108 @@ public class PageOfStatuses {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("isLast", "maxResults", "nextPage", "self", "startAt", "total", "values"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to PageOfStatuses
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `isLast` to the URL query string
-    if (getIsLast() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisLast%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsLast()))));
-    }
-
-    // add `maxResults` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smaxResults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
-
-    // add `nextPage` to the URL query string
-    if (getNextPage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snextPage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNextPage()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `startAt` to the URL query string
-    if (getStartAt() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartAt%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartAt()))));
-    }
-
-    // add `total` to the URL query string
-    if (getTotal() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stotal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTotal()))));
-    }
-
-    // add `values` to the URL query string
-    if (getValues() != null) {
-      for (int i = 0; i < getValues().size(); i++) {
-        if (getValues().get(i) != null) {
-          joiner.add(getValues().get(i).toUrlQueryString(String.format(Locale.ROOT, "%svalues%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!PageOfStatuses.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in PageOfStatuses is not found in the empty JSON string", PageOfStatuses.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!PageOfStatuses.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `PageOfStatuses` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("nextPage") != null && !jsonObj.get("nextPage").isJsonNull()) && !jsonObj.get("nextPage").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `nextPage` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nextPage").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if (jsonObj.get("values") != null && !jsonObj.get("values").isJsonNull()) {
+        JsonArray jsonArrayvalues = jsonObj.getAsJsonArray("values");
+        if (jsonArrayvalues != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("values").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `values` to be an array in the JSON string but got `%s`", jsonObj.get("values").toString()));
+          }
+
+          // validate the optional field `values` (array)
+          for (int i = 0; i < jsonArrayvalues.size(); i++) {
+            JiraStatus.validateJsonElement(jsonArrayvalues.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!PageOfStatuses.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'PageOfStatuses' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<PageOfStatuses> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(PageOfStatuses.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<PageOfStatuses>() {
+           @Override
+           public void write(JsonWriter out, PageOfStatuses value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public PageOfStatuses read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of PageOfStatuses given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of PageOfStatuses
+   * @throws IOException if the JSON string is invalid with respect to PageOfStatuses
+   */
+  public static PageOfStatuses fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, PageOfStatuses.class);
+  }
+
+  /**
+   * Convert an instance of PageOfStatuses to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

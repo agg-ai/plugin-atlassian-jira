@@ -13,129 +13,131 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.MandatoryFieldValue;
 import io.kestra.plugin.jira.client.model.MandatoryFieldValueForADF;
+import java.io.IOException;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+
 import io.kestra.plugin.jira.client.invoker.JSON;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-@JsonDeserialize(using=Fields.FieldsDeserializer.class)
-@JsonSerialize(using = Fields.FieldsSerializer.class)
 public class Fields extends AbstractOpenApiSchema {
     private static final Logger log = Logger.getLogger(Fields.class.getName());
 
-    public static class FieldsSerializer extends StdSerializer<Fields> {
-        public FieldsSerializer(Class<Fields> t) {
-            super(t);
-        }
-
-        public FieldsSerializer() {
-            this(null);
-        }
-
+    public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
         @Override
-        public void serialize(Fields value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeObject(value.getActualInstance());
-        }
-    }
-
-    public static class FieldsDeserializer extends StdDeserializer<Fields> {
-        public FieldsDeserializer() {
-            this(Fields.class);
-        }
-
-        public FieldsDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public Fields deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode tree = jp.readValueAsTree();
-
-            Object deserialized = null;
-            Class<?> cls = JSON.getClassForElement(tree, new Fields().getClass());
-            if (cls != null) {
-                // When the OAS schema includes a discriminator, use the discriminator value to
-                // discriminate the anyOf schemas.
-                // Get the discriminator mapping value to get the class.
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(cls);
-                Fields ret = new Fields();
-                ret.setActualInstance(deserialized);
-                return ret;
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (!Fields.class.isAssignableFrom(type.getRawType())) {
+                return null; // this class only serializes 'Fields' and its subtypes
             }
-            // deserialize MandatoryFieldValue
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(MandatoryFieldValue.class);
-                Fields ret = new Fields();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'Fields'", e);
-            }
+            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+            final TypeAdapter<MandatoryFieldValue> adapterMandatoryFieldValue = gson.getDelegateAdapter(this, TypeToken.get(MandatoryFieldValue.class));
+            final TypeAdapter<MandatoryFieldValueForADF> adapterMandatoryFieldValueForADF = gson.getDelegateAdapter(this, TypeToken.get(MandatoryFieldValueForADF.class));
 
-            // deserialize MandatoryFieldValueForADF
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(MandatoryFieldValueForADF.class);
-                Fields ret = new Fields();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'Fields'", e);
-            }
+            return (TypeAdapter<T>) new TypeAdapter<Fields>() {
+                @Override
+                public void write(JsonWriter out, Fields value) throws IOException {
+                    if (value == null || value.getActualInstance() == null) {
+                        elementAdapter.write(out, null);
+                        return;
+                    }
 
-            throw new IOException("Failed deserialization for Fields: no match found");
-        }
+                    // check if the actual instance is of the type `MandatoryFieldValue`
+                    if (value.getActualInstance() instanceof MandatoryFieldValue) {
+                        JsonElement element = adapterMandatoryFieldValue.toJsonTree((MandatoryFieldValue)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    // check if the actual instance is of the type `MandatoryFieldValueForADF`
+                    if (value.getActualInstance() instanceof MandatoryFieldValueForADF) {
+                        JsonElement element = adapterMandatoryFieldValueForADF.toJsonTree((MandatoryFieldValueForADF)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    throw new IOException("Failed to serialize as the type doesn't match anyOf schemas: MandatoryFieldValue, MandatoryFieldValueForADF");
+                }
 
-        /**
-         * Handle deserialization of the 'null' value.
-         */
-        @Override
-        public Fields getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "Fields cannot be null");
+                @Override
+                public Fields read(JsonReader in) throws IOException {
+                    Object deserialized = null;
+                    JsonElement jsonElement = elementAdapter.read(in);
+
+                    ArrayList<String> errorMessages = new ArrayList<>();
+                    TypeAdapter actualAdapter = elementAdapter;
+
+                    // deserialize MandatoryFieldValue
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        MandatoryFieldValue.validateJsonElement(jsonElement);
+                        actualAdapter = adapterMandatoryFieldValue;
+                        Fields ret = new Fields();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for MandatoryFieldValue failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'MandatoryFieldValue'", e);
+                    }
+                    // deserialize MandatoryFieldValueForADF
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        MandatoryFieldValueForADF.validateJsonElement(jsonElement);
+                        actualAdapter = adapterMandatoryFieldValueForADF;
+                        Fields ret = new Fields();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for MandatoryFieldValueForADF failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'MandatoryFieldValueForADF'", e);
+                    }
+
+                    throw new IOException(String.format(Locale.ROOT, "Failed deserialization for Fields: no class matches result, expected at least 1. Detailed failure message for anyOf schemas: %s. JSON: %s", errorMessages, jsonElement.toString()));
+                }
+            }.nullSafe();
         }
     }
 
@@ -146,12 +148,7 @@ public class Fields extends AbstractOpenApiSchema {
         super("anyOf", Boolean.FALSE);
     }
 
-    public Fields(MandatoryFieldValue o) {
-        super("anyOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public Fields(MandatoryFieldValueForADF o) {
+    public Fields(Object o) {
         super("anyOf", Boolean.FALSE);
         setActualInstance(o);
     }
@@ -159,13 +156,6 @@ public class Fields extends AbstractOpenApiSchema {
     static {
         schemas.put("MandatoryFieldValue", MandatoryFieldValue.class);
         schemas.put("MandatoryFieldValueForADF", MandatoryFieldValueForADF.class);
-        JSON.registerDescendants(Fields.class, Collections.unmodifiableMap(schemas));
-        // Initialize and register the discriminator mappings.
-        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("mandatoryField", MandatoryFieldValue.class);
-        mappings.put("mandatoryFieldForADF", MandatoryFieldValueForADF.class);
-        mappings.put("fields", Fields.class);
-        JSON.registerDiscriminator(Fields.class, "type", mappings);
     }
 
     @Override
@@ -179,16 +169,15 @@ public class Fields extends AbstractOpenApiSchema {
      * MandatoryFieldValue, MandatoryFieldValueForADF
      *
      * It could be an instance of the 'anyOf' schemas.
-     * The anyOf child schemas may themselves be a composed schema (allOf, anyOf, anyOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(MandatoryFieldValue.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof MandatoryFieldValue) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(MandatoryFieldValueForADF.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof MandatoryFieldValueForADF) {
             super.setActualInstance(instance);
             return;
         }
@@ -202,6 +191,7 @@ public class Fields extends AbstractOpenApiSchema {
      *
      * @return The actual instance (MandatoryFieldValue, MandatoryFieldValueForADF)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
@@ -229,42 +219,52 @@ public class Fields extends AbstractOpenApiSchema {
         return (MandatoryFieldValueForADF)super.getActualInstance();
     }
 
-
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
-  }
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @param prefix prefix of the query string
-   * @return URL query string
-   */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+    /**
+     * Validates the JSON Element and throws an exception if issues found
+     *
+     * @param jsonElement JSON Element
+     * @throws IOException if the JSON Element is invalid with respect to Fields
+     */
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+        // validate anyOf schemas one by one
+        ArrayList<String> errorMessages = new ArrayList<>();
+        // validate the json string with MandatoryFieldValue
+        try {
+            MandatoryFieldValue.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for MandatoryFieldValue failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with MandatoryFieldValueForADF
+        try {
+            MandatoryFieldValueForADF.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for MandatoryFieldValueForADF failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        throw new IOException(String.format(Locale.ROOT, "The JSON string is invalid for Fields with anyOf schemas: MandatoryFieldValue, MandatoryFieldValueForADF. no class match the result, expected at least 1. Detailed failure message for anyOf schemas: %s. JSON: %s", errorMessages, jsonElement.toString()));
     }
 
-    StringJoiner joiner = new StringJoiner("&");
+    /**
+     * Create an instance of Fields given an JSON string
+     *
+     * @param jsonString JSON string
+     * @return An instance of Fields
+     * @throws IOException if the JSON string is invalid with respect to Fields
+     */
+    public static Fields fromJson(String jsonString) throws IOException {
+        return JSON.getGson().fromJson(jsonString, Fields.class);
+    }
 
-    return null;
-  }
-
+    /**
+     * Convert an instance of Fields to an JSON string
+     *
+     * @return JSON string
+     */
+    public String toJson() {
+        return JSON.getGson().toJson(this);
+    }
 }
 

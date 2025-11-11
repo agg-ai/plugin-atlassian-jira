@@ -13,77 +13,92 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.TargetClassification;
 import io.kestra.plugin.jira.client.model.TargetMandatoryFields;
 import io.kestra.plugin.jira.client.model.TargetStatus;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * An object representing the mapping of issues and data related to destination entities, like fields and statuses, that are required during a bulk move.
  */
-@JsonPropertyOrder({
-  TargetToSourcesMapping.JSON_PROPERTY_INFER_CLASSIFICATION_DEFAULTS,
-  TargetToSourcesMapping.JSON_PROPERTY_INFER_FIELD_DEFAULTS,
-  TargetToSourcesMapping.JSON_PROPERTY_INFER_STATUS_DEFAULTS,
-  TargetToSourcesMapping.JSON_PROPERTY_INFER_SUBTASK_TYPE_DEFAULT,
-  TargetToSourcesMapping.JSON_PROPERTY_ISSUE_IDS_OR_KEYS,
-  TargetToSourcesMapping.JSON_PROPERTY_TARGET_CLASSIFICATION,
-  TargetToSourcesMapping.JSON_PROPERTY_TARGET_MANDATORY_FIELDS,
-  TargetToSourcesMapping.JSON_PROPERTY_TARGET_STATUS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TargetToSourcesMapping {
-  public static final String JSON_PROPERTY_INFER_CLASSIFICATION_DEFAULTS = "inferClassificationDefaults";
+  public static final String SERIALIZED_NAME_INFER_CLASSIFICATION_DEFAULTS = "inferClassificationDefaults";
+  @SerializedName(SERIALIZED_NAME_INFER_CLASSIFICATION_DEFAULTS)
   @javax.annotation.Nonnull
   private Boolean inferClassificationDefaults;
 
-  public static final String JSON_PROPERTY_INFER_FIELD_DEFAULTS = "inferFieldDefaults";
+  public static final String SERIALIZED_NAME_INFER_FIELD_DEFAULTS = "inferFieldDefaults";
+  @SerializedName(SERIALIZED_NAME_INFER_FIELD_DEFAULTS)
   @javax.annotation.Nonnull
   private Boolean inferFieldDefaults;
 
-  public static final String JSON_PROPERTY_INFER_STATUS_DEFAULTS = "inferStatusDefaults";
+  public static final String SERIALIZED_NAME_INFER_STATUS_DEFAULTS = "inferStatusDefaults";
+  @SerializedName(SERIALIZED_NAME_INFER_STATUS_DEFAULTS)
   @javax.annotation.Nonnull
   private Boolean inferStatusDefaults;
 
-  public static final String JSON_PROPERTY_INFER_SUBTASK_TYPE_DEFAULT = "inferSubtaskTypeDefault";
+  public static final String SERIALIZED_NAME_INFER_SUBTASK_TYPE_DEFAULT = "inferSubtaskTypeDefault";
+  @SerializedName(SERIALIZED_NAME_INFER_SUBTASK_TYPE_DEFAULT)
   @javax.annotation.Nonnull
   private Boolean inferSubtaskTypeDefault;
 
-  public static final String JSON_PROPERTY_ISSUE_IDS_OR_KEYS = "issueIdsOrKeys";
+  public static final String SERIALIZED_NAME_ISSUE_IDS_OR_KEYS = "issueIdsOrKeys";
+  @SerializedName(SERIALIZED_NAME_ISSUE_IDS_OR_KEYS)
   @javax.annotation.Nullable
   private List<String> issueIdsOrKeys = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_TARGET_CLASSIFICATION = "targetClassification";
-  private JsonNullable<List<TargetClassification>> targetClassification = JsonNullable.<List<TargetClassification>>undefined();
+  public static final String SERIALIZED_NAME_TARGET_CLASSIFICATION = "targetClassification";
+  @SerializedName(SERIALIZED_NAME_TARGET_CLASSIFICATION)
+  @javax.annotation.Nullable
+  private List<TargetClassification> targetClassification;
 
-  public static final String JSON_PROPERTY_TARGET_MANDATORY_FIELDS = "targetMandatoryFields";
-  private JsonNullable<List<TargetMandatoryFields>> targetMandatoryFields = JsonNullable.<List<TargetMandatoryFields>>undefined();
+  public static final String SERIALIZED_NAME_TARGET_MANDATORY_FIELDS = "targetMandatoryFields";
+  @SerializedName(SERIALIZED_NAME_TARGET_MANDATORY_FIELDS)
+  @javax.annotation.Nullable
+  private List<TargetMandatoryFields> targetMandatoryFields;
 
-  public static final String JSON_PROPERTY_TARGET_STATUS = "targetStatus";
-  private JsonNullable<List<TargetStatus>> targetStatus = JsonNullable.<List<TargetStatus>>undefined();
+  public static final String SERIALIZED_NAME_TARGET_STATUS = "targetStatus";
+  @SerializedName(SERIALIZED_NAME_TARGET_STATUS)
+  @javax.annotation.Nullable
+  private List<TargetStatus> targetStatus;
 
-  public TargetToSourcesMapping() { 
+  public TargetToSourcesMapping() {
   }
 
   public TargetToSourcesMapping inferClassificationDefaults(@javax.annotation.Nonnull Boolean inferClassificationDefaults) {
@@ -96,15 +111,10 @@ public class TargetToSourcesMapping {
    * @return inferClassificationDefaults
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_INFER_CLASSIFICATION_DEFAULTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getInferClassificationDefaults() {
     return inferClassificationDefaults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INFER_CLASSIFICATION_DEFAULTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setInferClassificationDefaults(@javax.annotation.Nonnull Boolean inferClassificationDefaults) {
     this.inferClassificationDefaults = inferClassificationDefaults;
   }
@@ -120,15 +130,10 @@ public class TargetToSourcesMapping {
    * @return inferFieldDefaults
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_INFER_FIELD_DEFAULTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getInferFieldDefaults() {
     return inferFieldDefaults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INFER_FIELD_DEFAULTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setInferFieldDefaults(@javax.annotation.Nonnull Boolean inferFieldDefaults) {
     this.inferFieldDefaults = inferFieldDefaults;
   }
@@ -144,15 +149,10 @@ public class TargetToSourcesMapping {
    * @return inferStatusDefaults
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_INFER_STATUS_DEFAULTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getInferStatusDefaults() {
     return inferStatusDefaults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INFER_STATUS_DEFAULTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setInferStatusDefaults(@javax.annotation.Nonnull Boolean inferStatusDefaults) {
     this.inferStatusDefaults = inferStatusDefaults;
   }
@@ -168,15 +168,10 @@ public class TargetToSourcesMapping {
    * @return inferSubtaskTypeDefault
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_INFER_SUBTASK_TYPE_DEFAULT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getInferSubtaskTypeDefault() {
     return inferSubtaskTypeDefault;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INFER_SUBTASK_TYPE_DEFAULT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setInferSubtaskTypeDefault(@javax.annotation.Nonnull Boolean inferSubtaskTypeDefault) {
     this.inferSubtaskTypeDefault = inferSubtaskTypeDefault;
   }
@@ -200,34 +195,25 @@ public class TargetToSourcesMapping {
    * @return issueIdsOrKeys
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS_OR_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getIssueIdsOrKeys() {
     return issueIdsOrKeys;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS_OR_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueIdsOrKeys(@javax.annotation.Nullable List<String> issueIdsOrKeys) {
     this.issueIdsOrKeys = issueIdsOrKeys;
   }
 
 
   public TargetToSourcesMapping targetClassification(@javax.annotation.Nullable List<TargetClassification> targetClassification) {
-    this.targetClassification = JsonNullable.<List<TargetClassification>>of(targetClassification);
+    this.targetClassification = targetClassification;
     return this;
   }
 
   public TargetToSourcesMapping addTargetClassificationItem(TargetClassification targetClassificationItem) {
-    if (this.targetClassification == null || !this.targetClassification.isPresent()) {
-      this.targetClassification = JsonNullable.<List<TargetClassification>>of(new ArrayList<>());
+    if (this.targetClassification == null) {
+      this.targetClassification = new ArrayList<>();
     }
-    try {
-      this.targetClassification.get().add(targetClassificationItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.targetClassification.add(targetClassificationItem);
     return this;
   }
 
@@ -236,42 +222,25 @@ public class TargetToSourcesMapping {
    * @return targetClassification
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<TargetClassification> getTargetClassification() {
-        return targetClassification.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_TARGET_CLASSIFICATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<TargetClassification>> getTargetClassification_JsonNullable() {
     return targetClassification;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TARGET_CLASSIFICATION)
-  public void setTargetClassification_JsonNullable(JsonNullable<List<TargetClassification>> targetClassification) {
-    this.targetClassification = targetClassification;
   }
 
   public void setTargetClassification(@javax.annotation.Nullable List<TargetClassification> targetClassification) {
-    this.targetClassification = JsonNullable.<List<TargetClassification>>of(targetClassification);
+    this.targetClassification = targetClassification;
   }
 
 
   public TargetToSourcesMapping targetMandatoryFields(@javax.annotation.Nullable List<TargetMandatoryFields> targetMandatoryFields) {
-    this.targetMandatoryFields = JsonNullable.<List<TargetMandatoryFields>>of(targetMandatoryFields);
+    this.targetMandatoryFields = targetMandatoryFields;
     return this;
   }
 
   public TargetToSourcesMapping addTargetMandatoryFieldsItem(TargetMandatoryFields targetMandatoryFieldsItem) {
-    if (this.targetMandatoryFields == null || !this.targetMandatoryFields.isPresent()) {
-      this.targetMandatoryFields = JsonNullable.<List<TargetMandatoryFields>>of(new ArrayList<>());
+    if (this.targetMandatoryFields == null) {
+      this.targetMandatoryFields = new ArrayList<>();
     }
-    try {
-      this.targetMandatoryFields.get().add(targetMandatoryFieldsItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.targetMandatoryFields.add(targetMandatoryFieldsItem);
     return this;
   }
 
@@ -280,42 +249,25 @@ public class TargetToSourcesMapping {
    * @return targetMandatoryFields
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<TargetMandatoryFields> getTargetMandatoryFields() {
-        return targetMandatoryFields.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_TARGET_MANDATORY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<TargetMandatoryFields>> getTargetMandatoryFields_JsonNullable() {
     return targetMandatoryFields;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TARGET_MANDATORY_FIELDS)
-  public void setTargetMandatoryFields_JsonNullable(JsonNullable<List<TargetMandatoryFields>> targetMandatoryFields) {
-    this.targetMandatoryFields = targetMandatoryFields;
   }
 
   public void setTargetMandatoryFields(@javax.annotation.Nullable List<TargetMandatoryFields> targetMandatoryFields) {
-    this.targetMandatoryFields = JsonNullable.<List<TargetMandatoryFields>>of(targetMandatoryFields);
+    this.targetMandatoryFields = targetMandatoryFields;
   }
 
 
   public TargetToSourcesMapping targetStatus(@javax.annotation.Nullable List<TargetStatus> targetStatus) {
-    this.targetStatus = JsonNullable.<List<TargetStatus>>of(targetStatus);
+    this.targetStatus = targetStatus;
     return this;
   }
 
   public TargetToSourcesMapping addTargetStatusItem(TargetStatus targetStatusItem) {
-    if (this.targetStatus == null || !this.targetStatus.isPresent()) {
-      this.targetStatus = JsonNullable.<List<TargetStatus>>of(new ArrayList<>());
+    if (this.targetStatus == null) {
+      this.targetStatus = new ArrayList<>();
     }
-    try {
-      this.targetStatus.get().add(targetStatusItem);
-    } catch (java.util.NoSuchElementException e) {
-      // this can never happen, as we make sure above that the value is present
-    }
+    this.targetStatus.add(targetStatusItem);
     return this;
   }
 
@@ -324,31 +276,16 @@ public class TargetToSourcesMapping {
    * @return targetStatus
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public List<TargetStatus> getTargetStatus() {
-        return targetStatus.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_TARGET_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<List<TargetStatus>> getTargetStatus_JsonNullable() {
     return targetStatus;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TARGET_STATUS)
-  public void setTargetStatus_JsonNullable(JsonNullable<List<TargetStatus>> targetStatus) {
-    this.targetStatus = targetStatus;
   }
 
   public void setTargetStatus(@javax.annotation.Nullable List<TargetStatus> targetStatus) {
-    this.targetStatus = JsonNullable.<List<TargetStatus>>of(targetStatus);
+    this.targetStatus = targetStatus;
   }
 
 
-  /**
-   * Return true if this targetToSourcesMapping object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -363,9 +300,9 @@ public class TargetToSourcesMapping {
         Objects.equals(this.inferStatusDefaults, targetToSourcesMapping.inferStatusDefaults) &&
         Objects.equals(this.inferSubtaskTypeDefault, targetToSourcesMapping.inferSubtaskTypeDefault) &&
         Objects.equals(this.issueIdsOrKeys, targetToSourcesMapping.issueIdsOrKeys) &&
-        equalsNullable(this.targetClassification, targetToSourcesMapping.targetClassification) &&
-        equalsNullable(this.targetMandatoryFields, targetToSourcesMapping.targetMandatoryFields) &&
-        equalsNullable(this.targetStatus, targetToSourcesMapping.targetStatus);
+        Objects.equals(this.targetClassification, targetToSourcesMapping.targetClassification) &&
+        Objects.equals(this.targetMandatoryFields, targetToSourcesMapping.targetMandatoryFields) &&
+        Objects.equals(this.targetStatus, targetToSourcesMapping.targetStatus);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -374,7 +311,7 @@ public class TargetToSourcesMapping {
 
   @Override
   public int hashCode() {
-    return Objects.hash(inferClassificationDefaults, inferFieldDefaults, inferStatusDefaults, inferSubtaskTypeDefault, issueIdsOrKeys, hashCodeNullable(targetClassification), hashCodeNullable(targetMandatoryFields), hashCodeNullable(targetStatus));
+    return Objects.hash(inferClassificationDefaults, inferFieldDefaults, inferStatusDefaults, inferSubtaskTypeDefault, issueIdsOrKeys, targetClassification, targetMandatoryFields, targetStatus);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -411,98 +348,141 @@ public class TargetToSourcesMapping {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("inferClassificationDefaults", "inferFieldDefaults", "inferStatusDefaults", "inferSubtaskTypeDefault", "issueIdsOrKeys", "targetClassification", "targetMandatoryFields", "targetStatus"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("inferClassificationDefaults", "inferFieldDefaults", "inferStatusDefaults", "inferSubtaskTypeDefault"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TargetToSourcesMapping
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `inferClassificationDefaults` to the URL query string
-    if (getInferClassificationDefaults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sinferClassificationDefaults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInferClassificationDefaults()))));
-    }
-
-    // add `inferFieldDefaults` to the URL query string
-    if (getInferFieldDefaults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sinferFieldDefaults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInferFieldDefaults()))));
-    }
-
-    // add `inferStatusDefaults` to the URL query string
-    if (getInferStatusDefaults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sinferStatusDefaults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInferStatusDefaults()))));
-    }
-
-    // add `inferSubtaskTypeDefault` to the URL query string
-    if (getInferSubtaskTypeDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sinferSubtaskTypeDefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInferSubtaskTypeDefault()))));
-    }
-
-    // add `issueIdsOrKeys` to the URL query string
-    if (getIssueIdsOrKeys() != null) {
-      for (int i = 0; i < getIssueIdsOrKeys().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sissueIdsOrKeys%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getIssueIdsOrKeys().get(i)))));
-      }
-    }
-
-    // add `targetClassification` to the URL query string
-    if (getTargetClassification() != null) {
-      for (int i = 0; i < getTargetClassification().size(); i++) {
-        if (getTargetClassification().get(i) != null) {
-          joiner.add(getTargetClassification().get(i).toUrlQueryString(String.format(Locale.ROOT, "%stargetClassification%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TargetToSourcesMapping.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TargetToSourcesMapping is not found in the empty JSON string", TargetToSourcesMapping.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `targetMandatoryFields` to the URL query string
-    if (getTargetMandatoryFields() != null) {
-      for (int i = 0; i < getTargetMandatoryFields().size(); i++) {
-        if (getTargetMandatoryFields().get(i) != null) {
-          joiner.add(getTargetMandatoryFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%stargetMandatoryFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!TargetToSourcesMapping.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `TargetToSourcesMapping` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
 
-    // add `targetStatus` to the URL query string
-    if (getTargetStatus() != null) {
-      for (int i = 0; i < getTargetStatus().size(); i++) {
-        if (getTargetStatus().get(i) != null) {
-          joiner.add(getTargetStatus().get(i).toUrlQueryString(String.format(Locale.ROOT, "%stargetStatus%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : TargetToSourcesMapping.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("issueIdsOrKeys") != null && !jsonObj.get("issueIdsOrKeys").isJsonNull() && !jsonObj.get("issueIdsOrKeys").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueIdsOrKeys` to be an array in the JSON string but got `%s`", jsonObj.get("issueIdsOrKeys").toString()));
+      }
+      if (jsonObj.get("targetClassification") != null && !jsonObj.get("targetClassification").isJsonNull()) {
+        JsonArray jsonArraytargetClassification = jsonObj.getAsJsonArray("targetClassification");
+        if (jsonArraytargetClassification != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("targetClassification").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `targetClassification` to be an array in the JSON string but got `%s`", jsonObj.get("targetClassification").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `targetClassification` (array)
+          for (int i = 0; i < jsonArraytargetClassification.size(); i++) {
+            TargetClassification.validateJsonElement(jsonArraytargetClassification.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("targetMandatoryFields") != null && !jsonObj.get("targetMandatoryFields").isJsonNull()) {
+        JsonArray jsonArraytargetMandatoryFields = jsonObj.getAsJsonArray("targetMandatoryFields");
+        if (jsonArraytargetMandatoryFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("targetMandatoryFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `targetMandatoryFields` to be an array in the JSON string but got `%s`", jsonObj.get("targetMandatoryFields").toString()));
+          }
+
+          // validate the optional field `targetMandatoryFields` (array)
+          for (int i = 0; i < jsonArraytargetMandatoryFields.size(); i++) {
+            TargetMandatoryFields.validateJsonElement(jsonArraytargetMandatoryFields.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("targetStatus") != null && !jsonObj.get("targetStatus").isJsonNull()) {
+        JsonArray jsonArraytargetStatus = jsonObj.getAsJsonArray("targetStatus");
+        if (jsonArraytargetStatus != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("targetStatus").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `targetStatus` to be an array in the JSON string but got `%s`", jsonObj.get("targetStatus").toString()));
+          }
+
+          // validate the optional field `targetStatus` (array)
+          for (int i = 0; i < jsonArraytargetStatus.size(); i++) {
+            TargetStatus.validateJsonElement(jsonArraytargetStatus.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TargetToSourcesMapping.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TargetToSourcesMapping' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TargetToSourcesMapping> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TargetToSourcesMapping.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TargetToSourcesMapping>() {
+           @Override
+           public void write(JsonWriter out, TargetToSourcesMapping value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TargetToSourcesMapping read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of TargetToSourcesMapping given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TargetToSourcesMapping
+   * @throws IOException if the JSON string is invalid with respect to TargetToSourcesMapping
+   */
+  public static TargetToSourcesMapping fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TargetToSourcesMapping.class);
+  }
+
+  /**
+   * Convert an instance of TargetToSourcesMapping to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

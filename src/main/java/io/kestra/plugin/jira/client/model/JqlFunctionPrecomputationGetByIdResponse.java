@@ -13,52 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JqlFunctionPrecomputationBean;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Get precomputations by ID response.
  */
-@JsonPropertyOrder({
-  JqlFunctionPrecomputationGetByIdResponse.JSON_PROPERTY_NOT_FOUND_PRECOMPUTATION_I_DS,
-  JqlFunctionPrecomputationGetByIdResponse.JSON_PROPERTY_PRECOMPUTATIONS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JqlFunctionPrecomputationGetByIdResponse {
-  public static final String JSON_PROPERTY_NOT_FOUND_PRECOMPUTATION_I_DS = "notFoundPrecomputationIDs";
+  public static final String SERIALIZED_NAME_NOT_FOUND_PRECOMPUTATION_I_DS = "notFoundPrecomputationIDs";
+  @SerializedName(SERIALIZED_NAME_NOT_FOUND_PRECOMPUTATION_I_DS)
   @javax.annotation.Nullable
   private List<String> notFoundPrecomputationIDs = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PRECOMPUTATIONS = "precomputations";
+  public static final String SERIALIZED_NAME_PRECOMPUTATIONS = "precomputations";
+  @SerializedName(SERIALIZED_NAME_PRECOMPUTATIONS)
   @javax.annotation.Nullable
   private List<JqlFunctionPrecomputationBean> precomputations = new ArrayList<>();
 
-  public JqlFunctionPrecomputationGetByIdResponse() { 
+  public JqlFunctionPrecomputationGetByIdResponse() {
   }
 
-  @JsonCreator
   public JqlFunctionPrecomputationGetByIdResponse(
-    @JsonProperty(JSON_PROPERTY_NOT_FOUND_PRECOMPUTATION_I_DS) List<String> notFoundPrecomputationIDs, 
-    @JsonProperty(JSON_PROPERTY_PRECOMPUTATIONS) List<JqlFunctionPrecomputationBean> precomputations
+     List<String> notFoundPrecomputationIDs, 
+     List<JqlFunctionPrecomputationBean> precomputations
   ) {
-  this();
+    this();
     this.notFoundPrecomputationIDs = notFoundPrecomputationIDs;
     this.precomputations = precomputations;
   }
@@ -68,12 +82,9 @@ public class JqlFunctionPrecomputationGetByIdResponse {
    * @return notFoundPrecomputationIDs
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NOT_FOUND_PRECOMPUTATION_I_DS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getNotFoundPrecomputationIDs() {
     return notFoundPrecomputationIDs;
   }
-
 
 
 
@@ -82,8 +93,6 @@ public class JqlFunctionPrecomputationGetByIdResponse {
    * @return precomputations
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PRECOMPUTATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JqlFunctionPrecomputationBean> getPrecomputations() {
     return precomputations;
   }
@@ -91,9 +100,6 @@ public class JqlFunctionPrecomputationGetByIdResponse {
 
 
 
-  /**
-   * Return true if this JqlFunctionPrecomputationGetByIdResponse object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -133,58 +139,106 @@ public class JqlFunctionPrecomputationGetByIdResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("notFoundPrecomputationIDs", "precomputations"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JqlFunctionPrecomputationGetByIdResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `notFoundPrecomputationIDs` to the URL query string
-    if (getNotFoundPrecomputationIDs() != null) {
-      for (int i = 0; i < getNotFoundPrecomputationIDs().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%snotFoundPrecomputationIDs%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getNotFoundPrecomputationIDs().get(i)))));
-      }
-    }
-
-    // add `precomputations` to the URL query string
-    if (getPrecomputations() != null) {
-      for (int i = 0; i < getPrecomputations().size(); i++) {
-        if (getPrecomputations().get(i) != null) {
-          joiner.add(getPrecomputations().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sprecomputations%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JqlFunctionPrecomputationGetByIdResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JqlFunctionPrecomputationGetByIdResponse is not found in the empty JSON string", JqlFunctionPrecomputationGetByIdResponse.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JqlFunctionPrecomputationGetByIdResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JqlFunctionPrecomputationGetByIdResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("notFoundPrecomputationIDs") != null && !jsonObj.get("notFoundPrecomputationIDs").isJsonNull() && !jsonObj.get("notFoundPrecomputationIDs").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `notFoundPrecomputationIDs` to be an array in the JSON string but got `%s`", jsonObj.get("notFoundPrecomputationIDs").toString()));
+      }
+      if (jsonObj.get("precomputations") != null && !jsonObj.get("precomputations").isJsonNull()) {
+        JsonArray jsonArrayprecomputations = jsonObj.getAsJsonArray("precomputations");
+        if (jsonArrayprecomputations != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("precomputations").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `precomputations` to be an array in the JSON string but got `%s`", jsonObj.get("precomputations").toString()));
+          }
+
+          // validate the optional field `precomputations` (array)
+          for (int i = 0; i < jsonArrayprecomputations.size(); i++) {
+            JqlFunctionPrecomputationBean.validateJsonElement(jsonArrayprecomputations.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JqlFunctionPrecomputationGetByIdResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JqlFunctionPrecomputationGetByIdResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JqlFunctionPrecomputationGetByIdResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JqlFunctionPrecomputationGetByIdResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JqlFunctionPrecomputationGetByIdResponse>() {
+           @Override
+           public void write(JsonWriter out, JqlFunctionPrecomputationGetByIdResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JqlFunctionPrecomputationGetByIdResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JqlFunctionPrecomputationGetByIdResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JqlFunctionPrecomputationGetByIdResponse
+   * @throws IOException if the JSON string is invalid with respect to JqlFunctionPrecomputationGetByIdResponse
+   */
+  public static JqlFunctionPrecomputationGetByIdResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JqlFunctionPrecomputationGetByIdResponse.class);
+  }
+
+  /**
+   * Convert an instance of JqlFunctionPrecomputationGetByIdResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

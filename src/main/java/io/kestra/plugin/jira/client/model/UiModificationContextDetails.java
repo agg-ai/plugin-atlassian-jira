@@ -13,60 +13,75 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The details of a UI modification&#39;s context, which define where to activate the UI modification.
  */
-@JsonPropertyOrder({
-  UiModificationContextDetails.JSON_PROPERTY_ID,
-  UiModificationContextDetails.JSON_PROPERTY_IS_AVAILABLE,
-  UiModificationContextDetails.JSON_PROPERTY_ISSUE_TYPE_ID,
-  UiModificationContextDetails.JSON_PROPERTY_PROJECT_ID,
-  UiModificationContextDetails.JSON_PROPERTY_VIEW_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class UiModificationContextDetails {
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_IS_AVAILABLE = "isAvailable";
+  public static final String SERIALIZED_NAME_IS_AVAILABLE = "isAvailable";
+  @SerializedName(SERIALIZED_NAME_IS_AVAILABLE)
   @javax.annotation.Nullable
   private Boolean isAvailable;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_ID = "issueTypeId";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_ID = "issueTypeId";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_ID)
   @javax.annotation.Nullable
   private String issueTypeId;
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nullable
   private String projectId;
 
   /**
    * The view type of the context. Only &#x60;GIC&#x60;(Global Issue Create), &#x60;IssueView&#x60; and &#x60;IssueTransition&#x60; are supported. Null is treated as a wildcard, meaning the UI modification will be applied to all view types. Each UI modification context can have a maximum of one wildcard.
    */
+  @JsonAdapter(ViewTypeEnum.Adapter.class)
   public enum ViewTypeEnum {
-    GIC(String.valueOf("GIC")),
+    GIC("GIC"),
     
-    ISSUE_VIEW(String.valueOf("IssueView")),
+    ISSUE_VIEW("IssueView"),
     
-    ISSUE_TRANSITION(String.valueOf("IssueTransition"));
+    ISSUE_TRANSITION("IssueTransition");
 
     private String value;
 
@@ -74,7 +89,6 @@ public class UiModificationContextDetails {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -84,7 +98,6 @@ public class UiModificationContextDetails {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ViewTypeEnum fromValue(String value) {
       for (ViewTypeEnum b : ViewTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -93,21 +106,39 @@ public class UiModificationContextDetails {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ViewTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ViewTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ViewTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ViewTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ViewTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_VIEW_TYPE = "viewType";
+  public static final String SERIALIZED_NAME_VIEW_TYPE = "viewType";
+  @SerializedName(SERIALIZED_NAME_VIEW_TYPE)
   @javax.annotation.Nullable
   private ViewTypeEnum viewType;
 
-  public UiModificationContextDetails() { 
+  public UiModificationContextDetails() {
   }
 
-  @JsonCreator
   public UiModificationContextDetails(
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_IS_AVAILABLE) Boolean isAvailable
+     String id, 
+     Boolean isAvailable
   ) {
-  this();
+    this();
     this.id = id;
     this.isAvailable = isAvailable;
   }
@@ -117,12 +148,9 @@ public class UiModificationContextDetails {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -131,12 +159,9 @@ public class UiModificationContextDetails {
    * @return isAvailable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_AVAILABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsAvailable() {
     return isAvailable;
   }
-
 
 
 
@@ -150,15 +175,10 @@ public class UiModificationContextDetails {
    * @return issueTypeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIssueTypeId() {
     return issueTypeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeId(@javax.annotation.Nullable String issueTypeId) {
     this.issueTypeId = issueTypeId;
   }
@@ -174,15 +194,10 @@ public class UiModificationContextDetails {
    * @return projectId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProjectId() {
     return projectId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectId(@javax.annotation.Nullable String projectId) {
     this.projectId = projectId;
   }
@@ -198,23 +213,16 @@ public class UiModificationContextDetails {
    * @return viewType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ViewTypeEnum getViewType() {
     return viewType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setViewType(@javax.annotation.Nullable ViewTypeEnum viewType) {
     this.viewType = viewType;
   }
 
 
-  /**
-   * Return true if this UiModificationContextDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -260,64 +268,104 @@ public class UiModificationContextDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("id", "isAvailable", "issueTypeId", "projectId", "viewType"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to UiModificationContextDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!UiModificationContextDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in UiModificationContextDetails is not found in the empty JSON string", UiModificationContextDetails.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!UiModificationContextDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `UiModificationContextDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("issueTypeId") != null && !jsonObj.get("issueTypeId").isJsonNull()) && !jsonObj.get("issueTypeId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypeId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("issueTypeId").toString()));
+      }
+      if ((jsonObj.get("projectId") != null && !jsonObj.get("projectId").isJsonNull()) && !jsonObj.get("projectId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectId").toString()));
+      }
+      if ((jsonObj.get("viewType") != null && !jsonObj.get("viewType").isJsonNull()) && !jsonObj.get("viewType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `viewType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("viewType").toString()));
+      }
+      // validate the optional field `viewType`
+      if (jsonObj.get("viewType") != null && !jsonObj.get("viewType").isJsonNull()) {
+        ViewTypeEnum.validateJsonElement(jsonObj.get("viewType"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!UiModificationContextDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'UiModificationContextDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<UiModificationContextDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(UiModificationContextDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<UiModificationContextDetails>() {
+           @Override
+           public void write(JsonWriter out, UiModificationContextDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public UiModificationContextDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of UiModificationContextDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of UiModificationContextDetails
+   * @throws IOException if the JSON string is invalid with respect to UiModificationContextDetails
+   */
+  public static UiModificationContextDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, UiModificationContextDetails.class);
+  }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `isAvailable` to the URL query string
-    if (getIsAvailable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisAvailable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsAvailable()))));
-    }
-
-    // add `issueTypeId` to the URL query string
-    if (getIssueTypeId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueTypeId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueTypeId()))));
-    }
-
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
-
-    // add `viewType` to the URL query string
-    if (getViewType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sviewType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getViewType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of UiModificationContextDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

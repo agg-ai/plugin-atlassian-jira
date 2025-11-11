@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.CreateResolutionDetails;
 import io.kestra.plugin.jira.client.model.ErrorCollection;
@@ -28,1114 +37,1199 @@ import io.kestra.plugin.jira.client.model.SetDefaultResolutionRequest;
 import io.kestra.plugin.jira.client.model.TaskProgressBeanObject;
 import io.kestra.plugin.jira.client.model.UpdateResolutionDetails;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueResolutionsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueResolutionsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueResolutionsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createResolution
+     * @param createResolutionDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createResolutionCall(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueResolutionsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueResolutionsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create resolution
-   * Creates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createResolutionDetails  (required)
-   * @return ResolutionId
-   * @throws ApiException if fails to make API call
-   */
-  public ResolutionId createResolution(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails) throws ApiException {
-    return createResolution(createResolutionDetails, null);
-  }
-
-  /**
-   * Create resolution
-   * Creates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createResolutionDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ResolutionId
-   * @throws ApiException if fails to make API call
-   */
-  public ResolutionId createResolution(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<ResolutionId> localVarResponse = createResolutionWithHttpInfo(createResolutionDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create resolution
-   * Creates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createResolutionDetails  (required)
-   * @return ApiResponse&lt;ResolutionId&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ResolutionId> createResolutionWithHttpInfo(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails) throws ApiException {
-    return createResolutionWithHttpInfo(createResolutionDetails, null);
-  }
-
-  /**
-   * Create resolution
-   * Creates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createResolutionDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ResolutionId&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ResolutionId> createResolutionWithHttpInfo(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createResolutionRequestBuilder(createResolutionDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createResolution", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ResolutionId>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ResolutionId responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ResolutionId>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = createResolutionDetails;
 
-        return new ApiResponse<ResolutionId>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/resolution";
 
-  private HttpRequest.Builder createResolutionRequestBuilder(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'createResolutionDetails' is set
-    if (createResolutionDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'createResolutionDetails' when calling createResolution");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/resolution";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createResolutionDetails);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete resolution
-   * Deletes an issue resolution.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue resolution. (required)
-   * @param replaceWith The ID of the issue resolution that will replace the currently selected resolution. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteResolution(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith) throws ApiException {
-    deleteResolution(id, replaceWith, null);
-  }
-
-  /**
-   * Delete resolution
-   * Deletes an issue resolution.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue resolution. (required)
-   * @param replaceWith The ID of the issue resolution that will replace the currently selected resolution. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteResolution(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith, Map<String, String> headers) throws ApiException {
-    deleteResolutionWithHttpInfo(id, replaceWith, headers);
-  }
-
-  /**
-   * Delete resolution
-   * Deletes an issue resolution.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue resolution. (required)
-   * @param replaceWith The ID of the issue resolution that will replace the currently selected resolution. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteResolutionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith) throws ApiException {
-    return deleteResolutionWithHttpInfo(id, replaceWith, null);
-  }
-
-  /**
-   * Delete resolution
-   * Deletes an issue resolution.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue resolution. (required)
-   * @param replaceWith The ID of the issue resolution that will replace the currently selected resolution. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteResolutionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteResolutionRequestBuilder(id, replaceWith, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteResolution", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteResolutionRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteResolution");
-    }
-    // verify the required parameter 'replaceWith' is set
-    if (replaceWith == null) {
-      throw new ApiException(400, "Missing the required parameter 'replaceWith' when calling deleteResolution");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/resolution/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "replaceWith";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("replaceWith", replaceWith));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get resolution
-   * Returns an issue resolution value.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param id The ID of the issue resolution value. (required)
-   * @return Resolution
-   * @throws ApiException if fails to make API call
-   */
-  public Resolution getResolution(@javax.annotation.Nonnull String id) throws ApiException {
-    return getResolution(id, null);
-  }
-
-  /**
-   * Get resolution
-   * Returns an issue resolution value.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param id The ID of the issue resolution value. (required)
-   * @param headers Optional headers to include in the request
-   * @return Resolution
-   * @throws ApiException if fails to make API call
-   */
-  public Resolution getResolution(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<Resolution> localVarResponse = getResolutionWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get resolution
-   * Returns an issue resolution value.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param id The ID of the issue resolution value. (required)
-   * @return ApiResponse&lt;Resolution&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Resolution> getResolutionWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getResolutionWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get resolution
-   * Returns an issue resolution value.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param id The ID of the issue resolution value. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Resolution&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Resolution> getResolutionWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getResolutionRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getResolution", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Resolution>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Resolution responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Resolution>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Resolution>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getResolutionRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getResolution");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/resolution/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get resolutions
-   * Returns a list of all issue resolution values.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @return List&lt;Resolution&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public List<Resolution> getResolutions() throws ApiException {
-    return getResolutions(null);
-  }
-
-  /**
-   * Get resolutions
-   * Returns a list of all issue resolution values.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param headers Optional headers to include in the request
-   * @return List&lt;Resolution&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public List<Resolution> getResolutions(Map<String, String> headers) throws ApiException {
-    ApiResponse<List<Resolution>> localVarResponse = getResolutionsWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get resolutions
-   * Returns a list of all issue resolution values.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @return ApiResponse&lt;List&lt;Resolution&gt;&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<List<Resolution>> getResolutionsWithHttpInfo() throws ApiException {
-    return getResolutionsWithHttpInfo(null);
-  }
-
-  /**
-   * Get resolutions
-   * Returns a list of all issue resolution values.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;Resolution&gt;&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<List<Resolution>> getResolutionsWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getResolutionsRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getResolutions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<Resolution>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<Resolution> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<Resolution>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<Resolution>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
 
-  private HttpRequest.Builder getResolutionsRequestBuilder(Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/resolution";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Move resolutions
-   * Changes the order of issue resolutions.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param reorderIssueResolutionsRequest  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object moveResolutions(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest) throws ApiException {
-    return moveResolutions(reorderIssueResolutionsRequest, null);
-  }
-
-  /**
-   * Move resolutions
-   * Changes the order of issue resolutions.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param reorderIssueResolutionsRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object moveResolutions(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = moveResolutionsWithHttpInfo(reorderIssueResolutionsRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Move resolutions
-   * Changes the order of issue resolutions.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param reorderIssueResolutionsRequest  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> moveResolutionsWithHttpInfo(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest) throws ApiException {
-    return moveResolutionsWithHttpInfo(reorderIssueResolutionsRequest, null);
-  }
-
-  /**
-   * Move resolutions
-   * Changes the order of issue resolutions.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param reorderIssueResolutionsRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> moveResolutionsWithHttpInfo(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = moveResolutionsRequestBuilder(reorderIssueResolutionsRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("moveResolutions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createResolutionValidateBeforeCall(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'createResolutionDetails' is set
+        if (createResolutionDetails == null) {
+            throw new ApiException("Missing the required parameter 'createResolutionDetails' when calling createResolution(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        return createResolutionCall(createResolutionDetails, _callback);
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder moveResolutionsRequestBuilder(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'reorderIssueResolutionsRequest' is set
-    if (reorderIssueResolutionsRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'reorderIssueResolutionsRequest' when calling moveResolutions");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/resolution/move";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(reorderIssueResolutionsRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create resolution
+     * Creates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createResolutionDetails  (required)
+     * @return ResolutionId
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ResolutionId createResolution(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails) throws ApiException {
+        ApiResponse<ResolutionId> localVarResp = createResolutionWithHttpInfo(createResolutionDetails);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+
+    /**
+     * Create resolution
+     * Creates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createResolutionDetails  (required)
+     * @return ApiResponse&lt;ResolutionId&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ResolutionId> createResolutionWithHttpInfo(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails) throws ApiException {
+        okhttp3.Call localVarCall = createResolutionValidateBeforeCall(createResolutionDetails, null);
+        Type localVarReturnType = new TypeToken<ResolutionId>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create resolution (asynchronously)
+     * Creates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createResolutionDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createResolutionAsync(@javax.annotation.Nonnull CreateResolutionDetails createResolutionDetails, final ApiCallback<ResolutionId> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createResolutionValidateBeforeCall(createResolutionDetails, _callback);
+        Type localVarReturnType = new TypeToken<ResolutionId>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for deleteResolution
+     * @param id The ID of the issue resolution. (required)
+     * @param replaceWith The ID of the issue resolution that will replace the currently selected resolution. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to delete the issue resolution is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteResolutionCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Search resolutions
-   * Returns a [paginated](#pagination) list of resolutions. The list can contain all resolutions or a subset determined by any combination of these criteria:   *  a list of resolutions IDs.  *  whether the field configuration is a default. This returns resolutions from company-managed (classic) projects only, as there is no concept of default resolutions in team-managed projects.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of resolutions IDs to be filtered out (optional)
-   * @param onlyDefault When set to true, return default only, when IDs provided, if none of them is default, return empty page. Default value is false (optional, default to false)
-   * @return PageBeanResolutionJsonBean
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanResolutionJsonBean searchResolutions(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault) throws ApiException {
-    return searchResolutions(startAt, maxResults, id, onlyDefault, null);
-  }
-
-  /**
-   * Search resolutions
-   * Returns a [paginated](#pagination) list of resolutions. The list can contain all resolutions or a subset determined by any combination of these criteria:   *  a list of resolutions IDs.  *  whether the field configuration is a default. This returns resolutions from company-managed (classic) projects only, as there is no concept of default resolutions in team-managed projects.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of resolutions IDs to be filtered out (optional)
-   * @param onlyDefault When set to true, return default only, when IDs provided, if none of them is default, return empty page. Default value is false (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanResolutionJsonBean
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanResolutionJsonBean searchResolutions(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanResolutionJsonBean> localVarResponse = searchResolutionsWithHttpInfo(startAt, maxResults, id, onlyDefault, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Search resolutions
-   * Returns a [paginated](#pagination) list of resolutions. The list can contain all resolutions or a subset determined by any combination of these criteria:   *  a list of resolutions IDs.  *  whether the field configuration is a default. This returns resolutions from company-managed (classic) projects only, as there is no concept of default resolutions in team-managed projects.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of resolutions IDs to be filtered out (optional)
-   * @param onlyDefault When set to true, return default only, when IDs provided, if none of them is default, return empty page. Default value is false (optional, default to false)
-   * @return ApiResponse&lt;PageBeanResolutionJsonBean&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanResolutionJsonBean> searchResolutionsWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault) throws ApiException {
-    return searchResolutionsWithHttpInfo(startAt, maxResults, id, onlyDefault, null);
-  }
-
-  /**
-   * Search resolutions
-   * Returns a [paginated](#pagination) list of resolutions. The list can contain all resolutions or a subset determined by any combination of these criteria:   *  a list of resolutions IDs.  *  whether the field configuration is a default. This returns resolutions from company-managed (classic) projects only, as there is no concept of default resolutions in team-managed projects.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of resolutions IDs to be filtered out (optional)
-   * @param onlyDefault When set to true, return default only, when IDs provided, if none of them is default, return empty page. Default value is false (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanResolutionJsonBean&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanResolutionJsonBean> searchResolutionsWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = searchResolutionsRequestBuilder(startAt, maxResults, id, onlyDefault, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("searchResolutions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanResolutionJsonBean>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanResolutionJsonBean responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanResolutionJsonBean>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<PageBeanResolutionJsonBean>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/resolution/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder searchResolutionsRequestBuilder(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault, Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/resolution/search";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-    localVarQueryParameterBaseName = "onlyDefault";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("onlyDefault", onlyDefault));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Set default resolution
-   * Sets default issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param setDefaultResolutionRequest  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object setDefaultResolution(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest) throws ApiException {
-    return setDefaultResolution(setDefaultResolutionRequest, null);
-  }
-
-  /**
-   * Set default resolution
-   * Sets default issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param setDefaultResolutionRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object setDefaultResolution(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = setDefaultResolutionWithHttpInfo(setDefaultResolutionRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set default resolution
-   * Sets default issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param setDefaultResolutionRequest  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> setDefaultResolutionWithHttpInfo(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest) throws ApiException {
-    return setDefaultResolutionWithHttpInfo(setDefaultResolutionRequest, null);
-  }
-
-  /**
-   * Set default resolution
-   * Sets default issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param setDefaultResolutionRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> setDefaultResolutionWithHttpInfo(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = setDefaultResolutionRequestBuilder(setDefaultResolutionRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("setDefaultResolution", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (replaceWith != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("replaceWith", replaceWith));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder setDefaultResolutionRequestBuilder(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'setDefaultResolutionRequest' is set
-    if (setDefaultResolutionRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'setDefaultResolutionRequest' when calling setDefaultResolution");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/resolution/default";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(setDefaultResolutionRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update resolution
-   * Updates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue resolution. (required)
-   * @param updateResolutionDetails  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateResolution(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails) throws ApiException {
-    return updateResolution(id, updateResolutionDetails, null);
-  }
-
-  /**
-   * Update resolution
-   * Updates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue resolution. (required)
-   * @param updateResolutionDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateResolution(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateResolutionWithHttpInfo(id, updateResolutionDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update resolution
-   * Updates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue resolution. (required)
-   * @param updateResolutionDetails  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateResolutionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails) throws ApiException {
-    return updateResolutionWithHttpInfo(id, updateResolutionDetails, null);
-  }
-
-  /**
-   * Update resolution
-   * Updates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue resolution. (required)
-   * @param updateResolutionDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateResolutionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateResolutionRequestBuilder(id, updateResolutionDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateResolution", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateResolutionRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateResolution");
-    }
-    // verify the required parameter 'updateResolutionDetails' is set
-    if (updateResolutionDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateResolutionDetails' when calling updateResolution");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteResolutionValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteResolution(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/resolution/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
+        // verify the required parameter 'replaceWith' is set
+        if (replaceWith == null) {
+            throw new ApiException("Missing the required parameter 'replaceWith' when calling deleteResolution(Async)");
+        }
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        return deleteResolutionCall(id, replaceWith, _callback);
 
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateResolutionDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete resolution
+     * Deletes an issue resolution.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue resolution. (required)
+     * @param replaceWith The ID of the issue resolution that will replace the currently selected resolution. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to delete the issue resolution is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteResolution(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith) throws ApiException {
+        deleteResolutionWithHttpInfo(id, replaceWith);
+    }
+
+    /**
+     * Delete resolution
+     * Deletes an issue resolution.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue resolution. (required)
+     * @param replaceWith The ID of the issue resolution that will replace the currently selected resolution. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to delete the issue resolution is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteResolutionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith) throws ApiException {
+        okhttp3.Call localVarCall = deleteResolutionValidateBeforeCall(id, replaceWith, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete resolution (asynchronously)
+     * Deletes an issue resolution.  This operation is [asynchronous](#async). Follow the &#x60;location&#x60; link in the response to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue resolution. (required)
+     * @param replaceWith The ID of the issue resolution that will replace the currently selected resolution. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a task to delete the issue resolution is already running. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteResolutionAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String replaceWith, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteResolutionValidateBeforeCall(id, replaceWith, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getResolution
+     * @param id The ID of the issue resolution value. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution value is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getResolutionCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/resolution/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getResolutionValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getResolution(Async)");
+        }
+
+        return getResolutionCall(id, _callback);
+
+    }
+
+    /**
+     * Get resolution
+     * Returns an issue resolution value.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param id The ID of the issue resolution value. (required)
+     * @return Resolution
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution value is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Resolution getResolution(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<Resolution> localVarResp = getResolutionWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get resolution
+     * Returns an issue resolution value.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param id The ID of the issue resolution value. (required)
+     * @return ApiResponse&lt;Resolution&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution value is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Resolution> getResolutionWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getResolutionValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<Resolution>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get resolution (asynchronously)
+     * Returns an issue resolution value.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param id The ID of the issue resolution value. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution value is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getResolutionAsync(@javax.annotation.Nonnull String id, final ApiCallback<Resolution> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getResolutionValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<Resolution>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getResolutions
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call getResolutionsCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/resolution";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @Deprecated
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getResolutionsValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getResolutionsCall(_callback);
+
+    }
+
+    /**
+     * Get resolutions
+     * Returns a list of all issue resolution values.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @return List&lt;Resolution&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public List<Resolution> getResolutions() throws ApiException {
+        ApiResponse<List<Resolution>> localVarResp = getResolutionsWithHttpInfo();
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get resolutions
+     * Returns a list of all issue resolution values.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @return ApiResponse&lt;List&lt;Resolution&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<List<Resolution>> getResolutionsWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getResolutionsValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<List<Resolution>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get resolutions (asynchronously)
+     * Returns a list of all issue resolution values.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call getResolutionsAsync(final ApiCallback<List<Resolution>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getResolutionsValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<List<Resolution>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for moveResolutions
+     * @param reorderIssueResolutionsRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call moveResolutionsCall(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = reorderIssueResolutionsRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/resolution/move";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call moveResolutionsValidateBeforeCall(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'reorderIssueResolutionsRequest' is set
+        if (reorderIssueResolutionsRequest == null) {
+            throw new ApiException("Missing the required parameter 'reorderIssueResolutionsRequest' when calling moveResolutions(Async)");
+        }
+
+        return moveResolutionsCall(reorderIssueResolutionsRequest, _callback);
+
+    }
+
+    /**
+     * Move resolutions
+     * Changes the order of issue resolutions.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param reorderIssueResolutionsRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object moveResolutions(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = moveResolutionsWithHttpInfo(reorderIssueResolutionsRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Move resolutions
+     * Changes the order of issue resolutions.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param reorderIssueResolutionsRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> moveResolutionsWithHttpInfo(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest) throws ApiException {
+        okhttp3.Call localVarCall = moveResolutionsValidateBeforeCall(reorderIssueResolutionsRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Move resolutions (asynchronously)
+     * Changes the order of issue resolutions.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param reorderIssueResolutionsRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call moveResolutionsAsync(@javax.annotation.Nonnull ReorderIssueResolutionsRequest reorderIssueResolutionsRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = moveResolutionsValidateBeforeCall(reorderIssueResolutionsRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for searchResolutions
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of resolutions IDs to be filtered out (optional)
+     * @param onlyDefault When set to true, return default only, when IDs provided, if none of them is default, return empty page. Default value is false (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call searchResolutionsCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/resolution/search";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        if (onlyDefault != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("onlyDefault", onlyDefault));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call searchResolutionsValidateBeforeCall(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault, final ApiCallback _callback) throws ApiException {
+        return searchResolutionsCall(startAt, maxResults, id, onlyDefault, _callback);
+
+    }
+
+    /**
+     * Search resolutions
+     * Returns a [paginated](#pagination) list of resolutions. The list can contain all resolutions or a subset determined by any combination of these criteria:   *  a list of resolutions IDs.  *  whether the field configuration is a default. This returns resolutions from company-managed (classic) projects only, as there is no concept of default resolutions in team-managed projects.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of resolutions IDs to be filtered out (optional)
+     * @param onlyDefault When set to true, return default only, when IDs provided, if none of them is default, return empty page. Default value is false (optional, default to false)
+     * @return PageBeanResolutionJsonBean
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanResolutionJsonBean searchResolutions(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault) throws ApiException {
+        ApiResponse<PageBeanResolutionJsonBean> localVarResp = searchResolutionsWithHttpInfo(startAt, maxResults, id, onlyDefault);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Search resolutions
+     * Returns a [paginated](#pagination) list of resolutions. The list can contain all resolutions or a subset determined by any combination of these criteria:   *  a list of resolutions IDs.  *  whether the field configuration is a default. This returns resolutions from company-managed (classic) projects only, as there is no concept of default resolutions in team-managed projects.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of resolutions IDs to be filtered out (optional)
+     * @param onlyDefault When set to true, return default only, when IDs provided, if none of them is default, return empty page. Default value is false (optional, default to false)
+     * @return ApiResponse&lt;PageBeanResolutionJsonBean&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanResolutionJsonBean> searchResolutionsWithHttpInfo(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault) throws ApiException {
+        okhttp3.Call localVarCall = searchResolutionsValidateBeforeCall(startAt, maxResults, id, onlyDefault, null);
+        Type localVarReturnType = new TypeToken<PageBeanResolutionJsonBean>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Search resolutions (asynchronously)
+     * Returns a [paginated](#pagination) list of resolutions. The list can contain all resolutions or a subset determined by any combination of these criteria:   *  a list of resolutions IDs.  *  whether the field configuration is a default. This returns resolutions from company-managed (classic) projects only, as there is no concept of default resolutions in team-managed projects.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of resolutions IDs to be filtered out (optional)
+     * @param onlyDefault When set to true, return default only, when IDs provided, if none of them is default, return empty page. Default value is false (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call searchResolutionsAsync(@javax.annotation.Nullable String startAt, @javax.annotation.Nullable String maxResults, @javax.annotation.Nullable List<String> id, @javax.annotation.Nullable Boolean onlyDefault, final ApiCallback<PageBeanResolutionJsonBean> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = searchResolutionsValidateBeforeCall(startAt, maxResults, id, onlyDefault, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanResolutionJsonBean>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for setDefaultResolution
+     * @param setDefaultResolutionRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setDefaultResolutionCall(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = setDefaultResolutionRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/resolution/default";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call setDefaultResolutionValidateBeforeCall(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'setDefaultResolutionRequest' is set
+        if (setDefaultResolutionRequest == null) {
+            throw new ApiException("Missing the required parameter 'setDefaultResolutionRequest' when calling setDefaultResolution(Async)");
+        }
+
+        return setDefaultResolutionCall(setDefaultResolutionRequest, _callback);
+
+    }
+
+    /**
+     * Set default resolution
+     * Sets default issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param setDefaultResolutionRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object setDefaultResolution(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = setDefaultResolutionWithHttpInfo(setDefaultResolutionRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set default resolution
+     * Sets default issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param setDefaultResolutionRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> setDefaultResolutionWithHttpInfo(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest) throws ApiException {
+        okhttp3.Call localVarCall = setDefaultResolutionValidateBeforeCall(setDefaultResolutionRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set default resolution (asynchronously)
+     * Sets default issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param setDefaultResolutionRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setDefaultResolutionAsync(@javax.annotation.Nonnull SetDefaultResolutionRequest setDefaultResolutionRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = setDefaultResolutionValidateBeforeCall(setDefaultResolutionRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateResolution
+     * @param id The ID of the issue resolution. (required)
+     * @param updateResolutionDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateResolutionCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = updateResolutionDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/resolution/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateResolutionValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateResolution(Async)");
+        }
+
+        // verify the required parameter 'updateResolutionDetails' is set
+        if (updateResolutionDetails == null) {
+            throw new ApiException("Missing the required parameter 'updateResolutionDetails' when calling updateResolution(Async)");
+        }
+
+        return updateResolutionCall(id, updateResolutionDetails, _callback);
+
+    }
+
+    /**
+     * Update resolution
+     * Updates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue resolution. (required)
+     * @param updateResolutionDetails  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateResolution(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails) throws ApiException {
+        ApiResponse<Object> localVarResp = updateResolutionWithHttpInfo(id, updateResolutionDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update resolution
+     * Updates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue resolution. (required)
+     * @param updateResolutionDetails  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateResolutionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails) throws ApiException {
+        okhttp3.Call localVarCall = updateResolutionValidateBeforeCall(id, updateResolutionDetails, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update resolution (asynchronously)
+     * Updates an issue resolution.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue resolution. (required)
+     * @param updateResolutionDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request isn&#39;t valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user doesn&#39;t have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue resolution isn&#39;t found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateResolutionAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull UpdateResolutionDetails updateResolutionDetails, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateResolutionValidateBeforeCall(id, updateResolutionDetails, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

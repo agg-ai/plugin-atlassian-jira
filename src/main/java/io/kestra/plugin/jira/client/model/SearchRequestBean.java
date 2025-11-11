@@ -13,81 +13,96 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * SearchRequestBean
  */
-@JsonPropertyOrder({
-  SearchRequestBean.JSON_PROPERTY_EXPAND,
-  SearchRequestBean.JSON_PROPERTY_FIELDS,
-  SearchRequestBean.JSON_PROPERTY_FIELDS_BY_KEYS,
-  SearchRequestBean.JSON_PROPERTY_JQL,
-  SearchRequestBean.JSON_PROPERTY_MAX_RESULTS,
-  SearchRequestBean.JSON_PROPERTY_PROPERTIES,
-  SearchRequestBean.JSON_PROPERTY_START_AT,
-  SearchRequestBean.JSON_PROPERTY_VALIDATE_QUERY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SearchRequestBean {
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private List<String> expand = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_FIELDS = "fields";
+  public static final String SERIALIZED_NAME_FIELDS = "fields";
+  @SerializedName(SERIALIZED_NAME_FIELDS)
   @javax.annotation.Nullable
   private List<String> fields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_FIELDS_BY_KEYS = "fieldsByKeys";
+  public static final String SERIALIZED_NAME_FIELDS_BY_KEYS = "fieldsByKeys";
+  @SerializedName(SERIALIZED_NAME_FIELDS_BY_KEYS)
   @javax.annotation.Nullable
   private Boolean fieldsByKeys;
 
-  public static final String JSON_PROPERTY_JQL = "jql";
+  public static final String SERIALIZED_NAME_JQL = "jql";
+  @SerializedName(SERIALIZED_NAME_JQL)
   @javax.annotation.Nullable
   private String jql;
 
-  public static final String JSON_PROPERTY_MAX_RESULTS = "maxResults";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "maxResults";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nullable
   private Integer maxResults = 50;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private List<String> properties = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_START_AT = "startAt";
+  public static final String SERIALIZED_NAME_START_AT = "startAt";
+  @SerializedName(SERIALIZED_NAME_START_AT)
   @javax.annotation.Nullable
   private Integer startAt;
 
   /**
    * Determines how to validate the JQL query and treat the validation results. Supported values:   *  &#x60;strict&#x60; Returns a 400 response code if any errors are found, along with a list of all errors (and warnings).  *  &#x60;warn&#x60; Returns all errors as warnings.  *  &#x60;none&#x60; No validation is performed.  *  &#x60;true&#x60; *Deprecated* A legacy synonym for &#x60;strict&#x60;.  *  &#x60;false&#x60; *Deprecated* A legacy synonym for &#x60;warn&#x60;.  The default is &#x60;strict&#x60;.  Note: If the JQL is not correctly formed a 400 response code is returned, regardless of the &#x60;validateQuery&#x60; value.
    */
+  @JsonAdapter(ValidateQueryEnum.Adapter.class)
   public enum ValidateQueryEnum {
-    STRICT(String.valueOf("strict")),
+    STRICT("strict"),
     
-    WARN(String.valueOf("warn")),
+    WARN("warn"),
     
-    NONE(String.valueOf("none")),
+    NONE("none"),
     
-    TRUE(String.valueOf("true")),
+    TRUE("true"),
     
-    FALSE(String.valueOf("false"));
+    FALSE("false");
 
     private String value;
 
@@ -95,7 +110,6 @@ public class SearchRequestBean {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -105,7 +119,6 @@ public class SearchRequestBean {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ValidateQueryEnum fromValue(String value) {
       for (ValidateQueryEnum b : ValidateQueryEnum.values()) {
         if (b.value.equals(value)) {
@@ -114,13 +127,32 @@ public class SearchRequestBean {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ValidateQueryEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ValidateQueryEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ValidateQueryEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ValidateQueryEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ValidateQueryEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_VALIDATE_QUERY = "validateQuery";
+  public static final String SERIALIZED_NAME_VALIDATE_QUERY = "validateQuery";
+  @SerializedName(SERIALIZED_NAME_VALIDATE_QUERY)
   @javax.annotation.Nullable
   private ValidateQueryEnum validateQuery;
 
-  public SearchRequestBean() { 
+  public SearchRequestBean() {
   }
 
   public SearchRequestBean expand(@javax.annotation.Nullable List<String> expand) {
@@ -141,15 +173,10 @@ public class SearchRequestBean {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getExpand() {
     return expand;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExpand(@javax.annotation.Nullable List<String> expand) {
     this.expand = expand;
   }
@@ -173,15 +200,10 @@ public class SearchRequestBean {
    * @return fields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getFields() {
     return fields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFields(@javax.annotation.Nullable List<String> fields) {
     this.fields = fields;
   }
@@ -197,15 +219,10 @@ public class SearchRequestBean {
    * @return fieldsByKeys
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS_BY_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getFieldsByKeys() {
     return fieldsByKeys;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELDS_BY_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldsByKeys(@javax.annotation.Nullable Boolean fieldsByKeys) {
     this.fieldsByKeys = fieldsByKeys;
   }
@@ -221,15 +238,10 @@ public class SearchRequestBean {
    * @return jql
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_JQL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getJql() {
     return jql;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_JQL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setJql(@javax.annotation.Nullable String jql) {
     this.jql = jql;
   }
@@ -245,15 +257,10 @@ public class SearchRequestBean {
    * @return maxResults
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResults() {
     return maxResults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxResults(@javax.annotation.Nullable Integer maxResults) {
     this.maxResults = maxResults;
   }
@@ -277,15 +284,10 @@ public class SearchRequestBean {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable List<String> properties) {
     this.properties = properties;
   }
@@ -301,15 +303,10 @@ public class SearchRequestBean {
    * @return startAt
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getStartAt() {
     return startAt;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartAt(@javax.annotation.Nullable Integer startAt) {
     this.startAt = startAt;
   }
@@ -325,23 +322,16 @@ public class SearchRequestBean {
    * @return validateQuery
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALIDATE_QUERY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ValidateQueryEnum getValidateQuery() {
     return validateQuery;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALIDATE_QUERY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValidateQuery(@javax.annotation.Nullable ValidateQueryEnum validateQuery) {
     this.validateQuery = validateQuery;
   }
 
 
-  /**
-   * Return true if this SearchRequestBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -393,91 +383,110 @@ public class SearchRequestBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("expand", "fields", "fieldsByKeys", "jql", "maxResults", "properties", "startAt", "validateQuery"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SearchRequestBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      for (int i = 0; i < getExpand().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sexpand%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getExpand().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SearchRequestBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SearchRequestBean is not found in the empty JSON string", SearchRequestBean.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `fields` to the URL query string
-    if (getFields() != null) {
-      for (int i = 0; i < getFields().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sfields%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getFields().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SearchRequestBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SearchRequestBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
-
-    // add `fieldsByKeys` to the URL query string
-    if (getFieldsByKeys() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldsByKeys%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldsByKeys()))));
-    }
-
-    // add `jql` to the URL query string
-    if (getJql() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sjql%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getJql()))));
-    }
-
-    // add `maxResults` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smaxResults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (int i = 0; i < getProperties().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(i)))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull() && !jsonObj.get("expand").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be an array in the JSON string but got `%s`", jsonObj.get("expand").toString()));
       }
-    }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("fields") != null && !jsonObj.get("fields").isJsonNull() && !jsonObj.get("fields").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fields` to be an array in the JSON string but got `%s`", jsonObj.get("fields").toString()));
+      }
+      if ((jsonObj.get("jql") != null && !jsonObj.get("jql").isJsonNull()) && !jsonObj.get("jql").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `jql` to be a primitive type in the JSON string but got `%s`", jsonObj.get("jql").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("properties") != null && !jsonObj.get("properties").isJsonNull() && !jsonObj.get("properties").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `properties` to be an array in the JSON string but got `%s`", jsonObj.get("properties").toString()));
+      }
+      if ((jsonObj.get("validateQuery") != null && !jsonObj.get("validateQuery").isJsonNull()) && !jsonObj.get("validateQuery").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `validateQuery` to be a primitive type in the JSON string but got `%s`", jsonObj.get("validateQuery").toString()));
+      }
+      // validate the optional field `validateQuery`
+      if (jsonObj.get("validateQuery") != null && !jsonObj.get("validateQuery").isJsonNull()) {
+        ValidateQueryEnum.validateJsonElement(jsonObj.get("validateQuery"));
+      }
+  }
 
-    // add `startAt` to the URL query string
-    if (getStartAt() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartAt%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartAt()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SearchRequestBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SearchRequestBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SearchRequestBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SearchRequestBean.class));
 
-    // add `validateQuery` to the URL query string
-    if (getValidateQuery() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalidateQuery%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValidateQuery()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<SearchRequestBean>() {
+           @Override
+           public void write(JsonWriter out, SearchRequestBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public SearchRequestBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of SearchRequestBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SearchRequestBean
+   * @throws IOException if the JSON string is invalid with respect to SearchRequestBean
+   */
+  public static SearchRequestBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SearchRequestBean.class);
+  }
+
+  /**
+   * Convert an instance of SearchRequestBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

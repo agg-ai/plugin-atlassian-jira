@@ -13,105 +13,120 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.HealthCheckResult;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the Jira instance.
  */
-@JsonPropertyOrder({
-  ServerInformation.JSON_PROPERTY_BASE_URL,
-  ServerInformation.JSON_PROPERTY_BUILD_DATE,
-  ServerInformation.JSON_PROPERTY_BUILD_NUMBER,
-  ServerInformation.JSON_PROPERTY_DEPLOYMENT_TYPE,
-  ServerInformation.JSON_PROPERTY_DISPLAY_URL,
-  ServerInformation.JSON_PROPERTY_DISPLAY_URL_CONFLUENCE,
-  ServerInformation.JSON_PROPERTY_DISPLAY_URL_SERVICEDESK_HELP_CENTER,
-  ServerInformation.JSON_PROPERTY_HEALTH_CHECKS,
-  ServerInformation.JSON_PROPERTY_SCM_INFO,
-  ServerInformation.JSON_PROPERTY_SERVER_TIME,
-  ServerInformation.JSON_PROPERTY_SERVER_TIME_ZONE,
-  ServerInformation.JSON_PROPERTY_SERVER_TITLE,
-  ServerInformation.JSON_PROPERTY_VERSION,
-  ServerInformation.JSON_PROPERTY_VERSION_NUMBERS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ServerInformation {
-  public static final String JSON_PROPERTY_BASE_URL = "baseUrl";
+  public static final String SERIALIZED_NAME_BASE_URL = "baseUrl";
+  @SerializedName(SERIALIZED_NAME_BASE_URL)
   @javax.annotation.Nullable
   private String baseUrl;
 
-  public static final String JSON_PROPERTY_BUILD_DATE = "buildDate";
+  public static final String SERIALIZED_NAME_BUILD_DATE = "buildDate";
+  @SerializedName(SERIALIZED_NAME_BUILD_DATE)
   @javax.annotation.Nullable
   private OffsetDateTime buildDate;
 
-  public static final String JSON_PROPERTY_BUILD_NUMBER = "buildNumber";
+  public static final String SERIALIZED_NAME_BUILD_NUMBER = "buildNumber";
+  @SerializedName(SERIALIZED_NAME_BUILD_NUMBER)
   @javax.annotation.Nullable
   private Integer buildNumber;
 
-  public static final String JSON_PROPERTY_DEPLOYMENT_TYPE = "deploymentType";
+  public static final String SERIALIZED_NAME_DEPLOYMENT_TYPE = "deploymentType";
+  @SerializedName(SERIALIZED_NAME_DEPLOYMENT_TYPE)
   @javax.annotation.Nullable
   private String deploymentType;
 
-  public static final String JSON_PROPERTY_DISPLAY_URL = "displayUrl";
+  public static final String SERIALIZED_NAME_DISPLAY_URL = "displayUrl";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_URL)
   @javax.annotation.Nullable
   private String displayUrl;
 
-  public static final String JSON_PROPERTY_DISPLAY_URL_CONFLUENCE = "displayUrlConfluence";
+  public static final String SERIALIZED_NAME_DISPLAY_URL_CONFLUENCE = "displayUrlConfluence";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_URL_CONFLUENCE)
   @javax.annotation.Nullable
   private String displayUrlConfluence;
 
-  public static final String JSON_PROPERTY_DISPLAY_URL_SERVICEDESK_HELP_CENTER = "displayUrlServicedeskHelpCenter";
+  public static final String SERIALIZED_NAME_DISPLAY_URL_SERVICEDESK_HELP_CENTER = "displayUrlServicedeskHelpCenter";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_URL_SERVICEDESK_HELP_CENTER)
   @javax.annotation.Nullable
   private String displayUrlServicedeskHelpCenter;
 
-  public static final String JSON_PROPERTY_HEALTH_CHECKS = "healthChecks";
+  public static final String SERIALIZED_NAME_HEALTH_CHECKS = "healthChecks";
+  @SerializedName(SERIALIZED_NAME_HEALTH_CHECKS)
   @javax.annotation.Nullable
   private List<HealthCheckResult> healthChecks = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SCM_INFO = "scmInfo";
+  public static final String SERIALIZED_NAME_SCM_INFO = "scmInfo";
+  @SerializedName(SERIALIZED_NAME_SCM_INFO)
   @javax.annotation.Nullable
   private String scmInfo;
 
-  public static final String JSON_PROPERTY_SERVER_TIME = "serverTime";
+  public static final String SERIALIZED_NAME_SERVER_TIME = "serverTime";
+  @SerializedName(SERIALIZED_NAME_SERVER_TIME)
   @javax.annotation.Nullable
   private OffsetDateTime serverTime;
 
-  public static final String JSON_PROPERTY_SERVER_TIME_ZONE = "serverTimeZone";
+  public static final String SERIALIZED_NAME_SERVER_TIME_ZONE = "serverTimeZone";
+  @SerializedName(SERIALIZED_NAME_SERVER_TIME_ZONE)
   @javax.annotation.Nullable
   private String serverTimeZone;
 
-  public static final String JSON_PROPERTY_SERVER_TITLE = "serverTitle";
+  public static final String SERIALIZED_NAME_SERVER_TITLE = "serverTitle";
+  @SerializedName(SERIALIZED_NAME_SERVER_TITLE)
   @javax.annotation.Nullable
   private String serverTitle;
 
-  public static final String JSON_PROPERTY_VERSION = "version";
+  public static final String SERIALIZED_NAME_VERSION = "version";
+  @SerializedName(SERIALIZED_NAME_VERSION)
   @javax.annotation.Nullable
   private String version;
 
-  public static final String JSON_PROPERTY_VERSION_NUMBERS = "versionNumbers";
+  public static final String SERIALIZED_NAME_VERSION_NUMBERS = "versionNumbers";
+  @SerializedName(SERIALIZED_NAME_VERSION_NUMBERS)
   @javax.annotation.Nullable
   private List<Integer> versionNumbers = new ArrayList<>();
 
-  public ServerInformation() { 
+  public ServerInformation() {
   }
 
   public ServerInformation baseUrl(@javax.annotation.Nullable String baseUrl) {
@@ -124,15 +139,10 @@ public class ServerInformation {
    * @return baseUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBaseUrl() {
     return baseUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBaseUrl(@javax.annotation.Nullable String baseUrl) {
     this.baseUrl = baseUrl;
   }
@@ -148,15 +158,10 @@ public class ServerInformation {
    * @return buildDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BUILD_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getBuildDate() {
     return buildDate;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BUILD_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBuildDate(@javax.annotation.Nullable OffsetDateTime buildDate) {
     this.buildDate = buildDate;
   }
@@ -172,15 +177,10 @@ public class ServerInformation {
    * @return buildNumber
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BUILD_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBuildNumber() {
     return buildNumber;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BUILD_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBuildNumber(@javax.annotation.Nullable Integer buildNumber) {
     this.buildNumber = buildNumber;
   }
@@ -196,15 +196,10 @@ public class ServerInformation {
    * @return deploymentType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEPLOYMENT_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeploymentType() {
     return deploymentType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEPLOYMENT_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeploymentType(@javax.annotation.Nullable String deploymentType) {
     this.deploymentType = deploymentType;
   }
@@ -220,15 +215,10 @@ public class ServerInformation {
    * @return displayUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayUrl() {
     return displayUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayUrl(@javax.annotation.Nullable String displayUrl) {
     this.displayUrl = displayUrl;
   }
@@ -244,15 +234,10 @@ public class ServerInformation {
    * @return displayUrlConfluence
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_URL_CONFLUENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayUrlConfluence() {
     return displayUrlConfluence;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_URL_CONFLUENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayUrlConfluence(@javax.annotation.Nullable String displayUrlConfluence) {
     this.displayUrlConfluence = displayUrlConfluence;
   }
@@ -268,15 +253,10 @@ public class ServerInformation {
    * @return displayUrlServicedeskHelpCenter
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_URL_SERVICEDESK_HELP_CENTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayUrlServicedeskHelpCenter() {
     return displayUrlServicedeskHelpCenter;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_URL_SERVICEDESK_HELP_CENTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayUrlServicedeskHelpCenter(@javax.annotation.Nullable String displayUrlServicedeskHelpCenter) {
     this.displayUrlServicedeskHelpCenter = displayUrlServicedeskHelpCenter;
   }
@@ -300,15 +280,10 @@ public class ServerInformation {
    * @return healthChecks
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HEALTH_CHECKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<HealthCheckResult> getHealthChecks() {
     return healthChecks;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_HEALTH_CHECKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHealthChecks(@javax.annotation.Nullable List<HealthCheckResult> healthChecks) {
     this.healthChecks = healthChecks;
   }
@@ -324,15 +299,10 @@ public class ServerInformation {
    * @return scmInfo
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCM_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getScmInfo() {
     return scmInfo;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCM_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScmInfo(@javax.annotation.Nullable String scmInfo) {
     this.scmInfo = scmInfo;
   }
@@ -348,15 +318,10 @@ public class ServerInformation {
    * @return serverTime
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SERVER_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getServerTime() {
     return serverTime;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SERVER_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerTime(@javax.annotation.Nullable OffsetDateTime serverTime) {
     this.serverTime = serverTime;
   }
@@ -372,15 +337,10 @@ public class ServerInformation {
    * @return serverTimeZone
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SERVER_TIME_ZONE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getServerTimeZone() {
     return serverTimeZone;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SERVER_TIME_ZONE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerTimeZone(@javax.annotation.Nullable String serverTimeZone) {
     this.serverTimeZone = serverTimeZone;
   }
@@ -396,15 +356,10 @@ public class ServerInformation {
    * @return serverTitle
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SERVER_TITLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getServerTitle() {
     return serverTitle;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SERVER_TITLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerTitle(@javax.annotation.Nullable String serverTitle) {
     this.serverTitle = serverTitle;
   }
@@ -420,15 +375,10 @@ public class ServerInformation {
    * @return version
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersion(@javax.annotation.Nullable String version) {
     this.version = version;
   }
@@ -452,23 +402,16 @@ public class ServerInformation {
    * @return versionNumbers
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VERSION_NUMBERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Integer> getVersionNumbers() {
     return versionNumbers;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VERSION_NUMBERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersionNumbers(@javax.annotation.Nullable List<Integer> versionNumbers) {
     this.versionNumbers = versionNumbers;
   }
 
 
-  /**
-   * Return true if this ServerInformation object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -532,118 +475,133 @@ public class ServerInformation {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("baseUrl", "buildDate", "buildNumber", "deploymentType", "displayUrl", "displayUrlConfluence", "displayUrlServicedeskHelpCenter", "healthChecks", "scmInfo", "serverTime", "serverTimeZone", "serverTitle", "version", "versionNumbers"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ServerInformation
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `baseUrl` to the URL query string
-    if (getBaseUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbaseUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
-    }
-
-    // add `buildDate` to the URL query string
-    if (getBuildDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbuildDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBuildDate()))));
-    }
-
-    // add `buildNumber` to the URL query string
-    if (getBuildNumber() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbuildNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBuildNumber()))));
-    }
-
-    // add `deploymentType` to the URL query string
-    if (getDeploymentType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdeploymentType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeploymentType()))));
-    }
-
-    // add `displayUrl` to the URL query string
-    if (getDisplayUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayUrl()))));
-    }
-
-    // add `displayUrlConfluence` to the URL query string
-    if (getDisplayUrlConfluence() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayUrlConfluence%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayUrlConfluence()))));
-    }
-
-    // add `displayUrlServicedeskHelpCenter` to the URL query string
-    if (getDisplayUrlServicedeskHelpCenter() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayUrlServicedeskHelpCenter%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayUrlServicedeskHelpCenter()))));
-    }
-
-    // add `healthChecks` to the URL query string
-    if (getHealthChecks() != null) {
-      for (int i = 0; i < getHealthChecks().size(); i++) {
-        if (getHealthChecks().get(i) != null) {
-          joiner.add(getHealthChecks().get(i).toUrlQueryString(String.format(Locale.ROOT, "%shealthChecks%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ServerInformation.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ServerInformation is not found in the empty JSON string", ServerInformation.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `scmInfo` to the URL query string
-    if (getScmInfo() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sscmInfo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScmInfo()))));
-    }
-
-    // add `serverTime` to the URL query string
-    if (getServerTime() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sserverTime%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getServerTime()))));
-    }
-
-    // add `serverTimeZone` to the URL query string
-    if (getServerTimeZone() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sserverTimeZone%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getServerTimeZone()))));
-    }
-
-    // add `serverTitle` to the URL query string
-    if (getServerTitle() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sserverTitle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getServerTitle()))));
-    }
-
-    // add `version` to the URL query string
-    if (getVersion() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sversion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
-    }
-
-    // add `versionNumbers` to the URL query string
-    if (getVersionNumbers() != null) {
-      for (int i = 0; i < getVersionNumbers().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sversionNumbers%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getVersionNumbers().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ServerInformation.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ServerInformation` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("baseUrl") != null && !jsonObj.get("baseUrl").isJsonNull()) && !jsonObj.get("baseUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `baseUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("baseUrl").toString()));
+      }
+      if ((jsonObj.get("deploymentType") != null && !jsonObj.get("deploymentType").isJsonNull()) && !jsonObj.get("deploymentType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `deploymentType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("deploymentType").toString()));
+      }
+      if ((jsonObj.get("displayUrl") != null && !jsonObj.get("displayUrl").isJsonNull()) && !jsonObj.get("displayUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayUrl").toString()));
+      }
+      if ((jsonObj.get("displayUrlConfluence") != null && !jsonObj.get("displayUrlConfluence").isJsonNull()) && !jsonObj.get("displayUrlConfluence").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayUrlConfluence` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayUrlConfluence").toString()));
+      }
+      if ((jsonObj.get("displayUrlServicedeskHelpCenter") != null && !jsonObj.get("displayUrlServicedeskHelpCenter").isJsonNull()) && !jsonObj.get("displayUrlServicedeskHelpCenter").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayUrlServicedeskHelpCenter` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayUrlServicedeskHelpCenter").toString()));
+      }
+      if (jsonObj.get("healthChecks") != null && !jsonObj.get("healthChecks").isJsonNull()) {
+        JsonArray jsonArrayhealthChecks = jsonObj.getAsJsonArray("healthChecks");
+        if (jsonArrayhealthChecks != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("healthChecks").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `healthChecks` to be an array in the JSON string but got `%s`", jsonObj.get("healthChecks").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `healthChecks` (array)
+          for (int i = 0; i < jsonArrayhealthChecks.size(); i++) {
+            HealthCheckResult.validateJsonElement(jsonArrayhealthChecks.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("scmInfo") != null && !jsonObj.get("scmInfo").isJsonNull()) && !jsonObj.get("scmInfo").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `scmInfo` to be a primitive type in the JSON string but got `%s`", jsonObj.get("scmInfo").toString()));
+      }
+      if ((jsonObj.get("serverTimeZone") != null && !jsonObj.get("serverTimeZone").isJsonNull()) && !jsonObj.get("serverTimeZone").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `serverTimeZone` to be a primitive type in the JSON string but got `%s`", jsonObj.get("serverTimeZone").toString()));
+      }
+      if ((jsonObj.get("serverTitle") != null && !jsonObj.get("serverTitle").isJsonNull()) && !jsonObj.get("serverTitle").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `serverTitle` to be a primitive type in the JSON string but got `%s`", jsonObj.get("serverTitle").toString()));
+      }
+      if ((jsonObj.get("version") != null && !jsonObj.get("version").isJsonNull()) && !jsonObj.get("version").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `version` to be a primitive type in the JSON string but got `%s`", jsonObj.get("version").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("versionNumbers") != null && !jsonObj.get("versionNumbers").isJsonNull() && !jsonObj.get("versionNumbers").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `versionNumbers` to be an array in the JSON string but got `%s`", jsonObj.get("versionNumbers").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ServerInformation.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ServerInformation' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ServerInformation> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ServerInformation.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ServerInformation>() {
+           @Override
+           public void write(JsonWriter out, ServerInformation value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ServerInformation read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ServerInformation given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ServerInformation
+   * @throws IOException if the JSON string is invalid with respect to ServerInformation
+   */
+  public static ServerInformation fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ServerInformation.class);
+  }
+
+  /**
+   * Convert an instance of ServerInformation to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

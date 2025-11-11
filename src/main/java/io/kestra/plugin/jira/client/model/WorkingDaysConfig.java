@@ -13,85 +13,99 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.NonWorkingDay;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Working days configuration
  */
-@JsonPropertyOrder({
-  WorkingDaysConfig.JSON_PROPERTY_FRIDAY,
-  WorkingDaysConfig.JSON_PROPERTY_ID,
-  WorkingDaysConfig.JSON_PROPERTY_MONDAY,
-  WorkingDaysConfig.JSON_PROPERTY_NON_WORKING_DAYS,
-  WorkingDaysConfig.JSON_PROPERTY_SATURDAY,
-  WorkingDaysConfig.JSON_PROPERTY_SUNDAY,
-  WorkingDaysConfig.JSON_PROPERTY_THURSDAY,
-  WorkingDaysConfig.JSON_PROPERTY_TIMEZONE_ID,
-  WorkingDaysConfig.JSON_PROPERTY_TUESDAY,
-  WorkingDaysConfig.JSON_PROPERTY_WEDNESDAY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkingDaysConfig {
-  public static final String JSON_PROPERTY_FRIDAY = "friday";
+  public static final String SERIALIZED_NAME_FRIDAY = "friday";
+  @SerializedName(SERIALIZED_NAME_FRIDAY)
   @javax.annotation.Nullable
   private Boolean friday;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_MONDAY = "monday";
+  public static final String SERIALIZED_NAME_MONDAY = "monday";
+  @SerializedName(SERIALIZED_NAME_MONDAY)
   @javax.annotation.Nullable
   private Boolean monday;
 
-  public static final String JSON_PROPERTY_NON_WORKING_DAYS = "nonWorkingDays";
+  public static final String SERIALIZED_NAME_NON_WORKING_DAYS = "nonWorkingDays";
+  @SerializedName(SERIALIZED_NAME_NON_WORKING_DAYS)
   @javax.annotation.Nullable
   private Set<NonWorkingDay> nonWorkingDays = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_SATURDAY = "saturday";
+  public static final String SERIALIZED_NAME_SATURDAY = "saturday";
+  @SerializedName(SERIALIZED_NAME_SATURDAY)
   @javax.annotation.Nullable
   private Boolean saturday;
 
-  public static final String JSON_PROPERTY_SUNDAY = "sunday";
+  public static final String SERIALIZED_NAME_SUNDAY = "sunday";
+  @SerializedName(SERIALIZED_NAME_SUNDAY)
   @javax.annotation.Nullable
   private Boolean sunday;
 
-  public static final String JSON_PROPERTY_THURSDAY = "thursday";
+  public static final String SERIALIZED_NAME_THURSDAY = "thursday";
+  @SerializedName(SERIALIZED_NAME_THURSDAY)
   @javax.annotation.Nullable
   private Boolean thursday;
 
-  public static final String JSON_PROPERTY_TIMEZONE_ID = "timezoneId";
+  public static final String SERIALIZED_NAME_TIMEZONE_ID = "timezoneId";
+  @SerializedName(SERIALIZED_NAME_TIMEZONE_ID)
   @javax.annotation.Nullable
   private String timezoneId;
 
-  public static final String JSON_PROPERTY_TUESDAY = "tuesday";
+  public static final String SERIALIZED_NAME_TUESDAY = "tuesday";
+  @SerializedName(SERIALIZED_NAME_TUESDAY)
   @javax.annotation.Nullable
   private Boolean tuesday;
 
-  public static final String JSON_PROPERTY_WEDNESDAY = "wednesday";
+  public static final String SERIALIZED_NAME_WEDNESDAY = "wednesday";
+  @SerializedName(SERIALIZED_NAME_WEDNESDAY)
   @javax.annotation.Nullable
   private Boolean wednesday;
 
-  public WorkingDaysConfig() { 
+  public WorkingDaysConfig() {
   }
 
   public WorkingDaysConfig friday(@javax.annotation.Nullable Boolean friday) {
@@ -104,15 +118,10 @@ public class WorkingDaysConfig {
    * @return friday
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FRIDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getFriday() {
     return friday;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FRIDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFriday(@javax.annotation.Nullable Boolean friday) {
     this.friday = friday;
   }
@@ -128,15 +137,10 @@ public class WorkingDaysConfig {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable Long id) {
     this.id = id;
   }
@@ -152,15 +156,10 @@ public class WorkingDaysConfig {
    * @return monday
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MONDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getMonday() {
     return monday;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MONDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMonday(@javax.annotation.Nullable Boolean monday) {
     this.monday = monday;
   }
@@ -184,16 +183,10 @@ public class WorkingDaysConfig {
    * @return nonWorkingDays
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NON_WORKING_DAYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<NonWorkingDay> getNonWorkingDays() {
     return nonWorkingDays;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_NON_WORKING_DAYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNonWorkingDays(@javax.annotation.Nullable Set<NonWorkingDay> nonWorkingDays) {
     this.nonWorkingDays = nonWorkingDays;
   }
@@ -209,15 +202,10 @@ public class WorkingDaysConfig {
    * @return saturday
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SATURDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaturday() {
     return saturday;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SATURDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaturday(@javax.annotation.Nullable Boolean saturday) {
     this.saturday = saturday;
   }
@@ -233,15 +221,10 @@ public class WorkingDaysConfig {
    * @return sunday
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUNDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSunday() {
     return sunday;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SUNDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSunday(@javax.annotation.Nullable Boolean sunday) {
     this.sunday = sunday;
   }
@@ -257,15 +240,10 @@ public class WorkingDaysConfig {
    * @return thursday
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_THURSDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getThursday() {
     return thursday;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_THURSDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThursday(@javax.annotation.Nullable Boolean thursday) {
     this.thursday = thursday;
   }
@@ -281,15 +259,10 @@ public class WorkingDaysConfig {
    * @return timezoneId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIMEZONE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTimezoneId() {
     return timezoneId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TIMEZONE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTimezoneId(@javax.annotation.Nullable String timezoneId) {
     this.timezoneId = timezoneId;
   }
@@ -305,15 +278,10 @@ public class WorkingDaysConfig {
    * @return tuesday
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TUESDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getTuesday() {
     return tuesday;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TUESDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTuesday(@javax.annotation.Nullable Boolean tuesday) {
     this.tuesday = tuesday;
   }
@@ -329,23 +297,16 @@ public class WorkingDaysConfig {
    * @return wednesday
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WEDNESDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getWednesday() {
     return wednesday;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WEDNESDAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWednesday(@javax.annotation.Nullable Boolean wednesday) {
     this.wednesday = wednesday;
   }
 
 
-  /**
-   * Return true if this WorkingDaysConfig object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -401,96 +362,105 @@ public class WorkingDaysConfig {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("friday", "id", "monday", "nonWorkingDays", "saturday", "sunday", "thursday", "timezoneId", "tuesday", "wednesday"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkingDaysConfig
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `friday` to the URL query string
-    if (getFriday() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfriday%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFriday()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `monday` to the URL query string
-    if (getMonday() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smonday%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMonday()))));
-    }
-
-    // add `nonWorkingDays` to the URL query string
-    if (getNonWorkingDays() != null) {
-      int i = 0;
-      for (NonWorkingDay _item : getNonWorkingDays()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%snonWorkingDays%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkingDaysConfig.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkingDaysConfig is not found in the empty JSON string", WorkingDaysConfig.openapiRequiredFields.toString()));
         }
       }
-      i++;
-    }
 
-    // add `saturday` to the URL query string
-    if (getSaturday() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssaturday%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSaturday()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkingDaysConfig.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkingDaysConfig` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("nonWorkingDays") != null && !jsonObj.get("nonWorkingDays").isJsonNull()) {
+        JsonArray jsonArraynonWorkingDays = jsonObj.getAsJsonArray("nonWorkingDays");
+        if (jsonArraynonWorkingDays != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("nonWorkingDays").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `nonWorkingDays` to be an array in the JSON string but got `%s`", jsonObj.get("nonWorkingDays").toString()));
+          }
 
-    // add `sunday` to the URL query string
-    if (getSunday() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssunday%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSunday()))));
-    }
+          // validate the optional field `nonWorkingDays` (array)
+          for (int i = 0; i < jsonArraynonWorkingDays.size(); i++) {
+            NonWorkingDay.validateJsonElement(jsonArraynonWorkingDays.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("timezoneId") != null && !jsonObj.get("timezoneId").isJsonNull()) && !jsonObj.get("timezoneId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `timezoneId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("timezoneId").toString()));
+      }
+  }
 
-    // add `thursday` to the URL query string
-    if (getThursday() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sthursday%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getThursday()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkingDaysConfig.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkingDaysConfig' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkingDaysConfig> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkingDaysConfig.class));
 
-    // add `timezoneId` to the URL query string
-    if (getTimezoneId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimezoneId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimezoneId()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<WorkingDaysConfig>() {
+           @Override
+           public void write(JsonWriter out, WorkingDaysConfig value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `tuesday` to the URL query string
-    if (getTuesday() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stuesday%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTuesday()))));
-    }
+           @Override
+           public WorkingDaysConfig read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `wednesday` to the URL query string
-    if (getWednesday() != null) {
-      joiner.add(String.format(Locale.ROOT, "%swednesday%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWednesday()))));
+       }.nullSafe();
     }
+  }
 
-    return joiner.toString();
+  /**
+   * Create an instance of WorkingDaysConfig given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkingDaysConfig
+   * @throws IOException if the JSON string is invalid with respect to WorkingDaysConfig
+   */
+  public static WorkingDaysConfig fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkingDaysConfig.class);
+  }
+
+  /**
+   * Convert an instance of WorkingDaysConfig to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

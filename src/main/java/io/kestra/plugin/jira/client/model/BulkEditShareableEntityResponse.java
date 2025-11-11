@@ -13,46 +13,60 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.BulkEditActionError;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a request to bulk edit shareable entity.
  */
-@JsonPropertyOrder({
-  BulkEditShareableEntityResponse.JSON_PROPERTY_ACTION,
-  BulkEditShareableEntityResponse.JSON_PROPERTY_ENTITY_ERRORS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkEditShareableEntityResponse {
   /**
    * Allowed action for bulk edit shareable entity
    */
+  @JsonAdapter(ActionEnum.Adapter.class)
   public enum ActionEnum {
-    CHANGE_OWNER(String.valueOf("changeOwner")),
+    CHANGE_OWNER("changeOwner"),
     
-    CHANGE_PERMISSION(String.valueOf("changePermission")),
+    CHANGE_PERMISSION("changePermission"),
     
-    ADD_PERMISSION(String.valueOf("addPermission")),
+    ADD_PERMISSION("addPermission"),
     
-    REMOVE_PERMISSION(String.valueOf("removePermission"));
+    REMOVE_PERMISSION("removePermission");
 
     private String value;
 
@@ -60,7 +74,6 @@ public class BulkEditShareableEntityResponse {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -70,7 +83,6 @@ public class BulkEditShareableEntityResponse {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ActionEnum fromValue(String value) {
       for (ActionEnum b : ActionEnum.values()) {
         if (b.value.equals(value)) {
@@ -79,17 +91,37 @@ public class BulkEditShareableEntityResponse {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ActionEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ActionEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ActionEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ActionEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ActionEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ACTION = "action";
+  public static final String SERIALIZED_NAME_ACTION = "action";
+  @SerializedName(SERIALIZED_NAME_ACTION)
   @javax.annotation.Nonnull
   private ActionEnum action;
 
-  public static final String JSON_PROPERTY_ENTITY_ERRORS = "entityErrors";
+  public static final String SERIALIZED_NAME_ENTITY_ERRORS = "entityErrors";
+  @SerializedName(SERIALIZED_NAME_ENTITY_ERRORS)
   @javax.annotation.Nullable
   private Map<String, BulkEditActionError> entityErrors = new HashMap<>();
 
-  public BulkEditShareableEntityResponse() { 
+  public BulkEditShareableEntityResponse() {
   }
 
   public BulkEditShareableEntityResponse action(@javax.annotation.Nonnull ActionEnum action) {
@@ -102,15 +134,10 @@ public class BulkEditShareableEntityResponse {
    * @return action
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public ActionEnum getAction() {
     return action;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setAction(@javax.annotation.Nonnull ActionEnum action) {
     this.action = action;
   }
@@ -134,23 +161,16 @@ public class BulkEditShareableEntityResponse {
    * @return entityErrors
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_ERRORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, BulkEditActionError> getEntityErrors() {
     return entityErrors;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_ERRORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEntityErrors(@javax.annotation.Nullable Map<String, BulkEditActionError> entityErrors) {
     this.entityErrors = entityErrors;
   }
 
 
-  /**
-   * Return true if this BulkEditShareableEntityResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -190,54 +210,100 @@ public class BulkEditShareableEntityResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("action", "entityErrors"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("action"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkEditShareableEntityResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `action` to the URL query string
-    if (getAction() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saction%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAction()))));
-    }
-
-    // add `entityErrors` to the URL query string
-    if (getEntityErrors() != null) {
-      for (String _key : getEntityErrors().keySet()) {
-        if (getEntityErrors().get(_key) != null) {
-          joiner.add(getEntityErrors().get(_key).toUrlQueryString(String.format(Locale.ROOT, "%sentityErrors%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkEditShareableEntityResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkEditShareableEntityResponse is not found in the empty JSON string", BulkEditShareableEntityResponse.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkEditShareableEntityResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkEditShareableEntityResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : BulkEditShareableEntityResponse.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("action").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `action` to be a primitive type in the JSON string but got `%s`", jsonObj.get("action").toString()));
+      }
+      // validate the required field `action`
+      ActionEnum.validateJsonElement(jsonObj.get("action"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkEditShareableEntityResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkEditShareableEntityResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkEditShareableEntityResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkEditShareableEntityResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<BulkEditShareableEntityResponse>() {
+           @Override
+           public void write(JsonWriter out, BulkEditShareableEntityResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BulkEditShareableEntityResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of BulkEditShareableEntityResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkEditShareableEntityResponse
+   * @throws IOException if the JSON string is invalid with respect to BulkEditShareableEntityResponse
+   */
+  public static BulkEditShareableEntityResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkEditShareableEntityResponse.class);
+  }
+
+  /**
+   * Convert an instance of BulkEditShareableEntityResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

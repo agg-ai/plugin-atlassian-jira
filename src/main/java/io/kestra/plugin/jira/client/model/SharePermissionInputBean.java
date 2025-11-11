@@ -13,76 +13,91 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * SharePermissionInputBean
  */
-@JsonPropertyOrder({
-  SharePermissionInputBean.JSON_PROPERTY_ACCOUNT_ID,
-  SharePermissionInputBean.JSON_PROPERTY_GROUP_ID,
-  SharePermissionInputBean.JSON_PROPERTY_GROUPNAME,
-  SharePermissionInputBean.JSON_PROPERTY_PROJECT_ID,
-  SharePermissionInputBean.JSON_PROPERTY_PROJECT_ROLE_ID,
-  SharePermissionInputBean.JSON_PROPERTY_RIGHTS,
-  SharePermissionInputBean.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SharePermissionInputBean {
-  public static final String JSON_PROPERTY_ACCOUNT_ID = "accountId";
+  public static final String SERIALIZED_NAME_ACCOUNT_ID = "accountId";
+  @SerializedName(SERIALIZED_NAME_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String accountId;
 
-  public static final String JSON_PROPERTY_GROUP_ID = "groupId";
+  public static final String SERIALIZED_NAME_GROUP_ID = "groupId";
+  @SerializedName(SERIALIZED_NAME_GROUP_ID)
   @javax.annotation.Nullable
   private String groupId;
 
-  public static final String JSON_PROPERTY_GROUPNAME = "groupname";
+  public static final String SERIALIZED_NAME_GROUPNAME = "groupname";
+  @SerializedName(SERIALIZED_NAME_GROUPNAME)
   @javax.annotation.Nullable
   private String groupname;
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nullable
   private String projectId;
 
-  public static final String JSON_PROPERTY_PROJECT_ROLE_ID = "projectRoleId";
+  public static final String SERIALIZED_NAME_PROJECT_ROLE_ID = "projectRoleId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ROLE_ID)
   @javax.annotation.Nullable
   private String projectRoleId;
 
-  public static final String JSON_PROPERTY_RIGHTS = "rights";
+  public static final String SERIALIZED_NAME_RIGHTS = "rights";
+  @SerializedName(SERIALIZED_NAME_RIGHTS)
   @javax.annotation.Nullable
   private Integer rights;
 
   /**
    * The type of the share permission.Specify the type as follows:   *  &#x60;user&#x60; Share with a user.  *  &#x60;group&#x60; Share with a group. Specify &#x60;groupname&#x60; as well.  *  &#x60;project&#x60; Share with a project. Specify &#x60;projectId&#x60; as well.  *  &#x60;projectRole&#x60; Share with a project role in a project. Specify &#x60;projectId&#x60; and &#x60;projectRoleId&#x60; as well.  *  &#x60;global&#x60; Share globally, including anonymous users. If set, this type overrides all existing share permissions and must be deleted before any non-global share permissions is set.  *  &#x60;authenticated&#x60; Share with all logged-in users. This shows as &#x60;loggedin&#x60; in the response. If set, this type overrides all existing share permissions and must be deleted before any non-global share permissions is set.
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    USER(String.valueOf("user")),
+    USER("user"),
     
-    PROJECT(String.valueOf("project")),
+    PROJECT("project"),
     
-    GROUP(String.valueOf("group")),
+    GROUP("group"),
     
-    PROJECT_ROLE(String.valueOf("projectRole")),
+    PROJECT_ROLE("projectRole"),
     
-    GLOBAL(String.valueOf("global")),
+    GLOBAL("global"),
     
-    AUTHENTICATED(String.valueOf("authenticated"));
+    AUTHENTICATED("authenticated");
 
     private String value;
 
@@ -90,7 +105,6 @@ public class SharePermissionInputBean {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -100,7 +114,6 @@ public class SharePermissionInputBean {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -109,13 +122,32 @@ public class SharePermissionInputBean {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nonnull
   private TypeEnum type;
 
-  public SharePermissionInputBean() { 
+  public SharePermissionInputBean() {
   }
 
   public SharePermissionInputBean accountId(@javax.annotation.Nullable String accountId) {
@@ -128,15 +160,10 @@ public class SharePermissionInputBean {
    * @return accountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAccountId() {
     return accountId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAccountId(@javax.annotation.Nullable String accountId) {
     this.accountId = accountId;
   }
@@ -152,15 +179,10 @@ public class SharePermissionInputBean {
    * @return groupId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getGroupId() {
     return groupId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupId(@javax.annotation.Nullable String groupId) {
     this.groupId = groupId;
   }
@@ -176,15 +198,10 @@ public class SharePermissionInputBean {
    * @return groupname
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUPNAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getGroupname() {
     return groupname;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUPNAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupname(@javax.annotation.Nullable String groupname) {
     this.groupname = groupname;
   }
@@ -200,15 +217,10 @@ public class SharePermissionInputBean {
    * @return projectId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProjectId() {
     return projectId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectId(@javax.annotation.Nullable String projectId) {
     this.projectId = projectId;
   }
@@ -224,15 +236,10 @@ public class SharePermissionInputBean {
    * @return projectRoleId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ROLE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProjectRoleId() {
     return projectRoleId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ROLE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectRoleId(@javax.annotation.Nullable String projectRoleId) {
     this.projectRoleId = projectRoleId;
   }
@@ -248,15 +255,10 @@ public class SharePermissionInputBean {
    * @return rights
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RIGHTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getRights() {
     return rights;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RIGHTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRights(@javax.annotation.Nullable Integer rights) {
     this.rights = rights;
   }
@@ -272,23 +274,16 @@ public class SharePermissionInputBean {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this SharePermissionInputBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -338,74 +333,115 @@ public class SharePermissionInputBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("accountId", "groupId", "groupname", "projectId", "projectRoleId", "rights", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("type"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SharePermissionInputBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SharePermissionInputBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SharePermissionInputBean is not found in the empty JSON string", SharePermissionInputBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SharePermissionInputBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SharePermissionInputBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : SharePermissionInputBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("accountId") != null && !jsonObj.get("accountId").isJsonNull()) && !jsonObj.get("accountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `accountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accountId").toString()));
+      }
+      if ((jsonObj.get("groupId") != null && !jsonObj.get("groupId").isJsonNull()) && !jsonObj.get("groupId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groupId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("groupId").toString()));
+      }
+      if ((jsonObj.get("groupname") != null && !jsonObj.get("groupname").isJsonNull()) && !jsonObj.get("groupname").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groupname` to be a primitive type in the JSON string but got `%s`", jsonObj.get("groupname").toString()));
+      }
+      if ((jsonObj.get("projectId") != null && !jsonObj.get("projectId").isJsonNull()) && !jsonObj.get("projectId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectId").toString()));
+      }
+      if ((jsonObj.get("projectRoleId") != null && !jsonObj.get("projectRoleId").isJsonNull()) && !jsonObj.get("projectRoleId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectRoleId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectRoleId").toString()));
+      }
+      if (!jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the required field `type`
+      TypeEnum.validateJsonElement(jsonObj.get("type"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SharePermissionInputBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SharePermissionInputBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SharePermissionInputBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SharePermissionInputBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SharePermissionInputBean>() {
+           @Override
+           public void write(JsonWriter out, SharePermissionInputBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SharePermissionInputBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of SharePermissionInputBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SharePermissionInputBean
+   * @throws IOException if the JSON string is invalid with respect to SharePermissionInputBean
+   */
+  public static SharePermissionInputBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SharePermissionInputBean.class);
+  }
 
-    // add `accountId` to the URL query string
-    if (getAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountId()))));
-    }
-
-    // add `groupId` to the URL query string
-    if (getGroupId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sgroupId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-    }
-
-    // add `groupname` to the URL query string
-    if (getGroupname() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sgroupname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGroupname()))));
-    }
-
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
-
-    // add `projectRoleId` to the URL query string
-    if (getProjectRoleId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectRoleId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectRoleId()))));
-    }
-
-    // add `rights` to the URL query string
-    if (getRights() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srights%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRights()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of SharePermissionInputBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

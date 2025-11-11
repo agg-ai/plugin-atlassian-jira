@@ -13,103 +13,118 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.FieldLastUsed;
 import io.kestra.plugin.jira.client.model.JsonTypeBean;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a field.
  */
-@JsonPropertyOrder({
-  Field.JSON_PROPERTY_CONTEXTS_COUNT,
-  Field.JSON_PROPERTY_DESCRIPTION,
-  Field.JSON_PROPERTY_ID,
-  Field.JSON_PROPERTY_IS_LOCKED,
-  Field.JSON_PROPERTY_IS_UNSCREENABLE,
-  Field.JSON_PROPERTY_KEY,
-  Field.JSON_PROPERTY_LAST_USED,
-  Field.JSON_PROPERTY_NAME,
-  Field.JSON_PROPERTY_PROJECTS_COUNT,
-  Field.JSON_PROPERTY_SCHEMA,
-  Field.JSON_PROPERTY_SCREENS_COUNT,
-  Field.JSON_PROPERTY_SEARCHER_KEY,
-  Field.JSON_PROPERTY_STABLE_ID,
-  Field.JSON_PROPERTY_TYPE_DISPLAY_NAME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Field {
-  public static final String JSON_PROPERTY_CONTEXTS_COUNT = "contextsCount";
+  public static final String SERIALIZED_NAME_CONTEXTS_COUNT = "contextsCount";
+  @SerializedName(SERIALIZED_NAME_CONTEXTS_COUNT)
   @javax.annotation.Nullable
   private Long contextsCount;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private String id;
 
-  public static final String JSON_PROPERTY_IS_LOCKED = "isLocked";
+  public static final String SERIALIZED_NAME_IS_LOCKED = "isLocked";
+  @SerializedName(SERIALIZED_NAME_IS_LOCKED)
   @javax.annotation.Nullable
   private Boolean isLocked;
 
-  public static final String JSON_PROPERTY_IS_UNSCREENABLE = "isUnscreenable";
+  public static final String SERIALIZED_NAME_IS_UNSCREENABLE = "isUnscreenable";
+  @SerializedName(SERIALIZED_NAME_IS_UNSCREENABLE)
   @javax.annotation.Nullable
   private Boolean isUnscreenable;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_LAST_USED = "lastUsed";
+  public static final String SERIALIZED_NAME_LAST_USED = "lastUsed";
+  @SerializedName(SERIALIZED_NAME_LAST_USED)
   @javax.annotation.Nullable
   private FieldLastUsed lastUsed;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
-  public static final String JSON_PROPERTY_PROJECTS_COUNT = "projectsCount";
+  public static final String SERIALIZED_NAME_PROJECTS_COUNT = "projectsCount";
+  @SerializedName(SERIALIZED_NAME_PROJECTS_COUNT)
   @javax.annotation.Nullable
   private Long projectsCount;
 
-  public static final String JSON_PROPERTY_SCHEMA = "schema";
+  public static final String SERIALIZED_NAME_SCHEMA = "schema";
+  @SerializedName(SERIALIZED_NAME_SCHEMA)
   @javax.annotation.Nonnull
   private JsonTypeBean schema;
 
-  public static final String JSON_PROPERTY_SCREENS_COUNT = "screensCount";
+  public static final String SERIALIZED_NAME_SCREENS_COUNT = "screensCount";
+  @SerializedName(SERIALIZED_NAME_SCREENS_COUNT)
   @javax.annotation.Nullable
   private Long screensCount;
 
-  public static final String JSON_PROPERTY_SEARCHER_KEY = "searcherKey";
+  public static final String SERIALIZED_NAME_SEARCHER_KEY = "searcherKey";
+  @SerializedName(SERIALIZED_NAME_SEARCHER_KEY)
   @javax.annotation.Nullable
   private String searcherKey;
 
-  public static final String JSON_PROPERTY_STABLE_ID = "stableId";
+  public static final String SERIALIZED_NAME_STABLE_ID = "stableId";
+  @SerializedName(SERIALIZED_NAME_STABLE_ID)
   @javax.annotation.Nullable
   private String stableId;
 
-  public static final String JSON_PROPERTY_TYPE_DISPLAY_NAME = "typeDisplayName";
+  public static final String SERIALIZED_NAME_TYPE_DISPLAY_NAME = "typeDisplayName";
+  @SerializedName(SERIALIZED_NAME_TYPE_DISPLAY_NAME)
   @javax.annotation.Nullable
   private String typeDisplayName;
 
-  public Field() { 
+  public Field() {
   }
 
   public Field contextsCount(@javax.annotation.Nullable Long contextsCount) {
@@ -122,15 +137,10 @@ public class Field {
    * @return contextsCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONTEXTS_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getContextsCount() {
     return contextsCount;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONTEXTS_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContextsCount(@javax.annotation.Nullable Long contextsCount) {
     this.contextsCount = contextsCount;
   }
@@ -146,15 +156,10 @@ public class Field {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -170,15 +175,10 @@ public class Field {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@javax.annotation.Nonnull String id) {
     this.id = id;
   }
@@ -194,15 +194,10 @@ public class Field {
    * @return isLocked
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_LOCKED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsLocked() {
     return isLocked;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_LOCKED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsLocked(@javax.annotation.Nullable Boolean isLocked) {
     this.isLocked = isLocked;
   }
@@ -218,15 +213,10 @@ public class Field {
    * @return isUnscreenable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_UNSCREENABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsUnscreenable() {
     return isUnscreenable;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_UNSCREENABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsUnscreenable(@javax.annotation.Nullable Boolean isUnscreenable) {
     this.isUnscreenable = isUnscreenable;
   }
@@ -242,15 +232,10 @@ public class Field {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
@@ -266,15 +251,10 @@ public class Field {
    * @return lastUsed
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAST_USED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FieldLastUsed getLastUsed() {
     return lastUsed;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LAST_USED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLastUsed(@javax.annotation.Nullable FieldLastUsed lastUsed) {
     this.lastUsed = lastUsed;
   }
@@ -290,15 +270,10 @@ public class Field {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -314,15 +289,10 @@ public class Field {
    * @return projectsCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getProjectsCount() {
     return projectsCount;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectsCount(@javax.annotation.Nullable Long projectsCount) {
     this.projectsCount = projectsCount;
   }
@@ -338,15 +308,10 @@ public class Field {
    * @return schema
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SCHEMA, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JsonTypeBean getSchema() {
     return schema;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCHEMA, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSchema(@javax.annotation.Nonnull JsonTypeBean schema) {
     this.schema = schema;
   }
@@ -362,15 +327,10 @@ public class Field {
    * @return screensCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCREENS_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getScreensCount() {
     return screensCount;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCREENS_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScreensCount(@javax.annotation.Nullable Long screensCount) {
     this.screensCount = screensCount;
   }
@@ -386,15 +346,10 @@ public class Field {
    * @return searcherKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SEARCHER_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSearcherKey() {
     return searcherKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SEARCHER_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearcherKey(@javax.annotation.Nullable String searcherKey) {
     this.searcherKey = searcherKey;
   }
@@ -410,15 +365,10 @@ public class Field {
    * @return stableId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STABLE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStableId() {
     return stableId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STABLE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStableId(@javax.annotation.Nullable String stableId) {
     this.stableId = stableId;
   }
@@ -434,23 +384,16 @@ public class Field {
    * @return typeDisplayName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTypeDisplayName() {
     return typeDisplayName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypeDisplayName(@javax.annotation.Nullable String typeDisplayName) {
     this.typeDisplayName = typeDisplayName;
   }
 
 
-  /**
-   * Return true if this Field object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -514,109 +457,122 @@ public class Field {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("contextsCount", "description", "id", "isLocked", "isUnscreenable", "key", "lastUsed", "name", "projectsCount", "schema", "screensCount", "searcherKey", "stableId", "typeDisplayName"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("id", "name", "schema"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Field
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Field.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Field is not found in the empty JSON string", Field.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Field.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Field` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : Field.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (!jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      // validate the optional field `lastUsed`
+      if (jsonObj.get("lastUsed") != null && !jsonObj.get("lastUsed").isJsonNull()) {
+        FieldLastUsed.validateJsonElement(jsonObj.get("lastUsed"));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the required field `schema`
+      JsonTypeBean.validateJsonElement(jsonObj.get("schema"));
+      if ((jsonObj.get("searcherKey") != null && !jsonObj.get("searcherKey").isJsonNull()) && !jsonObj.get("searcherKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `searcherKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("searcherKey").toString()));
+      }
+      if ((jsonObj.get("stableId") != null && !jsonObj.get("stableId").isJsonNull()) && !jsonObj.get("stableId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `stableId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("stableId").toString()));
+      }
+      if ((jsonObj.get("typeDisplayName") != null && !jsonObj.get("typeDisplayName").isJsonNull()) && !jsonObj.get("typeDisplayName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `typeDisplayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("typeDisplayName").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Field.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Field' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Field> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Field.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Field>() {
+           @Override
+           public void write(JsonWriter out, Field value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Field read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of Field given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Field
+   * @throws IOException if the JSON string is invalid with respect to Field
+   */
+  public static Field fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Field.class);
+  }
 
-    // add `contextsCount` to the URL query string
-    if (getContextsCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontextsCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContextsCount()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `isLocked` to the URL query string
-    if (getIsLocked() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisLocked%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsLocked()))));
-    }
-
-    // add `isUnscreenable` to the URL query string
-    if (getIsUnscreenable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisUnscreenable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsUnscreenable()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `lastUsed` to the URL query string
-    if (getLastUsed() != null) {
-      joiner.add(getLastUsed().toUrlQueryString(prefix + "lastUsed" + suffix));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `projectsCount` to the URL query string
-    if (getProjectsCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectsCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectsCount()))));
-    }
-
-    // add `schema` to the URL query string
-    if (getSchema() != null) {
-      joiner.add(getSchema().toUrlQueryString(prefix + "schema" + suffix));
-    }
-
-    // add `screensCount` to the URL query string
-    if (getScreensCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sscreensCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScreensCount()))));
-    }
-
-    // add `searcherKey` to the URL query string
-    if (getSearcherKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssearcherKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearcherKey()))));
-    }
-
-    // add `stableId` to the URL query string
-    if (getStableId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstableId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStableId()))));
-    }
-
-    // add `typeDisplayName` to the URL query string
-    if (getTypeDisplayName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stypeDisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTypeDisplayName()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of Field to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

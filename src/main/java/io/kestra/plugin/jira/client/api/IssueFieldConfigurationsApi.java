@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.AssociateFieldConfigurationsWithIssueTypesRequest;
 import io.kestra.plugin.jira.client.model.ErrorCollection;
@@ -34,2060 +43,2307 @@ import io.kestra.plugin.jira.client.model.PageBeanFieldConfigurationSchemeProjec
 import java.util.Set;
 import io.kestra.plugin.jira.client.model.UpdateFieldConfigurationSchemeDetails;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueFieldConfigurationsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueFieldConfigurationsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueFieldConfigurationsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for assignFieldConfigurationSchemeToProject
+     * @param fieldConfigurationSchemeProjectAssociation  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the project is not a classic project. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is missing. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call assignFieldConfigurationSchemeToProjectCall(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueFieldConfigurationsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueFieldConfigurationsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Assign field configuration scheme to project
-   * Assigns a field configuration scheme to a project. If the field configuration scheme ID is &#x60;null&#x60;, the operation assigns the default field configuration scheme.  Field configuration schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldConfigurationSchemeProjectAssociation  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object assignFieldConfigurationSchemeToProject(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation) throws ApiException {
-    return assignFieldConfigurationSchemeToProject(fieldConfigurationSchemeProjectAssociation, null);
-  }
-
-  /**
-   * Assign field configuration scheme to project
-   * Assigns a field configuration scheme to a project. If the field configuration scheme ID is &#x60;null&#x60;, the operation assigns the default field configuration scheme.  Field configuration schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldConfigurationSchemeProjectAssociation  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object assignFieldConfigurationSchemeToProject(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = assignFieldConfigurationSchemeToProjectWithHttpInfo(fieldConfigurationSchemeProjectAssociation, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Assign field configuration scheme to project
-   * Assigns a field configuration scheme to a project. If the field configuration scheme ID is &#x60;null&#x60;, the operation assigns the default field configuration scheme.  Field configuration schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldConfigurationSchemeProjectAssociation  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> assignFieldConfigurationSchemeToProjectWithHttpInfo(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation) throws ApiException {
-    return assignFieldConfigurationSchemeToProjectWithHttpInfo(fieldConfigurationSchemeProjectAssociation, null);
-  }
-
-  /**
-   * Assign field configuration scheme to project
-   * Assigns a field configuration scheme to a project. If the field configuration scheme ID is &#x60;null&#x60;, the operation assigns the default field configuration scheme.  Field configuration schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldConfigurationSchemeProjectAssociation  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> assignFieldConfigurationSchemeToProjectWithHttpInfo(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = assignFieldConfigurationSchemeToProjectRequestBuilder(fieldConfigurationSchemeProjectAssociation, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("assignFieldConfigurationSchemeToProject", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = fieldConfigurationSchemeProjectAssociation;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme/project";
 
-  private HttpRequest.Builder assignFieldConfigurationSchemeToProjectRequestBuilder(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'fieldConfigurationSchemeProjectAssociation' is set
-    if (fieldConfigurationSchemeProjectAssociation == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldConfigurationSchemeProjectAssociation' when calling assignFieldConfigurationSchemeToProject");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme/project";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(fieldConfigurationSchemeProjectAssociation);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create field configuration
-   * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.  This operation can only create configurations for use in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldConfigurationDetails  (required)
-   * @return FieldConfiguration
-   * @throws ApiException if fails to make API call
-   */
-  public FieldConfiguration createFieldConfiguration(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails) throws ApiException {
-    return createFieldConfiguration(fieldConfigurationDetails, null);
-  }
-
-  /**
-   * Create field configuration
-   * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.  This operation can only create configurations for use in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldConfigurationDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return FieldConfiguration
-   * @throws ApiException if fails to make API call
-   */
-  public FieldConfiguration createFieldConfiguration(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<FieldConfiguration> localVarResponse = createFieldConfigurationWithHttpInfo(fieldConfigurationDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create field configuration
-   * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.  This operation can only create configurations for use in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldConfigurationDetails  (required)
-   * @return ApiResponse&lt;FieldConfiguration&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FieldConfiguration> createFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails) throws ApiException {
-    return createFieldConfigurationWithHttpInfo(fieldConfigurationDetails, null);
-  }
-
-  /**
-   * Create field configuration
-   * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.  This operation can only create configurations for use in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldConfigurationDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;FieldConfiguration&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FieldConfiguration> createFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createFieldConfigurationRequestBuilder(fieldConfigurationDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createFieldConfiguration", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<FieldConfiguration>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        FieldConfiguration responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<FieldConfiguration>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<FieldConfiguration>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createFieldConfigurationRequestBuilder(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'fieldConfigurationDetails' is set
-    if (fieldConfigurationDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldConfigurationDetails' when calling createFieldConfiguration");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfiguration";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(fieldConfigurationDetails);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create field configuration scheme
-   * Creates a field configuration scheme.  This operation can only create field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
-   * @return FieldConfigurationScheme
-   * @throws ApiException if fails to make API call
-   */
-  public FieldConfigurationScheme createFieldConfigurationScheme(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails) throws ApiException {
-    return createFieldConfigurationScheme(updateFieldConfigurationSchemeDetails, null);
-  }
-
-  /**
-   * Create field configuration scheme
-   * Creates a field configuration scheme.  This operation can only create field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return FieldConfigurationScheme
-   * @throws ApiException if fails to make API call
-   */
-  public FieldConfigurationScheme createFieldConfigurationScheme(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<FieldConfigurationScheme> localVarResponse = createFieldConfigurationSchemeWithHttpInfo(updateFieldConfigurationSchemeDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create field configuration scheme
-   * Creates a field configuration scheme.  This operation can only create field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
-   * @return ApiResponse&lt;FieldConfigurationScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FieldConfigurationScheme> createFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails) throws ApiException {
-    return createFieldConfigurationSchemeWithHttpInfo(updateFieldConfigurationSchemeDetails, null);
-  }
-
-  /**
-   * Create field configuration scheme
-   * Creates a field configuration scheme.  This operation can only create field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;FieldConfigurationScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FieldConfigurationScheme> createFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createFieldConfigurationSchemeRequestBuilder(updateFieldConfigurationSchemeDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createFieldConfigurationScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<FieldConfigurationScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        FieldConfigurationScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<FieldConfigurationScheme>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<FieldConfigurationScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createFieldConfigurationSchemeRequestBuilder(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'updateFieldConfigurationSchemeDetails' is set
-    if (updateFieldConfigurationSchemeDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateFieldConfigurationSchemeDetails' when calling createFieldConfigurationScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateFieldConfigurationSchemeDetails);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete field configuration
-   * Deletes a field configuration.  This operation can only delete configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteFieldConfiguration(@javax.annotation.Nonnull Long id) throws ApiException {
-    return deleteFieldConfiguration(id, null);
-  }
-
-  /**
-   * Delete field configuration
-   * Deletes a field configuration.  This operation can only delete configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteFieldConfiguration(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deleteFieldConfigurationWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete field configuration
-   * Deletes a field configuration.  This operation can only delete configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
-    return deleteFieldConfigurationWithHttpInfo(id, null);
-  }
-
-  /**
-   * Delete field configuration
-   * Deletes a field configuration.  This operation can only delete configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteFieldConfigurationRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteFieldConfiguration", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call assignFieldConfigurationSchemeToProjectValidateBeforeCall(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'fieldConfigurationSchemeProjectAssociation' is set
+        if (fieldConfigurationSchemeProjectAssociation == null) {
+            throw new ApiException("Missing the required parameter 'fieldConfigurationSchemeProjectAssociation' when calling assignFieldConfigurationSchemeToProject(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        return assignFieldConfigurationSchemeToProjectCall(fieldConfigurationSchemeProjectAssociation, _callback);
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteFieldConfigurationRequestBuilder(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteFieldConfiguration");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfiguration/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Assign field configuration scheme to project
+     * Assigns a field configuration scheme to a project. If the field configuration scheme ID is &#x60;null&#x60;, the operation assigns the default field configuration scheme.  Field configuration schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldConfigurationSchemeProjectAssociation  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the project is not a classic project. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object assignFieldConfigurationSchemeToProject(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation) throws ApiException {
+        ApiResponse<Object> localVarResp = assignFieldConfigurationSchemeToProjectWithHttpInfo(fieldConfigurationSchemeProjectAssociation);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Assign field configuration scheme to project
+     * Assigns a field configuration scheme to a project. If the field configuration scheme ID is &#x60;null&#x60;, the operation assigns the default field configuration scheme.  Field configuration schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldConfigurationSchemeProjectAssociation  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the project is not a classic project. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> assignFieldConfigurationSchemeToProjectWithHttpInfo(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation) throws ApiException {
+        okhttp3.Call localVarCall = assignFieldConfigurationSchemeToProjectValidateBeforeCall(fieldConfigurationSchemeProjectAssociation, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Delete field configuration scheme
-   * Deletes a field configuration scheme.  This operation can only delete field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteFieldConfigurationScheme(@javax.annotation.Nonnull Long id) throws ApiException {
-    return deleteFieldConfigurationScheme(id, null);
-  }
+    /**
+     * Assign field configuration scheme to project (asynchronously)
+     * Assigns a field configuration scheme to a project. If the field configuration scheme ID is &#x60;null&#x60;, the operation assigns the default field configuration scheme.  Field configuration schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldConfigurationSchemeProjectAssociation  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the project is not a classic project. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call assignFieldConfigurationSchemeToProjectAsync(@javax.annotation.Nonnull FieldConfigurationSchemeProjectAssociation fieldConfigurationSchemeProjectAssociation, final ApiCallback<Object> _callback) throws ApiException {
 
-  /**
-   * Delete field configuration scheme
-   * Deletes a field configuration scheme.  This operation can only delete field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteFieldConfigurationScheme(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deleteFieldConfigurationSchemeWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
+        okhttp3.Call localVarCall = assignFieldConfigurationSchemeToProjectValidateBeforeCall(fieldConfigurationSchemeProjectAssociation, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for createFieldConfiguration
+     * @param fieldConfigurationDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createFieldConfigurationCall(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Delete field configuration scheme
-   * Deletes a field configuration scheme.  This operation can only delete field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
-    return deleteFieldConfigurationSchemeWithHttpInfo(id, null);
-  }
-
-  /**
-   * Delete field configuration scheme
-   * Deletes a field configuration scheme.  This operation can only delete field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteFieldConfigurationSchemeRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteFieldConfigurationScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = fieldConfigurationDetails;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfiguration";
 
-  private HttpRequest.Builder deleteFieldConfigurationSchemeRequestBuilder(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteFieldConfigurationScheme");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get all field configuration schemes
-   * Returns a [paginated](#pagination) list of field configuration schemes.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of field configuration scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @return PageBeanFieldConfigurationScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationScheme getAllFieldConfigurationSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id) throws ApiException {
-    return getAllFieldConfigurationSchemes(startAt, maxResults, id, null);
-  }
-
-  /**
-   * Get all field configuration schemes
-   * Returns a [paginated](#pagination) list of field configuration schemes.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of field configuration scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanFieldConfigurationScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationScheme getAllFieldConfigurationSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanFieldConfigurationScheme> localVarResponse = getAllFieldConfigurationSchemesWithHttpInfo(startAt, maxResults, id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all field configuration schemes
-   * Returns a [paginated](#pagination) list of field configuration schemes.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of field configuration scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @return ApiResponse&lt;PageBeanFieldConfigurationScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationScheme> getAllFieldConfigurationSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id) throws ApiException {
-    return getAllFieldConfigurationSchemesWithHttpInfo(startAt, maxResults, id, null);
-  }
-
-  /**
-   * Get all field configuration schemes
-   * Returns a [paginated](#pagination) list of field configuration schemes.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of field configuration scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanFieldConfigurationScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationScheme> getAllFieldConfigurationSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllFieldConfigurationSchemesRequestBuilder(startAt, maxResults, id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllFieldConfigurationSchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanFieldConfigurationScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanFieldConfigurationScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanFieldConfigurationScheme>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanFieldConfigurationScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAllFieldConfigurationSchemesRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get all field configurations
-   * Returns a [paginated](#pagination) list of field configurations. The list can be for all field configurations or a subset determined by any combination of these criteria:   *  a list of field configuration item IDs.  *  whether the field configuration is a default.  *  whether the field configuration name or description contains a query string.  Only field configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of field configuration IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param isDefault If *true* returns default field configurations only. (optional, default to false)
-   * @param query The query string used to match against field configuration names and descriptions. (optional, default to )
-   * @return PageBeanFieldConfigurationDetails
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationDetails getAllFieldConfigurations(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query) throws ApiException {
-    return getAllFieldConfigurations(startAt, maxResults, id, isDefault, query, null);
-  }
-
-  /**
-   * Get all field configurations
-   * Returns a [paginated](#pagination) list of field configurations. The list can be for all field configurations or a subset determined by any combination of these criteria:   *  a list of field configuration item IDs.  *  whether the field configuration is a default.  *  whether the field configuration name or description contains a query string.  Only field configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of field configuration IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param isDefault If *true* returns default field configurations only. (optional, default to false)
-   * @param query The query string used to match against field configuration names and descriptions. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return PageBeanFieldConfigurationDetails
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationDetails getAllFieldConfigurations(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanFieldConfigurationDetails> localVarResponse = getAllFieldConfigurationsWithHttpInfo(startAt, maxResults, id, isDefault, query, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all field configurations
-   * Returns a [paginated](#pagination) list of field configurations. The list can be for all field configurations or a subset determined by any combination of these criteria:   *  a list of field configuration item IDs.  *  whether the field configuration is a default.  *  whether the field configuration name or description contains a query string.  Only field configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of field configuration IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param isDefault If *true* returns default field configurations only. (optional, default to false)
-   * @param query The query string used to match against field configuration names and descriptions. (optional, default to )
-   * @return ApiResponse&lt;PageBeanFieldConfigurationDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationDetails> getAllFieldConfigurationsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query) throws ApiException {
-    return getAllFieldConfigurationsWithHttpInfo(startAt, maxResults, id, isDefault, query, null);
-  }
-
-  /**
-   * Get all field configurations
-   * Returns a [paginated](#pagination) list of field configurations. The list can be for all field configurations or a subset determined by any combination of these criteria:   *  a list of field configuration item IDs.  *  whether the field configuration is a default.  *  whether the field configuration name or description contains a query string.  Only field configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of field configuration IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param isDefault If *true* returns default field configurations only. (optional, default to false)
-   * @param query The query string used to match against field configuration names and descriptions. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanFieldConfigurationDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationDetails> getAllFieldConfigurationsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllFieldConfigurationsRequestBuilder(startAt, maxResults, id, isDefault, query, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllFieldConfigurations", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanFieldConfigurationDetails>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanFieldConfigurationDetails responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanFieldConfigurationDetails>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanFieldConfigurationDetails>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAllFieldConfigurationsRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfiguration";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-    localVarQueryParameterBaseName = "isDefault";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("isDefault", isDefault));
-    localVarQueryParameterBaseName = "query";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("query", query));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get field configuration items
-   * Returns a [paginated](#pagination) list of all fields for a configuration.  Only the fields from configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return PageBeanFieldConfigurationItem
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationItem getFieldConfigurationItems(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getFieldConfigurationItems(id, startAt, maxResults, null);
-  }
-
-  /**
-   * Get field configuration items
-   * Returns a [paginated](#pagination) list of all fields for a configuration.  Only the fields from configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanFieldConfigurationItem
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationItem getFieldConfigurationItems(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanFieldConfigurationItem> localVarResponse = getFieldConfigurationItemsWithHttpInfo(id, startAt, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get field configuration items
-   * Returns a [paginated](#pagination) list of all fields for a configuration.  Only the fields from configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return ApiResponse&lt;PageBeanFieldConfigurationItem&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationItem> getFieldConfigurationItemsWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getFieldConfigurationItemsWithHttpInfo(id, startAt, maxResults, null);
-  }
-
-  /**
-   * Get field configuration items
-   * Returns a [paginated](#pagination) list of all fields for a configuration.  Only the fields from configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanFieldConfigurationItem&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationItem> getFieldConfigurationItemsWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getFieldConfigurationItemsRequestBuilder(id, startAt, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getFieldConfigurationItems", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanFieldConfigurationItem>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createFieldConfigurationValidateBeforeCall(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'fieldConfigurationDetails' is set
+        if (fieldConfigurationDetails == null) {
+            throw new ApiException("Missing the required parameter 'fieldConfigurationDetails' when calling createFieldConfiguration(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanFieldConfigurationItem responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanFieldConfigurationItem>() {});
-        
-        localVarResponse.body().close();
+        return createFieldConfigurationCall(fieldConfigurationDetails, _callback);
 
-        return new ApiResponse<PageBeanFieldConfigurationItem>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getFieldConfigurationItemsRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getFieldConfigurationItems");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfiguration/{id}/fields"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Create field configuration
+     * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.  This operation can only create configurations for use in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldConfigurationDetails  (required)
+     * @return FieldConfiguration
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public FieldConfiguration createFieldConfiguration(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails) throws ApiException {
+        ApiResponse<FieldConfiguration> localVarResp = createFieldConfigurationWithHttpInfo(fieldConfigurationDetails);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Create field configuration
+     * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.  This operation can only create configurations for use in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldConfigurationDetails  (required)
+     * @return ApiResponse&lt;FieldConfiguration&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<FieldConfiguration> createFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails) throws ApiException {
+        okhttp3.Call localVarCall = createFieldConfigurationValidateBeforeCall(fieldConfigurationDetails, null);
+        Type localVarReturnType = new TypeToken<FieldConfiguration>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create field configuration (asynchronously)
+     * Creates a field configuration. The field configuration is created with the same field properties as the default configuration, with all the fields being optional.  This operation can only create configurations for use in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldConfigurationDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createFieldConfigurationAsync(@javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, final ApiCallback<FieldConfiguration> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createFieldConfigurationValidateBeforeCall(fieldConfigurationDetails, _callback);
+        Type localVarReturnType = new TypeToken<FieldConfiguration>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for createFieldConfigurationScheme
+     * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createFieldConfigurationSchemeCall(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get field configuration issue type items
-   * Returns a [paginated](#pagination) list of field configuration issue type items.  Only items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param fieldConfigurationSchemeId The list of field configuration scheme IDs. To include multiple field configuration schemes separate IDs with ampersand: &#x60;fieldConfigurationSchemeId&#x3D;10000&amp;fieldConfigurationSchemeId&#x3D;10001&#x60;. (optional)
-   * @return PageBeanFieldConfigurationIssueTypeItem
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationIssueTypeItem getFieldConfigurationSchemeMappings(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId) throws ApiException {
-    return getFieldConfigurationSchemeMappings(startAt, maxResults, fieldConfigurationSchemeId, null);
-  }
-
-  /**
-   * Get field configuration issue type items
-   * Returns a [paginated](#pagination) list of field configuration issue type items.  Only items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param fieldConfigurationSchemeId The list of field configuration scheme IDs. To include multiple field configuration schemes separate IDs with ampersand: &#x60;fieldConfigurationSchemeId&#x3D;10000&amp;fieldConfigurationSchemeId&#x3D;10001&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanFieldConfigurationIssueTypeItem
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationIssueTypeItem getFieldConfigurationSchemeMappings(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanFieldConfigurationIssueTypeItem> localVarResponse = getFieldConfigurationSchemeMappingsWithHttpInfo(startAt, maxResults, fieldConfigurationSchemeId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get field configuration issue type items
-   * Returns a [paginated](#pagination) list of field configuration issue type items.  Only items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param fieldConfigurationSchemeId The list of field configuration scheme IDs. To include multiple field configuration schemes separate IDs with ampersand: &#x60;fieldConfigurationSchemeId&#x3D;10000&amp;fieldConfigurationSchemeId&#x3D;10001&#x60;. (optional)
-   * @return ApiResponse&lt;PageBeanFieldConfigurationIssueTypeItem&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationIssueTypeItem> getFieldConfigurationSchemeMappingsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId) throws ApiException {
-    return getFieldConfigurationSchemeMappingsWithHttpInfo(startAt, maxResults, fieldConfigurationSchemeId, null);
-  }
-
-  /**
-   * Get field configuration issue type items
-   * Returns a [paginated](#pagination) list of field configuration issue type items.  Only items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param fieldConfigurationSchemeId The list of field configuration scheme IDs. To include multiple field configuration schemes separate IDs with ampersand: &#x60;fieldConfigurationSchemeId&#x3D;10000&amp;fieldConfigurationSchemeId&#x3D;10001&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanFieldConfigurationIssueTypeItem&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationIssueTypeItem> getFieldConfigurationSchemeMappingsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getFieldConfigurationSchemeMappingsRequestBuilder(startAt, maxResults, fieldConfigurationSchemeId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getFieldConfigurationSchemeMappings", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanFieldConfigurationIssueTypeItem>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanFieldConfigurationIssueTypeItem responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanFieldConfigurationIssueTypeItem>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = updateFieldConfigurationSchemeDetails;
 
-        return new ApiResponse<PageBeanFieldConfigurationIssueTypeItem>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme";
 
-  private HttpRequest.Builder getFieldConfigurationSchemeMappingsRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId, Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme/mapping";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "fieldConfigurationSchemeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "fieldConfigurationSchemeId", fieldConfigurationSchemeId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get field configuration schemes for projects
-   * Returns a [paginated](#pagination) list of field configuration schemes and, for each scheme, a list of the projects that use it.  The list is sorted by field configuration scheme ID. The first item contains the list of project IDs assigned to the default field configuration scheme.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The list of project IDs. To include multiple projects, separate IDs with ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return PageBeanFieldConfigurationSchemeProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationSchemeProjects getFieldConfigurationSchemeProjectMapping(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getFieldConfigurationSchemeProjectMapping(projectId, startAt, maxResults, null);
-  }
-
-  /**
-   * Get field configuration schemes for projects
-   * Returns a [paginated](#pagination) list of field configuration schemes and, for each scheme, a list of the projects that use it.  The list is sorted by field configuration scheme ID. The first item contains the list of project IDs assigned to the default field configuration scheme.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The list of project IDs. To include multiple projects, separate IDs with ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanFieldConfigurationSchemeProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanFieldConfigurationSchemeProjects getFieldConfigurationSchemeProjectMapping(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanFieldConfigurationSchemeProjects> localVarResponse = getFieldConfigurationSchemeProjectMappingWithHttpInfo(projectId, startAt, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get field configuration schemes for projects
-   * Returns a [paginated](#pagination) list of field configuration schemes and, for each scheme, a list of the projects that use it.  The list is sorted by field configuration scheme ID. The first item contains the list of project IDs assigned to the default field configuration scheme.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The list of project IDs. To include multiple projects, separate IDs with ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return ApiResponse&lt;PageBeanFieldConfigurationSchemeProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationSchemeProjects> getFieldConfigurationSchemeProjectMappingWithHttpInfo(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getFieldConfigurationSchemeProjectMappingWithHttpInfo(projectId, startAt, maxResults, null);
-  }
-
-  /**
-   * Get field configuration schemes for projects
-   * Returns a [paginated](#pagination) list of field configuration schemes and, for each scheme, a list of the projects that use it.  The list is sorted by field configuration scheme ID. The first item contains the list of project IDs assigned to the default field configuration scheme.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The list of project IDs. To include multiple projects, separate IDs with ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanFieldConfigurationSchemeProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanFieldConfigurationSchemeProjects> getFieldConfigurationSchemeProjectMappingWithHttpInfo(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getFieldConfigurationSchemeProjectMappingRequestBuilder(projectId, startAt, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getFieldConfigurationSchemeProjectMapping", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanFieldConfigurationSchemeProjects>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanFieldConfigurationSchemeProjects responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanFieldConfigurationSchemeProjects>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanFieldConfigurationSchemeProjects>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getFieldConfigurationSchemeProjectMappingRequestBuilder(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectId' is set
-    if (projectId == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectId' when calling getFieldConfigurationSchemeProjectMapping");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme/project";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "projectId", projectId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Remove issue types from field configuration scheme
-   * Removes issue types from the field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param issueTypeIdsToRemove The issue type IDs to remove. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeIssueTypesFromGlobalFieldConfigurationScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove) throws ApiException {
-    return removeIssueTypesFromGlobalFieldConfigurationScheme(id, issueTypeIdsToRemove, null);
-  }
-
-  /**
-   * Remove issue types from field configuration scheme
-   * Removes issue types from the field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param issueTypeIdsToRemove The issue type IDs to remove. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeIssueTypesFromGlobalFieldConfigurationScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = removeIssueTypesFromGlobalFieldConfigurationSchemeWithHttpInfo(id, issueTypeIdsToRemove, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Remove issue types from field configuration scheme
-   * Removes issue types from the field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param issueTypeIdsToRemove The issue type IDs to remove. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeIssueTypesFromGlobalFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove) throws ApiException {
-    return removeIssueTypesFromGlobalFieldConfigurationSchemeWithHttpInfo(id, issueTypeIdsToRemove, null);
-  }
-
-  /**
-   * Remove issue types from field configuration scheme
-   * Removes issue types from the field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param issueTypeIdsToRemove The issue type IDs to remove. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeIssueTypesFromGlobalFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeIssueTypesFromGlobalFieldConfigurationSchemeRequestBuilder(id, issueTypeIdsToRemove, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeIssueTypesFromGlobalFieldConfigurationScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder removeIssueTypesFromGlobalFieldConfigurationSchemeRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling removeIssueTypesFromGlobalFieldConfigurationScheme");
-    }
-    // verify the required parameter 'issueTypeIdsToRemove' is set
-    if (issueTypeIdsToRemove == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeIdsToRemove' when calling removeIssueTypesFromGlobalFieldConfigurationScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme/{id}/mapping/delete"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypeIdsToRemove);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Assign issue types to field configurations
-   * Assigns issue types to field configurations on field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param associateFieldConfigurationsWithIssueTypesRequest  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object setFieldConfigurationSchemeMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest) throws ApiException {
-    return setFieldConfigurationSchemeMapping(id, associateFieldConfigurationsWithIssueTypesRequest, null);
-  }
-
-  /**
-   * Assign issue types to field configurations
-   * Assigns issue types to field configurations on field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param associateFieldConfigurationsWithIssueTypesRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object setFieldConfigurationSchemeMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = setFieldConfigurationSchemeMappingWithHttpInfo(id, associateFieldConfigurationsWithIssueTypesRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Assign issue types to field configurations
-   * Assigns issue types to field configurations on field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param associateFieldConfigurationsWithIssueTypesRequest  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> setFieldConfigurationSchemeMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest) throws ApiException {
-    return setFieldConfigurationSchemeMappingWithHttpInfo(id, associateFieldConfigurationsWithIssueTypesRequest, null);
-  }
-
-  /**
-   * Assign issue types to field configurations
-   * Assigns issue types to field configurations on field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param associateFieldConfigurationsWithIssueTypesRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> setFieldConfigurationSchemeMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = setFieldConfigurationSchemeMappingRequestBuilder(id, associateFieldConfigurationsWithIssueTypesRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("setFieldConfigurationSchemeMapping", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createFieldConfigurationSchemeValidateBeforeCall(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'updateFieldConfigurationSchemeDetails' is set
+        if (updateFieldConfigurationSchemeDetails == null) {
+            throw new ApiException("Missing the required parameter 'updateFieldConfigurationSchemeDetails' when calling createFieldConfigurationScheme(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        return createFieldConfigurationSchemeCall(updateFieldConfigurationSchemeDetails, _callback);
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder setFieldConfigurationSchemeMappingRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling setFieldConfigurationSchemeMapping");
-    }
-    // verify the required parameter 'associateFieldConfigurationsWithIssueTypesRequest' is set
-    if (associateFieldConfigurationsWithIssueTypesRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'associateFieldConfigurationsWithIssueTypesRequest' when calling setFieldConfigurationSchemeMapping");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme/{id}/mapping"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(associateFieldConfigurationsWithIssueTypesRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create field configuration scheme
+     * Creates a field configuration scheme.  This operation can only create field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
+     * @return FieldConfigurationScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public FieldConfigurationScheme createFieldConfigurationScheme(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails) throws ApiException {
+        ApiResponse<FieldConfigurationScheme> localVarResp = createFieldConfigurationSchemeWithHttpInfo(updateFieldConfigurationSchemeDetails);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+
+    /**
+     * Create field configuration scheme
+     * Creates a field configuration scheme.  This operation can only create field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
+     * @return ApiResponse&lt;FieldConfigurationScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<FieldConfigurationScheme> createFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails) throws ApiException {
+        okhttp3.Call localVarCall = createFieldConfigurationSchemeValidateBeforeCall(updateFieldConfigurationSchemeDetails, null);
+        Type localVarReturnType = new TypeToken<FieldConfigurationScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create field configuration scheme (asynchronously)
+     * Creates a field configuration scheme.  This operation can only create field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createFieldConfigurationSchemeAsync(@javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, final ApiCallback<FieldConfigurationScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createFieldConfigurationSchemeValidateBeforeCall(updateFieldConfigurationSchemeDetails, _callback);
+        Type localVarReturnType = new TypeToken<FieldConfigurationScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for deleteFieldConfiguration
+     * @param id The ID of the field configuration. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteFieldConfigurationCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Update field configuration
-   * Updates a field configuration. The name and the description provided in the request override the existing values.  This operation can only update configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param fieldConfigurationDetails  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateFieldConfiguration(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails) throws ApiException {
-    return updateFieldConfiguration(id, fieldConfigurationDetails, null);
-  }
-
-  /**
-   * Update field configuration
-   * Updates a field configuration. The name and the description provided in the request override the existing values.  This operation can only update configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param fieldConfigurationDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateFieldConfiguration(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateFieldConfigurationWithHttpInfo(id, fieldConfigurationDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update field configuration
-   * Updates a field configuration. The name and the description provided in the request override the existing values.  This operation can only update configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param fieldConfigurationDetails  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails) throws ApiException {
-    return updateFieldConfigurationWithHttpInfo(id, fieldConfigurationDetails, null);
-  }
-
-  /**
-   * Update field configuration
-   * Updates a field configuration. The name and the description provided in the request override the existing values.  This operation can only update configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param fieldConfigurationDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateFieldConfigurationRequestBuilder(id, fieldConfigurationDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateFieldConfiguration", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfiguration/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder updateFieldConfigurationRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateFieldConfiguration");
-    }
-    // verify the required parameter 'fieldConfigurationDetails' is set
-    if (fieldConfigurationDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldConfigurationDetails' when calling updateFieldConfiguration");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfiguration/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(fieldConfigurationDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update field configuration items
-   * Updates fields in a field configuration. The properties of the field configuration fields provided override the existing values.  This operation can only update field configurations used in company-managed (classic) projects.  The operation can set the renderer for text fields to the default text renderer (&#x60;text-renderer&#x60;) or wiki style renderer (&#x60;wiki-renderer&#x60;). However, the renderer cannot be updated for fields using the autocomplete renderer (&#x60;autocomplete-renderer&#x60;).  Hiding a field deletes it from the field configuration - deleting the required, description and renderer type values as well. As a result, hiding and unhiding will not restore the other values but use their default values.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param fieldConfigurationItemsDetails  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateFieldConfigurationItems(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails) throws ApiException {
-    return updateFieldConfigurationItems(id, fieldConfigurationItemsDetails, null);
-  }
-
-  /**
-   * Update field configuration items
-   * Updates fields in a field configuration. The properties of the field configuration fields provided override the existing values.  This operation can only update field configurations used in company-managed (classic) projects.  The operation can set the renderer for text fields to the default text renderer (&#x60;text-renderer&#x60;) or wiki style renderer (&#x60;wiki-renderer&#x60;). However, the renderer cannot be updated for fields using the autocomplete renderer (&#x60;autocomplete-renderer&#x60;).  Hiding a field deletes it from the field configuration - deleting the required, description and renderer type values as well. As a result, hiding and unhiding will not restore the other values but use their default values.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param fieldConfigurationItemsDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateFieldConfigurationItems(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateFieldConfigurationItemsWithHttpInfo(id, fieldConfigurationItemsDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update field configuration items
-   * Updates fields in a field configuration. The properties of the field configuration fields provided override the existing values.  This operation can only update field configurations used in company-managed (classic) projects.  The operation can set the renderer for text fields to the default text renderer (&#x60;text-renderer&#x60;) or wiki style renderer (&#x60;wiki-renderer&#x60;). However, the renderer cannot be updated for fields using the autocomplete renderer (&#x60;autocomplete-renderer&#x60;).  Hiding a field deletes it from the field configuration - deleting the required, description and renderer type values as well. As a result, hiding and unhiding will not restore the other values but use their default values.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param fieldConfigurationItemsDetails  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateFieldConfigurationItemsWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails) throws ApiException {
-    return updateFieldConfigurationItemsWithHttpInfo(id, fieldConfigurationItemsDetails, null);
-  }
-
-  /**
-   * Update field configuration items
-   * Updates fields in a field configuration. The properties of the field configuration fields provided override the existing values.  This operation can only update field configurations used in company-managed (classic) projects.  The operation can set the renderer for text fields to the default text renderer (&#x60;text-renderer&#x60;) or wiki style renderer (&#x60;wiki-renderer&#x60;). However, the renderer cannot be updated for fields using the autocomplete renderer (&#x60;autocomplete-renderer&#x60;).  Hiding a field deletes it from the field configuration - deleting the required, description and renderer type values as well. As a result, hiding and unhiding will not restore the other values but use their default values.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration. (required)
-   * @param fieldConfigurationItemsDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateFieldConfigurationItemsWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateFieldConfigurationItemsRequestBuilder(id, fieldConfigurationItemsDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateFieldConfigurationItems", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateFieldConfigurationItemsRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateFieldConfigurationItems");
-    }
-    // verify the required parameter 'fieldConfigurationItemsDetails' is set
-    if (fieldConfigurationItemsDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldConfigurationItemsDetails' when calling updateFieldConfigurationItems");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/fieldconfiguration/{id}/fields"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(fieldConfigurationItemsDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update field configuration scheme
-   * Updates a field configuration scheme.  This operation can only update field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateFieldConfigurationScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails) throws ApiException {
-    return updateFieldConfigurationScheme(id, updateFieldConfigurationSchemeDetails, null);
-  }
-
-  /**
-   * Update field configuration scheme
-   * Updates a field configuration scheme.  This operation can only update field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateFieldConfigurationScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateFieldConfigurationSchemeWithHttpInfo(id, updateFieldConfigurationSchemeDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update field configuration scheme
-   * Updates a field configuration scheme.  This operation can only update field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails) throws ApiException {
-    return updateFieldConfigurationSchemeWithHttpInfo(id, updateFieldConfigurationSchemeDetails, null);
-  }
-
-  /**
-   * Update field configuration scheme
-   * Updates a field configuration scheme.  This operation can only update field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the field configuration scheme. (required)
-   * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateFieldConfigurationSchemeRequestBuilder(id, updateFieldConfigurationSchemeDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateFieldConfigurationScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateFieldConfigurationSchemeRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateFieldConfigurationScheme");
-    }
-    // verify the required parameter 'updateFieldConfigurationSchemeDetails' is set
-    if (updateFieldConfigurationSchemeDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateFieldConfigurationSchemeDetails' when calling updateFieldConfigurationScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteFieldConfigurationValidateBeforeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteFieldConfiguration(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/fieldconfigurationscheme/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
+        return deleteFieldConfigurationCall(id, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateFieldConfigurationSchemeDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete field configuration
+     * Deletes a field configuration.  This operation can only delete configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deleteFieldConfiguration(@javax.annotation.Nonnull Long id) throws ApiException {
+        ApiResponse<Object> localVarResp = deleteFieldConfigurationWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Delete field configuration
+     * Deletes a field configuration.  This operation can only delete configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deleteFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = deleteFieldConfigurationValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete field configuration (asynchronously)
+     * Deletes a field configuration.  This operation can only delete configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteFieldConfigurationAsync(@javax.annotation.Nonnull Long id, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteFieldConfigurationValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteFieldConfigurationScheme
+     * @param id The ID of the field configuration scheme. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteFieldConfigurationSchemeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteFieldConfigurationSchemeValidateBeforeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteFieldConfigurationScheme(Async)");
+        }
+
+        return deleteFieldConfigurationSchemeCall(id, _callback);
+
+    }
+
+    /**
+     * Delete field configuration scheme
+     * Deletes a field configuration scheme.  This operation can only delete field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deleteFieldConfigurationScheme(@javax.annotation.Nonnull Long id) throws ApiException {
+        ApiResponse<Object> localVarResp = deleteFieldConfigurationSchemeWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Delete field configuration scheme
+     * Deletes a field configuration scheme.  This operation can only delete field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deleteFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = deleteFieldConfigurationSchemeValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete field configuration scheme (asynchronously)
+     * Deletes a field configuration scheme.  This operation can only delete field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteFieldConfigurationSchemeAsync(@javax.annotation.Nonnull Long id, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteFieldConfigurationSchemeValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAllFieldConfigurationSchemes
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of field configuration scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllFieldConfigurationSchemesCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllFieldConfigurationSchemesValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, final ApiCallback _callback) throws ApiException {
+        return getAllFieldConfigurationSchemesCall(startAt, maxResults, id, _callback);
+
+    }
+
+    /**
+     * Get all field configuration schemes
+     * Returns a [paginated](#pagination) list of field configuration schemes.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of field configuration scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @return PageBeanFieldConfigurationScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanFieldConfigurationScheme getAllFieldConfigurationSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id) throws ApiException {
+        ApiResponse<PageBeanFieldConfigurationScheme> localVarResp = getAllFieldConfigurationSchemesWithHttpInfo(startAt, maxResults, id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all field configuration schemes
+     * Returns a [paginated](#pagination) list of field configuration schemes.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of field configuration scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @return ApiResponse&lt;PageBeanFieldConfigurationScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanFieldConfigurationScheme> getAllFieldConfigurationSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id) throws ApiException {
+        okhttp3.Call localVarCall = getAllFieldConfigurationSchemesValidateBeforeCall(startAt, maxResults, id, null);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all field configuration schemes (asynchronously)
+     * Returns a [paginated](#pagination) list of field configuration schemes.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of field configuration scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllFieldConfigurationSchemesAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, final ApiCallback<PageBeanFieldConfigurationScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAllFieldConfigurationSchemesValidateBeforeCall(startAt, maxResults, id, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAllFieldConfigurations
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of field configuration IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param isDefault If *true* returns default field configurations only. (optional, default to false)
+     * @param query The query string used to match against field configuration names and descriptions. (optional, default to )
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllFieldConfigurationsCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfiguration";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        if (isDefault != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("isDefault", isDefault));
+        }
+
+        if (query != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("query", query));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllFieldConfigurationsValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query, final ApiCallback _callback) throws ApiException {
+        return getAllFieldConfigurationsCall(startAt, maxResults, id, isDefault, query, _callback);
+
+    }
+
+    /**
+     * Get all field configurations
+     * Returns a [paginated](#pagination) list of field configurations. The list can be for all field configurations or a subset determined by any combination of these criteria:   *  a list of field configuration item IDs.  *  whether the field configuration is a default.  *  whether the field configuration name or description contains a query string.  Only field configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of field configuration IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param isDefault If *true* returns default field configurations only. (optional, default to false)
+     * @param query The query string used to match against field configuration names and descriptions. (optional, default to )
+     * @return PageBeanFieldConfigurationDetails
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanFieldConfigurationDetails getAllFieldConfigurations(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query) throws ApiException {
+        ApiResponse<PageBeanFieldConfigurationDetails> localVarResp = getAllFieldConfigurationsWithHttpInfo(startAt, maxResults, id, isDefault, query);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all field configurations
+     * Returns a [paginated](#pagination) list of field configurations. The list can be for all field configurations or a subset determined by any combination of these criteria:   *  a list of field configuration item IDs.  *  whether the field configuration is a default.  *  whether the field configuration name or description contains a query string.  Only field configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of field configuration IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param isDefault If *true* returns default field configurations only. (optional, default to false)
+     * @param query The query string used to match against field configuration names and descriptions. (optional, default to )
+     * @return ApiResponse&lt;PageBeanFieldConfigurationDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanFieldConfigurationDetails> getAllFieldConfigurationsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query) throws ApiException {
+        okhttp3.Call localVarCall = getAllFieldConfigurationsValidateBeforeCall(startAt, maxResults, id, isDefault, query, null);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationDetails>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all field configurations (asynchronously)
+     * Returns a [paginated](#pagination) list of field configurations. The list can be for all field configurations or a subset determined by any combination of these criteria:   *  a list of field configuration item IDs.  *  whether the field configuration is a default.  *  whether the field configuration name or description contains a query string.  Only field configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of field configuration IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param isDefault If *true* returns default field configurations only. (optional, default to false)
+     * @param query The query string used to match against field configuration names and descriptions. (optional, default to )
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllFieldConfigurationsAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable Boolean isDefault, @javax.annotation.Nullable String query, final ApiCallback<PageBeanFieldConfigurationDetails> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAllFieldConfigurationsValidateBeforeCall(startAt, maxResults, id, isDefault, query, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationDetails>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getFieldConfigurationItems
+     * @param id The ID of the field configuration. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFieldConfigurationItemsCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfiguration/{id}/fields"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getFieldConfigurationItemsValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getFieldConfigurationItems(Async)");
+        }
+
+        return getFieldConfigurationItemsCall(id, startAt, maxResults, _callback);
+
+    }
+
+    /**
+     * Get field configuration items
+     * Returns a [paginated](#pagination) list of all fields for a configuration.  Only the fields from configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return PageBeanFieldConfigurationItem
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanFieldConfigurationItem getFieldConfigurationItems(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageBeanFieldConfigurationItem> localVarResp = getFieldConfigurationItemsWithHttpInfo(id, startAt, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get field configuration items
+     * Returns a [paginated](#pagination) list of all fields for a configuration.  Only the fields from configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return ApiResponse&lt;PageBeanFieldConfigurationItem&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanFieldConfigurationItem> getFieldConfigurationItemsWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getFieldConfigurationItemsValidateBeforeCall(id, startAt, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationItem>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get field configuration items (asynchronously)
+     * Returns a [paginated](#pagination) list of all fields for a configuration.  Only the fields from configurations used in company-managed (classic) projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFieldConfigurationItemsAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageBeanFieldConfigurationItem> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getFieldConfigurationItemsValidateBeforeCall(id, startAt, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationItem>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getFieldConfigurationSchemeMappings
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param fieldConfigurationSchemeId The list of field configuration scheme IDs. To include multiple field configuration schemes separate IDs with ampersand: &#x60;fieldConfigurationSchemeId&#x3D;10000&amp;fieldConfigurationSchemeId&#x3D;10001&#x60;. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if no field configuration schemes are found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFieldConfigurationSchemeMappingsCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme/mapping";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (fieldConfigurationSchemeId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "fieldConfigurationSchemeId", fieldConfigurationSchemeId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getFieldConfigurationSchemeMappingsValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId, final ApiCallback _callback) throws ApiException {
+        return getFieldConfigurationSchemeMappingsCall(startAt, maxResults, fieldConfigurationSchemeId, _callback);
+
+    }
+
+    /**
+     * Get field configuration issue type items
+     * Returns a [paginated](#pagination) list of field configuration issue type items.  Only items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param fieldConfigurationSchemeId The list of field configuration scheme IDs. To include multiple field configuration schemes separate IDs with ampersand: &#x60;fieldConfigurationSchemeId&#x3D;10000&amp;fieldConfigurationSchemeId&#x3D;10001&#x60;. (optional)
+     * @return PageBeanFieldConfigurationIssueTypeItem
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if no field configuration schemes are found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanFieldConfigurationIssueTypeItem getFieldConfigurationSchemeMappings(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId) throws ApiException {
+        ApiResponse<PageBeanFieldConfigurationIssueTypeItem> localVarResp = getFieldConfigurationSchemeMappingsWithHttpInfo(startAt, maxResults, fieldConfigurationSchemeId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get field configuration issue type items
+     * Returns a [paginated](#pagination) list of field configuration issue type items.  Only items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param fieldConfigurationSchemeId The list of field configuration scheme IDs. To include multiple field configuration schemes separate IDs with ampersand: &#x60;fieldConfigurationSchemeId&#x3D;10000&amp;fieldConfigurationSchemeId&#x3D;10001&#x60;. (optional)
+     * @return ApiResponse&lt;PageBeanFieldConfigurationIssueTypeItem&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if no field configuration schemes are found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanFieldConfigurationIssueTypeItem> getFieldConfigurationSchemeMappingsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId) throws ApiException {
+        okhttp3.Call localVarCall = getFieldConfigurationSchemeMappingsValidateBeforeCall(startAt, maxResults, fieldConfigurationSchemeId, null);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationIssueTypeItem>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get field configuration issue type items (asynchronously)
+     * Returns a [paginated](#pagination) list of field configuration issue type items.  Only items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param fieldConfigurationSchemeId The list of field configuration scheme IDs. To include multiple field configuration schemes separate IDs with ampersand: &#x60;fieldConfigurationSchemeId&#x3D;10000&amp;fieldConfigurationSchemeId&#x3D;10001&#x60;. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if no field configuration schemes are found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFieldConfigurationSchemeMappingsAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> fieldConfigurationSchemeId, final ApiCallback<PageBeanFieldConfigurationIssueTypeItem> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getFieldConfigurationSchemeMappingsValidateBeforeCall(startAt, maxResults, fieldConfigurationSchemeId, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationIssueTypeItem>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getFieldConfigurationSchemeProjectMapping
+     * @param projectId The list of project IDs. To include multiple projects, separate IDs with ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFieldConfigurationSchemeProjectMappingCall(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme/project";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (projectId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "projectId", projectId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getFieldConfigurationSchemeProjectMappingValidateBeforeCall(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectId' is set
+        if (projectId == null) {
+            throw new ApiException("Missing the required parameter 'projectId' when calling getFieldConfigurationSchemeProjectMapping(Async)");
+        }
+
+        return getFieldConfigurationSchemeProjectMappingCall(projectId, startAt, maxResults, _callback);
+
+    }
+
+    /**
+     * Get field configuration schemes for projects
+     * Returns a [paginated](#pagination) list of field configuration schemes and, for each scheme, a list of the projects that use it.  The list is sorted by field configuration scheme ID. The first item contains the list of project IDs assigned to the default field configuration scheme.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The list of project IDs. To include multiple projects, separate IDs with ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return PageBeanFieldConfigurationSchemeProjects
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanFieldConfigurationSchemeProjects getFieldConfigurationSchemeProjectMapping(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageBeanFieldConfigurationSchemeProjects> localVarResp = getFieldConfigurationSchemeProjectMappingWithHttpInfo(projectId, startAt, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get field configuration schemes for projects
+     * Returns a [paginated](#pagination) list of field configuration schemes and, for each scheme, a list of the projects that use it.  The list is sorted by field configuration scheme ID. The first item contains the list of project IDs assigned to the default field configuration scheme.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The list of project IDs. To include multiple projects, separate IDs with ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return ApiResponse&lt;PageBeanFieldConfigurationSchemeProjects&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanFieldConfigurationSchemeProjects> getFieldConfigurationSchemeProjectMappingWithHttpInfo(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getFieldConfigurationSchemeProjectMappingValidateBeforeCall(projectId, startAt, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationSchemeProjects>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get field configuration schemes for projects (asynchronously)
+     * Returns a [paginated](#pagination) list of field configuration schemes and, for each scheme, a list of the projects that use it.  The list is sorted by field configuration scheme ID. The first item contains the list of project IDs assigned to the default field configuration scheme.  Only field configuration schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The list of project IDs. To include multiple projects, separate IDs with ampersand: &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFieldConfigurationSchemeProjectMappingAsync(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageBeanFieldConfigurationSchemeProjects> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getFieldConfigurationSchemeProjectMappingValidateBeforeCall(projectId, startAt, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanFieldConfigurationSchemeProjects>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeIssueTypesFromGlobalFieldConfigurationScheme
+     * @param id The ID of the field configuration scheme. (required)
+     * @param issueTypeIdsToRemove The issue type IDs to remove. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme or the issue types are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeIssueTypesFromGlobalFieldConfigurationSchemeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueTypeIdsToRemove;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme/{id}/mapping/delete"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeIssueTypesFromGlobalFieldConfigurationSchemeValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling removeIssueTypesFromGlobalFieldConfigurationScheme(Async)");
+        }
+
+        // verify the required parameter 'issueTypeIdsToRemove' is set
+        if (issueTypeIdsToRemove == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeIdsToRemove' when calling removeIssueTypesFromGlobalFieldConfigurationScheme(Async)");
+        }
+
+        return removeIssueTypesFromGlobalFieldConfigurationSchemeCall(id, issueTypeIdsToRemove, _callback);
+
+    }
+
+    /**
+     * Remove issue types from field configuration scheme
+     * Removes issue types from the field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param issueTypeIdsToRemove The issue type IDs to remove. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme or the issue types are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object removeIssueTypesFromGlobalFieldConfigurationScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove) throws ApiException {
+        ApiResponse<Object> localVarResp = removeIssueTypesFromGlobalFieldConfigurationSchemeWithHttpInfo(id, issueTypeIdsToRemove);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Remove issue types from field configuration scheme
+     * Removes issue types from the field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param issueTypeIdsToRemove The issue type IDs to remove. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme or the issue types are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> removeIssueTypesFromGlobalFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove) throws ApiException {
+        okhttp3.Call localVarCall = removeIssueTypesFromGlobalFieldConfigurationSchemeValidateBeforeCall(id, issueTypeIdsToRemove, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Remove issue types from field configuration scheme (asynchronously)
+     * Removes issue types from the field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param issueTypeIdsToRemove The issue type IDs to remove. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme or the issue types are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeIssueTypesFromGlobalFieldConfigurationSchemeAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull IssueTypeIdsToRemove issueTypeIdsToRemove, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeIssueTypesFromGlobalFieldConfigurationSchemeValidateBeforeCall(id, issueTypeIdsToRemove, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for setFieldConfigurationSchemeMapping
+     * @param id The ID of the field configuration scheme. (required)
+     * @param associateFieldConfigurationsWithIssueTypesRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme, the field configuration, or the issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setFieldConfigurationSchemeMappingCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = associateFieldConfigurationsWithIssueTypesRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme/{id}/mapping"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call setFieldConfigurationSchemeMappingValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling setFieldConfigurationSchemeMapping(Async)");
+        }
+
+        // verify the required parameter 'associateFieldConfigurationsWithIssueTypesRequest' is set
+        if (associateFieldConfigurationsWithIssueTypesRequest == null) {
+            throw new ApiException("Missing the required parameter 'associateFieldConfigurationsWithIssueTypesRequest' when calling setFieldConfigurationSchemeMapping(Async)");
+        }
+
+        return setFieldConfigurationSchemeMappingCall(id, associateFieldConfigurationsWithIssueTypesRequest, _callback);
+
+    }
+
+    /**
+     * Assign issue types to field configurations
+     * Assigns issue types to field configurations on field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param associateFieldConfigurationsWithIssueTypesRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme, the field configuration, or the issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object setFieldConfigurationSchemeMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = setFieldConfigurationSchemeMappingWithHttpInfo(id, associateFieldConfigurationsWithIssueTypesRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Assign issue types to field configurations
+     * Assigns issue types to field configurations on field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param associateFieldConfigurationsWithIssueTypesRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme, the field configuration, or the issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> setFieldConfigurationSchemeMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest) throws ApiException {
+        okhttp3.Call localVarCall = setFieldConfigurationSchemeMappingValidateBeforeCall(id, associateFieldConfigurationsWithIssueTypesRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Assign issue types to field configurations (asynchronously)
+     * Assigns issue types to field configurations on field configuration scheme.  This operation can only modify field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param associateFieldConfigurationsWithIssueTypesRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme, the field configuration, or the issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setFieldConfigurationSchemeMappingAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull AssociateFieldConfigurationsWithIssueTypesRequest associateFieldConfigurationsWithIssueTypesRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = setFieldConfigurationSchemeMappingValidateBeforeCall(id, associateFieldConfigurationsWithIssueTypesRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateFieldConfiguration
+     * @param id The ID of the field configuration. (required)
+     * @param fieldConfigurationDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateFieldConfigurationCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = fieldConfigurationDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfiguration/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateFieldConfigurationValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateFieldConfiguration(Async)");
+        }
+
+        // verify the required parameter 'fieldConfigurationDetails' is set
+        if (fieldConfigurationDetails == null) {
+            throw new ApiException("Missing the required parameter 'fieldConfigurationDetails' when calling updateFieldConfiguration(Async)");
+        }
+
+        return updateFieldConfigurationCall(id, fieldConfigurationDetails, _callback);
+
+    }
+
+    /**
+     * Update field configuration
+     * Updates a field configuration. The name and the description provided in the request override the existing values.  This operation can only update configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param fieldConfigurationDetails  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateFieldConfiguration(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails) throws ApiException {
+        ApiResponse<Object> localVarResp = updateFieldConfigurationWithHttpInfo(id, fieldConfigurationDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update field configuration
+     * Updates a field configuration. The name and the description provided in the request override the existing values.  This operation can only update configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param fieldConfigurationDetails  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateFieldConfigurationWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails) throws ApiException {
+        okhttp3.Call localVarCall = updateFieldConfigurationValidateBeforeCall(id, fieldConfigurationDetails, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update field configuration (asynchronously)
+     * Updates a field configuration. The name and the description provided in the request override the existing values.  This operation can only update configurations used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param fieldConfigurationDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateFieldConfigurationAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationDetails fieldConfigurationDetails, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateFieldConfigurationValidateBeforeCall(id, fieldConfigurationDetails, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateFieldConfigurationItems
+     * @param id The ID of the field configuration. (required)
+     * @param fieldConfigurationItemsDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateFieldConfigurationItemsCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = fieldConfigurationItemsDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfiguration/{id}/fields"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateFieldConfigurationItemsValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateFieldConfigurationItems(Async)");
+        }
+
+        // verify the required parameter 'fieldConfigurationItemsDetails' is set
+        if (fieldConfigurationItemsDetails == null) {
+            throw new ApiException("Missing the required parameter 'fieldConfigurationItemsDetails' when calling updateFieldConfigurationItems(Async)");
+        }
+
+        return updateFieldConfigurationItemsCall(id, fieldConfigurationItemsDetails, _callback);
+
+    }
+
+    /**
+     * Update field configuration items
+     * Updates fields in a field configuration. The properties of the field configuration fields provided override the existing values.  This operation can only update field configurations used in company-managed (classic) projects.  The operation can set the renderer for text fields to the default text renderer (&#x60;text-renderer&#x60;) or wiki style renderer (&#x60;wiki-renderer&#x60;). However, the renderer cannot be updated for fields using the autocomplete renderer (&#x60;autocomplete-renderer&#x60;).  Hiding a field deletes it from the field configuration - deleting the required, description and renderer type values as well. As a result, hiding and unhiding will not restore the other values but use their default values.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param fieldConfigurationItemsDetails  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateFieldConfigurationItems(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails) throws ApiException {
+        ApiResponse<Object> localVarResp = updateFieldConfigurationItemsWithHttpInfo(id, fieldConfigurationItemsDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update field configuration items
+     * Updates fields in a field configuration. The properties of the field configuration fields provided override the existing values.  This operation can only update field configurations used in company-managed (classic) projects.  The operation can set the renderer for text fields to the default text renderer (&#x60;text-renderer&#x60;) or wiki style renderer (&#x60;wiki-renderer&#x60;). However, the renderer cannot be updated for fields using the autocomplete renderer (&#x60;autocomplete-renderer&#x60;).  Hiding a field deletes it from the field configuration - deleting the required, description and renderer type values as well. As a result, hiding and unhiding will not restore the other values but use their default values.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param fieldConfigurationItemsDetails  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateFieldConfigurationItemsWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails) throws ApiException {
+        okhttp3.Call localVarCall = updateFieldConfigurationItemsValidateBeforeCall(id, fieldConfigurationItemsDetails, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update field configuration items (asynchronously)
+     * Updates fields in a field configuration. The properties of the field configuration fields provided override the existing values.  This operation can only update field configurations used in company-managed (classic) projects.  The operation can set the renderer for text fields to the default text renderer (&#x60;text-renderer&#x60;) or wiki style renderer (&#x60;wiki-renderer&#x60;). However, the renderer cannot be updated for fields using the autocomplete renderer (&#x60;autocomplete-renderer&#x60;).  Hiding a field deletes it from the field configuration - deleting the required, description and renderer type values as well. As a result, hiding and unhiding will not restore the other values but use their default values.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration. (required)
+     * @param fieldConfigurationItemsDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateFieldConfigurationItemsAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull FieldConfigurationItemsDetails fieldConfigurationItemsDetails, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateFieldConfigurationItemsValidateBeforeCall(id, fieldConfigurationItemsDetails, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateFieldConfigurationScheme
+     * @param id The ID of the field configuration scheme. (required)
+     * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateFieldConfigurationSchemeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = updateFieldConfigurationSchemeDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/fieldconfigurationscheme/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateFieldConfigurationSchemeValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateFieldConfigurationScheme(Async)");
+        }
+
+        // verify the required parameter 'updateFieldConfigurationSchemeDetails' is set
+        if (updateFieldConfigurationSchemeDetails == null) {
+            throw new ApiException("Missing the required parameter 'updateFieldConfigurationSchemeDetails' when calling updateFieldConfigurationScheme(Async)");
+        }
+
+        return updateFieldConfigurationSchemeCall(id, updateFieldConfigurationSchemeDetails, _callback);
+
+    }
+
+    /**
+     * Update field configuration scheme
+     * Updates a field configuration scheme.  This operation can only update field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateFieldConfigurationScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails) throws ApiException {
+        ApiResponse<Object> localVarResp = updateFieldConfigurationSchemeWithHttpInfo(id, updateFieldConfigurationSchemeDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update field configuration scheme
+     * Updates a field configuration scheme.  This operation can only update field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateFieldConfigurationSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails) throws ApiException {
+        okhttp3.Call localVarCall = updateFieldConfigurationSchemeValidateBeforeCall(id, updateFieldConfigurationSchemeDetails, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update field configuration scheme (asynchronously)
+     * Updates a field configuration scheme.  This operation can only update field configuration schemes used in company-managed (classic) projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the field configuration scheme. (required)
+     * @param updateFieldConfigurationSchemeDetails The details of the field configuration scheme. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field configuration scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateFieldConfigurationSchemeAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull UpdateFieldConfigurationSchemeDetails updateFieldConfigurationSchemeDetails, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateFieldConfigurationSchemeValidateBeforeCall(id, updateFieldConfigurationSchemeDetails, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

@@ -13,48 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The JQL query to sanitize for the account ID. If the account ID is null, sanitizing is performed for an anonymous user.
  */
-@JsonPropertyOrder({
-  JqlQueryToSanitize.JSON_PROPERTY_ACCOUNT_ID,
-  JqlQueryToSanitize.JSON_PROPERTY_QUERY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JqlQueryToSanitize {
-  public static final String JSON_PROPERTY_ACCOUNT_ID = "accountId";
-  private JsonNullable<String> accountId = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_ACCOUNT_ID = "accountId";
+  @SerializedName(SERIALIZED_NAME_ACCOUNT_ID)
+  @javax.annotation.Nullable
+  private String accountId;
 
-  public static final String JSON_PROPERTY_QUERY = "query";
+  public static final String SERIALIZED_NAME_QUERY = "query";
+  @SerializedName(SERIALIZED_NAME_QUERY)
   @javax.annotation.Nonnull
   private String query;
 
-  public JqlQueryToSanitize() { 
+  public JqlQueryToSanitize() {
   }
 
   public JqlQueryToSanitize accountId(@javax.annotation.Nullable String accountId) {
-    this.accountId = JsonNullable.<String>of(accountId);
+    this.accountId = accountId;
     return this;
   }
 
@@ -63,25 +76,12 @@ public class JqlQueryToSanitize {
    * @return accountId
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getAccountId() {
-        return accountId.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getAccountId_JsonNullable() {
     return accountId;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ACCOUNT_ID)
-  public void setAccountId_JsonNullable(JsonNullable<String> accountId) {
-    this.accountId = accountId;
   }
 
   public void setAccountId(@javax.annotation.Nullable String accountId) {
-    this.accountId = JsonNullable.<String>of(accountId);
+    this.accountId = accountId;
   }
 
 
@@ -95,23 +95,16 @@ public class JqlQueryToSanitize {
    * @return query
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_QUERY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getQuery() {
     return query;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUERY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setQuery(@javax.annotation.Nonnull String query) {
     this.query = query;
   }
 
 
-  /**
-   * Return true if this JqlQueryToSanitize object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -121,7 +114,7 @@ public class JqlQueryToSanitize {
       return false;
     }
     JqlQueryToSanitize jqlQueryToSanitize = (JqlQueryToSanitize) o;
-    return equalsNullable(this.accountId, jqlQueryToSanitize.accountId) &&
+    return Objects.equals(this.accountId, jqlQueryToSanitize.accountId) &&
         Objects.equals(this.query, jqlQueryToSanitize.query);
   }
 
@@ -131,7 +124,7 @@ public class JqlQueryToSanitize {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(accountId), query);
+    return Objects.hash(accountId, query);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -162,49 +155,101 @@ public class JqlQueryToSanitize {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("accountId", "query"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("query"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JqlQueryToSanitize
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JqlQueryToSanitize.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JqlQueryToSanitize is not found in the empty JSON string", JqlQueryToSanitize.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JqlQueryToSanitize.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JqlQueryToSanitize` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JqlQueryToSanitize.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("accountId") != null && !jsonObj.get("accountId").isJsonNull()) && !jsonObj.get("accountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `accountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accountId").toString()));
+      }
+      if (!jsonObj.get("query").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `query` to be a primitive type in the JSON string but got `%s`", jsonObj.get("query").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JqlQueryToSanitize.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JqlQueryToSanitize' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JqlQueryToSanitize> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JqlQueryToSanitize.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JqlQueryToSanitize>() {
+           @Override
+           public void write(JsonWriter out, JqlQueryToSanitize value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JqlQueryToSanitize read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of JqlQueryToSanitize given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JqlQueryToSanitize
+   * @throws IOException if the JSON string is invalid with respect to JqlQueryToSanitize
+   */
+  public static JqlQueryToSanitize fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JqlQueryToSanitize.class);
+  }
 
-    // add `accountId` to the URL query string
-    if (getAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountId()))));
-    }
-
-    // add `query` to the URL query string
-    if (getQuery() != null) {
-      joiner.add(String.format(Locale.ROOT, "%squery%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuery()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JqlQueryToSanitize to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

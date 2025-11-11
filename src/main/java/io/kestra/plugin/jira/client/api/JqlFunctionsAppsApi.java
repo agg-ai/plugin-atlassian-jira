@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.JqlFunctionPrecomputationGetByIdRequest;
 import io.kestra.plugin.jira.client.model.JqlFunctionPrecomputationGetByIdResponse;
@@ -25,554 +34,514 @@ import io.kestra.plugin.jira.client.model.JqlFunctionPrecomputationUpdateRequest
 import io.kestra.plugin.jira.client.model.JqlFunctionPrecomputationUpdateResponse;
 import io.kestra.plugin.jira.client.model.PageBean2JqlFunctionPrecomputationBean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JqlFunctionsAppsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public JqlFunctionsAppsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public JqlFunctionsAppsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for getPrecomputations
+     * @param functionKey The function key in format:   *  Forge: &#x60;ari:cloud:ecosystem::extension/[App ID]/[Environment ID]/static/[Function key from manifest]&#x60;  *  Connect: &#x60;[App key]__[Module key]&#x60; (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call getPrecomputationsCall(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public JqlFunctionsAppsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public JqlFunctionsAppsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Get precomputations (apps)
-   * Returns the list of a function&#39;s precomputations along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param functionKey The function key in format:   *  Forge: &#x60;ari:cloud:ecosystem::extension/[App ID]/[Environment ID]/static/[Function key from manifest]&#x60;  *  Connect: &#x60;[App key]__[Module key]&#x60; (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
-   * @return PageBean2JqlFunctionPrecomputationBean
-   * @throws ApiException if fails to make API call
-   */
-  public PageBean2JqlFunctionPrecomputationBean getPrecomputations(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy) throws ApiException {
-    return getPrecomputations(functionKey, startAt, maxResults, orderBy, null);
-  }
-
-  /**
-   * Get precomputations (apps)
-   * Returns the list of a function&#39;s precomputations along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param functionKey The function key in format:   *  Forge: &#x60;ari:cloud:ecosystem::extension/[App ID]/[Environment ID]/static/[Function key from manifest]&#x60;  *  Connect: &#x60;[App key]__[Module key]&#x60; (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBean2JqlFunctionPrecomputationBean
-   * @throws ApiException if fails to make API call
-   */
-  public PageBean2JqlFunctionPrecomputationBean getPrecomputations(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBean2JqlFunctionPrecomputationBean> localVarResponse = getPrecomputationsWithHttpInfo(functionKey, startAt, maxResults, orderBy, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get precomputations (apps)
-   * Returns the list of a function&#39;s precomputations along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param functionKey The function key in format:   *  Forge: &#x60;ari:cloud:ecosystem::extension/[App ID]/[Environment ID]/static/[Function key from manifest]&#x60;  *  Connect: &#x60;[App key]__[Module key]&#x60; (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
-   * @return ApiResponse&lt;PageBean2JqlFunctionPrecomputationBean&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBean2JqlFunctionPrecomputationBean> getPrecomputationsWithHttpInfo(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy) throws ApiException {
-    return getPrecomputationsWithHttpInfo(functionKey, startAt, maxResults, orderBy, null);
-  }
-
-  /**
-   * Get precomputations (apps)
-   * Returns the list of a function&#39;s precomputations along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param functionKey The function key in format:   *  Forge: &#x60;ari:cloud:ecosystem::extension/[App ID]/[Environment ID]/static/[Function key from manifest]&#x60;  *  Connect: &#x60;[App key]__[Module key]&#x60; (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBean2JqlFunctionPrecomputationBean&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBean2JqlFunctionPrecomputationBean> getPrecomputationsWithHttpInfo(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getPrecomputationsRequestBuilder(functionKey, startAt, maxResults, orderBy, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getPrecomputations", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBean2JqlFunctionPrecomputationBean>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBean2JqlFunctionPrecomputationBean responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBean2JqlFunctionPrecomputationBean>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<PageBean2JqlFunctionPrecomputationBean>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/function/computation";
 
-  private HttpRequest.Builder getPrecomputationsRequestBuilder(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/jql/function/computation";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "functionKey";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "functionKey", functionKey));
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get precomputations by ID (apps)
-   * Returns function precomputations by IDs, along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param jqlFunctionPrecomputationGetByIdRequest  (required)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
-   * @return JqlFunctionPrecomputationGetByIdResponse
-   * @throws ApiException if fails to make API call
-   */
-  public JqlFunctionPrecomputationGetByIdResponse getPrecomputationsByID(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy) throws ApiException {
-    return getPrecomputationsByID(jqlFunctionPrecomputationGetByIdRequest, orderBy, null);
-  }
-
-  /**
-   * Get precomputations by ID (apps)
-   * Returns function precomputations by IDs, along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param jqlFunctionPrecomputationGetByIdRequest  (required)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
-   * @param headers Optional headers to include in the request
-   * @return JqlFunctionPrecomputationGetByIdResponse
-   * @throws ApiException if fails to make API call
-   */
-  public JqlFunctionPrecomputationGetByIdResponse getPrecomputationsByID(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
-    ApiResponse<JqlFunctionPrecomputationGetByIdResponse> localVarResponse = getPrecomputationsByIDWithHttpInfo(jqlFunctionPrecomputationGetByIdRequest, orderBy, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get precomputations by ID (apps)
-   * Returns function precomputations by IDs, along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param jqlFunctionPrecomputationGetByIdRequest  (required)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
-   * @return ApiResponse&lt;JqlFunctionPrecomputationGetByIdResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<JqlFunctionPrecomputationGetByIdResponse> getPrecomputationsByIDWithHttpInfo(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy) throws ApiException {
-    return getPrecomputationsByIDWithHttpInfo(jqlFunctionPrecomputationGetByIdRequest, orderBy, null);
-  }
-
-  /**
-   * Get precomputations by ID (apps)
-   * Returns function precomputations by IDs, along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param jqlFunctionPrecomputationGetByIdRequest  (required)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;JqlFunctionPrecomputationGetByIdResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<JqlFunctionPrecomputationGetByIdResponse> getPrecomputationsByIDWithHttpInfo(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getPrecomputationsByIDRequestBuilder(jqlFunctionPrecomputationGetByIdRequest, orderBy, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getPrecomputationsByID", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<JqlFunctionPrecomputationGetByIdResponse>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (functionKey != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "functionKey", functionKey));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        JqlFunctionPrecomputationGetByIdResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<JqlFunctionPrecomputationGetByIdResponse>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<JqlFunctionPrecomputationGetByIdResponse>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getPrecomputationsByIDRequestBuilder(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'jqlFunctionPrecomputationGetByIdRequest' is set
-    if (jqlFunctionPrecomputationGetByIdRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'jqlFunctionPrecomputationGetByIdRequest' when calling getPrecomputationsByID");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/jql/function/computation/search";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(jqlFunctionPrecomputationGetByIdRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update precomputations (apps)
-   * Update the precomputation value of a function created by a Forge/Connect app.  **[Permissions](#permissions) required:** An API for apps to update their own precomputations.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param jqlFunctionPrecomputationUpdateRequestBean  (required)
-   * @param skipNotFoundPrecomputations  (optional, default to false)
-   * @return JqlFunctionPrecomputationUpdateResponse
-   * @throws ApiException if fails to make API call
-   */
-  public JqlFunctionPrecomputationUpdateResponse updatePrecomputations(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations) throws ApiException {
-    return updatePrecomputations(jqlFunctionPrecomputationUpdateRequestBean, skipNotFoundPrecomputations, null);
-  }
-
-  /**
-   * Update precomputations (apps)
-   * Update the precomputation value of a function created by a Forge/Connect app.  **[Permissions](#permissions) required:** An API for apps to update their own precomputations.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param jqlFunctionPrecomputationUpdateRequestBean  (required)
-   * @param skipNotFoundPrecomputations  (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return JqlFunctionPrecomputationUpdateResponse
-   * @throws ApiException if fails to make API call
-   */
-  public JqlFunctionPrecomputationUpdateResponse updatePrecomputations(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations, Map<String, String> headers) throws ApiException {
-    ApiResponse<JqlFunctionPrecomputationUpdateResponse> localVarResponse = updatePrecomputationsWithHttpInfo(jqlFunctionPrecomputationUpdateRequestBean, skipNotFoundPrecomputations, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update precomputations (apps)
-   * Update the precomputation value of a function created by a Forge/Connect app.  **[Permissions](#permissions) required:** An API for apps to update their own precomputations.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param jqlFunctionPrecomputationUpdateRequestBean  (required)
-   * @param skipNotFoundPrecomputations  (optional, default to false)
-   * @return ApiResponse&lt;JqlFunctionPrecomputationUpdateResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<JqlFunctionPrecomputationUpdateResponse> updatePrecomputationsWithHttpInfo(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations) throws ApiException {
-    return updatePrecomputationsWithHttpInfo(jqlFunctionPrecomputationUpdateRequestBean, skipNotFoundPrecomputations, null);
-  }
-
-  /**
-   * Update precomputations (apps)
-   * Update the precomputation value of a function created by a Forge/Connect app.  **[Permissions](#permissions) required:** An API for apps to update their own precomputations.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
-   * @param jqlFunctionPrecomputationUpdateRequestBean  (required)
-   * @param skipNotFoundPrecomputations  (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;JqlFunctionPrecomputationUpdateResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<JqlFunctionPrecomputationUpdateResponse> updatePrecomputationsWithHttpInfo(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updatePrecomputationsRequestBuilder(jqlFunctionPrecomputationUpdateRequestBean, skipNotFoundPrecomputations, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updatePrecomputations", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<JqlFunctionPrecomputationUpdateResponse>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        JqlFunctionPrecomputationUpdateResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<JqlFunctionPrecomputationUpdateResponse>() {});
-        
-        localVarResponse.body().close();
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
 
-        return new ApiResponse<JqlFunctionPrecomputationUpdateResponse>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
 
-  private HttpRequest.Builder updatePrecomputationsRequestBuilder(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'jqlFunctionPrecomputationUpdateRequestBean' is set
-    if (jqlFunctionPrecomputationUpdateRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'jqlFunctionPrecomputationUpdateRequestBean' when calling updatePrecomputations");
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getPrecomputationsValidateBeforeCall(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, final ApiCallback _callback) throws ApiException {
+        return getPrecomputationsCall(functionKey, startAt, maxResults, orderBy, _callback);
 
-    String localVarPath = "/rest/api/3/jql/function/computation";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "skipNotFoundPrecomputations";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("skipNotFoundPrecomputations", skipNotFoundPrecomputations));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
+    /**
+     * Get precomputations (apps)
+     * Returns the list of a function&#39;s precomputations along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param functionKey The function key in format:   *  Forge: &#x60;ari:cloud:ecosystem::extension/[App ID]/[Environment ID]/static/[Function key from manifest]&#x60;  *  Connect: &#x60;[App key]__[Module key]&#x60; (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
+     * @return PageBean2JqlFunctionPrecomputationBean
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBean2JqlFunctionPrecomputationBean getPrecomputations(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy) throws ApiException {
+        ApiResponse<PageBean2JqlFunctionPrecomputationBean> localVarResp = getPrecomputationsWithHttpInfo(functionKey, startAt, maxResults, orderBy);
+        return localVarResp.getData();
+    }
 
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(jqlFunctionPrecomputationUpdateRequestBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Get precomputations (apps)
+     * Returns the list of a function&#39;s precomputations along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param functionKey The function key in format:   *  Forge: &#x60;ari:cloud:ecosystem::extension/[App ID]/[Environment ID]/static/[Function key from manifest]&#x60;  *  Connect: &#x60;[App key]__[Module key]&#x60; (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
+     * @return ApiResponse&lt;PageBean2JqlFunctionPrecomputationBean&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBean2JqlFunctionPrecomputationBean> getPrecomputationsWithHttpInfo(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy) throws ApiException {
+        okhttp3.Call localVarCall = getPrecomputationsValidateBeforeCall(functionKey, startAt, maxResults, orderBy, null);
+        Type localVarReturnType = new TypeToken<PageBean2JqlFunctionPrecomputationBean>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Get precomputations (apps) (asynchronously)
+     * Returns the list of a function&#39;s precomputations along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param functionKey The function key in format:   *  Forge: &#x60;ari:cloud:ecosystem::extension/[App ID]/[Environment ID]/static/[Function key from manifest]&#x60;  *  Connect: &#x60;[App key]__[Module key]&#x60; (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPrecomputationsAsync(@javax.annotation.Nullable List<String> functionKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, final ApiCallback<PageBean2JqlFunctionPrecomputationBean> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getPrecomputationsValidateBeforeCall(functionKey, startAt, maxResults, orderBy, _callback);
+        Type localVarReturnType = new TypeToken<PageBean2JqlFunctionPrecomputationBean>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getPrecomputationsByID
+     * @param jqlFunctionPrecomputationGetByIdRequest  (required)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPrecomputationsByIDCall(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = jqlFunctionPrecomputationGetByIdRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/function/computation/search";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getPrecomputationsByIDValidateBeforeCall(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'jqlFunctionPrecomputationGetByIdRequest' is set
+        if (jqlFunctionPrecomputationGetByIdRequest == null) {
+            throw new ApiException("Missing the required parameter 'jqlFunctionPrecomputationGetByIdRequest' when calling getPrecomputationsByID(Async)");
+        }
+
+        return getPrecomputationsByIDCall(jqlFunctionPrecomputationGetByIdRequest, orderBy, _callback);
+
+    }
+
+    /**
+     * Get precomputations by ID (apps)
+     * Returns function precomputations by IDs, along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param jqlFunctionPrecomputationGetByIdRequest  (required)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
+     * @return JqlFunctionPrecomputationGetByIdResponse
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public JqlFunctionPrecomputationGetByIdResponse getPrecomputationsByID(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy) throws ApiException {
+        ApiResponse<JqlFunctionPrecomputationGetByIdResponse> localVarResp = getPrecomputationsByIDWithHttpInfo(jqlFunctionPrecomputationGetByIdRequest, orderBy);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get precomputations by ID (apps)
+     * Returns function precomputations by IDs, along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param jqlFunctionPrecomputationGetByIdRequest  (required)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
+     * @return ApiResponse&lt;JqlFunctionPrecomputationGetByIdResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<JqlFunctionPrecomputationGetByIdResponse> getPrecomputationsByIDWithHttpInfo(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy) throws ApiException {
+        okhttp3.Call localVarCall = getPrecomputationsByIDValidateBeforeCall(jqlFunctionPrecomputationGetByIdRequest, orderBy, null);
+        Type localVarReturnType = new TypeToken<JqlFunctionPrecomputationGetByIdResponse>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get precomputations by ID (apps) (asynchronously)
+     * Returns function precomputations by IDs, along with information about when they were created, updated, and last used. Each precomputation has a &#x60;value&#x60; \\- the JQL fragment to replace the custom function clause with.  **[Permissions](#permissions) required:** This API is only accessible to apps and apps can only inspect their own functions.  The new &#x60;read:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param jqlFunctionPrecomputationGetByIdRequest  (required)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;functionKey&#x60; Sorts by the functionKey.  *  &#x60;used&#x60; Sorts by the used timestamp.  *  &#x60;created&#x60; Sorts by the created timestamp.  *  &#x60;updated&#x60; Sorts by the updated timestamp. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPrecomputationsByIDAsync(@javax.annotation.Nonnull JqlFunctionPrecomputationGetByIdRequest jqlFunctionPrecomputationGetByIdRequest, @javax.annotation.Nullable String orderBy, final ApiCallback<JqlFunctionPrecomputationGetByIdResponse> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getPrecomputationsByIDValidateBeforeCall(jqlFunctionPrecomputationGetByIdRequest, orderBy, _callback);
+        Type localVarReturnType = new TypeToken<JqlFunctionPrecomputationGetByIdResponse>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updatePrecomputations
+     * @param jqlFunctionPrecomputationUpdateRequestBean  (required)
+     * @param skipNotFoundPrecomputations  (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updatePrecomputationsCall(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = jqlFunctionPrecomputationUpdateRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/function/computation";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (skipNotFoundPrecomputations != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("skipNotFoundPrecomputations", skipNotFoundPrecomputations));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updatePrecomputationsValidateBeforeCall(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'jqlFunctionPrecomputationUpdateRequestBean' is set
+        if (jqlFunctionPrecomputationUpdateRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'jqlFunctionPrecomputationUpdateRequestBean' when calling updatePrecomputations(Async)");
+        }
+
+        return updatePrecomputationsCall(jqlFunctionPrecomputationUpdateRequestBean, skipNotFoundPrecomputations, _callback);
+
+    }
+
+    /**
+     * Update precomputations (apps)
+     * Update the precomputation value of a function created by a Forge/Connect app.  **[Permissions](#permissions) required:** An API for apps to update their own precomputations.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param jqlFunctionPrecomputationUpdateRequestBean  (required)
+     * @param skipNotFoundPrecomputations  (optional, default to false)
+     * @return JqlFunctionPrecomputationUpdateResponse
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public JqlFunctionPrecomputationUpdateResponse updatePrecomputations(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations) throws ApiException {
+        ApiResponse<JqlFunctionPrecomputationUpdateResponse> localVarResp = updatePrecomputationsWithHttpInfo(jqlFunctionPrecomputationUpdateRequestBean, skipNotFoundPrecomputations);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update precomputations (apps)
+     * Update the precomputation value of a function created by a Forge/Connect app.  **[Permissions](#permissions) required:** An API for apps to update their own precomputations.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param jqlFunctionPrecomputationUpdateRequestBean  (required)
+     * @param skipNotFoundPrecomputations  (optional, default to false)
+     * @return ApiResponse&lt;JqlFunctionPrecomputationUpdateResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<JqlFunctionPrecomputationUpdateResponse> updatePrecomputationsWithHttpInfo(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations) throws ApiException {
+        okhttp3.Call localVarCall = updatePrecomputationsValidateBeforeCall(jqlFunctionPrecomputationUpdateRequestBean, skipNotFoundPrecomputations, null);
+        Type localVarReturnType = new TypeToken<JqlFunctionPrecomputationUpdateResponse>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update precomputations (apps) (asynchronously)
+     * Update the precomputation value of a function created by a Forge/Connect app.  **[Permissions](#permissions) required:** An API for apps to update their own precomputations.  The new &#x60;write:app-data:jira&#x60; OAuth scope is 100% optional now, and not using it won&#39;t break your app. However, we recommend adding it to your app&#39;s scope list because we will eventually make it mandatory.
+     * @param jqlFunctionPrecomputationUpdateRequestBean  (required)
+     * @param skipNotFoundPrecomputations  (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the request is not authenticated as the app that provided the function. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the function is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updatePrecomputationsAsync(@javax.annotation.Nonnull JqlFunctionPrecomputationUpdateRequestBean jqlFunctionPrecomputationUpdateRequestBean, @javax.annotation.Nullable Boolean skipNotFoundPrecomputations, final ApiCallback<JqlFunctionPrecomputationUpdateResponse> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updatePrecomputationsValidateBeforeCall(jqlFunctionPrecomputationUpdateRequestBean, skipNotFoundPrecomputations, _callback);
+        Type localVarReturnType = new TypeToken<JqlFunctionPrecomputationUpdateResponse>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

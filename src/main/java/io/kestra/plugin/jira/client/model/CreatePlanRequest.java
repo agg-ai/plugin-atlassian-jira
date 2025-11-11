@@ -13,80 +13,94 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.CreateCrossProjectReleaseRequest;
 import io.kestra.plugin.jira.client.model.CreateCustomFieldRequest;
 import io.kestra.plugin.jira.client.model.CreateExclusionRulesRequest;
 import io.kestra.plugin.jira.client.model.CreateIssueSourceRequest;
 import io.kestra.plugin.jira.client.model.CreatePermissionRequest;
 import io.kestra.plugin.jira.client.model.CreateSchedulingRequest;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * CreatePlanRequest
  */
-@JsonPropertyOrder({
-  CreatePlanRequest.JSON_PROPERTY_CROSS_PROJECT_RELEASES,
-  CreatePlanRequest.JSON_PROPERTY_CUSTOM_FIELDS,
-  CreatePlanRequest.JSON_PROPERTY_EXCLUSION_RULES,
-  CreatePlanRequest.JSON_PROPERTY_ISSUE_SOURCES,
-  CreatePlanRequest.JSON_PROPERTY_LEAD_ACCOUNT_ID,
-  CreatePlanRequest.JSON_PROPERTY_NAME,
-  CreatePlanRequest.JSON_PROPERTY_PERMISSIONS,
-  CreatePlanRequest.JSON_PROPERTY_SCHEDULING
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CreatePlanRequest {
-  public static final String JSON_PROPERTY_CROSS_PROJECT_RELEASES = "crossProjectReleases";
+  public static final String SERIALIZED_NAME_CROSS_PROJECT_RELEASES = "crossProjectReleases";
+  @SerializedName(SERIALIZED_NAME_CROSS_PROJECT_RELEASES)
   @javax.annotation.Nullable
   private Set<CreateCrossProjectReleaseRequest> crossProjectReleases = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_CUSTOM_FIELDS = "customFields";
+  public static final String SERIALIZED_NAME_CUSTOM_FIELDS = "customFields";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_FIELDS)
   @javax.annotation.Nullable
   private Set<CreateCustomFieldRequest> customFields = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_EXCLUSION_RULES = "exclusionRules";
+  public static final String SERIALIZED_NAME_EXCLUSION_RULES = "exclusionRules";
+  @SerializedName(SERIALIZED_NAME_EXCLUSION_RULES)
   @javax.annotation.Nullable
   private CreateExclusionRulesRequest exclusionRules;
 
-  public static final String JSON_PROPERTY_ISSUE_SOURCES = "issueSources";
+  public static final String SERIALIZED_NAME_ISSUE_SOURCES = "issueSources";
+  @SerializedName(SERIALIZED_NAME_ISSUE_SOURCES)
   @javax.annotation.Nonnull
   private Set<CreateIssueSourceRequest> issueSources = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_LEAD_ACCOUNT_ID = "leadAccountId";
+  public static final String SERIALIZED_NAME_LEAD_ACCOUNT_ID = "leadAccountId";
+  @SerializedName(SERIALIZED_NAME_LEAD_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String leadAccountId;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
-  public static final String JSON_PROPERTY_PERMISSIONS = "permissions";
+  public static final String SERIALIZED_NAME_PERMISSIONS = "permissions";
+  @SerializedName(SERIALIZED_NAME_PERMISSIONS)
   @javax.annotation.Nullable
   private Set<CreatePermissionRequest> permissions = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_SCHEDULING = "scheduling";
+  public static final String SERIALIZED_NAME_SCHEDULING = "scheduling";
+  @SerializedName(SERIALIZED_NAME_SCHEDULING)
   @javax.annotation.Nonnull
   private CreateSchedulingRequest scheduling;
 
-  public CreatePlanRequest() { 
+  public CreatePlanRequest() {
   }
 
   public CreatePlanRequest crossProjectReleases(@javax.annotation.Nullable Set<CreateCrossProjectReleaseRequest> crossProjectReleases) {
@@ -107,16 +121,10 @@ public class CreatePlanRequest {
    * @return crossProjectReleases
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CROSS_PROJECT_RELEASES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<CreateCrossProjectReleaseRequest> getCrossProjectReleases() {
     return crossProjectReleases;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_CROSS_PROJECT_RELEASES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCrossProjectReleases(@javax.annotation.Nullable Set<CreateCrossProjectReleaseRequest> crossProjectReleases) {
     this.crossProjectReleases = crossProjectReleases;
   }
@@ -140,16 +148,10 @@ public class CreatePlanRequest {
    * @return customFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<CreateCustomFieldRequest> getCustomFields() {
     return customFields;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomFields(@javax.annotation.Nullable Set<CreateCustomFieldRequest> customFields) {
     this.customFields = customFields;
   }
@@ -165,15 +167,10 @@ public class CreatePlanRequest {
    * @return exclusionRules
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXCLUSION_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CreateExclusionRulesRequest getExclusionRules() {
     return exclusionRules;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXCLUSION_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExclusionRules(@javax.annotation.Nullable CreateExclusionRulesRequest exclusionRules) {
     this.exclusionRules = exclusionRules;
   }
@@ -197,16 +194,10 @@ public class CreatePlanRequest {
    * @return issueSources
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SOURCES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Set<CreateIssueSourceRequest> getIssueSources() {
     return issueSources;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SOURCES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIssueSources(@javax.annotation.Nonnull Set<CreateIssueSourceRequest> issueSources) {
     this.issueSources = issueSources;
   }
@@ -222,15 +213,10 @@ public class CreatePlanRequest {
    * @return leadAccountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLeadAccountId() {
     return leadAccountId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLeadAccountId(@javax.annotation.Nullable String leadAccountId) {
     this.leadAccountId = leadAccountId;
   }
@@ -246,15 +232,10 @@ public class CreatePlanRequest {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -278,16 +259,10 @@ public class CreatePlanRequest {
    * @return permissions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<CreatePermissionRequest> getPermissions() {
     return permissions;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPermissions(@javax.annotation.Nullable Set<CreatePermissionRequest> permissions) {
     this.permissions = permissions;
   }
@@ -303,23 +278,16 @@ public class CreatePlanRequest {
    * @return scheduling
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SCHEDULING, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public CreateSchedulingRequest getScheduling() {
     return scheduling;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCHEDULING, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setScheduling(@javax.annotation.Nonnull CreateSchedulingRequest scheduling) {
     this.scheduling = scheduling;
   }
 
 
-  /**
-   * Return true if this CreatePlanRequest object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -371,107 +339,159 @@ public class CreatePlanRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("crossProjectReleases", "customFields", "exclusionRules", "issueSources", "leadAccountId", "name", "permissions", "scheduling"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("issueSources", "name", "scheduling"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CreatePlanRequest
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `crossProjectReleases` to the URL query string
-    if (getCrossProjectReleases() != null) {
-      int i = 0;
-      for (CreateCrossProjectReleaseRequest _item : getCrossProjectReleases()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%scrossProjectReleases%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CreatePlanRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CreatePlanRequest is not found in the empty JSON string", CreatePlanRequest.openapiRequiredFields.toString()));
         }
       }
-      i++;
-    }
 
-    // add `customFields` to the URL query string
-    if (getCustomFields() != null) {
-      int i = 0;
-      for (CreateCustomFieldRequest _item : getCustomFields()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%scustomFields%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CreatePlanRequest.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CreatePlanRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-      i++;
-    }
 
-    // add `exclusionRules` to the URL query string
-    if (getExclusionRules() != null) {
-      joiner.add(getExclusionRules().toUrlQueryString(prefix + "exclusionRules" + suffix));
-    }
-
-    // add `issueSources` to the URL query string
-    if (getIssueSources() != null) {
-      int i = 0;
-      for (CreateIssueSourceRequest _item : getIssueSources()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%sissueSources%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CreatePlanRequest.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
-      i++;
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("crossProjectReleases") != null && !jsonObj.get("crossProjectReleases").isJsonNull()) {
+        JsonArray jsonArraycrossProjectReleases = jsonObj.getAsJsonArray("crossProjectReleases");
+        if (jsonArraycrossProjectReleases != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("crossProjectReleases").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `crossProjectReleases` to be an array in the JSON string but got `%s`", jsonObj.get("crossProjectReleases").toString()));
+          }
 
-    // add `leadAccountId` to the URL query string
-    if (getLeadAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sleadAccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLeadAccountId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `permissions` to the URL query string
-    if (getPermissions() != null) {
-      int i = 0;
-      for (CreatePermissionRequest _item : getPermissions()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%spermissions%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `crossProjectReleases` (array)
+          for (int i = 0; i < jsonArraycrossProjectReleases.size(); i++) {
+            CreateCrossProjectReleaseRequest.validateJsonElement(jsonArraycrossProjectReleases.get(i));
+          };
         }
       }
-      i++;
-    }
+      if (jsonObj.get("customFields") != null && !jsonObj.get("customFields").isJsonNull()) {
+        JsonArray jsonArraycustomFields = jsonObj.getAsJsonArray("customFields");
+        if (jsonArraycustomFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("customFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customFields` to be an array in the JSON string but got `%s`", jsonObj.get("customFields").toString()));
+          }
 
-    // add `scheduling` to the URL query string
-    if (getScheduling() != null) {
-      joiner.add(getScheduling().toUrlQueryString(prefix + "scheduling" + suffix));
-    }
+          // validate the optional field `customFields` (array)
+          for (int i = 0; i < jsonArraycustomFields.size(); i++) {
+            CreateCustomFieldRequest.validateJsonElement(jsonArraycustomFields.get(i));
+          };
+        }
+      }
+      // validate the optional field `exclusionRules`
+      if (jsonObj.get("exclusionRules") != null && !jsonObj.get("exclusionRules").isJsonNull()) {
+        CreateExclusionRulesRequest.validateJsonElement(jsonObj.get("exclusionRules"));
+      }
+      // ensure the json data is an array
+      if (!jsonObj.get("issueSources").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueSources` to be an array in the JSON string but got `%s`", jsonObj.get("issueSources").toString()));
+      }
 
-    return joiner.toString();
+      JsonArray jsonArrayissueSources = jsonObj.getAsJsonArray("issueSources");
+      // validate the required field `issueSources` (array)
+      for (int i = 0; i < jsonArrayissueSources.size(); i++) {
+        CreateIssueSourceRequest.validateJsonElement(jsonArrayissueSources.get(i));
+      };
+      if ((jsonObj.get("leadAccountId") != null && !jsonObj.get("leadAccountId").isJsonNull()) && !jsonObj.get("leadAccountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `leadAccountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("leadAccountId").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (jsonObj.get("permissions") != null && !jsonObj.get("permissions").isJsonNull()) {
+        JsonArray jsonArraypermissions = jsonObj.getAsJsonArray("permissions");
+        if (jsonArraypermissions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("permissions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `permissions` to be an array in the JSON string but got `%s`", jsonObj.get("permissions").toString()));
+          }
+
+          // validate the optional field `permissions` (array)
+          for (int i = 0; i < jsonArraypermissions.size(); i++) {
+            CreatePermissionRequest.validateJsonElement(jsonArraypermissions.get(i));
+          };
+        }
+      }
+      // validate the required field `scheduling`
+      CreateSchedulingRequest.validateJsonElement(jsonObj.get("scheduling"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CreatePlanRequest.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CreatePlanRequest' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CreatePlanRequest> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CreatePlanRequest.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CreatePlanRequest>() {
+           @Override
+           public void write(JsonWriter out, CreatePlanRequest value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CreatePlanRequest read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of CreatePlanRequest given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CreatePlanRequest
+   * @throws IOException if the JSON string is invalid with respect to CreatePlanRequest
+   */
+  public static CreatePlanRequest fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CreatePlanRequest.class);
+  }
+
+  /**
+   * Convert an instance of CreatePlanRequest to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

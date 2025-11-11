@@ -13,70 +13,84 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.FilterSubscription;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A paginated list of subscriptions to a filter.
  */
-@JsonPropertyOrder({
-  FilterSubscriptionsList.JSON_PROPERTY_END_INDEX,
-  FilterSubscriptionsList.JSON_PROPERTY_ITEMS,
-  FilterSubscriptionsList.JSON_PROPERTY_MAX_RESULTS,
-  FilterSubscriptionsList.JSON_PROPERTY_SIZE,
-  FilterSubscriptionsList.JSON_PROPERTY_START_INDEX
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FilterSubscriptionsList {
-  public static final String JSON_PROPERTY_END_INDEX = "end-index";
+  public static final String SERIALIZED_NAME_END_INDEX = "end-index";
+  @SerializedName(SERIALIZED_NAME_END_INDEX)
   @javax.annotation.Nullable
   private Integer endIndex;
 
-  public static final String JSON_PROPERTY_ITEMS = "items";
+  public static final String SERIALIZED_NAME_ITEMS = "items";
+  @SerializedName(SERIALIZED_NAME_ITEMS)
   @javax.annotation.Nullable
   private List<FilterSubscription> items = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MAX_RESULTS = "max-results";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "max-results";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nullable
   private Integer maxResults;
 
-  public static final String JSON_PROPERTY_SIZE = "size";
+  public static final String SERIALIZED_NAME_SIZE = "size";
+  @SerializedName(SERIALIZED_NAME_SIZE)
   @javax.annotation.Nullable
   private Integer size;
 
-  public static final String JSON_PROPERTY_START_INDEX = "start-index";
+  public static final String SERIALIZED_NAME_START_INDEX = "start-index";
+  @SerializedName(SERIALIZED_NAME_START_INDEX)
   @javax.annotation.Nullable
   private Integer startIndex;
 
-  public FilterSubscriptionsList() { 
+  public FilterSubscriptionsList() {
   }
 
-  @JsonCreator
   public FilterSubscriptionsList(
-    @JsonProperty(JSON_PROPERTY_END_INDEX) Integer endIndex, 
-    @JsonProperty(JSON_PROPERTY_ITEMS) List<FilterSubscription> items, 
-    @JsonProperty(JSON_PROPERTY_MAX_RESULTS) Integer maxResults, 
-    @JsonProperty(JSON_PROPERTY_SIZE) Integer size, 
-    @JsonProperty(JSON_PROPERTY_START_INDEX) Integer startIndex
+     Integer endIndex, 
+     List<FilterSubscription> items, 
+     Integer maxResults, 
+     Integer size, 
+     Integer startIndex
   ) {
-  this();
+    this();
     this.endIndex = endIndex;
     this.items = items;
     this.maxResults = maxResults;
@@ -89,12 +103,9 @@ public class FilterSubscriptionsList {
    * @return endIndex
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_END_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getEndIndex() {
     return endIndex;
   }
-
 
 
 
@@ -103,12 +114,9 @@ public class FilterSubscriptionsList {
    * @return items
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<FilterSubscription> getItems() {
     return items;
   }
-
 
 
 
@@ -117,12 +125,9 @@ public class FilterSubscriptionsList {
    * @return maxResults
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResults() {
     return maxResults;
   }
-
 
 
 
@@ -131,12 +136,9 @@ public class FilterSubscriptionsList {
    * @return size
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSize() {
     return size;
   }
-
 
 
 
@@ -145,8 +147,6 @@ public class FilterSubscriptionsList {
    * @return startIndex
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getStartIndex() {
     return startIndex;
   }
@@ -154,9 +154,6 @@ public class FilterSubscriptionsList {
 
 
 
-  /**
-   * Return true if this FilterSubscriptionsList object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,69 +199,102 @@ public class FilterSubscriptionsList {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("end-index", "items", "max-results", "size", "start-index"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FilterSubscriptionsList
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `end-index` to the URL query string
-    if (getEndIndex() != null) {
-      joiner.add(String.format(Locale.ROOT, "%send-index%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEndIndex()))));
-    }
-
-    // add `items` to the URL query string
-    if (getItems() != null) {
-      for (int i = 0; i < getItems().size(); i++) {
-        if (getItems().get(i) != null) {
-          joiner.add(getItems().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sitems%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FilterSubscriptionsList.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FilterSubscriptionsList is not found in the empty JSON string", FilterSubscriptionsList.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `max-results` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smax-results%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FilterSubscriptionsList.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FilterSubscriptionsList` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("items") != null && !jsonObj.get("items").isJsonNull()) {
+        JsonArray jsonArrayitems = jsonObj.getAsJsonArray("items");
+        if (jsonArrayitems != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("items").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `items` to be an array in the JSON string but got `%s`", jsonObj.get("items").toString()));
+          }
 
-    // add `size` to the URL query string
-    if (getSize() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-    }
+          // validate the optional field `items` (array)
+          for (int i = 0; i < jsonArrayitems.size(); i++) {
+            FilterSubscription.validateJsonElement(jsonArrayitems.get(i));
+          };
+        }
+      }
+  }
 
-    // add `start-index` to the URL query string
-    if (getStartIndex() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstart-index%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FilterSubscriptionsList.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FilterSubscriptionsList' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FilterSubscriptionsList> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FilterSubscriptionsList.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<FilterSubscriptionsList>() {
+           @Override
+           public void write(JsonWriter out, FilterSubscriptionsList value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FilterSubscriptionsList read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FilterSubscriptionsList given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FilterSubscriptionsList
+   * @throws IOException if the JSON string is invalid with respect to FilterSubscriptionsList
+   */
+  public static FilterSubscriptionsList fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FilterSubscriptionsList.class);
+  }
+
+  /**
+   * Convert an instance of FilterSubscriptionsList to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,67 +13,82 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SwimlanePayload;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The payload for customising a swimlanes on a board
  */
-@JsonPropertyOrder({
-  SwimlanesPayload.JSON_PROPERTY_CUSTOM_SWIMLANES,
-  SwimlanesPayload.JSON_PROPERTY_DEFAULT_CUSTOM_SWIMLANE_NAME,
-  SwimlanesPayload.JSON_PROPERTY_SWIMLANE_STRATEGY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SwimlanesPayload {
-  public static final String JSON_PROPERTY_CUSTOM_SWIMLANES = "customSwimlanes";
+  public static final String SERIALIZED_NAME_CUSTOM_SWIMLANES = "customSwimlanes";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_SWIMLANES)
   @javax.annotation.Nullable
   private List<SwimlanePayload> customSwimlanes = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_DEFAULT_CUSTOM_SWIMLANE_NAME = "defaultCustomSwimlaneName";
+  public static final String SERIALIZED_NAME_DEFAULT_CUSTOM_SWIMLANE_NAME = "defaultCustomSwimlaneName";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_CUSTOM_SWIMLANE_NAME)
   @javax.annotation.Nullable
   private String defaultCustomSwimlaneName;
 
   /**
    * The swimlane strategy for the board.
    */
+  @JsonAdapter(SwimlaneStrategyEnum.Adapter.class)
   public enum SwimlaneStrategyEnum {
-    NONE(String.valueOf("none")),
+    NONE("none"),
     
-    CUSTOM(String.valueOf("custom")),
+    CUSTOM("custom"),
     
-    PARENT_CHILD(String.valueOf("parentChild")),
+    PARENT_CHILD("parentChild"),
     
-    ASSIGNEE(String.valueOf("assignee")),
+    ASSIGNEE("assignee"),
     
-    ASSIGNEE_UNASSIGNED_FIRST(String.valueOf("assigneeUnassignedFirst")),
+    ASSIGNEE_UNASSIGNED_FIRST("assigneeUnassignedFirst"),
     
-    EPIC(String.valueOf("epic")),
+    EPIC("epic"),
     
-    PROJECT(String.valueOf("project")),
+    PROJECT("project"),
     
-    ISSUEPARENT(String.valueOf("issueparent")),
+    ISSUEPARENT("issueparent"),
     
-    ISSUECHILDREN(String.valueOf("issuechildren")),
+    ISSUECHILDREN("issuechildren"),
     
-    REQUEST_TYPE(String.valueOf("request_type"));
+    REQUEST_TYPE("request_type");
 
     private String value;
 
@@ -81,7 +96,6 @@ public class SwimlanesPayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -91,7 +105,6 @@ public class SwimlanesPayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static SwimlaneStrategyEnum fromValue(String value) {
       for (SwimlaneStrategyEnum b : SwimlaneStrategyEnum.values()) {
         if (b.value.equals(value)) {
@@ -100,13 +113,32 @@ public class SwimlanesPayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<SwimlaneStrategyEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final SwimlaneStrategyEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public SwimlaneStrategyEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return SwimlaneStrategyEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      SwimlaneStrategyEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_SWIMLANE_STRATEGY = "swimlaneStrategy";
+  public static final String SERIALIZED_NAME_SWIMLANE_STRATEGY = "swimlaneStrategy";
+  @SerializedName(SERIALIZED_NAME_SWIMLANE_STRATEGY)
   @javax.annotation.Nullable
   private SwimlaneStrategyEnum swimlaneStrategy;
 
-  public SwimlanesPayload() { 
+  public SwimlanesPayload() {
   }
 
   public SwimlanesPayload customSwimlanes(@javax.annotation.Nullable List<SwimlanePayload> customSwimlanes) {
@@ -127,15 +159,10 @@ public class SwimlanesPayload {
    * @return customSwimlanes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_SWIMLANES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SwimlanePayload> getCustomSwimlanes() {
     return customSwimlanes;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_SWIMLANES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomSwimlanes(@javax.annotation.Nullable List<SwimlanePayload> customSwimlanes) {
     this.customSwimlanes = customSwimlanes;
   }
@@ -151,15 +178,10 @@ public class SwimlanesPayload {
    * @return defaultCustomSwimlaneName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_CUSTOM_SWIMLANE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDefaultCustomSwimlaneName() {
     return defaultCustomSwimlaneName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_CUSTOM_SWIMLANE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultCustomSwimlaneName(@javax.annotation.Nullable String defaultCustomSwimlaneName) {
     this.defaultCustomSwimlaneName = defaultCustomSwimlaneName;
   }
@@ -175,23 +197,16 @@ public class SwimlanesPayload {
    * @return swimlaneStrategy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SWIMLANE_STRATEGY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SwimlaneStrategyEnum getSwimlaneStrategy() {
     return swimlaneStrategy;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SWIMLANE_STRATEGY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSwimlaneStrategy(@javax.annotation.Nullable SwimlaneStrategyEnum swimlaneStrategy) {
     this.swimlaneStrategy = swimlaneStrategy;
   }
 
 
-  /**
-   * Return true if this SwimlanesPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -233,59 +248,112 @@ public class SwimlanesPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("customSwimlanes", "defaultCustomSwimlaneName", "swimlaneStrategy"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SwimlanesPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `customSwimlanes` to the URL query string
-    if (getCustomSwimlanes() != null) {
-      for (int i = 0; i < getCustomSwimlanes().size(); i++) {
-        if (getCustomSwimlanes().get(i) != null) {
-          joiner.add(getCustomSwimlanes().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scustomSwimlanes%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SwimlanesPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SwimlanesPayload is not found in the empty JSON string", SwimlanesPayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `defaultCustomSwimlaneName` to the URL query string
-    if (getDefaultCustomSwimlaneName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefaultCustomSwimlaneName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultCustomSwimlaneName()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SwimlanesPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SwimlanesPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("customSwimlanes") != null && !jsonObj.get("customSwimlanes").isJsonNull()) {
+        JsonArray jsonArraycustomSwimlanes = jsonObj.getAsJsonArray("customSwimlanes");
+        if (jsonArraycustomSwimlanes != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("customSwimlanes").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customSwimlanes` to be an array in the JSON string but got `%s`", jsonObj.get("customSwimlanes").toString()));
+          }
 
-    // add `swimlaneStrategy` to the URL query string
-    if (getSwimlaneStrategy() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sswimlaneStrategy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSwimlaneStrategy()))));
-    }
+          // validate the optional field `customSwimlanes` (array)
+          for (int i = 0; i < jsonArraycustomSwimlanes.size(); i++) {
+            SwimlanePayload.validateJsonElement(jsonArraycustomSwimlanes.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("defaultCustomSwimlaneName") != null && !jsonObj.get("defaultCustomSwimlaneName").isJsonNull()) && !jsonObj.get("defaultCustomSwimlaneName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `defaultCustomSwimlaneName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("defaultCustomSwimlaneName").toString()));
+      }
+      if ((jsonObj.get("swimlaneStrategy") != null && !jsonObj.get("swimlaneStrategy").isJsonNull()) && !jsonObj.get("swimlaneStrategy").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `swimlaneStrategy` to be a primitive type in the JSON string but got `%s`", jsonObj.get("swimlaneStrategy").toString()));
+      }
+      // validate the optional field `swimlaneStrategy`
+      if (jsonObj.get("swimlaneStrategy") != null && !jsonObj.get("swimlaneStrategy").isJsonNull()) {
+        SwimlaneStrategyEnum.validateJsonElement(jsonObj.get("swimlaneStrategy"));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SwimlanesPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SwimlanesPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SwimlanesPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SwimlanesPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SwimlanesPayload>() {
+           @Override
+           public void write(JsonWriter out, SwimlanesPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SwimlanesPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of SwimlanesPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SwimlanesPayload
+   * @throws IOException if the JSON string is invalid with respect to SwimlanesPayload
+   */
+  public static SwimlanesPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SwimlanesPayload.class);
+  }
+
+  /**
+   * Convert an instance of SwimlanesPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

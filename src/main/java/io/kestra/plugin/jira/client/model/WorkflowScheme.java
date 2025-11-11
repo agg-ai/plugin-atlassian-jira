@@ -13,115 +13,129 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueTypeDetails;
 import io.kestra.plugin.jira.client.model.User;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a workflow scheme.
  */
-@JsonPropertyOrder({
-  WorkflowScheme.JSON_PROPERTY_DEFAULT_WORKFLOW,
-  WorkflowScheme.JSON_PROPERTY_DESCRIPTION,
-  WorkflowScheme.JSON_PROPERTY_DRAFT,
-  WorkflowScheme.JSON_PROPERTY_ID,
-  WorkflowScheme.JSON_PROPERTY_ISSUE_TYPE_MAPPINGS,
-  WorkflowScheme.JSON_PROPERTY_ISSUE_TYPES,
-  WorkflowScheme.JSON_PROPERTY_LAST_MODIFIED,
-  WorkflowScheme.JSON_PROPERTY_LAST_MODIFIED_USER,
-  WorkflowScheme.JSON_PROPERTY_NAME,
-  WorkflowScheme.JSON_PROPERTY_ORIGINAL_DEFAULT_WORKFLOW,
-  WorkflowScheme.JSON_PROPERTY_ORIGINAL_ISSUE_TYPE_MAPPINGS,
-  WorkflowScheme.JSON_PROPERTY_SELF,
-  WorkflowScheme.JSON_PROPERTY_UPDATE_DRAFT_IF_NEEDED
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowScheme {
-  public static final String JSON_PROPERTY_DEFAULT_WORKFLOW = "defaultWorkflow";
+  public static final String SERIALIZED_NAME_DEFAULT_WORKFLOW = "defaultWorkflow";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_WORKFLOW)
   @javax.annotation.Nullable
   private String defaultWorkflow;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_DRAFT = "draft";
+  public static final String SERIALIZED_NAME_DRAFT = "draft";
+  @SerializedName(SERIALIZED_NAME_DRAFT)
   @javax.annotation.Nullable
   private Boolean draft;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_MAPPINGS = "issueTypeMappings";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_MAPPINGS = "issueTypeMappings";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_MAPPINGS)
   @javax.annotation.Nullable
   private Map<String, String> issueTypeMappings = new HashMap<>();
 
-  public static final String JSON_PROPERTY_ISSUE_TYPES = "issueTypes";
+  public static final String SERIALIZED_NAME_ISSUE_TYPES = "issueTypes";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPES)
   @javax.annotation.Nullable
   private Map<String, IssueTypeDetails> issueTypes = new HashMap<>();
 
-  public static final String JSON_PROPERTY_LAST_MODIFIED = "lastModified";
+  public static final String SERIALIZED_NAME_LAST_MODIFIED = "lastModified";
+  @SerializedName(SERIALIZED_NAME_LAST_MODIFIED)
   @javax.annotation.Nullable
   private String lastModified;
 
-  public static final String JSON_PROPERTY_LAST_MODIFIED_USER = "lastModifiedUser";
+  public static final String SERIALIZED_NAME_LAST_MODIFIED_USER = "lastModifiedUser";
+  @SerializedName(SERIALIZED_NAME_LAST_MODIFIED_USER)
   @javax.annotation.Nullable
   private User lastModifiedUser;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_ORIGINAL_DEFAULT_WORKFLOW = "originalDefaultWorkflow";
+  public static final String SERIALIZED_NAME_ORIGINAL_DEFAULT_WORKFLOW = "originalDefaultWorkflow";
+  @SerializedName(SERIALIZED_NAME_ORIGINAL_DEFAULT_WORKFLOW)
   @javax.annotation.Nullable
   private String originalDefaultWorkflow;
 
-  public static final String JSON_PROPERTY_ORIGINAL_ISSUE_TYPE_MAPPINGS = "originalIssueTypeMappings";
+  public static final String SERIALIZED_NAME_ORIGINAL_ISSUE_TYPE_MAPPINGS = "originalIssueTypeMappings";
+  @SerializedName(SERIALIZED_NAME_ORIGINAL_ISSUE_TYPE_MAPPINGS)
   @javax.annotation.Nullable
   private Map<String, String> originalIssueTypeMappings = new HashMap<>();
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_UPDATE_DRAFT_IF_NEEDED = "updateDraftIfNeeded";
+  public static final String SERIALIZED_NAME_UPDATE_DRAFT_IF_NEEDED = "updateDraftIfNeeded";
+  @SerializedName(SERIALIZED_NAME_UPDATE_DRAFT_IF_NEEDED)
   @javax.annotation.Nullable
   private Boolean updateDraftIfNeeded;
 
-  public WorkflowScheme() { 
+  public WorkflowScheme() {
   }
 
-  @JsonCreator
   public WorkflowScheme(
-    @JsonProperty(JSON_PROPERTY_DRAFT) Boolean draft, 
-    @JsonProperty(JSON_PROPERTY_ID) Long id, 
-    @JsonProperty(JSON_PROPERTY_ISSUE_TYPES) Map<String, IssueTypeDetails> issueTypes, 
-    @JsonProperty(JSON_PROPERTY_LAST_MODIFIED) String lastModified, 
-    @JsonProperty(JSON_PROPERTY_LAST_MODIFIED_USER) User lastModifiedUser, 
-    @JsonProperty(JSON_PROPERTY_ORIGINAL_DEFAULT_WORKFLOW) String originalDefaultWorkflow, 
-    @JsonProperty(JSON_PROPERTY_ORIGINAL_ISSUE_TYPE_MAPPINGS) Map<String, String> originalIssueTypeMappings, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self
+     Boolean draft, 
+     Long id, 
+     Map<String, IssueTypeDetails> issueTypes, 
+     String lastModified, 
+     User lastModifiedUser, 
+     String originalDefaultWorkflow, 
+     Map<String, String> originalIssueTypeMappings, 
+     URI self
   ) {
-  this();
+    this();
     this.draft = draft;
     this.id = id;
     this.issueTypes = issueTypes;
@@ -142,15 +156,10 @@ public class WorkflowScheme {
    * @return defaultWorkflow
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_WORKFLOW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDefaultWorkflow() {
     return defaultWorkflow;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_WORKFLOW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultWorkflow(@javax.annotation.Nullable String defaultWorkflow) {
     this.defaultWorkflow = defaultWorkflow;
   }
@@ -166,15 +175,10 @@ public class WorkflowScheme {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -185,12 +189,9 @@ public class WorkflowScheme {
    * @return draft
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DRAFT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDraft() {
     return draft;
   }
-
 
 
 
@@ -199,12 +200,9 @@ public class WorkflowScheme {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
-
 
 
 
@@ -226,15 +224,10 @@ public class WorkflowScheme {
    * @return issueTypeMappings
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getIssueTypeMappings() {
     return issueTypeMappings;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeMappings(@javax.annotation.Nullable Map<String, String> issueTypeMappings) {
     this.issueTypeMappings = issueTypeMappings;
   }
@@ -245,12 +238,9 @@ public class WorkflowScheme {
    * @return issueTypes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, IssueTypeDetails> getIssueTypes() {
     return issueTypes;
   }
-
 
 
 
@@ -259,12 +249,9 @@ public class WorkflowScheme {
    * @return lastModified
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAST_MODIFIED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLastModified() {
     return lastModified;
   }
-
 
 
 
@@ -273,12 +260,9 @@ public class WorkflowScheme {
    * @return lastModifiedUser
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAST_MODIFIED_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getLastModifiedUser() {
     return lastModifiedUser;
   }
-
 
 
 
@@ -292,15 +276,10 @@ public class WorkflowScheme {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -311,12 +290,9 @@ public class WorkflowScheme {
    * @return originalDefaultWorkflow
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_DEFAULT_WORKFLOW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOriginalDefaultWorkflow() {
     return originalDefaultWorkflow;
   }
-
 
 
 
@@ -325,12 +301,9 @@ public class WorkflowScheme {
    * @return originalIssueTypeMappings
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_ISSUE_TYPE_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getOriginalIssueTypeMappings() {
     return originalIssueTypeMappings;
   }
-
 
 
 
@@ -339,12 +312,9 @@ public class WorkflowScheme {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -358,23 +328,16 @@ public class WorkflowScheme {
    * @return updateDraftIfNeeded
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_DRAFT_IF_NEEDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getUpdateDraftIfNeeded() {
     return updateDraftIfNeeded;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_DRAFT_IF_NEEDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUpdateDraftIfNeeded(@javax.annotation.Nullable Boolean updateDraftIfNeeded) {
     this.updateDraftIfNeeded = updateDraftIfNeeded;
   }
 
 
-  /**
-   * Return true if this WorkflowScheme object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -436,117 +399,110 @@ public class WorkflowScheme {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("defaultWorkflow", "description", "draft", "id", "issueTypeMappings", "issueTypes", "lastModified", "lastModifiedUser", "name", "originalDefaultWorkflow", "originalIssueTypeMappings", "self", "updateDraftIfNeeded"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowScheme
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `defaultWorkflow` to the URL query string
-    if (getDefaultWorkflow() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefaultWorkflow%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultWorkflow()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `draft` to the URL query string
-    if (getDraft() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdraft%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDraft()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `issueTypeMappings` to the URL query string
-    if (getIssueTypeMappings() != null) {
-      for (String _key : getIssueTypeMappings().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sissueTypeMappings%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getIssueTypeMappings().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getIssueTypeMappings().get(_key)))));
-      }
-    }
-
-    // add `issueTypes` to the URL query string
-    if (getIssueTypes() != null) {
-      for (String _key : getIssueTypes().keySet()) {
-        if (getIssueTypes().get(_key) != null) {
-          joiner.add(getIssueTypes().get(_key).toUrlQueryString(String.format(Locale.ROOT, "%sissueTypes%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowScheme.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowScheme is not found in the empty JSON string", WorkflowScheme.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `lastModified` to the URL query string
-    if (getLastModified() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slastModified%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastModified()))));
-    }
-
-    // add `lastModifiedUser` to the URL query string
-    if (getLastModifiedUser() != null) {
-      joiner.add(getLastModifiedUser().toUrlQueryString(prefix + "lastModifiedUser" + suffix));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `originalDefaultWorkflow` to the URL query string
-    if (getOriginalDefaultWorkflow() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soriginalDefaultWorkflow%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOriginalDefaultWorkflow()))));
-    }
-
-    // add `originalIssueTypeMappings` to the URL query string
-    if (getOriginalIssueTypeMappings() != null) {
-      for (String _key : getOriginalIssueTypeMappings().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%soriginalIssueTypeMappings%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getOriginalIssueTypeMappings().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getOriginalIssueTypeMappings().get(_key)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowScheme.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowScheme` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("defaultWorkflow") != null && !jsonObj.get("defaultWorkflow").isJsonNull()) && !jsonObj.get("defaultWorkflow").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `defaultWorkflow` to be a primitive type in the JSON string but got `%s`", jsonObj.get("defaultWorkflow").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("lastModified") != null && !jsonObj.get("lastModified").isJsonNull()) && !jsonObj.get("lastModified").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `lastModified` to be a primitive type in the JSON string but got `%s`", jsonObj.get("lastModified").toString()));
+      }
+      // validate the optional field `lastModifiedUser`
+      if (jsonObj.get("lastModifiedUser") != null && !jsonObj.get("lastModifiedUser").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("lastModifiedUser"));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("originalDefaultWorkflow") != null && !jsonObj.get("originalDefaultWorkflow").isJsonNull()) && !jsonObj.get("originalDefaultWorkflow").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `originalDefaultWorkflow` to be a primitive type in the JSON string but got `%s`", jsonObj.get("originalDefaultWorkflow").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowScheme.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowScheme' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowScheme> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowScheme.class));
 
-    // add `updateDraftIfNeeded` to the URL query string
-    if (getUpdateDraftIfNeeded() != null) {
-      joiner.add(String.format(Locale.ROOT, "%supdateDraftIfNeeded%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUpdateDraftIfNeeded()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowScheme>() {
+           @Override
+           public void write(JsonWriter out, WorkflowScheme value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public WorkflowScheme read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowScheme given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowScheme
+   * @throws IOException if the JSON string is invalid with respect to WorkflowScheme
+   */
+  public static WorkflowScheme fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowScheme.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowScheme to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

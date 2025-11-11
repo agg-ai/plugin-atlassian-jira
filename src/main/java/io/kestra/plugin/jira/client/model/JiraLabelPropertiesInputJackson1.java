@@ -13,135 +13,149 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraLabelPropertiesInputJackson1
  */
-@JsonPropertyOrder({
-  JiraLabelPropertiesInputJackson1.JSON_PROPERTY_COLOR,
-  JiraLabelPropertiesInputJackson1.JSON_PROPERTY_NAME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraLabelPropertiesInputJackson1 {
   /**
    * Gets or Sets color
    */
+  @JsonAdapter(ColorEnum.Adapter.class)
   public enum ColorEnum {
-    GREY_LIGHTEST(String.valueOf("GREY_LIGHTEST")),
+    GREY_LIGHTEST("GREY_LIGHTEST"),
     
-    GREY_LIGHTER(String.valueOf("GREY_LIGHTER")),
+    GREY_LIGHTER("GREY_LIGHTER"),
     
-    GREY(String.valueOf("GREY")),
+    GREY("GREY"),
     
-    GREY_DARKER(String.valueOf("GREY_DARKER")),
+    GREY_DARKER("GREY_DARKER"),
     
-    GREY_DARKEST(String.valueOf("GREY_DARKEST")),
+    GREY_DARKEST("GREY_DARKEST"),
     
-    PURPLE_LIGHTEST(String.valueOf("PURPLE_LIGHTEST")),
+    PURPLE_LIGHTEST("PURPLE_LIGHTEST"),
     
-    PURPLE_LIGHTER(String.valueOf("PURPLE_LIGHTER")),
+    PURPLE_LIGHTER("PURPLE_LIGHTER"),
     
-    PURPLE(String.valueOf("PURPLE")),
+    PURPLE("PURPLE"),
     
-    PURPLE_DARKER(String.valueOf("PURPLE_DARKER")),
+    PURPLE_DARKER("PURPLE_DARKER"),
     
-    PURPLE_DARKEST(String.valueOf("PURPLE_DARKEST")),
+    PURPLE_DARKEST("PURPLE_DARKEST"),
     
-    BLUE_LIGHTEST(String.valueOf("BLUE_LIGHTEST")),
+    BLUE_LIGHTEST("BLUE_LIGHTEST"),
     
-    BLUE_LIGHTER(String.valueOf("BLUE_LIGHTER")),
+    BLUE_LIGHTER("BLUE_LIGHTER"),
     
-    BLUE(String.valueOf("BLUE")),
+    BLUE("BLUE"),
     
-    BLUE_DARKER(String.valueOf("BLUE_DARKER")),
+    BLUE_DARKER("BLUE_DARKER"),
     
-    BLUE_DARKEST(String.valueOf("BLUE_DARKEST")),
+    BLUE_DARKEST("BLUE_DARKEST"),
     
-    TEAL_LIGHTEST(String.valueOf("TEAL_LIGHTEST")),
+    TEAL_LIGHTEST("TEAL_LIGHTEST"),
     
-    TEAL_LIGHTER(String.valueOf("TEAL_LIGHTER")),
+    TEAL_LIGHTER("TEAL_LIGHTER"),
     
-    TEAL(String.valueOf("TEAL")),
+    TEAL("TEAL"),
     
-    TEAL_DARKER(String.valueOf("TEAL_DARKER")),
+    TEAL_DARKER("TEAL_DARKER"),
     
-    TEAL_DARKEST(String.valueOf("TEAL_DARKEST")),
+    TEAL_DARKEST("TEAL_DARKEST"),
     
-    GREEN_LIGHTEST(String.valueOf("GREEN_LIGHTEST")),
+    GREEN_LIGHTEST("GREEN_LIGHTEST"),
     
-    GREEN_LIGHTER(String.valueOf("GREEN_LIGHTER")),
+    GREEN_LIGHTER("GREEN_LIGHTER"),
     
-    GREEN(String.valueOf("GREEN")),
+    GREEN("GREEN"),
     
-    GREEN_DARKER(String.valueOf("GREEN_DARKER")),
+    GREEN_DARKER("GREEN_DARKER"),
     
-    GREEN_DARKEST(String.valueOf("GREEN_DARKEST")),
+    GREEN_DARKEST("GREEN_DARKEST"),
     
-    LIME_LIGHTEST(String.valueOf("LIME_LIGHTEST")),
+    LIME_LIGHTEST("LIME_LIGHTEST"),
     
-    LIME_LIGHTER(String.valueOf("LIME_LIGHTER")),
+    LIME_LIGHTER("LIME_LIGHTER"),
     
-    LIME(String.valueOf("LIME")),
+    LIME("LIME"),
     
-    LIME_DARKER(String.valueOf("LIME_DARKER")),
+    LIME_DARKER("LIME_DARKER"),
     
-    LIME_DARKEST(String.valueOf("LIME_DARKEST")),
+    LIME_DARKEST("LIME_DARKEST"),
     
-    YELLOW_LIGHTEST(String.valueOf("YELLOW_LIGHTEST")),
+    YELLOW_LIGHTEST("YELLOW_LIGHTEST"),
     
-    YELLOW_LIGHTER(String.valueOf("YELLOW_LIGHTER")),
+    YELLOW_LIGHTER("YELLOW_LIGHTER"),
     
-    YELLOW(String.valueOf("YELLOW")),
+    YELLOW("YELLOW"),
     
-    YELLOW_DARKER(String.valueOf("YELLOW_DARKER")),
+    YELLOW_DARKER("YELLOW_DARKER"),
     
-    YELLOW_DARKEST(String.valueOf("YELLOW_DARKEST")),
+    YELLOW_DARKEST("YELLOW_DARKEST"),
     
-    ORANGE_LIGHTEST(String.valueOf("ORANGE_LIGHTEST")),
+    ORANGE_LIGHTEST("ORANGE_LIGHTEST"),
     
-    ORANGE_LIGHTER(String.valueOf("ORANGE_LIGHTER")),
+    ORANGE_LIGHTER("ORANGE_LIGHTER"),
     
-    ORANGE(String.valueOf("ORANGE")),
+    ORANGE("ORANGE"),
     
-    ORANGE_DARKER(String.valueOf("ORANGE_DARKER")),
+    ORANGE_DARKER("ORANGE_DARKER"),
     
-    ORANGE_DARKEST(String.valueOf("ORANGE_DARKEST")),
+    ORANGE_DARKEST("ORANGE_DARKEST"),
     
-    RED_LIGHTEST(String.valueOf("RED_LIGHTEST")),
+    RED_LIGHTEST("RED_LIGHTEST"),
     
-    RED_LIGHTER(String.valueOf("RED_LIGHTER")),
+    RED_LIGHTER("RED_LIGHTER"),
     
-    RED(String.valueOf("RED")),
+    RED("RED"),
     
-    RED_DARKER(String.valueOf("RED_DARKER")),
+    RED_DARKER("RED_DARKER"),
     
-    RED_DARKEST(String.valueOf("RED_DARKEST")),
+    RED_DARKEST("RED_DARKEST"),
     
-    MAGENTA_LIGHTEST(String.valueOf("MAGENTA_LIGHTEST")),
+    MAGENTA_LIGHTEST("MAGENTA_LIGHTEST"),
     
-    MAGENTA_LIGHTER(String.valueOf("MAGENTA_LIGHTER")),
+    MAGENTA_LIGHTER("MAGENTA_LIGHTER"),
     
-    MAGENTA(String.valueOf("MAGENTA")),
+    MAGENTA("MAGENTA"),
     
-    MAGENTA_DARKER(String.valueOf("MAGENTA_DARKER")),
+    MAGENTA_DARKER("MAGENTA_DARKER"),
     
-    MAGENTA_DARKEST(String.valueOf("MAGENTA_DARKEST"));
+    MAGENTA_DARKEST("MAGENTA_DARKEST");
 
     private String value;
 
@@ -149,7 +163,6 @@ public class JiraLabelPropertiesInputJackson1 {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -159,7 +172,6 @@ public class JiraLabelPropertiesInputJackson1 {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ColorEnum fromValue(String value) {
       for (ColorEnum b : ColorEnum.values()) {
         if (b.value.equals(value)) {
@@ -168,17 +180,37 @@ public class JiraLabelPropertiesInputJackson1 {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ColorEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ColorEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ColorEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ColorEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ColorEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_COLOR = "color";
+  public static final String SERIALIZED_NAME_COLOR = "color";
+  @SerializedName(SERIALIZED_NAME_COLOR)
   @javax.annotation.Nullable
   private ColorEnum color;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public JiraLabelPropertiesInputJackson1() { 
+  public JiraLabelPropertiesInputJackson1() {
   }
 
   public JiraLabelPropertiesInputJackson1 color(@javax.annotation.Nullable ColorEnum color) {
@@ -191,15 +223,10 @@ public class JiraLabelPropertiesInputJackson1 {
    * @return color
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COLOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ColorEnum getColor() {
     return color;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_COLOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setColor(@javax.annotation.Nullable ColorEnum color) {
     this.color = color;
   }
@@ -215,23 +242,16 @@ public class JiraLabelPropertiesInputJackson1 {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
 
 
-  /**
-   * Return true if this JiraLabelPropertiesInputJackson1 object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -271,49 +291,98 @@ public class JiraLabelPropertiesInputJackson1 {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("color", "name"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraLabelPropertiesInputJackson1
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraLabelPropertiesInputJackson1.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraLabelPropertiesInputJackson1 is not found in the empty JSON string", JiraLabelPropertiesInputJackson1.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraLabelPropertiesInputJackson1.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraLabelPropertiesInputJackson1` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("color") != null && !jsonObj.get("color").isJsonNull()) && !jsonObj.get("color").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `color` to be a primitive type in the JSON string but got `%s`", jsonObj.get("color").toString()));
+      }
+      // validate the optional field `color`
+      if (jsonObj.get("color") != null && !jsonObj.get("color").isJsonNull()) {
+        ColorEnum.validateJsonElement(jsonObj.get("color"));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraLabelPropertiesInputJackson1.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraLabelPropertiesInputJackson1' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraLabelPropertiesInputJackson1> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraLabelPropertiesInputJackson1.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraLabelPropertiesInputJackson1>() {
+           @Override
+           public void write(JsonWriter out, JiraLabelPropertiesInputJackson1 value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraLabelPropertiesInputJackson1 read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of JiraLabelPropertiesInputJackson1 given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraLabelPropertiesInputJackson1
+   * @throws IOException if the JSON string is invalid with respect to JiraLabelPropertiesInputJackson1
+   */
+  public static JiraLabelPropertiesInputJackson1 fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraLabelPropertiesInputJackson1.class);
+  }
 
-    // add `color` to the URL query string
-    if (getColor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scolor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColor()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JiraLabelPropertiesInputJackson1 to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

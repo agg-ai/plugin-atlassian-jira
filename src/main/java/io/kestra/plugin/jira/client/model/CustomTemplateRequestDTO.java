@@ -13,18 +13,13 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.BoardsPayload;
 import io.kestra.plugin.jira.client.model.FieldCapabilityPayload;
 import io.kestra.plugin.jira.client.model.IssueTypeProjectCreatePayload;
@@ -35,68 +30,94 @@ import io.kestra.plugin.jira.client.model.RolesCapabilityPayload;
 import io.kestra.plugin.jira.client.model.ScopePayload;
 import io.kestra.plugin.jira.client.model.SecuritySchemePayload;
 import io.kestra.plugin.jira.client.model.WorkflowCapabilityPayload;
+import java.io.IOException;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The specific request object for creating a project with template.
  */
-@JsonPropertyOrder({
-  CustomTemplateRequestDTO.JSON_PROPERTY_BOARDS,
-  CustomTemplateRequestDTO.JSON_PROPERTY_FIELD,
-  CustomTemplateRequestDTO.JSON_PROPERTY_ISSUE_TYPE,
-  CustomTemplateRequestDTO.JSON_PROPERTY_NOTIFICATION,
-  CustomTemplateRequestDTO.JSON_PROPERTY_PERMISSION_SCHEME,
-  CustomTemplateRequestDTO.JSON_PROPERTY_PROJECT,
-  CustomTemplateRequestDTO.JSON_PROPERTY_ROLE,
-  CustomTemplateRequestDTO.JSON_PROPERTY_SCOPE,
-  CustomTemplateRequestDTO.JSON_PROPERTY_SECURITY,
-  CustomTemplateRequestDTO.JSON_PROPERTY_WORKFLOW
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CustomTemplateRequestDTO {
-  public static final String JSON_PROPERTY_BOARDS = "boards";
-  private JsonNullable<BoardsPayload> boards = JsonNullable.<BoardsPayload>undefined();
+  public static final String SERIALIZED_NAME_BOARDS = "boards";
+  @SerializedName(SERIALIZED_NAME_BOARDS)
+  @javax.annotation.Nullable
+  private BoardsPayload boards;
 
-  public static final String JSON_PROPERTY_FIELD = "field";
-  private JsonNullable<FieldCapabilityPayload> field = JsonNullable.<FieldCapabilityPayload>undefined();
+  public static final String SERIALIZED_NAME_FIELD = "field";
+  @SerializedName(SERIALIZED_NAME_FIELD)
+  @javax.annotation.Nullable
+  private FieldCapabilityPayload field;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE = "issueType";
-  private JsonNullable<IssueTypeProjectCreatePayload> issueType = JsonNullable.<IssueTypeProjectCreatePayload>undefined();
+  public static final String SERIALIZED_NAME_ISSUE_TYPE = "issueType";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE)
+  @javax.annotation.Nullable
+  private IssueTypeProjectCreatePayload issueType;
 
-  public static final String JSON_PROPERTY_NOTIFICATION = "notification";
-  private JsonNullable<NotificationSchemePayload> notification = JsonNullable.<NotificationSchemePayload>undefined();
+  public static final String SERIALIZED_NAME_NOTIFICATION = "notification";
+  @SerializedName(SERIALIZED_NAME_NOTIFICATION)
+  @javax.annotation.Nullable
+  private NotificationSchemePayload notification;
 
-  public static final String JSON_PROPERTY_PERMISSION_SCHEME = "permissionScheme";
-  private JsonNullable<PermissionPayloadDTO> permissionScheme = JsonNullable.<PermissionPayloadDTO>undefined();
+  public static final String SERIALIZED_NAME_PERMISSION_SCHEME = "permissionScheme";
+  @SerializedName(SERIALIZED_NAME_PERMISSION_SCHEME)
+  @javax.annotation.Nullable
+  private PermissionPayloadDTO permissionScheme;
 
-  public static final String JSON_PROPERTY_PROJECT = "project";
+  public static final String SERIALIZED_NAME_PROJECT = "project";
+  @SerializedName(SERIALIZED_NAME_PROJECT)
   @javax.annotation.Nullable
   private ProjectPayload project;
 
-  public static final String JSON_PROPERTY_ROLE = "role";
-  private JsonNullable<RolesCapabilityPayload> role = JsonNullable.<RolesCapabilityPayload>undefined();
+  public static final String SERIALIZED_NAME_ROLE = "role";
+  @SerializedName(SERIALIZED_NAME_ROLE)
+  @javax.annotation.Nullable
+  private RolesCapabilityPayload role;
 
-  public static final String JSON_PROPERTY_SCOPE = "scope";
-  private JsonNullable<ScopePayload> scope = JsonNullable.<ScopePayload>undefined();
+  public static final String SERIALIZED_NAME_SCOPE = "scope";
+  @SerializedName(SERIALIZED_NAME_SCOPE)
+  @javax.annotation.Nullable
+  private ScopePayload scope;
 
-  public static final String JSON_PROPERTY_SECURITY = "security";
-  private JsonNullable<SecuritySchemePayload> security = JsonNullable.<SecuritySchemePayload>undefined();
+  public static final String SERIALIZED_NAME_SECURITY = "security";
+  @SerializedName(SERIALIZED_NAME_SECURITY)
+  @javax.annotation.Nullable
+  private SecuritySchemePayload security;
 
-  public static final String JSON_PROPERTY_WORKFLOW = "workflow";
-  private JsonNullable<WorkflowCapabilityPayload> workflow = JsonNullable.<WorkflowCapabilityPayload>undefined();
+  public static final String SERIALIZED_NAME_WORKFLOW = "workflow";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW)
+  @javax.annotation.Nullable
+  private WorkflowCapabilityPayload workflow;
 
-  public CustomTemplateRequestDTO() { 
+  public CustomTemplateRequestDTO() {
   }
 
   public CustomTemplateRequestDTO boards(@javax.annotation.Nullable BoardsPayload boards) {
-    this.boards = JsonNullable.<BoardsPayload>of(boards);
+    this.boards = boards;
     return this;
   }
 
@@ -105,30 +126,17 @@ public class CustomTemplateRequestDTO {
    * @return boards
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public BoardsPayload getBoards() {
-        return boards.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_BOARDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<BoardsPayload> getBoards_JsonNullable() {
     return boards;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_BOARDS)
-  public void setBoards_JsonNullable(JsonNullable<BoardsPayload> boards) {
-    this.boards = boards;
   }
 
   public void setBoards(@javax.annotation.Nullable BoardsPayload boards) {
-    this.boards = JsonNullable.<BoardsPayload>of(boards);
+    this.boards = boards;
   }
 
 
   public CustomTemplateRequestDTO field(@javax.annotation.Nullable FieldCapabilityPayload field) {
-    this.field = JsonNullable.<FieldCapabilityPayload>of(field);
+    this.field = field;
     return this;
   }
 
@@ -137,30 +145,17 @@ public class CustomTemplateRequestDTO {
    * @return field
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public FieldCapabilityPayload getField() {
-        return field.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<FieldCapabilityPayload> getField_JsonNullable() {
     return field;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_FIELD)
-  public void setField_JsonNullable(JsonNullable<FieldCapabilityPayload> field) {
-    this.field = field;
   }
 
   public void setField(@javax.annotation.Nullable FieldCapabilityPayload field) {
-    this.field = JsonNullable.<FieldCapabilityPayload>of(field);
+    this.field = field;
   }
 
 
   public CustomTemplateRequestDTO issueType(@javax.annotation.Nullable IssueTypeProjectCreatePayload issueType) {
-    this.issueType = JsonNullable.<IssueTypeProjectCreatePayload>of(issueType);
+    this.issueType = issueType;
     return this;
   }
 
@@ -169,30 +164,17 @@ public class CustomTemplateRequestDTO {
    * @return issueType
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public IssueTypeProjectCreatePayload getIssueType() {
-        return issueType.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<IssueTypeProjectCreatePayload> getIssueType_JsonNullable() {
     return issueType;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ISSUE_TYPE)
-  public void setIssueType_JsonNullable(JsonNullable<IssueTypeProjectCreatePayload> issueType) {
-    this.issueType = issueType;
   }
 
   public void setIssueType(@javax.annotation.Nullable IssueTypeProjectCreatePayload issueType) {
-    this.issueType = JsonNullable.<IssueTypeProjectCreatePayload>of(issueType);
+    this.issueType = issueType;
   }
 
 
   public CustomTemplateRequestDTO notification(@javax.annotation.Nullable NotificationSchemePayload notification) {
-    this.notification = JsonNullable.<NotificationSchemePayload>of(notification);
+    this.notification = notification;
     return this;
   }
 
@@ -201,30 +183,17 @@ public class CustomTemplateRequestDTO {
    * @return notification
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public NotificationSchemePayload getNotification() {
-        return notification.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<NotificationSchemePayload> getNotification_JsonNullable() {
     return notification;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NOTIFICATION)
-  public void setNotification_JsonNullable(JsonNullable<NotificationSchemePayload> notification) {
-    this.notification = notification;
   }
 
   public void setNotification(@javax.annotation.Nullable NotificationSchemePayload notification) {
-    this.notification = JsonNullable.<NotificationSchemePayload>of(notification);
+    this.notification = notification;
   }
 
 
   public CustomTemplateRequestDTO permissionScheme(@javax.annotation.Nullable PermissionPayloadDTO permissionScheme) {
-    this.permissionScheme = JsonNullable.<PermissionPayloadDTO>of(permissionScheme);
+    this.permissionScheme = permissionScheme;
     return this;
   }
 
@@ -233,25 +202,12 @@ public class CustomTemplateRequestDTO {
    * @return permissionScheme
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public PermissionPayloadDTO getPermissionScheme() {
-        return permissionScheme.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<PermissionPayloadDTO> getPermissionScheme_JsonNullable() {
     return permissionScheme;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_PERMISSION_SCHEME)
-  public void setPermissionScheme_JsonNullable(JsonNullable<PermissionPayloadDTO> permissionScheme) {
-    this.permissionScheme = permissionScheme;
   }
 
   public void setPermissionScheme(@javax.annotation.Nullable PermissionPayloadDTO permissionScheme) {
-    this.permissionScheme = JsonNullable.<PermissionPayloadDTO>of(permissionScheme);
+    this.permissionScheme = permissionScheme;
   }
 
 
@@ -265,22 +221,17 @@ public class CustomTemplateRequestDTO {
    * @return project
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectPayload getProject() {
     return project;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProject(@javax.annotation.Nullable ProjectPayload project) {
     this.project = project;
   }
 
 
   public CustomTemplateRequestDTO role(@javax.annotation.Nullable RolesCapabilityPayload role) {
-    this.role = JsonNullable.<RolesCapabilityPayload>of(role);
+    this.role = role;
     return this;
   }
 
@@ -289,30 +240,17 @@ public class CustomTemplateRequestDTO {
    * @return role
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public RolesCapabilityPayload getRole() {
-        return role.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ROLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<RolesCapabilityPayload> getRole_JsonNullable() {
     return role;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ROLE)
-  public void setRole_JsonNullable(JsonNullable<RolesCapabilityPayload> role) {
-    this.role = role;
   }
 
   public void setRole(@javax.annotation.Nullable RolesCapabilityPayload role) {
-    this.role = JsonNullable.<RolesCapabilityPayload>of(role);
+    this.role = role;
   }
 
 
   public CustomTemplateRequestDTO scope(@javax.annotation.Nullable ScopePayload scope) {
-    this.scope = JsonNullable.<ScopePayload>of(scope);
+    this.scope = scope;
     return this;
   }
 
@@ -321,30 +259,17 @@ public class CustomTemplateRequestDTO {
    * @return scope
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public ScopePayload getScope() {
-        return scope.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<ScopePayload> getScope_JsonNullable() {
     return scope;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SCOPE)
-  public void setScope_JsonNullable(JsonNullable<ScopePayload> scope) {
-    this.scope = scope;
   }
 
   public void setScope(@javax.annotation.Nullable ScopePayload scope) {
-    this.scope = JsonNullable.<ScopePayload>of(scope);
+    this.scope = scope;
   }
 
 
   public CustomTemplateRequestDTO security(@javax.annotation.Nullable SecuritySchemePayload security) {
-    this.security = JsonNullable.<SecuritySchemePayload>of(security);
+    this.security = security;
     return this;
   }
 
@@ -353,30 +278,17 @@ public class CustomTemplateRequestDTO {
    * @return security
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public SecuritySchemePayload getSecurity() {
-        return security.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_SECURITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<SecuritySchemePayload> getSecurity_JsonNullable() {
     return security;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SECURITY)
-  public void setSecurity_JsonNullable(JsonNullable<SecuritySchemePayload> security) {
-    this.security = security;
   }
 
   public void setSecurity(@javax.annotation.Nullable SecuritySchemePayload security) {
-    this.security = JsonNullable.<SecuritySchemePayload>of(security);
+    this.security = security;
   }
 
 
   public CustomTemplateRequestDTO workflow(@javax.annotation.Nullable WorkflowCapabilityPayload workflow) {
-    this.workflow = JsonNullable.<WorkflowCapabilityPayload>of(workflow);
+    this.workflow = workflow;
     return this;
   }
 
@@ -385,31 +297,16 @@ public class CustomTemplateRequestDTO {
    * @return workflow
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public WorkflowCapabilityPayload getWorkflow() {
-        return workflow.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<WorkflowCapabilityPayload> getWorkflow_JsonNullable() {
     return workflow;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_WORKFLOW)
-  public void setWorkflow_JsonNullable(JsonNullable<WorkflowCapabilityPayload> workflow) {
-    this.workflow = workflow;
   }
 
   public void setWorkflow(@javax.annotation.Nullable WorkflowCapabilityPayload workflow) {
-    this.workflow = JsonNullable.<WorkflowCapabilityPayload>of(workflow);
+    this.workflow = workflow;
   }
 
 
-  /**
-   * Return true if this CustomTemplateRequestDTO object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -419,16 +316,16 @@ public class CustomTemplateRequestDTO {
       return false;
     }
     CustomTemplateRequestDTO customTemplateRequestDTO = (CustomTemplateRequestDTO) o;
-    return equalsNullable(this.boards, customTemplateRequestDTO.boards) &&
-        equalsNullable(this.field, customTemplateRequestDTO.field) &&
-        equalsNullable(this.issueType, customTemplateRequestDTO.issueType) &&
-        equalsNullable(this.notification, customTemplateRequestDTO.notification) &&
-        equalsNullable(this.permissionScheme, customTemplateRequestDTO.permissionScheme) &&
+    return Objects.equals(this.boards, customTemplateRequestDTO.boards) &&
+        Objects.equals(this.field, customTemplateRequestDTO.field) &&
+        Objects.equals(this.issueType, customTemplateRequestDTO.issueType) &&
+        Objects.equals(this.notification, customTemplateRequestDTO.notification) &&
+        Objects.equals(this.permissionScheme, customTemplateRequestDTO.permissionScheme) &&
         Objects.equals(this.project, customTemplateRequestDTO.project) &&
-        equalsNullable(this.role, customTemplateRequestDTO.role) &&
-        equalsNullable(this.scope, customTemplateRequestDTO.scope) &&
-        equalsNullable(this.security, customTemplateRequestDTO.security) &&
-        equalsNullable(this.workflow, customTemplateRequestDTO.workflow);
+        Objects.equals(this.role, customTemplateRequestDTO.role) &&
+        Objects.equals(this.scope, customTemplateRequestDTO.scope) &&
+        Objects.equals(this.security, customTemplateRequestDTO.security) &&
+        Objects.equals(this.workflow, customTemplateRequestDTO.workflow);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -437,7 +334,7 @@ public class CustomTemplateRequestDTO {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(boards), hashCodeNullable(field), hashCodeNullable(issueType), hashCodeNullable(notification), hashCodeNullable(permissionScheme), project, hashCodeNullable(role), hashCodeNullable(scope), hashCodeNullable(security), hashCodeNullable(workflow));
+    return Objects.hash(boards, field, issueType, notification, permissionScheme, project, role, scope, security, workflow);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -476,89 +373,128 @@ public class CustomTemplateRequestDTO {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("boards", "field", "issueType", "notification", "permissionScheme", "project", "role", "scope", "security", "workflow"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CustomTemplateRequestDTO
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CustomTemplateRequestDTO.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CustomTemplateRequestDTO is not found in the empty JSON string", CustomTemplateRequestDTO.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CustomTemplateRequestDTO.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CustomTemplateRequestDTO` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `boards`
+      if (jsonObj.get("boards") != null && !jsonObj.get("boards").isJsonNull()) {
+        BoardsPayload.validateJsonElement(jsonObj.get("boards"));
+      }
+      // validate the optional field `field`
+      if (jsonObj.get("field") != null && !jsonObj.get("field").isJsonNull()) {
+        FieldCapabilityPayload.validateJsonElement(jsonObj.get("field"));
+      }
+      // validate the optional field `issueType`
+      if (jsonObj.get("issueType") != null && !jsonObj.get("issueType").isJsonNull()) {
+        IssueTypeProjectCreatePayload.validateJsonElement(jsonObj.get("issueType"));
+      }
+      // validate the optional field `notification`
+      if (jsonObj.get("notification") != null && !jsonObj.get("notification").isJsonNull()) {
+        NotificationSchemePayload.validateJsonElement(jsonObj.get("notification"));
+      }
+      // validate the optional field `permissionScheme`
+      if (jsonObj.get("permissionScheme") != null && !jsonObj.get("permissionScheme").isJsonNull()) {
+        PermissionPayloadDTO.validateJsonElement(jsonObj.get("permissionScheme"));
+      }
+      // validate the optional field `project`
+      if (jsonObj.get("project") != null && !jsonObj.get("project").isJsonNull()) {
+        ProjectPayload.validateJsonElement(jsonObj.get("project"));
+      }
+      // validate the optional field `role`
+      if (jsonObj.get("role") != null && !jsonObj.get("role").isJsonNull()) {
+        RolesCapabilityPayload.validateJsonElement(jsonObj.get("role"));
+      }
+      // validate the optional field `scope`
+      if (jsonObj.get("scope") != null && !jsonObj.get("scope").isJsonNull()) {
+        ScopePayload.validateJsonElement(jsonObj.get("scope"));
+      }
+      // validate the optional field `security`
+      if (jsonObj.get("security") != null && !jsonObj.get("security").isJsonNull()) {
+        SecuritySchemePayload.validateJsonElement(jsonObj.get("security"));
+      }
+      // validate the optional field `workflow`
+      if (jsonObj.get("workflow") != null && !jsonObj.get("workflow").isJsonNull()) {
+        WorkflowCapabilityPayload.validateJsonElement(jsonObj.get("workflow"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CustomTemplateRequestDTO.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CustomTemplateRequestDTO' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CustomTemplateRequestDTO> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CustomTemplateRequestDTO.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CustomTemplateRequestDTO>() {
+           @Override
+           public void write(JsonWriter out, CustomTemplateRequestDTO value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CustomTemplateRequestDTO read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CustomTemplateRequestDTO given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CustomTemplateRequestDTO
+   * @throws IOException if the JSON string is invalid with respect to CustomTemplateRequestDTO
+   */
+  public static CustomTemplateRequestDTO fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CustomTemplateRequestDTO.class);
+  }
 
-    // add `boards` to the URL query string
-    if (getBoards() != null) {
-      joiner.add(getBoards().toUrlQueryString(prefix + "boards" + suffix));
-    }
-
-    // add `field` to the URL query string
-    if (getField() != null) {
-      joiner.add(getField().toUrlQueryString(prefix + "field" + suffix));
-    }
-
-    // add `issueType` to the URL query string
-    if (getIssueType() != null) {
-      joiner.add(getIssueType().toUrlQueryString(prefix + "issueType" + suffix));
-    }
-
-    // add `notification` to the URL query string
-    if (getNotification() != null) {
-      joiner.add(getNotification().toUrlQueryString(prefix + "notification" + suffix));
-    }
-
-    // add `permissionScheme` to the URL query string
-    if (getPermissionScheme() != null) {
-      joiner.add(getPermissionScheme().toUrlQueryString(prefix + "permissionScheme" + suffix));
-    }
-
-    // add `project` to the URL query string
-    if (getProject() != null) {
-      joiner.add(getProject().toUrlQueryString(prefix + "project" + suffix));
-    }
-
-    // add `role` to the URL query string
-    if (getRole() != null) {
-      joiner.add(getRole().toUrlQueryString(prefix + "role" + suffix));
-    }
-
-    // add `scope` to the URL query string
-    if (getScope() != null) {
-      joiner.add(getScope().toUrlQueryString(prefix + "scope" + suffix));
-    }
-
-    // add `security` to the URL query string
-    if (getSecurity() != null) {
-      joiner.add(getSecurity().toUrlQueryString(prefix + "security" + suffix));
-    }
-
-    // add `workflow` to the URL query string
-    if (getWorkflow() != null) {
-      joiner.add(getWorkflow().toUrlQueryString(prefix + "workflow" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CustomTemplateRequestDTO to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

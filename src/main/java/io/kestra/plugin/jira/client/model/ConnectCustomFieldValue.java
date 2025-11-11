@@ -13,54 +13,62 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A list of custom field details.
  */
-@JsonPropertyOrder({
-  ConnectCustomFieldValue.JSON_PROPERTY_TYPE,
-  ConnectCustomFieldValue.JSON_PROPERTY_FIELD_I_D,
-  ConnectCustomFieldValue.JSON_PROPERTY_ISSUE_I_D,
-  ConnectCustomFieldValue.JSON_PROPERTY_NUMBER,
-  ConnectCustomFieldValue.JSON_PROPERTY_OPTION_I_D,
-  ConnectCustomFieldValue.JSON_PROPERTY_RICH_TEXT,
-  ConnectCustomFieldValue.JSON_PROPERTY_STRING,
-  ConnectCustomFieldValue.JSON_PROPERTY_TEXT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ConnectCustomFieldValue {
   /**
    * The type of custom field.
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    STRING_ISSUE_FIELD(String.valueOf("StringIssueField")),
+    STRING_ISSUE_FIELD("StringIssueField"),
     
-    NUMBER_ISSUE_FIELD(String.valueOf("NumberIssueField")),
+    NUMBER_ISSUE_FIELD("NumberIssueField"),
     
-    RICH_TEXT_ISSUE_FIELD(String.valueOf("RichTextIssueField")),
+    RICH_TEXT_ISSUE_FIELD("RichTextIssueField"),
     
-    SINGLE_SELECT_ISSUE_FIELD(String.valueOf("SingleSelectIssueField")),
+    SINGLE_SELECT_ISSUE_FIELD("SingleSelectIssueField"),
     
-    MULTI_SELECT_ISSUE_FIELD(String.valueOf("MultiSelectIssueField")),
+    MULTI_SELECT_ISSUE_FIELD("MultiSelectIssueField"),
     
-    TEXT_ISSUE_FIELD(String.valueOf("TextIssueField"));
+    TEXT_ISSUE_FIELD("TextIssueField");
 
     private String value;
 
@@ -68,7 +76,6 @@ public class ConnectCustomFieldValue {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -78,7 +85,6 @@ public class ConnectCustomFieldValue {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -87,41 +93,67 @@ public class ConnectCustomFieldValue {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "_type";
+  public static final String SERIALIZED_NAME_TYPE = "_type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nonnull
   private TypeEnum type;
 
-  public static final String JSON_PROPERTY_FIELD_I_D = "fieldID";
+  public static final String SERIALIZED_NAME_FIELD_I_D = "fieldID";
+  @SerializedName(SERIALIZED_NAME_FIELD_I_D)
   @javax.annotation.Nonnull
   private Integer fieldID;
 
-  public static final String JSON_PROPERTY_ISSUE_I_D = "issueID";
+  public static final String SERIALIZED_NAME_ISSUE_I_D = "issueID";
+  @SerializedName(SERIALIZED_NAME_ISSUE_I_D)
   @javax.annotation.Nonnull
   private Integer issueID;
 
-  public static final String JSON_PROPERTY_NUMBER = "number";
+  public static final String SERIALIZED_NAME_NUMBER = "number";
+  @SerializedName(SERIALIZED_NAME_NUMBER)
   @javax.annotation.Nullable
   private BigDecimal number;
 
-  public static final String JSON_PROPERTY_OPTION_I_D = "optionID";
+  public static final String SERIALIZED_NAME_OPTION_I_D = "optionID";
+  @SerializedName(SERIALIZED_NAME_OPTION_I_D)
   @javax.annotation.Nullable
   private String optionID;
 
-  public static final String JSON_PROPERTY_RICH_TEXT = "richText";
+  public static final String SERIALIZED_NAME_RICH_TEXT = "richText";
+  @SerializedName(SERIALIZED_NAME_RICH_TEXT)
   @javax.annotation.Nullable
   private String richText;
 
-  public static final String JSON_PROPERTY_STRING = "string";
+  public static final String SERIALIZED_NAME_STRING = "string";
+  @SerializedName(SERIALIZED_NAME_STRING)
   @javax.annotation.Nullable
   private String string;
 
-  public static final String JSON_PROPERTY_TEXT = "text";
+  public static final String SERIALIZED_NAME_TEXT = "text";
+  @SerializedName(SERIALIZED_NAME_TEXT)
   @javax.annotation.Nullable
   private String text;
 
-  public ConnectCustomFieldValue() { 
+  public ConnectCustomFieldValue() {
   }
 
   public ConnectCustomFieldValue type(@javax.annotation.Nonnull TypeEnum type) {
@@ -134,15 +166,10 @@ public class ConnectCustomFieldValue {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
@@ -158,15 +185,10 @@ public class ConnectCustomFieldValue {
    * @return fieldID
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELD_I_D, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getFieldID() {
     return fieldID;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_I_D, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFieldID(@javax.annotation.Nonnull Integer fieldID) {
     this.fieldID = fieldID;
   }
@@ -182,15 +204,10 @@ public class ConnectCustomFieldValue {
    * @return issueID
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_I_D, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getIssueID() {
     return issueID;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_I_D, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIssueID(@javax.annotation.Nonnull Integer issueID) {
     this.issueID = issueID;
   }
@@ -206,15 +223,10 @@ public class ConnectCustomFieldValue {
    * @return number
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BigDecimal getNumber() {
     return number;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNumber(@javax.annotation.Nullable BigDecimal number) {
     this.number = number;
   }
@@ -230,15 +242,10 @@ public class ConnectCustomFieldValue {
    * @return optionID
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPTION_I_D, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOptionID() {
     return optionID;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPTION_I_D, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOptionID(@javax.annotation.Nullable String optionID) {
     this.optionID = optionID;
   }
@@ -254,15 +261,10 @@ public class ConnectCustomFieldValue {
    * @return richText
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RICH_TEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRichText() {
     return richText;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RICH_TEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRichText(@javax.annotation.Nullable String richText) {
     this.richText = richText;
   }
@@ -278,15 +280,10 @@ public class ConnectCustomFieldValue {
    * @return string
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STRING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getString() {
     return string;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STRING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setString(@javax.annotation.Nullable String string) {
     this.string = string;
   }
@@ -302,23 +299,16 @@ public class ConnectCustomFieldValue {
    * @return text
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getText() {
     return text;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setText(@javax.annotation.Nullable String text) {
     this.text = text;
   }
 
 
-  /**
-   * Return true if this ConnectCustomFieldValue object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -370,79 +360,112 @@ public class ConnectCustomFieldValue {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("_type", "fieldID", "issueID", "number", "optionID", "richText", "string", "text"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("_type", "fieldID", "issueID"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ConnectCustomFieldValue
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ConnectCustomFieldValue.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ConnectCustomFieldValue is not found in the empty JSON string", ConnectCustomFieldValue.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ConnectCustomFieldValue.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ConnectCustomFieldValue` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : ConnectCustomFieldValue.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("_type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `_type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("_type").toString()));
+      }
+      // validate the required field `_type`
+      TypeEnum.validateJsonElement(jsonObj.get("_type"));
+      if ((jsonObj.get("optionID") != null && !jsonObj.get("optionID").isJsonNull()) && !jsonObj.get("optionID").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `optionID` to be a primitive type in the JSON string but got `%s`", jsonObj.get("optionID").toString()));
+      }
+      if ((jsonObj.get("richText") != null && !jsonObj.get("richText").isJsonNull()) && !jsonObj.get("richText").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `richText` to be a primitive type in the JSON string but got `%s`", jsonObj.get("richText").toString()));
+      }
+      if ((jsonObj.get("string") != null && !jsonObj.get("string").isJsonNull()) && !jsonObj.get("string").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `string` to be a primitive type in the JSON string but got `%s`", jsonObj.get("string").toString()));
+      }
+      if ((jsonObj.get("text") != null && !jsonObj.get("text").isJsonNull()) && !jsonObj.get("text").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `text` to be a primitive type in the JSON string but got `%s`", jsonObj.get("text").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ConnectCustomFieldValue.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ConnectCustomFieldValue' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ConnectCustomFieldValue> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ConnectCustomFieldValue.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ConnectCustomFieldValue>() {
+           @Override
+           public void write(JsonWriter out, ConnectCustomFieldValue value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ConnectCustomFieldValue read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ConnectCustomFieldValue given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ConnectCustomFieldValue
+   * @throws IOException if the JSON string is invalid with respect to ConnectCustomFieldValue
+   */
+  public static ConnectCustomFieldValue fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ConnectCustomFieldValue.class);
+  }
 
-    // add `_type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%s_type%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    // add `fieldID` to the URL query string
-    if (getFieldID() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldID%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldID()))));
-    }
-
-    // add `issueID` to the URL query string
-    if (getIssueID() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueID%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueID()))));
-    }
-
-    // add `number` to the URL query string
-    if (getNumber() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNumber()))));
-    }
-
-    // add `optionID` to the URL query string
-    if (getOptionID() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soptionID%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOptionID()))));
-    }
-
-    // add `richText` to the URL query string
-    if (getRichText() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srichText%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRichText()))));
-    }
-
-    // add `string` to the URL query string
-    if (getString() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstring%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getString()))));
-    }
-
-    // add `text` to the URL query string
-    if (getText() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stext%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getText()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ConnectCustomFieldValue to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

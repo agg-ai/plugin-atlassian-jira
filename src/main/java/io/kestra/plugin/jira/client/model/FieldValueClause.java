@@ -13,70 +13,85 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JqlQueryClauseOperand;
 import io.kestra.plugin.jira.client.model.JqlQueryField;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A clause that asserts the current value of a field. For example, &#x60;summary ~ test&#x60;.
  */
-@JsonPropertyOrder({
-  FieldValueClause.JSON_PROPERTY_FIELD,
-  FieldValueClause.JSON_PROPERTY_OPERAND,
-  FieldValueClause.JSON_PROPERTY_OPERATOR
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FieldValueClause {
-  public static final String JSON_PROPERTY_FIELD = "field";
+  public static final String SERIALIZED_NAME_FIELD = "field";
+  @SerializedName(SERIALIZED_NAME_FIELD)
   @javax.annotation.Nonnull
   private JqlQueryField field;
 
-  public static final String JSON_PROPERTY_OPERAND = "operand";
+  public static final String SERIALIZED_NAME_OPERAND = "operand";
+  @SerializedName(SERIALIZED_NAME_OPERAND)
   @javax.annotation.Nonnull
   private JqlQueryClauseOperand operand;
 
   /**
    * The operator between the field and operand.
    */
+  @JsonAdapter(OperatorEnum.Adapter.class)
   public enum OperatorEnum {
-    EQUAL(String.valueOf("=")),
+    EQUAL("="),
     
-    NOT_EQUAL(String.valueOf("!=")),
+    NOT_EQUAL("!="),
     
-    GREATER_THAN(String.valueOf(">")),
+    GREATER_THAN(">"),
     
-    LESS_THAN(String.valueOf("<")),
+    LESS_THAN("<"),
     
-    GREATER_THAN_OR_EQUAL_TO(String.valueOf(">=")),
+    GREATER_THAN_OR_EQUAL_TO(">="),
     
-    LESS_THAN_OR_EQUAL_TO(String.valueOf("<=")),
+    LESS_THAN_OR_EQUAL_TO("<="),
     
-    IN(String.valueOf("in")),
+    IN("in"),
     
-    NOT_IN(String.valueOf("not in")),
+    NOT_IN("not in"),
     
-    TILDE(String.valueOf("~")),
+    TILDE("~"),
     
-    TILDE_EQUAL(String.valueOf("~=")),
+    TILDE_EQUAL("~="),
     
-    IS(String.valueOf("is")),
+    IS("is"),
     
-    IS_NOT(String.valueOf("is not"));
+    IS_NOT("is not");
 
     private String value;
 
@@ -84,7 +99,6 @@ public class FieldValueClause {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -94,7 +108,6 @@ public class FieldValueClause {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static OperatorEnum fromValue(String value) {
       for (OperatorEnum b : OperatorEnum.values()) {
         if (b.value.equals(value)) {
@@ -103,13 +116,32 @@ public class FieldValueClause {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<OperatorEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final OperatorEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public OperatorEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return OperatorEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      OperatorEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_OPERATOR = "operator";
+  public static final String SERIALIZED_NAME_OPERATOR = "operator";
+  @SerializedName(SERIALIZED_NAME_OPERATOR)
   @javax.annotation.Nonnull
   private OperatorEnum operator;
 
-  public FieldValueClause() { 
+  public FieldValueClause() {
   }
 
   public FieldValueClause field(@javax.annotation.Nonnull JqlQueryField field) {
@@ -122,15 +154,10 @@ public class FieldValueClause {
    * @return field
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JqlQueryField getField() {
     return field;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setField(@javax.annotation.Nonnull JqlQueryField field) {
     this.field = field;
   }
@@ -146,15 +173,10 @@ public class FieldValueClause {
    * @return operand
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OPERAND, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JqlQueryClauseOperand getOperand() {
     return operand;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPERAND, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOperand(@javax.annotation.Nonnull JqlQueryClauseOperand operand) {
     this.operand = operand;
   }
@@ -170,23 +192,16 @@ public class FieldValueClause {
    * @return operator
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OPERATOR, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public OperatorEnum getOperator() {
     return operator;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPERATOR, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOperator(@javax.annotation.Nonnull OperatorEnum operator) {
     this.operator = operator;
   }
 
 
-  /**
-   * Return true if this FieldValueClause object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -228,54 +243,104 @@ public class FieldValueClause {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("field", "operand", "operator"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("field", "operand", "operator"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FieldValueClause
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FieldValueClause.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FieldValueClause is not found in the empty JSON string", FieldValueClause.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FieldValueClause.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FieldValueClause` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : FieldValueClause.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the required field `field`
+      JqlQueryField.validateJsonElement(jsonObj.get("field"));
+      // validate the required field `operand`
+      JqlQueryClauseOperand.validateJsonElement(jsonObj.get("operand"));
+      if (!jsonObj.get("operator").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `operator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("operator").toString()));
+      }
+      // validate the required field `operator`
+      OperatorEnum.validateJsonElement(jsonObj.get("operator"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FieldValueClause.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FieldValueClause' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FieldValueClause> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FieldValueClause.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<FieldValueClause>() {
+           @Override
+           public void write(JsonWriter out, FieldValueClause value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FieldValueClause read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of FieldValueClause given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FieldValueClause
+   * @throws IOException if the JSON string is invalid with respect to FieldValueClause
+   */
+  public static FieldValueClause fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FieldValueClause.class);
+  }
 
-    // add `field` to the URL query string
-    if (getField() != null) {
-      joiner.add(getField().toUrlQueryString(prefix + "field" + suffix));
-    }
-
-    // add `operand` to the URL query string
-    if (getOperand() != null) {
-      joiner.add(getOperand().toUrlQueryString(prefix + "operand" + suffix));
-    }
-
-    // add `operator` to the URL query string
-    if (getOperator() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soperator%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperator()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of FieldValueClause to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

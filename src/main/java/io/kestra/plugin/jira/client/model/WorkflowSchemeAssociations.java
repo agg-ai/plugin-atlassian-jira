@@ -13,44 +13,59 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.WorkflowScheme;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A workflow scheme along with a list of projects that use it.
  */
-@JsonPropertyOrder({
-  WorkflowSchemeAssociations.JSON_PROPERTY_PROJECT_IDS,
-  WorkflowSchemeAssociations.JSON_PROPERTY_WORKFLOW_SCHEME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowSchemeAssociations {
-  public static final String JSON_PROPERTY_PROJECT_IDS = "projectIds";
+  public static final String SERIALIZED_NAME_PROJECT_IDS = "projectIds";
+  @SerializedName(SERIALIZED_NAME_PROJECT_IDS)
   @javax.annotation.Nonnull
   private List<String> projectIds = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_WORKFLOW_SCHEME = "workflowScheme";
+  public static final String SERIALIZED_NAME_WORKFLOW_SCHEME = "workflowScheme";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW_SCHEME)
   @javax.annotation.Nonnull
   private WorkflowScheme workflowScheme;
 
-  public WorkflowSchemeAssociations() { 
+  public WorkflowSchemeAssociations() {
   }
 
   public WorkflowSchemeAssociations projectIds(@javax.annotation.Nonnull List<String> projectIds) {
@@ -71,15 +86,10 @@ public class WorkflowSchemeAssociations {
    * @return projectIds
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<String> getProjectIds() {
     return projectIds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setProjectIds(@javax.annotation.Nonnull List<String> projectIds) {
     this.projectIds = projectIds;
   }
@@ -95,23 +105,16 @@ public class WorkflowSchemeAssociations {
    * @return workflowScheme
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_SCHEME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public WorkflowScheme getWorkflowScheme() {
     return workflowScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_SCHEME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setWorkflowScheme(@javax.annotation.Nonnull WorkflowScheme workflowScheme) {
     this.workflowScheme = workflowScheme;
   }
 
 
-  /**
-   * Return true if this WorkflowSchemeAssociations object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -151,53 +154,103 @@ public class WorkflowSchemeAssociations {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("projectIds", "workflowScheme"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("projectIds", "workflowScheme"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowSchemeAssociations
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `projectIds` to the URL query string
-    if (getProjectIds() != null) {
-      for (int i = 0; i < getProjectIds().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sprojectIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getProjectIds().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowSchemeAssociations.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowSchemeAssociations is not found in the empty JSON string", WorkflowSchemeAssociations.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `workflowScheme` to the URL query string
-    if (getWorkflowScheme() != null) {
-      joiner.add(getWorkflowScheme().toUrlQueryString(prefix + "workflowScheme" + suffix));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowSchemeAssociations.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowSchemeAssociations` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : WorkflowSchemeAssociations.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the required json array is present
+      if (jsonObj.get("projectIds") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("projectIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectIds` to be an array in the JSON string but got `%s`", jsonObj.get("projectIds").toString()));
+      }
+      // validate the required field `workflowScheme`
+      WorkflowScheme.validateJsonElement(jsonObj.get("workflowScheme"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowSchemeAssociations.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowSchemeAssociations' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowSchemeAssociations> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowSchemeAssociations.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowSchemeAssociations>() {
+           @Override
+           public void write(JsonWriter out, WorkflowSchemeAssociations value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowSchemeAssociations read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowSchemeAssociations given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowSchemeAssociations
+   * @throws IOException if the JSON string is invalid with respect to WorkflowSchemeAssociations
+   */
+  public static WorkflowSchemeAssociations fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowSchemeAssociations.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowSchemeAssociations to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

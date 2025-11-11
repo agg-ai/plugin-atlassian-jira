@@ -10,1146 +10,1233 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.Avatar;
 import io.kestra.plugin.jira.client.model.IssueTypeCreateBean;
 import io.kestra.plugin.jira.client.model.IssueTypeDetails;
 import io.kestra.plugin.jira.client.model.IssueTypeUpdateBean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueTypesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueTypesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueTypesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createIssueType
+     * @param issueTypeCreateBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid because:   *  no content is sent.  *  the issue type name exceeds 60 characters.  *  a subtask issue type is requested on an instance where subtasks are disabled. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type name is in use. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createIssueTypeCall(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueTypesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueTypesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create issue type
-   * Creates an issue type and adds it to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeCreateBean  (required)
-   * @return IssueTypeDetails
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeDetails createIssueType(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean) throws ApiException {
-    return createIssueType(issueTypeCreateBean, null);
-  }
-
-  /**
-   * Create issue type
-   * Creates an issue type and adds it to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeCreateBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return IssueTypeDetails
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeDetails createIssueType(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<IssueTypeDetails> localVarResponse = createIssueTypeWithHttpInfo(issueTypeCreateBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create issue type
-   * Creates an issue type and adds it to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeCreateBean  (required)
-   * @return ApiResponse&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeDetails> createIssueTypeWithHttpInfo(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean) throws ApiException {
-    return createIssueTypeWithHttpInfo(issueTypeCreateBean, null);
-  }
-
-  /**
-   * Create issue type
-   * Creates an issue type and adds it to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeCreateBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeDetails> createIssueTypeWithHttpInfo(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createIssueTypeRequestBuilder(issueTypeCreateBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createIssueType", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<IssueTypeDetails>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        IssueTypeDetails responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<IssueTypeDetails>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = issueTypeCreateBean;
 
-        return new ApiResponse<IssueTypeDetails>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetype";
 
-  private HttpRequest.Builder createIssueTypeRequestBuilder(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueTypeCreateBean' is set
-    if (issueTypeCreateBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeCreateBean' when calling createIssueType");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetype";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypeCreateBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Load issue type avatar
-   * Loads an avatar for the issue type.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST \\ --user email@example.com:&lt;api_token&gt; \\ --header &#39;X-Atlassian-Token: no-check&#39; \\ --header &#39;Content-Type: image/&lt; image_type&gt;&#39; \\ --data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; \\ --url &#39;https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}&#39;This&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param size The length of each side of the crop region. (required)
-   * @param body  (required)
-   * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @return Avatar
-   * @throws ApiException if fails to make API call
-   */
-  public Avatar createIssueTypeAvatar(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y) throws ApiException {
-    return createIssueTypeAvatar(id, size, body, x, y, null);
-  }
-
-  /**
-   * Load issue type avatar
-   * Loads an avatar for the issue type.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST \\ --user email@example.com:&lt;api_token&gt; \\ --header &#39;X-Atlassian-Token: no-check&#39; \\ --header &#39;Content-Type: image/&lt; image_type&gt;&#39; \\ --data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; \\ --url &#39;https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}&#39;This&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param size The length of each side of the crop region. (required)
-   * @param body  (required)
-   * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param headers Optional headers to include in the request
-   * @return Avatar
-   * @throws ApiException if fails to make API call
-   */
-  public Avatar createIssueTypeAvatar(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, Map<String, String> headers) throws ApiException {
-    ApiResponse<Avatar> localVarResponse = createIssueTypeAvatarWithHttpInfo(id, size, body, x, y, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Load issue type avatar
-   * Loads an avatar for the issue type.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST \\ --user email@example.com:&lt;api_token&gt; \\ --header &#39;X-Atlassian-Token: no-check&#39; \\ --header &#39;Content-Type: image/&lt; image_type&gt;&#39; \\ --data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; \\ --url &#39;https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}&#39;This&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param size The length of each side of the crop region. (required)
-   * @param body  (required)
-   * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @return ApiResponse&lt;Avatar&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Avatar> createIssueTypeAvatarWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y) throws ApiException {
-    return createIssueTypeAvatarWithHttpInfo(id, size, body, x, y, null);
-  }
-
-  /**
-   * Load issue type avatar
-   * Loads an avatar for the issue type.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST \\ --user email@example.com:&lt;api_token&gt; \\ --header &#39;X-Atlassian-Token: no-check&#39; \\ --header &#39;Content-Type: image/&lt; image_type&gt;&#39; \\ --data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; \\ --url &#39;https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}&#39;This&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param size The length of each side of the crop region. (required)
-   * @param body  (required)
-   * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Avatar&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Avatar> createIssueTypeAvatarWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createIssueTypeAvatarRequestBuilder(id, size, body, x, y, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createIssueTypeAvatar", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Avatar>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Avatar responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Avatar>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Avatar>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createIssueTypeAvatarRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling createIssueTypeAvatar");
-    }
-    // verify the required parameter 'size' is set
-    if (size == null) {
-      throw new ApiException(400, "Missing the required parameter 'size' when calling createIssueTypeAvatar");
-    }
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling createIssueTypeAvatar");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetype/{id}/avatar2"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "x";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("x", x));
-    localVarQueryParameterBaseName = "y";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("y", y));
-    localVarQueryParameterBaseName = "size";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("size", size));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete issue type
-   * Deletes the issue type. If the issue type is in use, all uses are updated with the alternative issue type (&#x60;alternativeIssueTypeId&#x60;). A list of alternative issue types are obtained from the [Get alternative issue types](#api-rest-api-3-issuetype-id-alternatives-get) resource.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param alternativeIssueTypeId The ID of the replacement issue type. (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteIssueType(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId) throws ApiException {
-    deleteIssueType(id, alternativeIssueTypeId, null);
-  }
-
-  /**
-   * Delete issue type
-   * Deletes the issue type. If the issue type is in use, all uses are updated with the alternative issue type (&#x60;alternativeIssueTypeId&#x60;). A list of alternative issue types are obtained from the [Get alternative issue types](#api-rest-api-3-issuetype-id-alternatives-get) resource.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param alternativeIssueTypeId The ID of the replacement issue type. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteIssueType(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId, Map<String, String> headers) throws ApiException {
-    deleteIssueTypeWithHttpInfo(id, alternativeIssueTypeId, headers);
-  }
-
-  /**
-   * Delete issue type
-   * Deletes the issue type. If the issue type is in use, all uses are updated with the alternative issue type (&#x60;alternativeIssueTypeId&#x60;). A list of alternative issue types are obtained from the [Get alternative issue types](#api-rest-api-3-issuetype-id-alternatives-get) resource.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param alternativeIssueTypeId The ID of the replacement issue type. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId) throws ApiException {
-    return deleteIssueTypeWithHttpInfo(id, alternativeIssueTypeId, null);
-  }
-
-  /**
-   * Delete issue type
-   * Deletes the issue type. If the issue type is in use, all uses are updated with the alternative issue type (&#x60;alternativeIssueTypeId&#x60;). A list of alternative issue types are obtained from the [Get alternative issue types](#api-rest-api-3-issuetype-id-alternatives-get) resource.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param alternativeIssueTypeId The ID of the replacement issue type. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteIssueTypeRequestBuilder(id, alternativeIssueTypeId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteIssueType", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteIssueTypeRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteIssueType");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetype/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "alternativeIssueTypeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("alternativeIssueTypeId", alternativeIssueTypeId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get alternative issue types
-   * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param id The ID of the issue type. (required)
-   * @return List&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<IssueTypeDetails> getAlternativeIssueTypes(@javax.annotation.Nonnull String id) throws ApiException {
-    return getAlternativeIssueTypes(id, null);
-  }
-
-  /**
-   * Get alternative issue types
-   * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param id The ID of the issue type. (required)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<IssueTypeDetails> getAlternativeIssueTypes(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<IssueTypeDetails>> localVarResponse = getAlternativeIssueTypesWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get alternative issue types
-   * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param id The ID of the issue type. (required)
-   * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<IssueTypeDetails>> getAlternativeIssueTypesWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getAlternativeIssueTypesWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get alternative issue types
-   * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param id The ID of the issue type. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<IssueTypeDetails>> getAlternativeIssueTypesWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAlternativeIssueTypesRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAlternativeIssueTypes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<IssueTypeDetails>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<IssueTypeDetails> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<IssueTypeDetails>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<IssueTypeDetails>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAlternativeIssueTypesRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getAlternativeIssueTypes");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetype/{id}/alternatives"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get all issue types for user
-   * Returns all issue types.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Issue types are only returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg), all issue types are returned.  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for one or more projects, the issue types associated with the projects the user has permission to browse are returned.  *  if the user is anonymous then they will be able to access projects with the *Browse projects* for anonymous users  *  if the user authentication is incorrect they will fall back to anonymous
-   * @return List&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<IssueTypeDetails> getIssueAllTypes() throws ApiException {
-    return getIssueAllTypes(null);
-  }
-
-  /**
-   * Get all issue types for user
-   * Returns all issue types.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Issue types are only returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg), all issue types are returned.  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for one or more projects, the issue types associated with the projects the user has permission to browse are returned.  *  if the user is anonymous then they will be able to access projects with the *Browse projects* for anonymous users  *  if the user authentication is incorrect they will fall back to anonymous
-   * @param headers Optional headers to include in the request
-   * @return List&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<IssueTypeDetails> getIssueAllTypes(Map<String, String> headers) throws ApiException {
-    ApiResponse<List<IssueTypeDetails>> localVarResponse = getIssueAllTypesWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all issue types for user
-   * Returns all issue types.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Issue types are only returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg), all issue types are returned.  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for one or more projects, the issue types associated with the projects the user has permission to browse are returned.  *  if the user is anonymous then they will be able to access projects with the *Browse projects* for anonymous users  *  if the user authentication is incorrect they will fall back to anonymous
-   * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<IssueTypeDetails>> getIssueAllTypesWithHttpInfo() throws ApiException {
-    return getIssueAllTypesWithHttpInfo(null);
-  }
-
-  /**
-   * Get all issue types for user
-   * Returns all issue types.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Issue types are only returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg), all issue types are returned.  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for one or more projects, the issue types associated with the projects the user has permission to browse are returned.  *  if the user is anonymous then they will be able to access projects with the *Browse projects* for anonymous users  *  if the user authentication is incorrect they will fall back to anonymous
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<IssueTypeDetails>> getIssueAllTypesWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueAllTypesRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueAllTypes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<IssueTypeDetails>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createIssueTypeValidateBeforeCall(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueTypeCreateBean' is set
+        if (issueTypeCreateBean == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeCreateBean' when calling createIssueType(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<IssueTypeDetails> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<IssueTypeDetails>>() {});
-        
-        localVarResponse.body().close();
+        return createIssueTypeCall(issueTypeCreateBean, _callback);
 
-        return new ApiResponse<List<IssueTypeDetails>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getIssueAllTypesRequestBuilder(Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetype";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue type
-   * Returns an issue type.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in a project the issue type is associated with or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @return IssueTypeDetails
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeDetails getIssueType(@javax.annotation.Nonnull String id) throws ApiException {
-    return getIssueType(id, null);
-  }
-
-  /**
-   * Get issue type
-   * Returns an issue type.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in a project the issue type is associated with or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param headers Optional headers to include in the request
-   * @return IssueTypeDetails
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeDetails getIssueType(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<IssueTypeDetails> localVarResponse = getIssueTypeWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue type
-   * Returns an issue type.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in a project the issue type is associated with or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @return ApiResponse&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeDetails> getIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getIssueTypeWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get issue type
-   * Returns an issue type.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in a project the issue type is associated with or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeDetails> getIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueTypeRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueType", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<IssueTypeDetails>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
-        }
-
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        IssueTypeDetails responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<IssueTypeDetails>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<IssueTypeDetails>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getIssueTypeRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getIssueType");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetype/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Create issue type
+     * Creates an issue type and adds it to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeCreateBean  (required)
+     * @return IssueTypeDetails
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid because:   *  no content is sent.  *  the issue type name exceeds 60 characters.  *  a subtask issue type is requested on an instance where subtasks are disabled. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public IssueTypeDetails createIssueType(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean) throws ApiException {
+        ApiResponse<IssueTypeDetails> localVarResp = createIssueTypeWithHttpInfo(issueTypeCreateBean);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create issue type
+     * Creates an issue type and adds it to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeCreateBean  (required)
+     * @return ApiResponse&lt;IssueTypeDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid because:   *  no content is sent.  *  the issue type name exceeds 60 characters.  *  a subtask issue type is requested on an instance where subtasks are disabled. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<IssueTypeDetails> createIssueTypeWithHttpInfo(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean) throws ApiException {
+        okhttp3.Call localVarCall = createIssueTypeValidateBeforeCall(issueTypeCreateBean, null);
+        Type localVarReturnType = new TypeToken<IssueTypeDetails>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Get issue types for project
-   * Returns issue types for a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in the relevant project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The ID of the project. (required)
-   * @param level The level of the issue type to filter by. Use:   *  &#x60;-1&#x60; for Subtask.  *  &#x60;0&#x60; for Base.  *  &#x60;1&#x60; for Epic. (optional)
-   * @return List&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<IssueTypeDetails> getIssueTypesForProject(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level) throws ApiException {
-    return getIssueTypesForProject(projectId, level, null);
-  }
+    /**
+     * Create issue type (asynchronously)
+     * Creates an issue type and adds it to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeCreateBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid because:   *  no content is sent.  *  the issue type name exceeds 60 characters.  *  a subtask issue type is requested on an instance where subtasks are disabled. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createIssueTypeAsync(@javax.annotation.Nonnull IssueTypeCreateBean issueTypeCreateBean, final ApiCallback<IssueTypeDetails> _callback) throws ApiException {
 
-  /**
-   * Get issue types for project
-   * Returns issue types for a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in the relevant project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The ID of the project. (required)
-   * @param level The level of the issue type to filter by. Use:   *  &#x60;-1&#x60; for Subtask.  *  &#x60;0&#x60; for Base.  *  &#x60;1&#x60; for Epic. (optional)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<IssueTypeDetails> getIssueTypesForProject(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<IssueTypeDetails>> localVarResponse = getIssueTypesForProjectWithHttpInfo(projectId, level, headers);
-    return localVarResponse.getData();
-  }
+        okhttp3.Call localVarCall = createIssueTypeValidateBeforeCall(issueTypeCreateBean, _callback);
+        Type localVarReturnType = new TypeToken<IssueTypeDetails>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for createIssueTypeAvatar
+     * @param id The ID of the issue type. (required)
+     * @param size The length of each side of the crop region. (required)
+     * @param body  (required)
+     * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  an image isn&#39;t included in the request.  *  the image type is unsupported.  *  the crop parameters extend the crop area beyond the edge of the image.  *  &#x60;cropSize&#x60; is missing.  *  the issue type ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createIssueTypeAvatarCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get issue types for project
-   * Returns issue types for a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in the relevant project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The ID of the project. (required)
-   * @param level The level of the issue type to filter by. Use:   *  &#x60;-1&#x60; for Subtask.  *  &#x60;0&#x60; for Base.  *  &#x60;1&#x60; for Epic. (optional)
-   * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<IssueTypeDetails>> getIssueTypesForProjectWithHttpInfo(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level) throws ApiException {
-    return getIssueTypesForProjectWithHttpInfo(projectId, level, null);
-  }
-
-  /**
-   * Get issue types for project
-   * Returns issue types for a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in the relevant project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The ID of the project. (required)
-   * @param level The level of the issue type to filter by. Use:   *  &#x60;-1&#x60; for Subtask.  *  &#x60;0&#x60; for Base.  *  &#x60;1&#x60; for Epic. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<IssueTypeDetails>> getIssueTypesForProjectWithHttpInfo(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueTypesForProjectRequestBuilder(projectId, level, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueTypesForProject", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<IssueTypeDetails>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<IssueTypeDetails> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<IssueTypeDetails>>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = body;
 
-        return new ApiResponse<List<IssueTypeDetails>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetype/{id}/avatar2"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder getIssueTypesForProjectRequestBuilder(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectId' is set
-    if (projectId == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectId' when calling getIssueTypesForProject");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetype/project";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectId", projectId));
-    localVarQueryParameterBaseName = "level";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("level", level));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update issue type
-   * Updates the issue type.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param issueTypeUpdateBean  (required)
-   * @return IssueTypeDetails
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeDetails updateIssueType(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean) throws ApiException {
-    return updateIssueType(id, issueTypeUpdateBean, null);
-  }
-
-  /**
-   * Update issue type
-   * Updates the issue type.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param issueTypeUpdateBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return IssueTypeDetails
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeDetails updateIssueType(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<IssueTypeDetails> localVarResponse = updateIssueTypeWithHttpInfo(id, issueTypeUpdateBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update issue type
-   * Updates the issue type.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param issueTypeUpdateBean  (required)
-   * @return ApiResponse&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeDetails> updateIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean) throws ApiException {
-    return updateIssueTypeWithHttpInfo(id, issueTypeUpdateBean, null);
-  }
-
-  /**
-   * Update issue type
-   * Updates the issue type.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the issue type. (required)
-   * @param issueTypeUpdateBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;IssueTypeDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeDetails> updateIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateIssueTypeRequestBuilder(id, issueTypeUpdateBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateIssueType", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<IssueTypeDetails>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (x != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("x", x));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        IssueTypeDetails responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<IssueTypeDetails>() {});
-        
-        localVarResponse.body().close();
+        if (y != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("y", y));
+        }
 
-        return new ApiResponse<IssueTypeDetails>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        if (size != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("size", size));
+        }
 
-  private HttpRequest.Builder updateIssueTypeRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateIssueType");
-    }
-    // verify the required parameter 'issueTypeUpdateBean' is set
-    if (issueTypeUpdateBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeUpdateBean' when calling updateIssueType");
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createIssueTypeAvatarValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling createIssueTypeAvatar(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/issuetype/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
+        // verify the required parameter 'size' is set
+        if (size == null) {
+            throw new ApiException("Missing the required parameter 'size' when calling createIssueTypeAvatar(Async)");
+        }
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling createIssueTypeAvatar(Async)");
+        }
 
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
+        return createIssueTypeAvatarCall(id, size, body, x, y, _callback);
 
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypeUpdateBean);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Load issue type avatar
+     * Loads an avatar for the issue type.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST \\ --user email@example.com:&lt;api_token&gt; \\ --header &#39;X-Atlassian-Token: no-check&#39; \\ --header &#39;Content-Type: image/&lt; image_type&gt;&#39; \\ --data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; \\ --url &#39;https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}&#39;This&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param size The length of each side of the crop region. (required)
+     * @param body  (required)
+     * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @return Avatar
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  an image isn&#39;t included in the request.  *  the image type is unsupported.  *  the crop parameters extend the crop area beyond the edge of the image.  *  &#x60;cropSize&#x60; is missing.  *  the issue type ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Avatar createIssueTypeAvatar(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y) throws ApiException {
+        ApiResponse<Avatar> localVarResp = createIssueTypeAvatarWithHttpInfo(id, size, body, x, y);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Load issue type avatar
+     * Loads an avatar for the issue type.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST \\ --user email@example.com:&lt;api_token&gt; \\ --header &#39;X-Atlassian-Token: no-check&#39; \\ --header &#39;Content-Type: image/&lt; image_type&gt;&#39; \\ --data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; \\ --url &#39;https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}&#39;This&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param size The length of each side of the crop region. (required)
+     * @param body  (required)
+     * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @return ApiResponse&lt;Avatar&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  an image isn&#39;t included in the request.  *  the image type is unsupported.  *  the crop parameters extend the crop area beyond the edge of the image.  *  &#x60;cropSize&#x60; is missing.  *  the issue type ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Avatar> createIssueTypeAvatarWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y) throws ApiException {
+        okhttp3.Call localVarCall = createIssueTypeAvatarValidateBeforeCall(id, size, body, x, y, null);
+        Type localVarReturnType = new TypeToken<Avatar>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Load issue type avatar (asynchronously)
+     * Loads an avatar for the issue type.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST \\ --user email@example.com:&lt;api_token&gt; \\ --header &#39;X-Atlassian-Token: no-check&#39; \\ --header &#39;Content-Type: image/&lt; image_type&gt;&#39; \\ --data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; \\ --url &#39;https://your-domain.atlassian.net/rest/api/3/issuetype/{issueTypeId}&#39;This&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar, use [ Update issue type](#api-rest-api-3-issuetype-id-put) to set it as the issue type&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param size The length of each side of the crop region. (required)
+     * @param body  (required)
+     * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  an image isn&#39;t included in the request.  *  the image type is unsupported.  *  the crop parameters extend the crop area beyond the edge of the image.  *  &#x60;cropSize&#x60; is missing.  *  the issue type ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createIssueTypeAvatarAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Integer size, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, final ApiCallback<Avatar> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createIssueTypeAvatarValidateBeforeCall(id, size, body, x, y, _callback);
+        Type localVarReturnType = new TypeToken<Avatar>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteIssueType
+     * @param id The ID of the issue type. (required)
+     * @param alternativeIssueTypeId The ID of the replacement issue type. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if any issues cannot be updated with the alternative issue type. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is in use and an alternative issue type is not specified.  *  the issue type or alternative issue type is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type is in use and:   *  also specified as the alternative issue type.  *  is a *standard* issue type and the alternative issue type is a *subtask*. </td><td>  -  </td></tr>
+        <tr><td> 423 </td><td> Returned if a resource related to deletion is locked. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteIssueTypeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetype/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (alternativeIssueTypeId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("alternativeIssueTypeId", alternativeIssueTypeId));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteIssueTypeValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteIssueType(Async)");
+        }
+
+        return deleteIssueTypeCall(id, alternativeIssueTypeId, _callback);
+
+    }
+
+    /**
+     * Delete issue type
+     * Deletes the issue type. If the issue type is in use, all uses are updated with the alternative issue type (&#x60;alternativeIssueTypeId&#x60;). A list of alternative issue types are obtained from the [Get alternative issue types](#api-rest-api-3-issuetype-id-alternatives-get) resource.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param alternativeIssueTypeId The ID of the replacement issue type. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if any issues cannot be updated with the alternative issue type. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is in use and an alternative issue type is not specified.  *  the issue type or alternative issue type is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type is in use and:   *  also specified as the alternative issue type.  *  is a *standard* issue type and the alternative issue type is a *subtask*. </td><td>  -  </td></tr>
+        <tr><td> 423 </td><td> Returned if a resource related to deletion is locked. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteIssueType(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId) throws ApiException {
+        deleteIssueTypeWithHttpInfo(id, alternativeIssueTypeId);
+    }
+
+    /**
+     * Delete issue type
+     * Deletes the issue type. If the issue type is in use, all uses are updated with the alternative issue type (&#x60;alternativeIssueTypeId&#x60;). A list of alternative issue types are obtained from the [Get alternative issue types](#api-rest-api-3-issuetype-id-alternatives-get) resource.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param alternativeIssueTypeId The ID of the replacement issue type. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if any issues cannot be updated with the alternative issue type. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is in use and an alternative issue type is not specified.  *  the issue type or alternative issue type is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type is in use and:   *  also specified as the alternative issue type.  *  is a *standard* issue type and the alternative issue type is a *subtask*. </td><td>  -  </td></tr>
+        <tr><td> 423 </td><td> Returned if a resource related to deletion is locked. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId) throws ApiException {
+        okhttp3.Call localVarCall = deleteIssueTypeValidateBeforeCall(id, alternativeIssueTypeId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete issue type (asynchronously)
+     * Deletes the issue type. If the issue type is in use, all uses are updated with the alternative issue type (&#x60;alternativeIssueTypeId&#x60;). A list of alternative issue types are obtained from the [Get alternative issue types](#api-rest-api-3-issuetype-id-alternatives-get) resource.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param alternativeIssueTypeId The ID of the replacement issue type. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if any issues cannot be updated with the alternative issue type. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is in use and an alternative issue type is not specified.  *  the issue type or alternative issue type is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type is in use and:   *  also specified as the alternative issue type.  *  is a *standard* issue type and the alternative issue type is a *subtask*. </td><td>  -  </td></tr>
+        <tr><td> 423 </td><td> Returned if a resource related to deletion is locked. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteIssueTypeAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String alternativeIssueTypeId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteIssueTypeValidateBeforeCall(id, alternativeIssueTypeId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAlternativeIssueTypes
+     * @param id The ID of the issue type. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAlternativeIssueTypesCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetype/{id}/alternatives"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAlternativeIssueTypesValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getAlternativeIssueTypes(Async)");
+        }
+
+        return getAlternativeIssueTypesCall(id, _callback);
+
+    }
+
+    /**
+     * Get alternative issue types
+     * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param id The ID of the issue type. (required)
+     * @return List&lt;IssueTypeDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<IssueTypeDetails> getAlternativeIssueTypes(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<List<IssueTypeDetails>> localVarResp = getAlternativeIssueTypesWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get alternative issue types
+     * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param id The ID of the issue type. (required)
+     * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<IssueTypeDetails>> getAlternativeIssueTypesWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getAlternativeIssueTypesValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<List<IssueTypeDetails>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get alternative issue types (asynchronously)
+     * Returns a list of issue types that can be used to replace the issue type. The alternative issue types are those assigned to the same workflow scheme, field configuration scheme, and screen scheme.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param id The ID of the issue type. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAlternativeIssueTypesAsync(@javax.annotation.Nonnull String id, final ApiCallback<List<IssueTypeDetails>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAlternativeIssueTypesValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<List<IssueTypeDetails>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueAllTypes
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueAllTypesCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetype";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueAllTypesValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getIssueAllTypesCall(_callback);
+
+    }
+
+    /**
+     * Get all issue types for user
+     * Returns all issue types.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Issue types are only returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg), all issue types are returned.  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for one or more projects, the issue types associated with the projects the user has permission to browse are returned.  *  if the user is anonymous then they will be able to access projects with the *Browse projects* for anonymous users  *  if the user authentication is incorrect they will fall back to anonymous
+     * @return List&lt;IssueTypeDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<IssueTypeDetails> getIssueAllTypes() throws ApiException {
+        ApiResponse<List<IssueTypeDetails>> localVarResp = getIssueAllTypesWithHttpInfo();
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all issue types for user
+     * Returns all issue types.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Issue types are only returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg), all issue types are returned.  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for one or more projects, the issue types associated with the projects the user has permission to browse are returned.  *  if the user is anonymous then they will be able to access projects with the *Browse projects* for anonymous users  *  if the user authentication is incorrect they will fall back to anonymous
+     * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<IssueTypeDetails>> getIssueAllTypesWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getIssueAllTypesValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<List<IssueTypeDetails>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all issue types for user (asynchronously)
+     * Returns all issue types.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Issue types are only returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg), all issue types are returned.  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for one or more projects, the issue types associated with the projects the user has permission to browse are returned.  *  if the user is anonymous then they will be able to access projects with the *Browse projects* for anonymous users  *  if the user authentication is incorrect they will fall back to anonymous
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueAllTypesAsync(final ApiCallback<List<IssueTypeDetails>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueAllTypesValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<List<IssueTypeDetails>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueType
+     * @param id The ID of the issue type. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue type ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueTypeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetype/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueTypeValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getIssueType(Async)");
+        }
+
+        return getIssueTypeCall(id, _callback);
+
+    }
+
+    /**
+     * Get issue type
+     * Returns an issue type.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in a project the issue type is associated with or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @return IssueTypeDetails
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue type ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public IssueTypeDetails getIssueType(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<IssueTypeDetails> localVarResp = getIssueTypeWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue type
+     * Returns an issue type.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in a project the issue type is associated with or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @return ApiResponse&lt;IssueTypeDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue type ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<IssueTypeDetails> getIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getIssueTypeValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<IssueTypeDetails>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue type (asynchronously)
+     * Returns an issue type.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in a project the issue type is associated with or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the issue type ID is invalid. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue type is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueTypeAsync(@javax.annotation.Nonnull String id, final ApiCallback<IssueTypeDetails> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueTypeValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<IssueTypeDetails>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueTypesForProject
+     * @param projectId The ID of the project. (required)
+     * @param level The level of the issue type to filter by. Use:   *  &#x60;-1&#x60; for Subtask.  *  &#x60;0&#x60; for Base.  *  &#x60;1&#x60; for Epic. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project is not found.  *  the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueTypesForProjectCall(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetype/project";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (projectId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectId", projectId));
+        }
+
+        if (level != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("level", level));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueTypesForProjectValidateBeforeCall(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectId' is set
+        if (projectId == null) {
+            throw new ApiException("Missing the required parameter 'projectId' when calling getIssueTypesForProject(Async)");
+        }
+
+        return getIssueTypesForProjectCall(projectId, level, _callback);
+
+    }
+
+    /**
+     * Get issue types for project
+     * Returns issue types for a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in the relevant project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The ID of the project. (required)
+     * @param level The level of the issue type to filter by. Use:   *  &#x60;-1&#x60; for Subtask.  *  &#x60;0&#x60; for Base.  *  &#x60;1&#x60; for Epic. (optional)
+     * @return List&lt;IssueTypeDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project is not found.  *  the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<IssueTypeDetails> getIssueTypesForProject(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level) throws ApiException {
+        ApiResponse<List<IssueTypeDetails>> localVarResp = getIssueTypesForProjectWithHttpInfo(projectId, level);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue types for project
+     * Returns issue types for a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in the relevant project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The ID of the project. (required)
+     * @param level The level of the issue type to filter by. Use:   *  &#x60;-1&#x60; for Subtask.  *  &#x60;0&#x60; for Base.  *  &#x60;1&#x60; for Epic. (optional)
+     * @return ApiResponse&lt;List&lt;IssueTypeDetails&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project is not found.  *  the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<IssueTypeDetails>> getIssueTypesForProjectWithHttpInfo(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level) throws ApiException {
+        okhttp3.Call localVarCall = getIssueTypesForProjectValidateBeforeCall(projectId, level, null);
+        Type localVarReturnType = new TypeToken<List<IssueTypeDetails>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue types for project (asynchronously)
+     * Returns issue types for a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) in the relevant project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The ID of the project. (required)
+     * @param level The level of the issue type to filter by. Use:   *  &#x60;-1&#x60; for Subtask.  *  &#x60;0&#x60; for Base.  *  &#x60;1&#x60; for Epic. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project is not found.  *  the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueTypesForProjectAsync(@javax.annotation.Nonnull Long projectId, @javax.annotation.Nullable Integer level, final ApiCallback<List<IssueTypeDetails>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueTypesForProjectValidateBeforeCall(projectId, level, _callback);
+        Type localVarReturnType = new TypeToken<List<IssueTypeDetails>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateIssueType
+     * @param id The ID of the issue type. (required)
+     * @param issueTypeUpdateBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid because:   *  no content is sent.  *  the issue type name exceeds 60 characters.  *  the avatar is not associated with this issue type. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateIssueTypeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueTypeUpdateBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetype/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateIssueTypeValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateIssueType(Async)");
+        }
+
+        // verify the required parameter 'issueTypeUpdateBean' is set
+        if (issueTypeUpdateBean == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeUpdateBean' when calling updateIssueType(Async)");
+        }
+
+        return updateIssueTypeCall(id, issueTypeUpdateBean, _callback);
+
+    }
+
+    /**
+     * Update issue type
+     * Updates the issue type.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param issueTypeUpdateBean  (required)
+     * @return IssueTypeDetails
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid because:   *  no content is sent.  *  the issue type name exceeds 60 characters.  *  the avatar is not associated with this issue type. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public IssueTypeDetails updateIssueType(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean) throws ApiException {
+        ApiResponse<IssueTypeDetails> localVarResp = updateIssueTypeWithHttpInfo(id, issueTypeUpdateBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update issue type
+     * Updates the issue type.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param issueTypeUpdateBean  (required)
+     * @return ApiResponse&lt;IssueTypeDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid because:   *  no content is sent.  *  the issue type name exceeds 60 characters.  *  the avatar is not associated with this issue type. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<IssueTypeDetails> updateIssueTypeWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean) throws ApiException {
+        okhttp3.Call localVarCall = updateIssueTypeValidateBeforeCall(id, issueTypeUpdateBean, null);
+        Type localVarReturnType = new TypeToken<IssueTypeDetails>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update issue type (asynchronously)
+     * Updates the issue type.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the issue type. (required)
+     * @param issueTypeUpdateBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid because:   *  no content is sent.  *  the issue type name exceeds 60 characters.  *  the avatar is not associated with this issue type. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the issue type name is in use. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateIssueTypeAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull IssueTypeUpdateBean issueTypeUpdateBean, final ApiCallback<IssueTypeDetails> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateIssueTypeValidateBeforeCall(id, issueTypeUpdateBean, _callback);
+        Type localVarReturnType = new TypeToken<IssueTypeDetails>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

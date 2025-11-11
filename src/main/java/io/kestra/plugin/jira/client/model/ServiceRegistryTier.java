@@ -13,63 +13,77 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * ServiceRegistryTier
  */
-@JsonPropertyOrder({
-  ServiceRegistryTier.JSON_PROPERTY_DESCRIPTION,
-  ServiceRegistryTier.JSON_PROPERTY_ID,
-  ServiceRegistryTier.JSON_PROPERTY_LEVEL,
-  ServiceRegistryTier.JSON_PROPERTY_NAME,
-  ServiceRegistryTier.JSON_PROPERTY_NAME_KEY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ServiceRegistryTier {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
-  private JsonNullable<String> description = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
+  @javax.annotation.Nullable
+  private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private UUID id;
 
-  public static final String JSON_PROPERTY_LEVEL = "level";
+  public static final String SERIALIZED_NAME_LEVEL = "level";
+  @SerializedName(SERIALIZED_NAME_LEVEL)
   @javax.annotation.Nullable
   private Integer level;
 
-  public static final String JSON_PROPERTY_NAME = "name";
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
+  @javax.annotation.Nullable
+  private String name;
 
-  public static final String JSON_PROPERTY_NAME_KEY = "nameKey";
+  public static final String SERIALIZED_NAME_NAME_KEY = "nameKey";
+  @SerializedName(SERIALIZED_NAME_NAME_KEY)
   @javax.annotation.Nullable
   private String nameKey;
 
-  public ServiceRegistryTier() { 
+  public ServiceRegistryTier() {
   }
 
   public ServiceRegistryTier description(@javax.annotation.Nullable String description) {
-    this.description = JsonNullable.<String>of(description);
+    this.description = description;
     return this;
   }
 
@@ -78,25 +92,12 @@ public class ServiceRegistryTier {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getDescription() {
-        return description.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getDescription_JsonNullable() {
     return description;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-  public void setDescription_JsonNullable(JsonNullable<String> description) {
-    this.description = description;
   }
 
   public void setDescription(@javax.annotation.Nullable String description) {
-    this.description = JsonNullable.<String>of(description);
+    this.description = description;
   }
 
 
@@ -110,15 +111,10 @@ public class ServiceRegistryTier {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable UUID id) {
     this.id = id;
   }
@@ -134,22 +130,17 @@ public class ServiceRegistryTier {
    * @return level
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getLevel() {
     return level;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLevel(@javax.annotation.Nullable Integer level) {
     this.level = level;
   }
 
 
   public ServiceRegistryTier name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
+    this.name = name;
     return this;
   }
 
@@ -158,25 +149,12 @@ public class ServiceRegistryTier {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
     return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
+    this.name = name;
   }
 
 
@@ -190,23 +168,16 @@ public class ServiceRegistryTier {
    * @return nameKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNameKey() {
     return nameKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNameKey(@javax.annotation.Nullable String nameKey) {
     this.nameKey = nameKey;
   }
 
 
-  /**
-   * Return true if this ServiceRegistryTier object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -216,10 +187,10 @@ public class ServiceRegistryTier {
       return false;
     }
     ServiceRegistryTier serviceRegistryTier = (ServiceRegistryTier) o;
-    return equalsNullable(this.description, serviceRegistryTier.description) &&
+    return Objects.equals(this.description, serviceRegistryTier.description) &&
         Objects.equals(this.id, serviceRegistryTier.id) &&
         Objects.equals(this.level, serviceRegistryTier.level) &&
-        equalsNullable(this.name, serviceRegistryTier.name) &&
+        Objects.equals(this.name, serviceRegistryTier.name) &&
         Objects.equals(this.nameKey, serviceRegistryTier.nameKey);
   }
 
@@ -229,7 +200,7 @@ public class ServiceRegistryTier {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(description), id, level, hashCodeNullable(name), nameKey);
+    return Objects.hash(description, id, level, name, nameKey);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -263,64 +234,100 @@ public class ServiceRegistryTier {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "id", "level", "name", "nameKey"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ServiceRegistryTier
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ServiceRegistryTier.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ServiceRegistryTier is not found in the empty JSON string", ServiceRegistryTier.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ServiceRegistryTier.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ServiceRegistryTier` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("nameKey") != null && !jsonObj.get("nameKey").isJsonNull()) && !jsonObj.get("nameKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `nameKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nameKey").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ServiceRegistryTier.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ServiceRegistryTier' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ServiceRegistryTier> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ServiceRegistryTier.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ServiceRegistryTier>() {
+           @Override
+           public void write(JsonWriter out, ServiceRegistryTier value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ServiceRegistryTier read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ServiceRegistryTier given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ServiceRegistryTier
+   * @throws IOException if the JSON string is invalid with respect to ServiceRegistryTier
+   */
+  public static ServiceRegistryTier fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ServiceRegistryTier.class);
+  }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `level` to the URL query string
-    if (getLevel() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLevel()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `nameKey` to the URL query string
-    if (getNameKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snameKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNameKey()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ServiceRegistryTier to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

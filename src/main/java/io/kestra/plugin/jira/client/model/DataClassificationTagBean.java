@@ -13,66 +13,81 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The data classification.
  */
-@JsonPropertyOrder({
-  DataClassificationTagBean.JSON_PROPERTY_COLOR,
-  DataClassificationTagBean.JSON_PROPERTY_DESCRIPTION,
-  DataClassificationTagBean.JSON_PROPERTY_GUIDELINE,
-  DataClassificationTagBean.JSON_PROPERTY_ID,
-  DataClassificationTagBean.JSON_PROPERTY_NAME,
-  DataClassificationTagBean.JSON_PROPERTY_RANK,
-  DataClassificationTagBean.JSON_PROPERTY_STATUS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class DataClassificationTagBean {
-  public static final String JSON_PROPERTY_COLOR = "color";
+  public static final String SERIALIZED_NAME_COLOR = "color";
+  @SerializedName(SERIALIZED_NAME_COLOR)
   @javax.annotation.Nullable
   private String color;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_GUIDELINE = "guideline";
+  public static final String SERIALIZED_NAME_GUIDELINE = "guideline";
+  @SerializedName(SERIALIZED_NAME_GUIDELINE)
   @javax.annotation.Nullable
   private String guideline;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private String id;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_RANK = "rank";
+  public static final String SERIALIZED_NAME_RANK = "rank";
+  @SerializedName(SERIALIZED_NAME_RANK)
   @javax.annotation.Nullable
   private Integer rank;
 
-  public static final String JSON_PROPERTY_STATUS = "status";
+  public static final String SERIALIZED_NAME_STATUS = "status";
+  @SerializedName(SERIALIZED_NAME_STATUS)
   @javax.annotation.Nonnull
   private String status;
 
-  public DataClassificationTagBean() { 
+  public DataClassificationTagBean() {
   }
 
   public DataClassificationTagBean color(@javax.annotation.Nullable String color) {
@@ -85,15 +100,10 @@ public class DataClassificationTagBean {
    * @return color
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COLOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getColor() {
     return color;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_COLOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setColor(@javax.annotation.Nullable String color) {
     this.color = color;
   }
@@ -109,15 +119,10 @@ public class DataClassificationTagBean {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -133,15 +138,10 @@ public class DataClassificationTagBean {
    * @return guideline
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GUIDELINE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getGuideline() {
     return guideline;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GUIDELINE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGuideline(@javax.annotation.Nullable String guideline) {
     this.guideline = guideline;
   }
@@ -157,15 +157,10 @@ public class DataClassificationTagBean {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@javax.annotation.Nonnull String id) {
     this.id = id;
   }
@@ -181,15 +176,10 @@ public class DataClassificationTagBean {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -205,15 +195,10 @@ public class DataClassificationTagBean {
    * @return rank
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RANK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getRank() {
     return rank;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RANK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRank(@javax.annotation.Nullable Integer rank) {
     this.rank = rank;
   }
@@ -229,23 +214,16 @@ public class DataClassificationTagBean {
    * @return status
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getStatus() {
     return status;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStatus(@javax.annotation.Nonnull String status) {
     this.status = status;
   }
 
 
-  /**
-   * Return true if this DataClassificationTagBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -295,74 +273,113 @@ public class DataClassificationTagBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("color", "description", "guideline", "id", "name", "rank", "status"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("id", "status"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to DataClassificationTagBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!DataClassificationTagBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in DataClassificationTagBean is not found in the empty JSON string", DataClassificationTagBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!DataClassificationTagBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `DataClassificationTagBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : DataClassificationTagBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("color") != null && !jsonObj.get("color").isJsonNull()) && !jsonObj.get("color").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `color` to be a primitive type in the JSON string but got `%s`", jsonObj.get("color").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("guideline") != null && !jsonObj.get("guideline").isJsonNull()) && !jsonObj.get("guideline").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `guideline` to be a primitive type in the JSON string but got `%s`", jsonObj.get("guideline").toString()));
+      }
+      if (!jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (!jsonObj.get("status").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `status` to be a primitive type in the JSON string but got `%s`", jsonObj.get("status").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!DataClassificationTagBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'DataClassificationTagBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<DataClassificationTagBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(DataClassificationTagBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<DataClassificationTagBean>() {
+           @Override
+           public void write(JsonWriter out, DataClassificationTagBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public DataClassificationTagBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of DataClassificationTagBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of DataClassificationTagBean
+   * @throws IOException if the JSON string is invalid with respect to DataClassificationTagBean
+   */
+  public static DataClassificationTagBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, DataClassificationTagBean.class);
+  }
 
-    // add `color` to the URL query string
-    if (getColor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scolor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColor()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `guideline` to the URL query string
-    if (getGuideline() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sguideline%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGuideline()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `rank` to the URL query string
-    if (getRank() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srank%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRank()))));
-    }
-
-    // add `status` to the URL query string
-    if (getStatus() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of DataClassificationTagBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

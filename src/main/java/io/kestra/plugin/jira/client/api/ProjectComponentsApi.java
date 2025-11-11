@@ -10,1182 +10,1260 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.ComponentIssuesCount;
 import io.kestra.plugin.jira.client.model.PageBean2ComponentJsonBean;
 import io.kestra.plugin.jira.client.model.PageBeanComponentWithIssueCount;
 import io.kestra.plugin.jira.client.model.ProjectComponent;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectComponentsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ProjectComponentsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ProjectComponentsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createComponent
+     * @param projectComponent  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the user is not found.  *  &#x60;name&#x60; is not provided.  *  &#x60;name&#x60; is over 255 characters in length.  *  &#x60;projectId&#x60; is not provided.  *  &#x60;assigneeType&#x60; is an invalid value. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createComponentCall(@javax.annotation.Nonnull ProjectComponent projectComponent, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ProjectComponentsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ProjectComponentsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create component
-   * Creates a component. Use components to provide containers for issues within a project. Use components to provide containers for issues within a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project in which the component is created or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectComponent  (required)
-   * @return ProjectComponent
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectComponent createComponent(@javax.annotation.Nonnull ProjectComponent projectComponent) throws ApiException {
-    return createComponent(projectComponent, null);
-  }
-
-  /**
-   * Create component
-   * Creates a component. Use components to provide containers for issues within a project. Use components to provide containers for issues within a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project in which the component is created or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectComponent  (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectComponent
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectComponent createComponent(@javax.annotation.Nonnull ProjectComponent projectComponent, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectComponent> localVarResponse = createComponentWithHttpInfo(projectComponent, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create component
-   * Creates a component. Use components to provide containers for issues within a project. Use components to provide containers for issues within a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project in which the component is created or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectComponent  (required)
-   * @return ApiResponse&lt;ProjectComponent&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectComponent> createComponentWithHttpInfo(@javax.annotation.Nonnull ProjectComponent projectComponent) throws ApiException {
-    return createComponentWithHttpInfo(projectComponent, null);
-  }
-
-  /**
-   * Create component
-   * Creates a component. Use components to provide containers for issues within a project. Use components to provide containers for issues within a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project in which the component is created or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectComponent  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectComponent&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectComponent> createComponentWithHttpInfo(@javax.annotation.Nonnull ProjectComponent projectComponent, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createComponentRequestBuilder(projectComponent, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createComponent", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectComponent>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectComponent responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectComponent>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = projectComponent;
 
-        return new ApiResponse<ProjectComponent>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/component";
 
-  private HttpRequest.Builder createComponentRequestBuilder(@javax.annotation.Nonnull ProjectComponent projectComponent, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectComponent' is set
-    if (projectComponent == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectComponent' when calling createComponent");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/component";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(projectComponent);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete component
-   * Deletes a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the component. (required)
-   * @param moveIssuesTo The ID of the component to replace the deleted component. If this value is null no replacement is made. (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteComponent(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo) throws ApiException {
-    deleteComponent(id, moveIssuesTo, null);
-  }
-
-  /**
-   * Delete component
-   * Deletes a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the component. (required)
-   * @param moveIssuesTo The ID of the component to replace the deleted component. If this value is null no replacement is made. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteComponent(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo, Map<String, String> headers) throws ApiException {
-    deleteComponentWithHttpInfo(id, moveIssuesTo, headers);
-  }
-
-  /**
-   * Delete component
-   * Deletes a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the component. (required)
-   * @param moveIssuesTo The ID of the component to replace the deleted component. If this value is null no replacement is made. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteComponentWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo) throws ApiException {
-    return deleteComponentWithHttpInfo(id, moveIssuesTo, null);
-  }
-
-  /**
-   * Delete component
-   * Deletes a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the component. (required)
-   * @param moveIssuesTo The ID of the component to replace the deleted component. If this value is null no replacement is made. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteComponentWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteComponentRequestBuilder(id, moveIssuesTo, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteComponent", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteComponentRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteComponent");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/component/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "moveIssuesTo";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("moveIssuesTo", moveIssuesTo));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Find components for projects
-   * Returns a [paginated](#pagination) list of all components in a project, including global (Compass) components when applicable.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdsOrKeys The project IDs and/or project keys (case sensitive). (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;name&#x60; Sorts by component name. (optional)
-   * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @return PageBean2ComponentJsonBean
-   * @throws ApiException if fails to make API call
-   */
-  public PageBean2ComponentJsonBean findComponentsForProjects(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query) throws ApiException {
-    return findComponentsForProjects(projectIdsOrKeys, startAt, maxResults, orderBy, query, null);
-  }
-
-  /**
-   * Find components for projects
-   * Returns a [paginated](#pagination) list of all components in a project, including global (Compass) components when applicable.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdsOrKeys The project IDs and/or project keys (case sensitive). (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;name&#x60; Sorts by component name. (optional)
-   * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBean2ComponentJsonBean
-   * @throws ApiException if fails to make API call
-   */
-  public PageBean2ComponentJsonBean findComponentsForProjects(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBean2ComponentJsonBean> localVarResponse = findComponentsForProjectsWithHttpInfo(projectIdsOrKeys, startAt, maxResults, orderBy, query, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Find components for projects
-   * Returns a [paginated](#pagination) list of all components in a project, including global (Compass) components when applicable.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdsOrKeys The project IDs and/or project keys (case sensitive). (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;name&#x60; Sorts by component name. (optional)
-   * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @return ApiResponse&lt;PageBean2ComponentJsonBean&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBean2ComponentJsonBean> findComponentsForProjectsWithHttpInfo(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query) throws ApiException {
-    return findComponentsForProjectsWithHttpInfo(projectIdsOrKeys, startAt, maxResults, orderBy, query, null);
-  }
-
-  /**
-   * Find components for projects
-   * Returns a [paginated](#pagination) list of all components in a project, including global (Compass) components when applicable.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdsOrKeys The project IDs and/or project keys (case sensitive). (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;name&#x60; Sorts by component name. (optional)
-   * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBean2ComponentJsonBean&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBean2ComponentJsonBean> findComponentsForProjectsWithHttpInfo(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = findComponentsForProjectsRequestBuilder(projectIdsOrKeys, startAt, maxResults, orderBy, query, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("findComponentsForProjects", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBean2ComponentJsonBean>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBean2ComponentJsonBean responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBean2ComponentJsonBean>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBean2ComponentJsonBean>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder findComponentsForProjectsRequestBuilder(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/component";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "projectIdsOrKeys";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "projectIdsOrKeys", projectIdsOrKeys));
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-    localVarQueryParameterBaseName = "query";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("query", query));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get component
-   * Returns a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for project containing the component.
-   * @param id The ID of the component. (required)
-   * @return ProjectComponent
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectComponent getComponent(@javax.annotation.Nonnull String id) throws ApiException {
-    return getComponent(id, null);
-  }
-
-  /**
-   * Get component
-   * Returns a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for project containing the component.
-   * @param id The ID of the component. (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectComponent
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectComponent getComponent(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectComponent> localVarResponse = getComponentWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get component
-   * Returns a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for project containing the component.
-   * @param id The ID of the component. (required)
-   * @return ApiResponse&lt;ProjectComponent&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectComponent> getComponentWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getComponentWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get component
-   * Returns a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for project containing the component.
-   * @param id The ID of the component. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectComponent&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectComponent> getComponentWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getComponentRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getComponent", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectComponent>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectComponent responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectComponent>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ProjectComponent>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getComponentRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getComponent");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/component/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get component issues count
-   * Returns the counts of issues assigned to the component.  This operation can be accessed anonymously.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:field:jira&#x60;, &#x60;read:project.component:jira&#x60;  **[Permissions](#permissions) required:** None.
-   * @param id The ID of the component. (required)
-   * @return ComponentIssuesCount
-   * @throws ApiException if fails to make API call
-   */
-  public ComponentIssuesCount getComponentRelatedIssues(@javax.annotation.Nonnull String id) throws ApiException {
-    return getComponentRelatedIssues(id, null);
-  }
-
-  /**
-   * Get component issues count
-   * Returns the counts of issues assigned to the component.  This operation can be accessed anonymously.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:field:jira&#x60;, &#x60;read:project.component:jira&#x60;  **[Permissions](#permissions) required:** None.
-   * @param id The ID of the component. (required)
-   * @param headers Optional headers to include in the request
-   * @return ComponentIssuesCount
-   * @throws ApiException if fails to make API call
-   */
-  public ComponentIssuesCount getComponentRelatedIssues(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<ComponentIssuesCount> localVarResponse = getComponentRelatedIssuesWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get component issues count
-   * Returns the counts of issues assigned to the component.  This operation can be accessed anonymously.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:field:jira&#x60;, &#x60;read:project.component:jira&#x60;  **[Permissions](#permissions) required:** None.
-   * @param id The ID of the component. (required)
-   * @return ApiResponse&lt;ComponentIssuesCount&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ComponentIssuesCount> getComponentRelatedIssuesWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getComponentRelatedIssuesWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get component issues count
-   * Returns the counts of issues assigned to the component.  This operation can be accessed anonymously.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:field:jira&#x60;, &#x60;read:project.component:jira&#x60;  **[Permissions](#permissions) required:** None.
-   * @param id The ID of the component. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ComponentIssuesCount&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ComponentIssuesCount> getComponentRelatedIssuesWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getComponentRelatedIssuesRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getComponentRelatedIssues", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ComponentIssuesCount>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createComponentValidateBeforeCall(@javax.annotation.Nonnull ProjectComponent projectComponent, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectComponent' is set
+        if (projectComponent == null) {
+            throw new ApiException("Missing the required parameter 'projectComponent' when calling createComponent(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ComponentIssuesCount responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ComponentIssuesCount>() {});
-        
-        localVarResponse.body().close();
+        return createComponentCall(projectComponent, _callback);
 
-        return new ApiResponse<ComponentIssuesCount>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getComponentRelatedIssuesRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getComponentRelatedIssues");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/component/{id}/relatedIssueCounts"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Create component
+     * Creates a component. Use components to provide containers for issues within a project. Use components to provide containers for issues within a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project in which the component is created or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectComponent  (required)
+     * @return ProjectComponent
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the user is not found.  *  &#x60;name&#x60; is not provided.  *  &#x60;name&#x60; is over 255 characters in length.  *  &#x60;projectId&#x60; is not provided.  *  &#x60;assigneeType&#x60; is an invalid value. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectComponent createComponent(@javax.annotation.Nonnull ProjectComponent projectComponent) throws ApiException {
+        ApiResponse<ProjectComponent> localVarResp = createComponentWithHttpInfo(projectComponent);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create component
+     * Creates a component. Use components to provide containers for issues within a project. Use components to provide containers for issues within a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project in which the component is created or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectComponent  (required)
+     * @return ApiResponse&lt;ProjectComponent&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the user is not found.  *  &#x60;name&#x60; is not provided.  *  &#x60;name&#x60; is over 255 characters in length.  *  &#x60;projectId&#x60; is not provided.  *  &#x60;assigneeType&#x60; is an invalid value. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectComponent> createComponentWithHttpInfo(@javax.annotation.Nonnull ProjectComponent projectComponent) throws ApiException {
+        okhttp3.Call localVarCall = createComponentValidateBeforeCall(projectComponent, null);
+        Type localVarReturnType = new TypeToken<ProjectComponent>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Get project components
-   * Returns all components in a project. See the [Get project components paginated](#api-rest-api-3-project-projectIdOrKey-component-get) resource if you want to get a full list of components with pagination.  If your project uses Compass components, this API will return a paginated list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
-   * @return List&lt;ProjectComponent&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ProjectComponent> getProjectComponents(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource) throws ApiException {
-    return getProjectComponents(projectIdOrKey, componentSource, null);
-  }
+    /**
+     * Create component (asynchronously)
+     * Creates a component. Use components to provide containers for issues within a project. Use components to provide containers for issues within a project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project in which the component is created or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectComponent  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the user is not found.  *  &#x60;name&#x60; is not provided.  *  &#x60;name&#x60; is over 255 characters in length.  *  &#x60;projectId&#x60; is not provided.  *  &#x60;assigneeType&#x60; is an invalid value. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createComponentAsync(@javax.annotation.Nonnull ProjectComponent projectComponent, final ApiCallback<ProjectComponent> _callback) throws ApiException {
 
-  /**
-   * Get project components
-   * Returns all components in a project. See the [Get project components paginated](#api-rest-api-3-project-projectIdOrKey-component-get) resource if you want to get a full list of components with pagination.  If your project uses Compass components, this API will return a paginated list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;ProjectComponent&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ProjectComponent> getProjectComponents(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<ProjectComponent>> localVarResponse = getProjectComponentsWithHttpInfo(projectIdOrKey, componentSource, headers);
-    return localVarResponse.getData();
-  }
+        okhttp3.Call localVarCall = createComponentValidateBeforeCall(projectComponent, _callback);
+        Type localVarReturnType = new TypeToken<ProjectComponent>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteComponent
+     * @param id The ID of the component. (required)
+     * @param moveIssuesTo The ID of the component to replace the deleted component. If this value is null no replacement is made. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the component is not found.  *  the replacement component is not found.  *  the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteComponentCall(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get project components
-   * Returns all components in a project. See the [Get project components paginated](#api-rest-api-3-project-projectIdOrKey-component-get) resource if you want to get a full list of components with pagination.  If your project uses Compass components, this API will return a paginated list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
-   * @return ApiResponse&lt;List&lt;ProjectComponent&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ProjectComponent>> getProjectComponentsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource) throws ApiException {
-    return getProjectComponentsWithHttpInfo(projectIdOrKey, componentSource, null);
-  }
-
-  /**
-   * Get project components
-   * Returns all components in a project. See the [Get project components paginated](#api-rest-api-3-project-projectIdOrKey-component-get) resource if you want to get a full list of components with pagination.  If your project uses Compass components, this API will return a paginated list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;ProjectComponent&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ProjectComponent>> getProjectComponentsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectComponentsRequestBuilder(projectIdOrKey, componentSource, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectComponents", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<ProjectComponent>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<ProjectComponent> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ProjectComponent>>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<List<ProjectComponent>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/component/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder getProjectComponentsRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getProjectComponents");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/components"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "componentSource";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("componentSource", componentSource));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project components paginated
-   * Returns a [paginated](#pagination) list of all components in a project. See the [Get project components](#api-rest-api-3-project-projectIdOrKey-components-get) resource if you want to get a full list of versions without pagination.  If your project uses Compass components, this API will return a list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;issueCount&#x60; Sorts by the count of issues associated with the component.  *  &#x60;lead&#x60; Sorts by the user key of the component&#39;s project lead.  *  &#x60;name&#x60; Sorts by component name. (optional)
-   * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
-   * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @return PageBeanComponentWithIssueCount
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanComponentWithIssueCount getProjectComponentsPaginated(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query) throws ApiException {
-    return getProjectComponentsPaginated(projectIdOrKey, startAt, maxResults, orderBy, componentSource, query, null);
-  }
-
-  /**
-   * Get project components paginated
-   * Returns a [paginated](#pagination) list of all components in a project. See the [Get project components](#api-rest-api-3-project-projectIdOrKey-components-get) resource if you want to get a full list of versions without pagination.  If your project uses Compass components, this API will return a list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;issueCount&#x60; Sorts by the count of issues associated with the component.  *  &#x60;lead&#x60; Sorts by the user key of the component&#39;s project lead.  *  &#x60;name&#x60; Sorts by component name. (optional)
-   * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
-   * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanComponentWithIssueCount
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanComponentWithIssueCount getProjectComponentsPaginated(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanComponentWithIssueCount> localVarResponse = getProjectComponentsPaginatedWithHttpInfo(projectIdOrKey, startAt, maxResults, orderBy, componentSource, query, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project components paginated
-   * Returns a [paginated](#pagination) list of all components in a project. See the [Get project components](#api-rest-api-3-project-projectIdOrKey-components-get) resource if you want to get a full list of versions without pagination.  If your project uses Compass components, this API will return a list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;issueCount&#x60; Sorts by the count of issues associated with the component.  *  &#x60;lead&#x60; Sorts by the user key of the component&#39;s project lead.  *  &#x60;name&#x60; Sorts by component name. (optional)
-   * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
-   * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @return ApiResponse&lt;PageBeanComponentWithIssueCount&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanComponentWithIssueCount> getProjectComponentsPaginatedWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query) throws ApiException {
-    return getProjectComponentsPaginatedWithHttpInfo(projectIdOrKey, startAt, maxResults, orderBy, componentSource, query, null);
-  }
-
-  /**
-   * Get project components paginated
-   * Returns a [paginated](#pagination) list of all components in a project. See the [Get project components](#api-rest-api-3-project-projectIdOrKey-components-get) resource if you want to get a full list of versions without pagination.  If your project uses Compass components, this API will return a list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;issueCount&#x60; Sorts by the count of issues associated with the component.  *  &#x60;lead&#x60; Sorts by the user key of the component&#39;s project lead.  *  &#x60;name&#x60; Sorts by component name. (optional)
-   * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
-   * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanComponentWithIssueCount&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanComponentWithIssueCount> getProjectComponentsPaginatedWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectComponentsPaginatedRequestBuilder(projectIdOrKey, startAt, maxResults, orderBy, componentSource, query, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectComponentsPaginated", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanComponentWithIssueCount>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (moveIssuesTo != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("moveIssuesTo", moveIssuesTo));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanComponentWithIssueCount responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanComponentWithIssueCount>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanComponentWithIssueCount>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectComponentsPaginatedRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getProjectComponentsPaginated");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/component"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-    localVarQueryParameterBaseName = "componentSource";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("componentSource", componentSource));
-    localVarQueryParameterBaseName = "query";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("query", query));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update component
-   * Updates a component. Any fields included in the request are overwritten. If &#x60;leadAccountId&#x60; is an empty string (\&quot;\&quot;) the component lead is removed.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the component. (required)
-   * @param projectComponent  (required)
-   * @return ProjectComponent
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectComponent updateComponent(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent) throws ApiException {
-    return updateComponent(id, projectComponent, null);
-  }
-
-  /**
-   * Update component
-   * Updates a component. Any fields included in the request are overwritten. If &#x60;leadAccountId&#x60; is an empty string (\&quot;\&quot;) the component lead is removed.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the component. (required)
-   * @param projectComponent  (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectComponent
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectComponent updateComponent(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectComponent> localVarResponse = updateComponentWithHttpInfo(id, projectComponent, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update component
-   * Updates a component. Any fields included in the request are overwritten. If &#x60;leadAccountId&#x60; is an empty string (\&quot;\&quot;) the component lead is removed.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the component. (required)
-   * @param projectComponent  (required)
-   * @return ApiResponse&lt;ProjectComponent&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectComponent> updateComponentWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent) throws ApiException {
-    return updateComponentWithHttpInfo(id, projectComponent, null);
-  }
-
-  /**
-   * Update component
-   * Updates a component. Any fields included in the request are overwritten. If &#x60;leadAccountId&#x60; is an empty string (\&quot;\&quot;) the component lead is removed.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the component. (required)
-   * @param projectComponent  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectComponent&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectComponent> updateComponentWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateComponentRequestBuilder(id, projectComponent, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateComponent", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectComponent>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectComponent responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectComponent>() {});
-        
-        localVarResponse.body().close();
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
 
-        return new ApiResponse<ProjectComponent>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateComponentRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateComponent");
-    }
-    // verify the required parameter 'projectComponent' is set
-    if (projectComponent == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectComponent' when calling updateComponent");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteComponentValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteComponent(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/component/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
+        return deleteComponentCall(id, moveIssuesTo, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(projectComponent);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete component
+     * Deletes a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the component. (required)
+     * @param moveIssuesTo The ID of the component to replace the deleted component. If this value is null no replacement is made. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the component is not found.  *  the replacement component is not found.  *  the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteComponent(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo) throws ApiException {
+        deleteComponentWithHttpInfo(id, moveIssuesTo);
+    }
+
+    /**
+     * Delete component
+     * Deletes a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the component. (required)
+     * @param moveIssuesTo The ID of the component to replace the deleted component. If this value is null no replacement is made. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the component is not found.  *  the replacement component is not found.  *  the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteComponentWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo) throws ApiException {
+        okhttp3.Call localVarCall = deleteComponentValidateBeforeCall(id, moveIssuesTo, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete component (asynchronously)
+     * Deletes a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the component. (required)
+     * @param moveIssuesTo The ID of the component to replace the deleted component. If this value is null no replacement is made. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the component is not found.  *  the replacement component is not found.  *  the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteComponentAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveIssuesTo, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteComponentValidateBeforeCall(id, moveIssuesTo, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for findComponentsForProjects
+     * @param projectIdsOrKeys The project IDs and/or project keys (case sensitive). (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;name&#x60; Sorts by component name. (optional)
+     * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call findComponentsForProjectsCall(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/component";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (projectIdsOrKeys != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "projectIdsOrKeys", projectIdsOrKeys));
+        }
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
+
+        if (query != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("query", query));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call findComponentsForProjectsValidateBeforeCall(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, final ApiCallback _callback) throws ApiException {
+        return findComponentsForProjectsCall(projectIdsOrKeys, startAt, maxResults, orderBy, query, _callback);
+
+    }
+
+    /**
+     * Find components for projects
+     * Returns a [paginated](#pagination) list of all components in a project, including global (Compass) components when applicable.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdsOrKeys The project IDs and/or project keys (case sensitive). (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;name&#x60; Sorts by component name. (optional)
+     * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @return PageBean2ComponentJsonBean
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBean2ComponentJsonBean findComponentsForProjects(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query) throws ApiException {
+        ApiResponse<PageBean2ComponentJsonBean> localVarResp = findComponentsForProjectsWithHttpInfo(projectIdsOrKeys, startAt, maxResults, orderBy, query);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Find components for projects
+     * Returns a [paginated](#pagination) list of all components in a project, including global (Compass) components when applicable.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdsOrKeys The project IDs and/or project keys (case sensitive). (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;name&#x60; Sorts by component name. (optional)
+     * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @return ApiResponse&lt;PageBean2ComponentJsonBean&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBean2ComponentJsonBean> findComponentsForProjectsWithHttpInfo(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query) throws ApiException {
+        okhttp3.Call localVarCall = findComponentsForProjectsValidateBeforeCall(projectIdsOrKeys, startAt, maxResults, orderBy, query, null);
+        Type localVarReturnType = new TypeToken<PageBean2ComponentJsonBean>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Find components for projects (asynchronously)
+     * Returns a [paginated](#pagination) list of all components in a project, including global (Compass) components when applicable.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdsOrKeys The project IDs and/or project keys (case sensitive). (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;name&#x60; Sorts by component name. (optional)
+     * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call findComponentsForProjectsAsync(@javax.annotation.Nullable List<String> projectIdsOrKeys, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, final ApiCallback<PageBean2ComponentJsonBean> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = findComponentsForProjectsValidateBeforeCall(projectIdsOrKeys, startAt, maxResults, orderBy, query, _callback);
+        Type localVarReturnType = new TypeToken<PageBean2ComponentJsonBean>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getComponent
+     * @param id The ID of the component. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getComponentCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/component/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getComponentValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getComponent(Async)");
+        }
+
+        return getComponentCall(id, _callback);
+
+    }
+
+    /**
+     * Get component
+     * Returns a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for project containing the component.
+     * @param id The ID of the component. (required)
+     * @return ProjectComponent
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectComponent getComponent(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<ProjectComponent> localVarResp = getComponentWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get component
+     * Returns a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for project containing the component.
+     * @param id The ID of the component. (required)
+     * @return ApiResponse&lt;ProjectComponent&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectComponent> getComponentWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getComponentValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<ProjectComponent>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get component (asynchronously)
+     * Returns a component.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for project containing the component.
+     * @param id The ID of the component. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getComponentAsync(@javax.annotation.Nonnull String id, final ApiCallback<ProjectComponent> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getComponentValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<ProjectComponent>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getComponentRelatedIssues
+     * @param id The ID of the component. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getComponentRelatedIssuesCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/component/{id}/relatedIssueCounts"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getComponentRelatedIssuesValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getComponentRelatedIssues(Async)");
+        }
+
+        return getComponentRelatedIssuesCall(id, _callback);
+
+    }
+
+    /**
+     * Get component issues count
+     * Returns the counts of issues assigned to the component.  This operation can be accessed anonymously.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:field:jira&#x60;, &#x60;read:project.component:jira&#x60;  **[Permissions](#permissions) required:** None.
+     * @param id The ID of the component. (required)
+     * @return ComponentIssuesCount
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ComponentIssuesCount getComponentRelatedIssues(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<ComponentIssuesCount> localVarResp = getComponentRelatedIssuesWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get component issues count
+     * Returns the counts of issues assigned to the component.  This operation can be accessed anonymously.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:field:jira&#x60;, &#x60;read:project.component:jira&#x60;  **[Permissions](#permissions) required:** None.
+     * @param id The ID of the component. (required)
+     * @return ApiResponse&lt;ComponentIssuesCount&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ComponentIssuesCount> getComponentRelatedIssuesWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getComponentRelatedIssuesValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<ComponentIssuesCount>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get component issues count (asynchronously)
+     * Returns the counts of issues assigned to the component.  This operation can be accessed anonymously.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:field:jira&#x60;, &#x60;read:project.component:jira&#x60;  **[Permissions](#permissions) required:** None.
+     * @param id The ID of the component. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getComponentRelatedIssuesAsync(@javax.annotation.Nonnull String id, final ApiCallback<ComponentIssuesCount> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getComponentRelatedIssuesValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<ComponentIssuesCount>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectComponents
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectComponentsCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/components"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (componentSource != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("componentSource", componentSource));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectComponentsValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getProjectComponents(Async)");
+        }
+
+        return getProjectComponentsCall(projectIdOrKey, componentSource, _callback);
+
+    }
+
+    /**
+     * Get project components
+     * Returns all components in a project. See the [Get project components paginated](#api-rest-api-3-project-projectIdOrKey-component-get) resource if you want to get a full list of components with pagination.  If your project uses Compass components, this API will return a paginated list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
+     * @return List&lt;ProjectComponent&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<ProjectComponent> getProjectComponents(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource) throws ApiException {
+        ApiResponse<List<ProjectComponent>> localVarResp = getProjectComponentsWithHttpInfo(projectIdOrKey, componentSource);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project components
+     * Returns all components in a project. See the [Get project components paginated](#api-rest-api-3-project-projectIdOrKey-component-get) resource if you want to get a full list of components with pagination.  If your project uses Compass components, this API will return a paginated list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
+     * @return ApiResponse&lt;List&lt;ProjectComponent&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<ProjectComponent>> getProjectComponentsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource) throws ApiException {
+        okhttp3.Call localVarCall = getProjectComponentsValidateBeforeCall(projectIdOrKey, componentSource, null);
+        Type localVarReturnType = new TypeToken<List<ProjectComponent>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project components (asynchronously)
+     * Returns all components in a project. See the [Get project components paginated](#api-rest-api-3-project-projectIdOrKey-component-get) resource if you want to get a full list of components with pagination.  If your project uses Compass components, this API will return a paginated list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectComponentsAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String componentSource, final ApiCallback<List<ProjectComponent>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectComponentsValidateBeforeCall(projectIdOrKey, componentSource, _callback);
+        Type localVarReturnType = new TypeToken<List<ProjectComponent>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectComponentsPaginated
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;issueCount&#x60; Sorts by the count of issues associated with the component.  *  &#x60;lead&#x60; Sorts by the user key of the component&#39;s project lead.  *  &#x60;name&#x60; Sorts by component name. (optional)
+     * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
+     * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectComponentsPaginatedCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/component"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
+
+        if (componentSource != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("componentSource", componentSource));
+        }
+
+        if (query != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("query", query));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectComponentsPaginatedValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getProjectComponentsPaginated(Async)");
+        }
+
+        return getProjectComponentsPaginatedCall(projectIdOrKey, startAt, maxResults, orderBy, componentSource, query, _callback);
+
+    }
+
+    /**
+     * Get project components paginated
+     * Returns a [paginated](#pagination) list of all components in a project. See the [Get project components](#api-rest-api-3-project-projectIdOrKey-components-get) resource if you want to get a full list of versions without pagination.  If your project uses Compass components, this API will return a list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;issueCount&#x60; Sorts by the count of issues associated with the component.  *  &#x60;lead&#x60; Sorts by the user key of the component&#39;s project lead.  *  &#x60;name&#x60; Sorts by component name. (optional)
+     * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
+     * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @return PageBeanComponentWithIssueCount
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanComponentWithIssueCount getProjectComponentsPaginated(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query) throws ApiException {
+        ApiResponse<PageBeanComponentWithIssueCount> localVarResp = getProjectComponentsPaginatedWithHttpInfo(projectIdOrKey, startAt, maxResults, orderBy, componentSource, query);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project components paginated
+     * Returns a [paginated](#pagination) list of all components in a project. See the [Get project components](#api-rest-api-3-project-projectIdOrKey-components-get) resource if you want to get a full list of versions without pagination.  If your project uses Compass components, this API will return a list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;issueCount&#x60; Sorts by the count of issues associated with the component.  *  &#x60;lead&#x60; Sorts by the user key of the component&#39;s project lead.  *  &#x60;name&#x60; Sorts by component name. (optional)
+     * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
+     * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @return ApiResponse&lt;PageBeanComponentWithIssueCount&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanComponentWithIssueCount> getProjectComponentsPaginatedWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query) throws ApiException {
+        okhttp3.Call localVarCall = getProjectComponentsPaginatedValidateBeforeCall(projectIdOrKey, startAt, maxResults, orderBy, componentSource, query, null);
+        Type localVarReturnType = new TypeToken<PageBeanComponentWithIssueCount>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project components paginated (asynchronously)
+     * Returns a [paginated](#pagination) list of all components in a project. See the [Get project components](#api-rest-api-3-project-projectIdOrKey-components-get) resource if you want to get a full list of versions without pagination.  If your project uses Compass components, this API will return a list of Compass components that are linked to issues in that project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by the component description.  *  &#x60;issueCount&#x60; Sorts by the count of issues associated with the component.  *  &#x60;lead&#x60; Sorts by the user key of the component&#39;s project lead.  *  &#x60;name&#x60; Sorts by component name. (optional)
+     * @param componentSource The source of the components to return. Can be &#x60;jira&#x60; (default), &#x60;compass&#x60; or &#x60;auto&#x60;. When &#x60;auto&#x60; is specified, the API will return connected Compass components if the project is opted into Compass, otherwise it will return Jira components. Defaults to &#x60;jira&#x60;. (optional, default to jira)
+     * @param query Filter the results using a literal string. Components with a matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectComponentsPaginatedAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String componentSource, @javax.annotation.Nullable String query, final ApiCallback<PageBeanComponentWithIssueCount> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectComponentsPaginatedValidateBeforeCall(projectIdOrKey, startAt, maxResults, orderBy, componentSource, query, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanComponentWithIssueCount>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateComponent
+     * @param id The ID of the component. (required)
+     * @param projectComponent  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the user is not found.  *  &#x60;assigneeType&#x60; is an invalid value.  *  &#x60;name&#x60; is over 255 characters in length. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateComponentCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = projectComponent;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/component/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateComponentValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateComponent(Async)");
+        }
+
+        // verify the required parameter 'projectComponent' is set
+        if (projectComponent == null) {
+            throw new ApiException("Missing the required parameter 'projectComponent' when calling updateComponent(Async)");
+        }
+
+        return updateComponentCall(id, projectComponent, _callback);
+
+    }
+
+    /**
+     * Update component
+     * Updates a component. Any fields included in the request are overwritten. If &#x60;leadAccountId&#x60; is an empty string (\&quot;\&quot;) the component lead is removed.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the component. (required)
+     * @param projectComponent  (required)
+     * @return ProjectComponent
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the user is not found.  *  &#x60;assigneeType&#x60; is an invalid value.  *  &#x60;name&#x60; is over 255 characters in length. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectComponent updateComponent(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent) throws ApiException {
+        ApiResponse<ProjectComponent> localVarResp = updateComponentWithHttpInfo(id, projectComponent);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update component
+     * Updates a component. Any fields included in the request are overwritten. If &#x60;leadAccountId&#x60; is an empty string (\&quot;\&quot;) the component lead is removed.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the component. (required)
+     * @param projectComponent  (required)
+     * @return ApiResponse&lt;ProjectComponent&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the user is not found.  *  &#x60;assigneeType&#x60; is an invalid value.  *  &#x60;name&#x60; is over 255 characters in length. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectComponent> updateComponentWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent) throws ApiException {
+        okhttp3.Call localVarCall = updateComponentValidateBeforeCall(id, projectComponent, null);
+        Type localVarReturnType = new TypeToken<ProjectComponent>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update component (asynchronously)
+     * Updates a component. Any fields included in the request are overwritten. If &#x60;leadAccountId&#x60; is an empty string (\&quot;\&quot;) the component lead is removed.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the component or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the component. (required)
+     * @param projectComponent  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the user is not found.  *  &#x60;assigneeType&#x60; is an invalid value.  *  &#x60;name&#x60; is over 255 characters in length. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to manage the project containing the component or does not have permission to administer Jira. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the component is not found or the user does not have permission to browse the project containing the component. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateComponentAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull ProjectComponent projectComponent, final ApiCallback<ProjectComponent> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateComponentValidateBeforeCall(id, projectComponent, _callback);
+        Type localVarReturnType = new TypeToken<ProjectComponent>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

@@ -13,45 +13,60 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.NotificationSchemeEventIDPayload;
 import io.kestra.plugin.jira.client.model.NotificationSchemeNotificationDetailsPayload;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The payload for creating a notification scheme event. Defines which notifications should be sent for a specific event
  */
-@JsonPropertyOrder({
-  NotificationSchemeEventPayload.JSON_PROPERTY_EVENT,
-  NotificationSchemeEventPayload.JSON_PROPERTY_NOTIFICATIONS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class NotificationSchemeEventPayload {
-  public static final String JSON_PROPERTY_EVENT = "event";
+  public static final String SERIALIZED_NAME_EVENT = "event";
+  @SerializedName(SERIALIZED_NAME_EVENT)
   @javax.annotation.Nullable
   private NotificationSchemeEventIDPayload event;
 
-  public static final String JSON_PROPERTY_NOTIFICATIONS = "notifications";
+  public static final String SERIALIZED_NAME_NOTIFICATIONS = "notifications";
+  @SerializedName(SERIALIZED_NAME_NOTIFICATIONS)
   @javax.annotation.Nullable
   private List<NotificationSchemeNotificationDetailsPayload> notifications = new ArrayList<>();
 
-  public NotificationSchemeEventPayload() { 
+  public NotificationSchemeEventPayload() {
   }
 
   public NotificationSchemeEventPayload event(@javax.annotation.Nullable NotificationSchemeEventIDPayload event) {
@@ -64,15 +79,10 @@ public class NotificationSchemeEventPayload {
    * @return event
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EVENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public NotificationSchemeEventIDPayload getEvent() {
     return event;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EVENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEvent(@javax.annotation.Nullable NotificationSchemeEventIDPayload event) {
     this.event = event;
   }
@@ -96,23 +106,16 @@ public class NotificationSchemeEventPayload {
    * @return notifications
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<NotificationSchemeNotificationDetailsPayload> getNotifications() {
     return notifications;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNotifications(@javax.annotation.Nullable List<NotificationSchemeNotificationDetailsPayload> notifications) {
     this.notifications = notifications;
   }
 
 
-  /**
-   * Return true if this NotificationSchemeEventPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -152,54 +155,106 @@ public class NotificationSchemeEventPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("event", "notifications"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to NotificationSchemeEventPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `event` to the URL query string
-    if (getEvent() != null) {
-      joiner.add(getEvent().toUrlQueryString(prefix + "event" + suffix));
-    }
-
-    // add `notifications` to the URL query string
-    if (getNotifications() != null) {
-      for (int i = 0; i < getNotifications().size(); i++) {
-        if (getNotifications().get(i) != null) {
-          joiner.add(getNotifications().get(i).toUrlQueryString(String.format(Locale.ROOT, "%snotifications%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!NotificationSchemeEventPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in NotificationSchemeEventPayload is not found in the empty JSON string", NotificationSchemeEventPayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!NotificationSchemeEventPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `NotificationSchemeEventPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `event`
+      if (jsonObj.get("event") != null && !jsonObj.get("event").isJsonNull()) {
+        NotificationSchemeEventIDPayload.validateJsonElement(jsonObj.get("event"));
+      }
+      if (jsonObj.get("notifications") != null && !jsonObj.get("notifications").isJsonNull()) {
+        JsonArray jsonArraynotifications = jsonObj.getAsJsonArray("notifications");
+        if (jsonArraynotifications != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("notifications").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `notifications` to be an array in the JSON string but got `%s`", jsonObj.get("notifications").toString()));
+          }
+
+          // validate the optional field `notifications` (array)
+          for (int i = 0; i < jsonArraynotifications.size(); i++) {
+            NotificationSchemeNotificationDetailsPayload.validateJsonElement(jsonArraynotifications.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!NotificationSchemeEventPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'NotificationSchemeEventPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<NotificationSchemeEventPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(NotificationSchemeEventPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<NotificationSchemeEventPayload>() {
+           @Override
+           public void write(JsonWriter out, NotificationSchemeEventPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public NotificationSchemeEventPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of NotificationSchemeEventPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of NotificationSchemeEventPayload
+   * @throws IOException if the JSON string is invalid with respect to NotificationSchemeEventPayload
+   */
+  public static NotificationSchemeEventPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, NotificationSchemeEventPayload.class);
+  }
+
+  /**
+   * Convert an instance of NotificationSchemeEventPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

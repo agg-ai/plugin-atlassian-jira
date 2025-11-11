@@ -13,50 +13,65 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of the status being created.
  */
-@JsonPropertyOrder({
-  StatusCreate.JSON_PROPERTY_DESCRIPTION,
-  StatusCreate.JSON_PROPERTY_NAME,
-  StatusCreate.JSON_PROPERTY_STATUS_CATEGORY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class StatusCreate {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
   /**
    * The category of the status.
    */
+  @JsonAdapter(StatusCategoryEnum.Adapter.class)
   public enum StatusCategoryEnum {
-    TODO(String.valueOf("TODO")),
+    TODO("TODO"),
     
-    IN_PROGRESS(String.valueOf("IN_PROGRESS")),
+    IN_PROGRESS("IN_PROGRESS"),
     
-    DONE(String.valueOf("DONE"));
+    DONE("DONE");
 
     private String value;
 
@@ -64,7 +79,6 @@ public class StatusCreate {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -74,7 +88,6 @@ public class StatusCreate {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static StatusCategoryEnum fromValue(String value) {
       for (StatusCategoryEnum b : StatusCategoryEnum.values()) {
         if (b.value.equals(value)) {
@@ -83,13 +96,32 @@ public class StatusCreate {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<StatusCategoryEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StatusCategoryEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StatusCategoryEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return StatusCategoryEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      StatusCategoryEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_STATUS_CATEGORY = "statusCategory";
+  public static final String SERIALIZED_NAME_STATUS_CATEGORY = "statusCategory";
+  @SerializedName(SERIALIZED_NAME_STATUS_CATEGORY)
   @javax.annotation.Nonnull
   private StatusCategoryEnum statusCategory;
 
-  public StatusCreate() { 
+  public StatusCreate() {
   }
 
   public StatusCreate description(@javax.annotation.Nullable String description) {
@@ -102,15 +134,10 @@ public class StatusCreate {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -126,15 +153,10 @@ public class StatusCreate {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -150,23 +172,16 @@ public class StatusCreate {
    * @return statusCategory
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_STATUS_CATEGORY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public StatusCategoryEnum getStatusCategory() {
     return statusCategory;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_CATEGORY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStatusCategory(@javax.annotation.Nonnull StatusCategoryEnum statusCategory) {
     this.statusCategory = statusCategory;
   }
 
 
-  /**
-   * Return true if this StatusCreate object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -208,54 +223,106 @@ public class StatusCreate {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "name", "statusCategory"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("name", "statusCategory"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to StatusCreate
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!StatusCreate.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in StatusCreate is not found in the empty JSON string", StatusCreate.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!StatusCreate.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `StatusCreate` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : StatusCreate.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (!jsonObj.get("statusCategory").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusCategory` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusCategory").toString()));
+      }
+      // validate the required field `statusCategory`
+      StatusCategoryEnum.validateJsonElement(jsonObj.get("statusCategory"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!StatusCreate.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'StatusCreate' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<StatusCreate> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(StatusCreate.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<StatusCreate>() {
+           @Override
+           public void write(JsonWriter out, StatusCreate value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public StatusCreate read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of StatusCreate given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of StatusCreate
+   * @throws IOException if the JSON string is invalid with respect to StatusCreate
+   */
+  public static StatusCreate fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, StatusCreate.class);
+  }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `statusCategory` to the URL query string
-    if (getStatusCategory() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusCategory%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusCategory()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of StatusCreate to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

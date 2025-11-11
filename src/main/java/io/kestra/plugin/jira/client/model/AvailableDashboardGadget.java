@@ -13,55 +13,69 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The details of the available dashboard gadget.
  */
-@JsonPropertyOrder({
-  AvailableDashboardGadget.JSON_PROPERTY_MODULE_KEY,
-  AvailableDashboardGadget.JSON_PROPERTY_TITLE,
-  AvailableDashboardGadget.JSON_PROPERTY_URI
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AvailableDashboardGadget {
-  public static final String JSON_PROPERTY_MODULE_KEY = "moduleKey";
+  public static final String SERIALIZED_NAME_MODULE_KEY = "moduleKey";
+  @SerializedName(SERIALIZED_NAME_MODULE_KEY)
   @javax.annotation.Nullable
   private String moduleKey;
 
-  public static final String JSON_PROPERTY_TITLE = "title";
+  public static final String SERIALIZED_NAME_TITLE = "title";
+  @SerializedName(SERIALIZED_NAME_TITLE)
   @javax.annotation.Nonnull
   private String title;
 
-  public static final String JSON_PROPERTY_URI = "uri";
+  public static final String SERIALIZED_NAME_URI = "uri";
+  @SerializedName(SERIALIZED_NAME_URI)
   @javax.annotation.Nullable
   private String uri;
 
-  public AvailableDashboardGadget() { 
+  public AvailableDashboardGadget() {
   }
 
-  @JsonCreator
   public AvailableDashboardGadget(
-    @JsonProperty(JSON_PROPERTY_MODULE_KEY) String moduleKey, 
-    @JsonProperty(JSON_PROPERTY_TITLE) String title, 
-    @JsonProperty(JSON_PROPERTY_URI) String uri
+     String moduleKey, 
+     String title, 
+     String uri
   ) {
-  this();
+    this();
     this.moduleKey = moduleKey;
     this.title = title;
     this.uri = uri;
@@ -72,12 +86,9 @@ public class AvailableDashboardGadget {
    * @return moduleKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MODULE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getModuleKey() {
     return moduleKey;
   }
-
 
 
 
@@ -86,12 +97,9 @@ public class AvailableDashboardGadget {
    * @return title
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TITLE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTitle() {
     return title;
   }
-
 
 
 
@@ -100,8 +108,6 @@ public class AvailableDashboardGadget {
    * @return uri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUri() {
     return uri;
   }
@@ -109,9 +115,6 @@ public class AvailableDashboardGadget {
 
 
 
-  /**
-   * Return true if this AvailableDashboardGadget object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -153,54 +156,104 @@ public class AvailableDashboardGadget {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("moduleKey", "title", "uri"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("title"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AvailableDashboardGadget
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AvailableDashboardGadget.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AvailableDashboardGadget is not found in the empty JSON string", AvailableDashboardGadget.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AvailableDashboardGadget.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AvailableDashboardGadget` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : AvailableDashboardGadget.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("moduleKey") != null && !jsonObj.get("moduleKey").isJsonNull()) && !jsonObj.get("moduleKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `moduleKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("moduleKey").toString()));
+      }
+      if (!jsonObj.get("title").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `title` to be a primitive type in the JSON string but got `%s`", jsonObj.get("title").toString()));
+      }
+      if ((jsonObj.get("uri") != null && !jsonObj.get("uri").isJsonNull()) && !jsonObj.get("uri").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `uri` to be a primitive type in the JSON string but got `%s`", jsonObj.get("uri").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AvailableDashboardGadget.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AvailableDashboardGadget' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AvailableDashboardGadget> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AvailableDashboardGadget.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<AvailableDashboardGadget>() {
+           @Override
+           public void write(JsonWriter out, AvailableDashboardGadget value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public AvailableDashboardGadget read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of AvailableDashboardGadget given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AvailableDashboardGadget
+   * @throws IOException if the JSON string is invalid with respect to AvailableDashboardGadget
+   */
+  public static AvailableDashboardGadget fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AvailableDashboardGadget.class);
+  }
 
-    // add `moduleKey` to the URL query string
-    if (getModuleKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smoduleKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModuleKey()))));
-    }
-
-    // add `title` to the URL query string
-    if (getTitle() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stitle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
-    }
-
-    // add `uri` to the URL query string
-    if (getUri() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suri%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUri()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of AvailableDashboardGadget to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

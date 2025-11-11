@@ -13,64 +13,79 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.Application;
 import io.kestra.plugin.jira.client.model.RemoteObject;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of an issue remote link.
  */
-@JsonPropertyOrder({
-  RemoteIssueLink.JSON_PROPERTY_APPLICATION,
-  RemoteIssueLink.JSON_PROPERTY_GLOBAL_ID,
-  RemoteIssueLink.JSON_PROPERTY_ID,
-  RemoteIssueLink.JSON_PROPERTY_OBJECT,
-  RemoteIssueLink.JSON_PROPERTY_RELATIONSHIP,
-  RemoteIssueLink.JSON_PROPERTY_SELF
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class RemoteIssueLink {
-  public static final String JSON_PROPERTY_APPLICATION = "application";
+  public static final String SERIALIZED_NAME_APPLICATION = "application";
+  @SerializedName(SERIALIZED_NAME_APPLICATION)
   @javax.annotation.Nullable
   private Application application;
 
-  public static final String JSON_PROPERTY_GLOBAL_ID = "globalId";
+  public static final String SERIALIZED_NAME_GLOBAL_ID = "globalId";
+  @SerializedName(SERIALIZED_NAME_GLOBAL_ID)
   @javax.annotation.Nullable
   private String globalId;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_OBJECT = "object";
+  public static final String SERIALIZED_NAME_OBJECT = "object";
+  @SerializedName(SERIALIZED_NAME_OBJECT)
   @javax.annotation.Nullable
   private RemoteObject _object;
 
-  public static final String JSON_PROPERTY_RELATIONSHIP = "relationship";
+  public static final String SERIALIZED_NAME_RELATIONSHIP = "relationship";
+  @SerializedName(SERIALIZED_NAME_RELATIONSHIP)
   @javax.annotation.Nullable
   private String relationship;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public RemoteIssueLink() { 
+  public RemoteIssueLink() {
   }
 
   public RemoteIssueLink application(@javax.annotation.Nullable Application application) {
@@ -83,15 +98,10 @@ public class RemoteIssueLink {
    * @return application
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Application getApplication() {
     return application;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setApplication(@javax.annotation.Nullable Application application) {
     this.application = application;
   }
@@ -107,15 +117,10 @@ public class RemoteIssueLink {
    * @return globalId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GLOBAL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getGlobalId() {
     return globalId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GLOBAL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGlobalId(@javax.annotation.Nullable String globalId) {
     this.globalId = globalId;
   }
@@ -131,15 +136,10 @@ public class RemoteIssueLink {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable Long id) {
     this.id = id;
   }
@@ -155,15 +155,10 @@ public class RemoteIssueLink {
    * @return _object
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OBJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RemoteObject getObject() {
     return _object;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OBJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setObject(@javax.annotation.Nullable RemoteObject _object) {
     this._object = _object;
   }
@@ -179,15 +174,10 @@ public class RemoteIssueLink {
    * @return relationship
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RELATIONSHIP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRelationship() {
     return relationship;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RELATIONSHIP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRelationship(@javax.annotation.Nullable String relationship) {
     this.relationship = relationship;
   }
@@ -203,23 +193,16 @@ public class RemoteIssueLink {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSelf(@javax.annotation.Nullable URI self) {
     this.self = self;
   }
 
 
-  /**
-   * Return true if this RemoteIssueLink object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -267,69 +250,97 @@ public class RemoteIssueLink {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("application", "globalId", "id", "object", "relationship", "self"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to RemoteIssueLink
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!RemoteIssueLink.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in RemoteIssueLink is not found in the empty JSON string", RemoteIssueLink.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!RemoteIssueLink.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `RemoteIssueLink` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("globalId") != null && !jsonObj.get("globalId").isJsonNull()) && !jsonObj.get("globalId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `globalId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("globalId").toString()));
+      }
+      if ((jsonObj.get("relationship") != null && !jsonObj.get("relationship").isJsonNull()) && !jsonObj.get("relationship").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `relationship` to be a primitive type in the JSON string but got `%s`", jsonObj.get("relationship").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!RemoteIssueLink.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'RemoteIssueLink' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<RemoteIssueLink> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(RemoteIssueLink.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<RemoteIssueLink>() {
+           @Override
+           public void write(JsonWriter out, RemoteIssueLink value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public RemoteIssueLink read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of RemoteIssueLink given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of RemoteIssueLink
+   * @throws IOException if the JSON string is invalid with respect to RemoteIssueLink
+   */
+  public static RemoteIssueLink fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, RemoteIssueLink.class);
+  }
 
-    // add `application` to the URL query string
-    if (getApplication() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sapplication%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getApplication()))));
-    }
-
-    // add `globalId` to the URL query string
-    if (getGlobalId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sglobalId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGlobalId()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `object` to the URL query string
-    if (getObject() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sobject%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getObject()))));
-    }
-
-    // add `relationship` to the URL query string
-    if (getRelationship() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srelationship%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRelationship()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of RemoteIssueLink to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

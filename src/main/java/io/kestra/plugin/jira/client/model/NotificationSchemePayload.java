@@ -13,60 +13,74 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.NotificationSchemeEventPayload;
 import io.kestra.plugin.jira.client.model.ProjectCreateResourceIdentifier;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The payload for creating a notification scheme. The user has to supply the ID for the default notification scheme. For CMP this is provided in the project payload and should be left empty, for TMP it&#39;s provided using this payload
  */
-@JsonPropertyOrder({
-  NotificationSchemePayload.JSON_PROPERTY_DESCRIPTION,
-  NotificationSchemePayload.JSON_PROPERTY_NAME,
-  NotificationSchemePayload.JSON_PROPERTY_NOTIFICATION_SCHEME_EVENTS,
-  NotificationSchemePayload.JSON_PROPERTY_ON_CONFLICT,
-  NotificationSchemePayload.JSON_PROPERTY_PCRI
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class NotificationSchemePayload {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_NOTIFICATION_SCHEME_EVENTS = "notificationSchemeEvents";
+  public static final String SERIALIZED_NAME_NOTIFICATION_SCHEME_EVENTS = "notificationSchemeEvents";
+  @SerializedName(SERIALIZED_NAME_NOTIFICATION_SCHEME_EVENTS)
   @javax.annotation.Nullable
   private List<NotificationSchemeEventPayload> notificationSchemeEvents = new ArrayList<>();
 
   /**
    * The strategy to use when there is a conflict with an existing entity
    */
+  @JsonAdapter(OnConflictEnum.Adapter.class)
   public enum OnConflictEnum {
-    FAIL(String.valueOf("FAIL")),
+    FAIL("FAIL"),
     
-    USE(String.valueOf("USE")),
+    USE("USE"),
     
-    NEW(String.valueOf("NEW"));
+    NEW("NEW");
 
     private String value;
 
@@ -74,7 +88,6 @@ public class NotificationSchemePayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -84,7 +97,6 @@ public class NotificationSchemePayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static OnConflictEnum fromValue(String value) {
       for (OnConflictEnum b : OnConflictEnum.values()) {
         if (b.value.equals(value)) {
@@ -93,17 +105,37 @@ public class NotificationSchemePayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<OnConflictEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final OnConflictEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public OnConflictEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return OnConflictEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      OnConflictEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ON_CONFLICT = "onConflict";
+  public static final String SERIALIZED_NAME_ON_CONFLICT = "onConflict";
+  @SerializedName(SERIALIZED_NAME_ON_CONFLICT)
   @javax.annotation.Nullable
   private OnConflictEnum onConflict;
 
-  public static final String JSON_PROPERTY_PCRI = "pcri";
+  public static final String SERIALIZED_NAME_PCRI = "pcri";
+  @SerializedName(SERIALIZED_NAME_PCRI)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier pcri;
 
-  public NotificationSchemePayload() { 
+  public NotificationSchemePayload() {
   }
 
   public NotificationSchemePayload description(@javax.annotation.Nullable String description) {
@@ -116,15 +148,10 @@ public class NotificationSchemePayload {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -140,15 +167,10 @@ public class NotificationSchemePayload {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -172,15 +194,10 @@ public class NotificationSchemePayload {
    * @return notificationSchemeEvents
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_SCHEME_EVENTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<NotificationSchemeEventPayload> getNotificationSchemeEvents() {
     return notificationSchemeEvents;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_SCHEME_EVENTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNotificationSchemeEvents(@javax.annotation.Nullable List<NotificationSchemeEventPayload> notificationSchemeEvents) {
     this.notificationSchemeEvents = notificationSchemeEvents;
   }
@@ -196,15 +213,10 @@ public class NotificationSchemePayload {
    * @return onConflict
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ON_CONFLICT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OnConflictEnum getOnConflict() {
     return onConflict;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ON_CONFLICT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOnConflict(@javax.annotation.Nullable OnConflictEnum onConflict) {
     this.onConflict = onConflict;
   }
@@ -220,23 +232,16 @@ public class NotificationSchemePayload {
    * @return pcri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getPcri() {
     return pcri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPcri(@javax.annotation.Nullable ProjectCreateResourceIdentifier pcri) {
     this.pcri = pcri;
   }
 
 
-  /**
-   * Return true if this NotificationSchemePayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -282,69 +287,119 @@ public class NotificationSchemePayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "name", "notificationSchemeEvents", "onConflict", "pcri"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to NotificationSchemePayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `notificationSchemeEvents` to the URL query string
-    if (getNotificationSchemeEvents() != null) {
-      for (int i = 0; i < getNotificationSchemeEvents().size(); i++) {
-        if (getNotificationSchemeEvents().get(i) != null) {
-          joiner.add(getNotificationSchemeEvents().get(i).toUrlQueryString(String.format(Locale.ROOT, "%snotificationSchemeEvents%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!NotificationSchemePayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in NotificationSchemePayload is not found in the empty JSON string", NotificationSchemePayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `onConflict` to the URL query string
-    if (getOnConflict() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sonConflict%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOnConflict()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!NotificationSchemePayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `NotificationSchemePayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (jsonObj.get("notificationSchemeEvents") != null && !jsonObj.get("notificationSchemeEvents").isJsonNull()) {
+        JsonArray jsonArraynotificationSchemeEvents = jsonObj.getAsJsonArray("notificationSchemeEvents");
+        if (jsonArraynotificationSchemeEvents != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("notificationSchemeEvents").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `notificationSchemeEvents` to be an array in the JSON string but got `%s`", jsonObj.get("notificationSchemeEvents").toString()));
+          }
 
-    // add `pcri` to the URL query string
-    if (getPcri() != null) {
-      joiner.add(getPcri().toUrlQueryString(prefix + "pcri" + suffix));
-    }
+          // validate the optional field `notificationSchemeEvents` (array)
+          for (int i = 0; i < jsonArraynotificationSchemeEvents.size(); i++) {
+            NotificationSchemeEventPayload.validateJsonElement(jsonArraynotificationSchemeEvents.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("onConflict") != null && !jsonObj.get("onConflict").isJsonNull()) && !jsonObj.get("onConflict").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `onConflict` to be a primitive type in the JSON string but got `%s`", jsonObj.get("onConflict").toString()));
+      }
+      // validate the optional field `onConflict`
+      if (jsonObj.get("onConflict") != null && !jsonObj.get("onConflict").isJsonNull()) {
+        OnConflictEnum.validateJsonElement(jsonObj.get("onConflict"));
+      }
+      // validate the optional field `pcri`
+      if (jsonObj.get("pcri") != null && !jsonObj.get("pcri").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("pcri"));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!NotificationSchemePayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'NotificationSchemePayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<NotificationSchemePayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(NotificationSchemePayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<NotificationSchemePayload>() {
+           @Override
+           public void write(JsonWriter out, NotificationSchemePayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public NotificationSchemePayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of NotificationSchemePayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of NotificationSchemePayload
+   * @throws IOException if the JSON string is invalid with respect to NotificationSchemePayload
+   */
+  public static NotificationSchemePayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, NotificationSchemePayload.class);
+  }
+
+  /**
+   * Convert an instance of NotificationSchemePayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

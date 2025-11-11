@@ -13,102 +13,115 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JsonNode;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a task.
  */
-@JsonPropertyOrder({
-  TaskProgressBeanJsonNode.JSON_PROPERTY_DESCRIPTION,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_ELAPSED_RUNTIME,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_FINISHED,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_ID,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_LAST_UPDATE,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_MESSAGE,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_PROGRESS,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_RESULT,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_SELF,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_STARTED,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_STATUS,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_SUBMITTED,
-  TaskProgressBeanJsonNode.JSON_PROPERTY_SUBMITTED_BY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TaskProgressBeanJsonNode {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ELAPSED_RUNTIME = "elapsedRuntime";
+  public static final String SERIALIZED_NAME_ELAPSED_RUNTIME = "elapsedRuntime";
+  @SerializedName(SERIALIZED_NAME_ELAPSED_RUNTIME)
   @javax.annotation.Nonnull
   private Long elapsedRuntime;
 
-  public static final String JSON_PROPERTY_FINISHED = "finished";
+  public static final String SERIALIZED_NAME_FINISHED = "finished";
+  @SerializedName(SERIALIZED_NAME_FINISHED)
   @javax.annotation.Nullable
   private Long finished;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private String id;
 
-  public static final String JSON_PROPERTY_LAST_UPDATE = "lastUpdate";
+  public static final String SERIALIZED_NAME_LAST_UPDATE = "lastUpdate";
+  @SerializedName(SERIALIZED_NAME_LAST_UPDATE)
   @javax.annotation.Nonnull
   private Long lastUpdate;
 
-  public static final String JSON_PROPERTY_MESSAGE = "message";
+  public static final String SERIALIZED_NAME_MESSAGE = "message";
+  @SerializedName(SERIALIZED_NAME_MESSAGE)
   @javax.annotation.Nullable
   private String message;
 
-  public static final String JSON_PROPERTY_PROGRESS = "progress";
+  public static final String SERIALIZED_NAME_PROGRESS = "progress";
+  @SerializedName(SERIALIZED_NAME_PROGRESS)
   @javax.annotation.Nonnull
   private Long progress;
 
-  public static final String JSON_PROPERTY_RESULT = "result";
+  public static final String SERIALIZED_NAME_RESULT = "result";
+  @SerializedName(SERIALIZED_NAME_RESULT)
   @javax.annotation.Nullable
   private JsonNode result;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nonnull
   private URI self;
 
-  public static final String JSON_PROPERTY_STARTED = "started";
+  public static final String SERIALIZED_NAME_STARTED = "started";
+  @SerializedName(SERIALIZED_NAME_STARTED)
   @javax.annotation.Nullable
   private Long started;
 
   /**
    * The status of the task.
    */
+  @JsonAdapter(StatusEnum.Adapter.class)
   public enum StatusEnum {
-    ENQUEUED(String.valueOf("ENQUEUED")),
+    ENQUEUED("ENQUEUED"),
     
-    RUNNING(String.valueOf("RUNNING")),
+    RUNNING("RUNNING"),
     
-    COMPLETE(String.valueOf("COMPLETE")),
+    COMPLETE("COMPLETE"),
     
-    FAILED(String.valueOf("FAILED")),
+    FAILED("FAILED"),
     
-    CANCEL_REQUESTED(String.valueOf("CANCEL_REQUESTED")),
+    CANCEL_REQUESTED("CANCEL_REQUESTED"),
     
-    CANCELLED(String.valueOf("CANCELLED")),
+    CANCELLED("CANCELLED"),
     
-    DEAD(String.valueOf("DEAD"));
+    DEAD("DEAD");
 
     private String value;
 
@@ -116,7 +129,6 @@ public class TaskProgressBeanJsonNode {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -126,7 +138,6 @@ public class TaskProgressBeanJsonNode {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static StatusEnum fromValue(String value) {
       for (StatusEnum b : StatusEnum.values()) {
         if (b.value.equals(value)) {
@@ -135,21 +146,42 @@ public class TaskProgressBeanJsonNode {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<StatusEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StatusEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return StatusEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      StatusEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_STATUS = "status";
+  public static final String SERIALIZED_NAME_STATUS = "status";
+  @SerializedName(SERIALIZED_NAME_STATUS)
   @javax.annotation.Nonnull
   private StatusEnum status;
 
-  public static final String JSON_PROPERTY_SUBMITTED = "submitted";
+  public static final String SERIALIZED_NAME_SUBMITTED = "submitted";
+  @SerializedName(SERIALIZED_NAME_SUBMITTED)
   @javax.annotation.Nonnull
   private Long submitted;
 
-  public static final String JSON_PROPERTY_SUBMITTED_BY = "submittedBy";
+  public static final String SERIALIZED_NAME_SUBMITTED_BY = "submittedBy";
+  @SerializedName(SERIALIZED_NAME_SUBMITTED_BY)
   @javax.annotation.Nonnull
   private Long submittedBy;
 
-  public TaskProgressBeanJsonNode() { 
+  public TaskProgressBeanJsonNode() {
   }
 
   public TaskProgressBeanJsonNode description(@javax.annotation.Nullable String description) {
@@ -162,15 +194,10 @@ public class TaskProgressBeanJsonNode {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -186,15 +213,10 @@ public class TaskProgressBeanJsonNode {
    * @return elapsedRuntime
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ELAPSED_RUNTIME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getElapsedRuntime() {
     return elapsedRuntime;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ELAPSED_RUNTIME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setElapsedRuntime(@javax.annotation.Nonnull Long elapsedRuntime) {
     this.elapsedRuntime = elapsedRuntime;
   }
@@ -210,15 +232,10 @@ public class TaskProgressBeanJsonNode {
    * @return finished
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FINISHED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getFinished() {
     return finished;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FINISHED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFinished(@javax.annotation.Nullable Long finished) {
     this.finished = finished;
   }
@@ -234,15 +251,10 @@ public class TaskProgressBeanJsonNode {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@javax.annotation.Nonnull String id) {
     this.id = id;
   }
@@ -258,15 +270,10 @@ public class TaskProgressBeanJsonNode {
    * @return lastUpdate
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getLastUpdate() {
     return lastUpdate;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLastUpdate(@javax.annotation.Nonnull Long lastUpdate) {
     this.lastUpdate = lastUpdate;
   }
@@ -282,15 +289,10 @@ public class TaskProgressBeanJsonNode {
    * @return message
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMessage() {
     return message;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMessage(@javax.annotation.Nullable String message) {
     this.message = message;
   }
@@ -306,15 +308,10 @@ public class TaskProgressBeanJsonNode {
    * @return progress
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROGRESS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getProgress() {
     return progress;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROGRESS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setProgress(@javax.annotation.Nonnull Long progress) {
     this.progress = progress;
   }
@@ -330,15 +327,10 @@ public class TaskProgressBeanJsonNode {
    * @return result
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JsonNode getResult() {
     return result;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setResult(@javax.annotation.Nullable JsonNode result) {
     this.result = result;
   }
@@ -354,15 +346,10 @@ public class TaskProgressBeanJsonNode {
    * @return self
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public URI getSelf() {
     return self;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSelf(@javax.annotation.Nonnull URI self) {
     this.self = self;
   }
@@ -378,15 +365,10 @@ public class TaskProgressBeanJsonNode {
    * @return started
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STARTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStarted() {
     return started;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STARTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStarted(@javax.annotation.Nullable Long started) {
     this.started = started;
   }
@@ -402,15 +384,10 @@ public class TaskProgressBeanJsonNode {
    * @return status
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public StatusEnum getStatus() {
     return status;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStatus(@javax.annotation.Nonnull StatusEnum status) {
     this.status = status;
   }
@@ -426,15 +403,10 @@ public class TaskProgressBeanJsonNode {
    * @return submitted
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SUBMITTED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getSubmitted() {
     return submitted;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SUBMITTED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSubmitted(@javax.annotation.Nonnull Long submitted) {
     this.submitted = submitted;
   }
@@ -450,23 +422,16 @@ public class TaskProgressBeanJsonNode {
    * @return submittedBy
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SUBMITTED_BY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getSubmittedBy() {
     return submittedBy;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SUBMITTED_BY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSubmittedBy(@javax.annotation.Nonnull Long submittedBy) {
     this.submittedBy = submittedBy;
   }
 
 
-  /**
-   * Return true if this TaskProgressBeanJsonNode object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -528,104 +493,116 @@ public class TaskProgressBeanJsonNode {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "elapsedRuntime", "finished", "id", "lastUpdate", "message", "progress", "result", "self", "started", "status", "submitted", "submittedBy"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("elapsedRuntime", "id", "lastUpdate", "progress", "self", "status", "submitted", "submittedBy"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TaskProgressBeanJsonNode
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TaskProgressBeanJsonNode.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TaskProgressBeanJsonNode is not found in the empty JSON string", TaskProgressBeanJsonNode.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!TaskProgressBeanJsonNode.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `TaskProgressBeanJsonNode` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : TaskProgressBeanJsonNode.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (!jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("message") != null && !jsonObj.get("message").isJsonNull()) && !jsonObj.get("message").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `message` to be a primitive type in the JSON string but got `%s`", jsonObj.get("message").toString()));
+      }
+      // validate the optional field `result`
+      if (jsonObj.get("result") != null && !jsonObj.get("result").isJsonNull()) {
+        JsonNode.validateJsonElement(jsonObj.get("result"));
+      }
+      if (!jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if (!jsonObj.get("status").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `status` to be a primitive type in the JSON string but got `%s`", jsonObj.get("status").toString()));
+      }
+      // validate the required field `status`
+      StatusEnum.validateJsonElement(jsonObj.get("status"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TaskProgressBeanJsonNode.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TaskProgressBeanJsonNode' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TaskProgressBeanJsonNode> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TaskProgressBeanJsonNode.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TaskProgressBeanJsonNode>() {
+           @Override
+           public void write(JsonWriter out, TaskProgressBeanJsonNode value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TaskProgressBeanJsonNode read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of TaskProgressBeanJsonNode given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TaskProgressBeanJsonNode
+   * @throws IOException if the JSON string is invalid with respect to TaskProgressBeanJsonNode
+   */
+  public static TaskProgressBeanJsonNode fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TaskProgressBeanJsonNode.class);
+  }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `elapsedRuntime` to the URL query string
-    if (getElapsedRuntime() != null) {
-      joiner.add(String.format(Locale.ROOT, "%selapsedRuntime%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getElapsedRuntime()))));
-    }
-
-    // add `finished` to the URL query string
-    if (getFinished() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfinished%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinished()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `lastUpdate` to the URL query string
-    if (getLastUpdate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slastUpdate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastUpdate()))));
-    }
-
-    // add `message` to the URL query string
-    if (getMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
-    }
-
-    // add `progress` to the URL query string
-    if (getProgress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprogress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProgress()))));
-    }
-
-    // add `result` to the URL query string
-    if (getResult() != null) {
-      joiner.add(getResult().toUrlQueryString(prefix + "result" + suffix));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `started` to the URL query string
-    if (getStarted() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstarted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStarted()))));
-    }
-
-    // add `status` to the URL query string
-    if (getStatus() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-    }
-
-    // add `submitted` to the URL query string
-    if (getSubmitted() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssubmitted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubmitted()))));
-    }
-
-    // add `submittedBy` to the URL query string
-    if (getSubmittedBy() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssubmittedBy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubmittedBy()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of TaskProgressBeanJsonNode to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

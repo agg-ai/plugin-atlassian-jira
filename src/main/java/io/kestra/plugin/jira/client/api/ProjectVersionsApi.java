@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.DeleteAndReplaceVersionBean;
 import io.kestra.plugin.jira.client.model.PageBeanVersion;
@@ -26,2033 +35,2265 @@ import io.kestra.plugin.jira.client.model.VersionMoveBean;
 import io.kestra.plugin.jira.client.model.VersionRelatedWork;
 import io.kestra.plugin.jira.client.model.VersionUnresolvedIssuesCount;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectVersionsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ProjectVersionsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ProjectVersionsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createRelatedWork
+     * @param id  (required)
+     * @param versionRelatedWork  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createRelatedWorkCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ProjectVersionsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ProjectVersionsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create related work
-   * Creates a related work for the given version. You can only create a generic link type of related works via this API. relatedWorkId will be auto-generated UUID, that does not need to be provided.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param id  (required)
-   * @param versionRelatedWork  (required)
-   * @return VersionRelatedWork
-   * @throws ApiException if fails to make API call
-   */
-  public VersionRelatedWork createRelatedWork(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork) throws ApiException {
-    return createRelatedWork(id, versionRelatedWork, null);
-  }
-
-  /**
-   * Create related work
-   * Creates a related work for the given version. You can only create a generic link type of related works via this API. relatedWorkId will be auto-generated UUID, that does not need to be provided.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param id  (required)
-   * @param versionRelatedWork  (required)
-   * @param headers Optional headers to include in the request
-   * @return VersionRelatedWork
-   * @throws ApiException if fails to make API call
-   */
-  public VersionRelatedWork createRelatedWork(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, Map<String, String> headers) throws ApiException {
-    ApiResponse<VersionRelatedWork> localVarResponse = createRelatedWorkWithHttpInfo(id, versionRelatedWork, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create related work
-   * Creates a related work for the given version. You can only create a generic link type of related works via this API. relatedWorkId will be auto-generated UUID, that does not need to be provided.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param id  (required)
-   * @param versionRelatedWork  (required)
-   * @return ApiResponse&lt;VersionRelatedWork&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<VersionRelatedWork> createRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork) throws ApiException {
-    return createRelatedWorkWithHttpInfo(id, versionRelatedWork, null);
-  }
-
-  /**
-   * Create related work
-   * Creates a related work for the given version. You can only create a generic link type of related works via this API. relatedWorkId will be auto-generated UUID, that does not need to be provided.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param id  (required)
-   * @param versionRelatedWork  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;VersionRelatedWork&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<VersionRelatedWork> createRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createRelatedWorkRequestBuilder(id, versionRelatedWork, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createRelatedWork", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<VersionRelatedWork>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        VersionRelatedWork responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<VersionRelatedWork>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = versionRelatedWork;
 
-        return new ApiResponse<VersionRelatedWork>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}/relatedwork"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder createRelatedWorkRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling createRelatedWork");
-    }
-    // verify the required parameter 'versionRelatedWork' is set
-    if (versionRelatedWork == null) {
-      throw new ApiException(400, "Missing the required parameter 'versionRelatedWork' when calling createRelatedWork");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}/relatedwork"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(versionRelatedWork);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create version
-   * Creates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project the version is added to.
-   * @param version  (required)
-   * @return Version
-   * @throws ApiException if fails to make API call
-   */
-  public Version createVersion(@javax.annotation.Nonnull Version version) throws ApiException {
-    return createVersion(version, null);
-  }
-
-  /**
-   * Create version
-   * Creates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project the version is added to.
-   * @param version  (required)
-   * @param headers Optional headers to include in the request
-   * @return Version
-   * @throws ApiException if fails to make API call
-   */
-  public Version createVersion(@javax.annotation.Nonnull Version version, Map<String, String> headers) throws ApiException {
-    ApiResponse<Version> localVarResponse = createVersionWithHttpInfo(version, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create version
-   * Creates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project the version is added to.
-   * @param version  (required)
-   * @return ApiResponse&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Version> createVersionWithHttpInfo(@javax.annotation.Nonnull Version version) throws ApiException {
-    return createVersionWithHttpInfo(version, null);
-  }
-
-  /**
-   * Create version
-   * Creates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project the version is added to.
-   * @param version  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Version> createVersionWithHttpInfo(@javax.annotation.Nonnull Version version, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createVersionRequestBuilder(version, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createVersion", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Version>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Version responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Version>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Version>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createVersionRequestBuilder(@javax.annotation.Nonnull Version version, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'version' is set
-    if (version == null) {
-      throw new ApiException(400, "Missing the required parameter 'version' when calling createVersion");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(version);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete and replace version
-   * Deletes a project version.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, or any version picker custom fields. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and any version picker custom field, that contain the deleted version, are cleared. Any replacement version must be in the same project as the version being deleted and cannot be the version being deleted.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param deleteAndReplaceVersionBean  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteAndReplaceVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean) throws ApiException {
-    return deleteAndReplaceVersion(id, deleteAndReplaceVersionBean, null);
-  }
-
-  /**
-   * Delete and replace version
-   * Deletes a project version.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, or any version picker custom fields. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and any version picker custom field, that contain the deleted version, are cleared. Any replacement version must be in the same project as the version being deleted and cannot be the version being deleted.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param deleteAndReplaceVersionBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteAndReplaceVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deleteAndReplaceVersionWithHttpInfo(id, deleteAndReplaceVersionBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete and replace version
-   * Deletes a project version.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, or any version picker custom fields. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and any version picker custom field, that contain the deleted version, are cleared. Any replacement version must be in the same project as the version being deleted and cannot be the version being deleted.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param deleteAndReplaceVersionBean  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteAndReplaceVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean) throws ApiException {
-    return deleteAndReplaceVersionWithHttpInfo(id, deleteAndReplaceVersionBean, null);
-  }
-
-  /**
-   * Delete and replace version
-   * Deletes a project version.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, or any version picker custom fields. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and any version picker custom field, that contain the deleted version, are cleared. Any replacement version must be in the same project as the version being deleted and cannot be the version being deleted.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param deleteAndReplaceVersionBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteAndReplaceVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteAndReplaceVersionRequestBuilder(id, deleteAndReplaceVersionBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteAndReplaceVersion", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteAndReplaceVersionRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteAndReplaceVersion");
-    }
-    // verify the required parameter 'deleteAndReplaceVersionBean' is set
-    if (deleteAndReplaceVersionBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'deleteAndReplaceVersionBean' when calling deleteAndReplaceVersion");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}/removeAndSwap"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(deleteAndReplaceVersionBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete related work
-   * Deletes the given related work for the given version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param versionId The ID of the version that the target related work belongs to. (required)
-   * @param relatedWorkId The ID of the related work to delete. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteRelatedWork(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId) throws ApiException {
-    deleteRelatedWork(versionId, relatedWorkId, null);
-  }
-
-  /**
-   * Delete related work
-   * Deletes the given related work for the given version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param versionId The ID of the version that the target related work belongs to. (required)
-   * @param relatedWorkId The ID of the related work to delete. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteRelatedWork(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId, Map<String, String> headers) throws ApiException {
-    deleteRelatedWorkWithHttpInfo(versionId, relatedWorkId, headers);
-  }
-
-  /**
-   * Delete related work
-   * Deletes the given related work for the given version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param versionId The ID of the version that the target related work belongs to. (required)
-   * @param relatedWorkId The ID of the related work to delete. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId) throws ApiException {
-    return deleteRelatedWorkWithHttpInfo(versionId, relatedWorkId, null);
-  }
-
-  /**
-   * Delete related work
-   * Deletes the given related work for the given version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param versionId The ID of the version that the target related work belongs to. (required)
-   * @param relatedWorkId The ID of the related work to delete. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteRelatedWorkRequestBuilder(versionId, relatedWorkId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteRelatedWork", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteRelatedWorkRequestBuilder(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'versionId' is set
-    if (versionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'versionId' when calling deleteRelatedWork");
-    }
-    // verify the required parameter 'relatedWorkId' is set
-    if (relatedWorkId == null) {
-      throw new ApiException(400, "Missing the required parameter 'relatedWorkId' when calling deleteRelatedWork");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{versionId}/relatedwork/{relatedWorkId}"
-        .replace("{versionId}", ApiClient.urlEncode(versionId.toString()))
-        .replace("{relatedWorkId}", ApiClient.urlEncode(relatedWorkId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete version
-   * Deletes a project version.  Deprecated, use [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) that supports swapping version values in custom fields, in addition to the swapping for &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; provided in this resource.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60; or &#x60;affectedVersion&#x60;. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; that contain the deleted version are cleared.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param moveFixIssuesTo The ID of the version to update &#x60;fixVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
-   * @param moveAffectedIssuesTo The ID of the version to update &#x60;affectedVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public void deleteVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo) throws ApiException {
-    deleteVersion(id, moveFixIssuesTo, moveAffectedIssuesTo, null);
-  }
-
-  /**
-   * Delete version
-   * Deletes a project version.  Deprecated, use [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) that supports swapping version values in custom fields, in addition to the swapping for &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; provided in this resource.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60; or &#x60;affectedVersion&#x60;. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; that contain the deleted version are cleared.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param moveFixIssuesTo The ID of the version to update &#x60;fixVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
-   * @param moveAffectedIssuesTo The ID of the version to update &#x60;affectedVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public void deleteVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo, Map<String, String> headers) throws ApiException {
-    deleteVersionWithHttpInfo(id, moveFixIssuesTo, moveAffectedIssuesTo, headers);
-  }
-
-  /**
-   * Delete version
-   * Deletes a project version.  Deprecated, use [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) that supports swapping version values in custom fields, in addition to the swapping for &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; provided in this resource.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60; or &#x60;affectedVersion&#x60;. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; that contain the deleted version are cleared.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param moveFixIssuesTo The ID of the version to update &#x60;fixVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
-   * @param moveAffectedIssuesTo The ID of the version to update &#x60;affectedVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<Void> deleteVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo) throws ApiException {
-    return deleteVersionWithHttpInfo(id, moveFixIssuesTo, moveAffectedIssuesTo, null);
-  }
-
-  /**
-   * Delete version
-   * Deletes a project version.  Deprecated, use [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) that supports swapping version values in custom fields, in addition to the swapping for &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; provided in this resource.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60; or &#x60;affectedVersion&#x60;. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; that contain the deleted version are cleared.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param moveFixIssuesTo The ID of the version to update &#x60;fixVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
-   * @param moveAffectedIssuesTo The ID of the version to update &#x60;affectedVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<Void> deleteVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteVersionRequestBuilder(id, moveFixIssuesTo, moveAffectedIssuesTo, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteVersion", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteVersionRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteVersion");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "moveFixIssuesTo";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("moveFixIssuesTo", moveFixIssuesTo));
-    localVarQueryParameterBaseName = "moveAffectedIssuesTo";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("moveAffectedIssuesTo", moveAffectedIssuesTo));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project versions
-   * Returns all versions in a project. The response is not paginated. Use [Get project versions paginated](#api-rest-api-3-project-projectIdOrKey-version-get) if you want to get the versions in a project with pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;operations&#x60;, which returns actions that can be performed on the version. (optional)
-   * @return List&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<Version> getProjectVersions(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand) throws ApiException {
-    return getProjectVersions(projectIdOrKey, expand, null);
-  }
-
-  /**
-   * Get project versions
-   * Returns all versions in a project. The response is not paginated. Use [Get project versions paginated](#api-rest-api-3-project-projectIdOrKey-version-get) if you want to get the versions in a project with pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;operations&#x60;, which returns actions that can be performed on the version. (optional)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<Version> getProjectVersions(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<Version>> localVarResponse = getProjectVersionsWithHttpInfo(projectIdOrKey, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project versions
-   * Returns all versions in a project. The response is not paginated. Use [Get project versions paginated](#api-rest-api-3-project-projectIdOrKey-version-get) if you want to get the versions in a project with pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;operations&#x60;, which returns actions that can be performed on the version. (optional)
-   * @return ApiResponse&lt;List&lt;Version&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<Version>> getProjectVersionsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand) throws ApiException {
-    return getProjectVersionsWithHttpInfo(projectIdOrKey, expand, null);
-  }
-
-  /**
-   * Get project versions
-   * Returns all versions in a project. The response is not paginated. Use [Get project versions paginated](#api-rest-api-3-project-projectIdOrKey-version-get) if you want to get the versions in a project with pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;operations&#x60;, which returns actions that can be performed on the version. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;Version&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<Version>> getProjectVersionsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectVersionsRequestBuilder(projectIdOrKey, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectVersions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<Version>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createRelatedWorkValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling createRelatedWork(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<Version> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<Version>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<Version>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectVersionsRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getProjectVersions");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/versions"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project versions paginated
-   * Returns a [paginated](#pagination) list of all versions in a project. See the [Get project versions](#api-rest-api-3-project-projectIdOrKey-versions-get) resource if you want to get a full list of versions without pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by version description.  *  &#x60;name&#x60; Sorts by version name.  *  &#x60;releaseDate&#x60; Sorts by release date, starting with the oldest date. Versions with no release date are listed last.  *  &#x60;sequence&#x60; Sorts by the order of appearance in the user interface.  *  &#x60;startDate&#x60; Sorts by start date, starting with the oldest date. Versions with no start date are listed last. (optional)
-   * @param query Filter the results using a literal string. Versions with matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @param status A list of status values used to filter the results by version status. This parameter accepts a comma-separated list. The status values are &#x60;released&#x60;, &#x60;unreleased&#x60;, and &#x60;archived&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;issuesstatus&#x60; Returns the number of issues in each status category for each version.  *  &#x60;operations&#x60; Returns actions that can be performed on the specified version.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the approvers for this version. (optional)
-   * @return PageBeanVersion
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanVersion getProjectVersionsPaginated(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand) throws ApiException {
-    return getProjectVersionsPaginated(projectIdOrKey, startAt, maxResults, orderBy, query, status, expand, null);
-  }
-
-  /**
-   * Get project versions paginated
-   * Returns a [paginated](#pagination) list of all versions in a project. See the [Get project versions](#api-rest-api-3-project-projectIdOrKey-versions-get) resource if you want to get a full list of versions without pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by version description.  *  &#x60;name&#x60; Sorts by version name.  *  &#x60;releaseDate&#x60; Sorts by release date, starting with the oldest date. Versions with no release date are listed last.  *  &#x60;sequence&#x60; Sorts by the order of appearance in the user interface.  *  &#x60;startDate&#x60; Sorts by start date, starting with the oldest date. Versions with no start date are listed last. (optional)
-   * @param query Filter the results using a literal string. Versions with matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @param status A list of status values used to filter the results by version status. This parameter accepts a comma-separated list. The status values are &#x60;released&#x60;, &#x60;unreleased&#x60;, and &#x60;archived&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;issuesstatus&#x60; Returns the number of issues in each status category for each version.  *  &#x60;operations&#x60; Returns actions that can be performed on the specified version.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the approvers for this version. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanVersion
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanVersion getProjectVersionsPaginated(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanVersion> localVarResponse = getProjectVersionsPaginatedWithHttpInfo(projectIdOrKey, startAt, maxResults, orderBy, query, status, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project versions paginated
-   * Returns a [paginated](#pagination) list of all versions in a project. See the [Get project versions](#api-rest-api-3-project-projectIdOrKey-versions-get) resource if you want to get a full list of versions without pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by version description.  *  &#x60;name&#x60; Sorts by version name.  *  &#x60;releaseDate&#x60; Sorts by release date, starting with the oldest date. Versions with no release date are listed last.  *  &#x60;sequence&#x60; Sorts by the order of appearance in the user interface.  *  &#x60;startDate&#x60; Sorts by start date, starting with the oldest date. Versions with no start date are listed last. (optional)
-   * @param query Filter the results using a literal string. Versions with matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @param status A list of status values used to filter the results by version status. This parameter accepts a comma-separated list. The status values are &#x60;released&#x60;, &#x60;unreleased&#x60;, and &#x60;archived&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;issuesstatus&#x60; Returns the number of issues in each status category for each version.  *  &#x60;operations&#x60; Returns actions that can be performed on the specified version.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the approvers for this version. (optional)
-   * @return ApiResponse&lt;PageBeanVersion&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanVersion> getProjectVersionsPaginatedWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand) throws ApiException {
-    return getProjectVersionsPaginatedWithHttpInfo(projectIdOrKey, startAt, maxResults, orderBy, query, status, expand, null);
-  }
-
-  /**
-   * Get project versions paginated
-   * Returns a [paginated](#pagination) list of all versions in a project. See the [Get project versions](#api-rest-api-3-project-projectIdOrKey-versions-get) resource if you want to get a full list of versions without pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by version description.  *  &#x60;name&#x60; Sorts by version name.  *  &#x60;releaseDate&#x60; Sorts by release date, starting with the oldest date. Versions with no release date are listed last.  *  &#x60;sequence&#x60; Sorts by the order of appearance in the user interface.  *  &#x60;startDate&#x60; Sorts by start date, starting with the oldest date. Versions with no start date are listed last. (optional)
-   * @param query Filter the results using a literal string. Versions with matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
-   * @param status A list of status values used to filter the results by version status. This parameter accepts a comma-separated list. The status values are &#x60;released&#x60;, &#x60;unreleased&#x60;, and &#x60;archived&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;issuesstatus&#x60; Returns the number of issues in each status category for each version.  *  &#x60;operations&#x60; Returns actions that can be performed on the specified version.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the approvers for this version. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanVersion&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanVersion> getProjectVersionsPaginatedWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectVersionsPaginatedRequestBuilder(projectIdOrKey, startAt, maxResults, orderBy, query, status, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectVersionsPaginated", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanVersion>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'versionRelatedWork' is set
+        if (versionRelatedWork == null) {
+            throw new ApiException("Missing the required parameter 'versionRelatedWork' when calling createRelatedWork(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanVersion responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanVersion>() {});
-        
-        localVarResponse.body().close();
+        return createRelatedWorkCall(id, versionRelatedWork, _callback);
 
-        return new ApiResponse<PageBeanVersion>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectVersionsPaginatedRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getProjectVersionsPaginated");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/version"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-    localVarQueryParameterBaseName = "query";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("query", query));
-    localVarQueryParameterBaseName = "status";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("status", status));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Create related work
+     * Creates a related work for the given version. You can only create a generic link type of related works via this API. relatedWorkId will be auto-generated UUID, that does not need to be provided.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param id  (required)
+     * @param versionRelatedWork  (required)
+     * @return VersionRelatedWork
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public VersionRelatedWork createRelatedWork(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork) throws ApiException {
+        ApiResponse<VersionRelatedWork> localVarResp = createRelatedWorkWithHttpInfo(id, versionRelatedWork);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Create related work
+     * Creates a related work for the given version. You can only create a generic link type of related works via this API. relatedWorkId will be auto-generated UUID, that does not need to be provided.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param id  (required)
+     * @param versionRelatedWork  (required)
+     * @return ApiResponse&lt;VersionRelatedWork&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<VersionRelatedWork> createRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork) throws ApiException {
+        okhttp3.Call localVarCall = createRelatedWorkValidateBeforeCall(id, versionRelatedWork, null);
+        Type localVarReturnType = new TypeToken<VersionRelatedWork>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create related work (asynchronously)
+     * Creates a related work for the given version. You can only create a generic link type of related works via this API. relatedWorkId will be auto-generated UUID, that does not need to be provided.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param id  (required)
+     * @param versionRelatedWork  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createRelatedWorkAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, final ApiCallback<VersionRelatedWork> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createRelatedWorkValidateBeforeCall(id, versionRelatedWork, _callback);
+        Type localVarReturnType = new TypeToken<VersionRelatedWork>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for createVersion
+     * @param version  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createVersionCall(@javax.annotation.Nonnull Version version, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get related work
-   * Returns related work items for the given version id.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
-   * @param id The ID of the version. (required)
-   * @return List&lt;VersionRelatedWork&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<VersionRelatedWork> getRelatedWork(@javax.annotation.Nonnull String id) throws ApiException {
-    return getRelatedWork(id, null);
-  }
-
-  /**
-   * Get related work
-   * Returns related work items for the given version id.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
-   * @param id The ID of the version. (required)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;VersionRelatedWork&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<VersionRelatedWork> getRelatedWork(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<VersionRelatedWork>> localVarResponse = getRelatedWorkWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get related work
-   * Returns related work items for the given version id.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
-   * @param id The ID of the version. (required)
-   * @return ApiResponse&lt;List&lt;VersionRelatedWork&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<VersionRelatedWork>> getRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getRelatedWorkWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get related work
-   * Returns related work items for the given version id.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
-   * @param id The ID of the version. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;VersionRelatedWork&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<VersionRelatedWork>> getRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getRelatedWorkRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getRelatedWork", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<VersionRelatedWork>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<VersionRelatedWork> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<VersionRelatedWork>>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = version;
 
-        return new ApiResponse<List<VersionRelatedWork>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version";
 
-  private HttpRequest.Builder getRelatedWorkRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getRelatedWork");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}/relatedwork"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get version
-   * Returns a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
-   * @param id The ID of the version. (required)
-   * @param expand Use [expand](#expansion) to include additional information about version in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;operations&#x60; Returns the list of operations available for this version.  *  &#x60;issuesstatus&#x60; Returns the count of issues in this version for each of the status categories *to do*, *in progress*, *done*, and *unmapped*. The *unmapped* property represents the number of issues with a status other than *to do*, *in progress*, and *done*.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the Atlassian account IDs of approvers for this version. (optional)
-   * @return Version
-   * @throws ApiException if fails to make API call
-   */
-  public Version getVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
-    return getVersion(id, expand, null);
-  }
-
-  /**
-   * Get version
-   * Returns a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
-   * @param id The ID of the version. (required)
-   * @param expand Use [expand](#expansion) to include additional information about version in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;operations&#x60; Returns the list of operations available for this version.  *  &#x60;issuesstatus&#x60; Returns the count of issues in this version for each of the status categories *to do*, *in progress*, *done*, and *unmapped*. The *unmapped* property represents the number of issues with a status other than *to do*, *in progress*, and *done*.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the Atlassian account IDs of approvers for this version. (optional)
-   * @param headers Optional headers to include in the request
-   * @return Version
-   * @throws ApiException if fails to make API call
-   */
-  public Version getVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<Version> localVarResponse = getVersionWithHttpInfo(id, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get version
-   * Returns a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
-   * @param id The ID of the version. (required)
-   * @param expand Use [expand](#expansion) to include additional information about version in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;operations&#x60; Returns the list of operations available for this version.  *  &#x60;issuesstatus&#x60; Returns the count of issues in this version for each of the status categories *to do*, *in progress*, *done*, and *unmapped*. The *unmapped* property represents the number of issues with a status other than *to do*, *in progress*, and *done*.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the Atlassian account IDs of approvers for this version. (optional)
-   * @return ApiResponse&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Version> getVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
-    return getVersionWithHttpInfo(id, expand, null);
-  }
-
-  /**
-   * Get version
-   * Returns a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
-   * @param id The ID of the version. (required)
-   * @param expand Use [expand](#expansion) to include additional information about version in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;operations&#x60; Returns the list of operations available for this version.  *  &#x60;issuesstatus&#x60; Returns the count of issues in this version for each of the status categories *to do*, *in progress*, *done*, and *unmapped*. The *unmapped* property represents the number of issues with a status other than *to do*, *in progress*, and *done*.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the Atlassian account IDs of approvers for this version. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Version> getVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getVersionRequestBuilder(id, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getVersion", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Version>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Version responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Version>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Version>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getVersionRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getVersion");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get version&#39;s related issues count
-   * Returns the following counts for a version:   *  Number of issues where the &#x60;fixVersion&#x60; is set to the version.  *  Number of issues where the &#x60;affectedVersion&#x60; is set to the version.  *  Number of issues where a version custom field is set to the version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @return VersionIssueCounts
-   * @throws ApiException if fails to make API call
-   */
-  public VersionIssueCounts getVersionRelatedIssues(@javax.annotation.Nonnull String id) throws ApiException {
-    return getVersionRelatedIssues(id, null);
-  }
-
-  /**
-   * Get version&#39;s related issues count
-   * Returns the following counts for a version:   *  Number of issues where the &#x60;fixVersion&#x60; is set to the version.  *  Number of issues where the &#x60;affectedVersion&#x60; is set to the version.  *  Number of issues where a version custom field is set to the version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param headers Optional headers to include in the request
-   * @return VersionIssueCounts
-   * @throws ApiException if fails to make API call
-   */
-  public VersionIssueCounts getVersionRelatedIssues(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<VersionIssueCounts> localVarResponse = getVersionRelatedIssuesWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get version&#39;s related issues count
-   * Returns the following counts for a version:   *  Number of issues where the &#x60;fixVersion&#x60; is set to the version.  *  Number of issues where the &#x60;affectedVersion&#x60; is set to the version.  *  Number of issues where a version custom field is set to the version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @return ApiResponse&lt;VersionIssueCounts&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<VersionIssueCounts> getVersionRelatedIssuesWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getVersionRelatedIssuesWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get version&#39;s related issues count
-   * Returns the following counts for a version:   *  Number of issues where the &#x60;fixVersion&#x60; is set to the version.  *  Number of issues where the &#x60;affectedVersion&#x60; is set to the version.  *  Number of issues where a version custom field is set to the version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;VersionIssueCounts&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<VersionIssueCounts> getVersionRelatedIssuesWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getVersionRelatedIssuesRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getVersionRelatedIssues", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<VersionIssueCounts>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        VersionIssueCounts responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<VersionIssueCounts>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<VersionIssueCounts>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getVersionRelatedIssuesRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getVersionRelatedIssues");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}/relatedIssueCounts"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get version&#39;s unresolved issues count
-   * Returns counts of the issues and unresolved issues for the project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @return VersionUnresolvedIssuesCount
-   * @throws ApiException if fails to make API call
-   */
-  public VersionUnresolvedIssuesCount getVersionUnresolvedIssues(@javax.annotation.Nonnull String id) throws ApiException {
-    return getVersionUnresolvedIssues(id, null);
-  }
-
-  /**
-   * Get version&#39;s unresolved issues count
-   * Returns counts of the issues and unresolved issues for the project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param headers Optional headers to include in the request
-   * @return VersionUnresolvedIssuesCount
-   * @throws ApiException if fails to make API call
-   */
-  public VersionUnresolvedIssuesCount getVersionUnresolvedIssues(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<VersionUnresolvedIssuesCount> localVarResponse = getVersionUnresolvedIssuesWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get version&#39;s unresolved issues count
-   * Returns counts of the issues and unresolved issues for the project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @return ApiResponse&lt;VersionUnresolvedIssuesCount&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<VersionUnresolvedIssuesCount> getVersionUnresolvedIssuesWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getVersionUnresolvedIssuesWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get version&#39;s unresolved issues count
-   * Returns counts of the issues and unresolved issues for the project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;VersionUnresolvedIssuesCount&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<VersionUnresolvedIssuesCount> getVersionUnresolvedIssuesWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getVersionUnresolvedIssuesRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getVersionUnresolvedIssues", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<VersionUnresolvedIssuesCount>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createVersionValidateBeforeCall(@javax.annotation.Nonnull Version version, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'version' is set
+        if (version == null) {
+            throw new ApiException("Missing the required parameter 'version' when calling createVersion(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        VersionUnresolvedIssuesCount responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<VersionUnresolvedIssuesCount>() {});
-        
-        localVarResponse.body().close();
+        return createVersionCall(version, _callback);
 
-        return new ApiResponse<VersionUnresolvedIssuesCount>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getVersionUnresolvedIssuesRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getVersionUnresolvedIssues");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}/unresolvedIssueCount"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Create version
+     * Creates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project the version is added to.
+     * @param version  (required)
+     * @return Version
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Version createVersion(@javax.annotation.Nonnull Version version) throws ApiException {
+        ApiResponse<Version> localVarResp = createVersionWithHttpInfo(version);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create version
+     * Creates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project the version is added to.
+     * @param version  (required)
+     * @return ApiResponse&lt;Version&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Version> createVersionWithHttpInfo(@javax.annotation.Nonnull Version version) throws ApiException {
+        okhttp3.Call localVarCall = createVersionValidateBeforeCall(version, null);
+        Type localVarReturnType = new TypeToken<Version>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Merge versions
-   * Merges two project versions. The merge is completed by deleting the version specified in &#x60;id&#x60; and replacing any occurrences of its ID in &#x60;fixVersion&#x60; with the version ID specified in &#x60;moveIssuesTo&#x60;.  Consider using [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) instead. This resource supports swapping version values in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and custom fields.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version to delete. (required)
-   * @param moveIssuesTo The ID of the version to merge into. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object mergeVersions(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo) throws ApiException {
-    return mergeVersions(id, moveIssuesTo, null);
-  }
+    /**
+     * Create version (asynchronously)
+     * Creates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project the version is added to.
+     * @param version  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createVersionAsync(@javax.annotation.Nonnull Version version, final ApiCallback<Version> _callback) throws ApiException {
 
-  /**
-   * Merge versions
-   * Merges two project versions. The merge is completed by deleting the version specified in &#x60;id&#x60; and replacing any occurrences of its ID in &#x60;fixVersion&#x60; with the version ID specified in &#x60;moveIssuesTo&#x60;.  Consider using [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) instead. This resource supports swapping version values in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and custom fields.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version to delete. (required)
-   * @param moveIssuesTo The ID of the version to merge into. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object mergeVersions(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = mergeVersionsWithHttpInfo(id, moveIssuesTo, headers);
-    return localVarResponse.getData();
-  }
+        okhttp3.Call localVarCall = createVersionValidateBeforeCall(version, _callback);
+        Type localVarReturnType = new TypeToken<Version>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteAndReplaceVersion
+     * @param id The ID of the version. (required)
+     * @param deleteAndReplaceVersionBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version to delete is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteAndReplaceVersionCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Merge versions
-   * Merges two project versions. The merge is completed by deleting the version specified in &#x60;id&#x60; and replacing any occurrences of its ID in &#x60;fixVersion&#x60; with the version ID specified in &#x60;moveIssuesTo&#x60;.  Consider using [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) instead. This resource supports swapping version values in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and custom fields.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version to delete. (required)
-   * @param moveIssuesTo The ID of the version to merge into. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> mergeVersionsWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo) throws ApiException {
-    return mergeVersionsWithHttpInfo(id, moveIssuesTo, null);
-  }
-
-  /**
-   * Merge versions
-   * Merges two project versions. The merge is completed by deleting the version specified in &#x60;id&#x60; and replacing any occurrences of its ID in &#x60;fixVersion&#x60; with the version ID specified in &#x60;moveIssuesTo&#x60;.  Consider using [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) instead. This resource supports swapping version values in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and custom fields.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version to delete. (required)
-   * @param moveIssuesTo The ID of the version to merge into. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> mergeVersionsWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = mergeVersionsRequestBuilder(id, moveIssuesTo, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("mergeVersions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = deleteAndReplaceVersionBean;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}/removeAndSwap"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder mergeVersionsRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling mergeVersions");
-    }
-    // verify the required parameter 'moveIssuesTo' is set
-    if (moveIssuesTo == null) {
-      throw new ApiException(400, "Missing the required parameter 'moveIssuesTo' when calling mergeVersions");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}/mergeto/{moveIssuesTo}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()))
-        .replace("{moveIssuesTo}", ApiClient.urlEncode(moveIssuesTo.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Move version
-   * Modifies the version&#39;s sequence within the project, which affects the display order of the versions in Jira.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version to be moved. (required)
-   * @param versionMoveBean  (required)
-   * @return Version
-   * @throws ApiException if fails to make API call
-   */
-  public Version moveVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean) throws ApiException {
-    return moveVersion(id, versionMoveBean, null);
-  }
-
-  /**
-   * Move version
-   * Modifies the version&#39;s sequence within the project, which affects the display order of the versions in Jira.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version to be moved. (required)
-   * @param versionMoveBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return Version
-   * @throws ApiException if fails to make API call
-   */
-  public Version moveVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<Version> localVarResponse = moveVersionWithHttpInfo(id, versionMoveBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Move version
-   * Modifies the version&#39;s sequence within the project, which affects the display order of the versions in Jira.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version to be moved. (required)
-   * @param versionMoveBean  (required)
-   * @return ApiResponse&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Version> moveVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean) throws ApiException {
-    return moveVersionWithHttpInfo(id, versionMoveBean, null);
-  }
-
-  /**
-   * Move version
-   * Modifies the version&#39;s sequence within the project, which affects the display order of the versions in Jira.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
-   * @param id The ID of the version to be moved. (required)
-   * @param versionMoveBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Version> moveVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = moveVersionRequestBuilder(id, versionMoveBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("moveVersion", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Version>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Version responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Version>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Version>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder moveVersionRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling moveVersion");
-    }
-    // verify the required parameter 'versionMoveBean' is set
-    if (versionMoveBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'versionMoveBean' when calling moveVersion");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}/move"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(versionMoveBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update related work
-   * Updates the given related work. You can only update generic link related works via Rest APIs. Any archived version related works can&#39;t be edited.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param id The ID of the version to update the related work on. For the related work id, pass it to the input JSON. (required)
-   * @param versionRelatedWork  (required)
-   * @return VersionRelatedWork
-   * @throws ApiException if fails to make API call
-   */
-  public VersionRelatedWork updateRelatedWork(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork) throws ApiException {
-    return updateRelatedWork(id, versionRelatedWork, null);
-  }
-
-  /**
-   * Update related work
-   * Updates the given related work. You can only update generic link related works via Rest APIs. Any archived version related works can&#39;t be edited.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param id The ID of the version to update the related work on. For the related work id, pass it to the input JSON. (required)
-   * @param versionRelatedWork  (required)
-   * @param headers Optional headers to include in the request
-   * @return VersionRelatedWork
-   * @throws ApiException if fails to make API call
-   */
-  public VersionRelatedWork updateRelatedWork(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, Map<String, String> headers) throws ApiException {
-    ApiResponse<VersionRelatedWork> localVarResponse = updateRelatedWorkWithHttpInfo(id, versionRelatedWork, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update related work
-   * Updates the given related work. You can only update generic link related works via Rest APIs. Any archived version related works can&#39;t be edited.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param id The ID of the version to update the related work on. For the related work id, pass it to the input JSON. (required)
-   * @param versionRelatedWork  (required)
-   * @return ApiResponse&lt;VersionRelatedWork&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<VersionRelatedWork> updateRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork) throws ApiException {
-    return updateRelatedWorkWithHttpInfo(id, versionRelatedWork, null);
-  }
-
-  /**
-   * Update related work
-   * Updates the given related work. You can only update generic link related works via Rest APIs. Any archived version related works can&#39;t be edited.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
-   * @param id The ID of the version to update the related work on. For the related work id, pass it to the input JSON. (required)
-   * @param versionRelatedWork  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;VersionRelatedWork&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<VersionRelatedWork> updateRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateRelatedWorkRequestBuilder(id, versionRelatedWork, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateRelatedWork", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<VersionRelatedWork>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        VersionRelatedWork responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<VersionRelatedWork>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<VersionRelatedWork>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateRelatedWorkRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateRelatedWork");
-    }
-    // verify the required parameter 'versionRelatedWork' is set
-    if (versionRelatedWork == null) {
-      throw new ApiException(400, "Missing the required parameter 'versionRelatedWork' when calling updateRelatedWork");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}/relatedwork"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(versionRelatedWork);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update version
-   * Updates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param version  (required)
-   * @return Version
-   * @throws ApiException if fails to make API call
-   */
-  public Version updateVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version) throws ApiException {
-    return updateVersion(id, version, null);
-  }
-
-  /**
-   * Update version
-   * Updates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param version  (required)
-   * @param headers Optional headers to include in the request
-   * @return Version
-   * @throws ApiException if fails to make API call
-   */
-  public Version updateVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version, Map<String, String> headers) throws ApiException {
-    ApiResponse<Version> localVarResponse = updateVersionWithHttpInfo(id, version, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update version
-   * Updates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param version  (required)
-   * @return ApiResponse&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Version> updateVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version) throws ApiException {
-    return updateVersionWithHttpInfo(id, version, null);
-  }
-
-  /**
-   * Update version
-   * Updates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
-   * @param id The ID of the version. (required)
-   * @param version  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Version&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Version> updateVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateVersionRequestBuilder(id, version, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateVersion", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Version>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteAndReplaceVersionValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteAndReplaceVersion(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Version responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Version>() {});
-        
-        localVarResponse.body().close();
+        // verify the required parameter 'deleteAndReplaceVersionBean' is set
+        if (deleteAndReplaceVersionBean == null) {
+            throw new ApiException("Missing the required parameter 'deleteAndReplaceVersionBean' when calling deleteAndReplaceVersion(Async)");
+        }
 
-        return new ApiResponse<Version>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        return deleteAndReplaceVersionCall(id, deleteAndReplaceVersionBean, _callback);
 
-  private HttpRequest.Builder updateVersionRequestBuilder(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateVersion");
-    }
-    // verify the required parameter 'version' is set
-    if (version == null) {
-      throw new ApiException(400, "Missing the required parameter 'version' when calling updateVersion");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/version/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(version);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Delete and replace version
+     * Deletes a project version.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, or any version picker custom fields. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and any version picker custom field, that contain the deleted version, are cleared. Any replacement version must be in the same project as the version being deleted and cannot be the version being deleted.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param deleteAndReplaceVersionBean  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version to delete is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deleteAndReplaceVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean) throws ApiException {
+        ApiResponse<Object> localVarResp = deleteAndReplaceVersionWithHttpInfo(id, deleteAndReplaceVersionBean);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete and replace version
+     * Deletes a project version.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, or any version picker custom fields. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and any version picker custom field, that contain the deleted version, are cleared. Any replacement version must be in the same project as the version being deleted and cannot be the version being deleted.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param deleteAndReplaceVersionBean  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version to delete is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deleteAndReplaceVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean) throws ApiException {
+        okhttp3.Call localVarCall = deleteAndReplaceVersionValidateBeforeCall(id, deleteAndReplaceVersionBean, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete and replace version (asynchronously)
+     * Deletes a project version.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, or any version picker custom fields. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and any version picker custom field, that contain the deleted version, are cleared. Any replacement version must be in the same project as the version being deleted and cannot be the version being deleted.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param deleteAndReplaceVersionBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version to delete is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteAndReplaceVersionAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull DeleteAndReplaceVersionBean deleteAndReplaceVersionBean, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteAndReplaceVersionValidateBeforeCall(id, deleteAndReplaceVersionBean, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteRelatedWork
+     * @param versionId The ID of the version that the target related work belongs to. (required)
+     * @param relatedWorkId The ID of the related work to delete. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the related work is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if  the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version/related work is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteRelatedWorkCall(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{versionId}/relatedwork/{relatedWorkId}"
+            .replace("{" + "versionId" + "}", localVarApiClient.escapeString(versionId.toString()))
+            .replace("{" + "relatedWorkId" + "}", localVarApiClient.escapeString(relatedWorkId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteRelatedWorkValidateBeforeCall(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'versionId' is set
+        if (versionId == null) {
+            throw new ApiException("Missing the required parameter 'versionId' when calling deleteRelatedWork(Async)");
+        }
+
+        // verify the required parameter 'relatedWorkId' is set
+        if (relatedWorkId == null) {
+            throw new ApiException("Missing the required parameter 'relatedWorkId' when calling deleteRelatedWork(Async)");
+        }
+
+        return deleteRelatedWorkCall(versionId, relatedWorkId, _callback);
+
+    }
+
+    /**
+     * Delete related work
+     * Deletes the given related work for the given version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param versionId The ID of the version that the target related work belongs to. (required)
+     * @param relatedWorkId The ID of the related work to delete. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the related work is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if  the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version/related work is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteRelatedWork(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId) throws ApiException {
+        deleteRelatedWorkWithHttpInfo(versionId, relatedWorkId);
+    }
+
+    /**
+     * Delete related work
+     * Deletes the given related work for the given version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param versionId The ID of the version that the target related work belongs to. (required)
+     * @param relatedWorkId The ID of the related work to delete. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the related work is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if  the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version/related work is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId) throws ApiException {
+        okhttp3.Call localVarCall = deleteRelatedWorkValidateBeforeCall(versionId, relatedWorkId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete related work (asynchronously)
+     * Deletes the given related work for the given version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param versionId The ID of the version that the target related work belongs to. (required)
+     * @param relatedWorkId The ID of the related work to delete. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the related work is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if  the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version/related work is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteRelatedWorkAsync(@javax.annotation.Nonnull String versionId, @javax.annotation.Nonnull String relatedWorkId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteRelatedWorkValidateBeforeCall(versionId, relatedWorkId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteVersion
+     * @param id The ID of the version. (required)
+     * @param moveFixIssuesTo The ID of the version to update &#x60;fixVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
+     * @param moveAffectedIssuesTo The ID of the version to update &#x60;affectedVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call deleteVersionCall(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (moveFixIssuesTo != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("moveFixIssuesTo", moveFixIssuesTo));
+        }
+
+        if (moveAffectedIssuesTo != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("moveAffectedIssuesTo", moveAffectedIssuesTo));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @Deprecated
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteVersionValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteVersion(Async)");
+        }
+
+        return deleteVersionCall(id, moveFixIssuesTo, moveAffectedIssuesTo, _callback);
+
+    }
+
+    /**
+     * Delete version
+     * Deletes a project version.  Deprecated, use [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) that supports swapping version values in custom fields, in addition to the swapping for &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; provided in this resource.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60; or &#x60;affectedVersion&#x60;. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; that contain the deleted version are cleared.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param moveFixIssuesTo The ID of the version to update &#x60;fixVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
+     * @param moveAffectedIssuesTo The ID of the version to update &#x60;affectedVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public void deleteVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo) throws ApiException {
+        deleteVersionWithHttpInfo(id, moveFixIssuesTo, moveAffectedIssuesTo);
+    }
+
+    /**
+     * Delete version
+     * Deletes a project version.  Deprecated, use [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) that supports swapping version values in custom fields, in addition to the swapping for &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; provided in this resource.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60; or &#x60;affectedVersion&#x60;. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; that contain the deleted version are cleared.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param moveFixIssuesTo The ID of the version to update &#x60;fixVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
+     * @param moveAffectedIssuesTo The ID of the version to update &#x60;affectedVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<Void> deleteVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo) throws ApiException {
+        okhttp3.Call localVarCall = deleteVersionValidateBeforeCall(id, moveFixIssuesTo, moveAffectedIssuesTo, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete version (asynchronously)
+     * Deletes a project version.  Deprecated, use [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) that supports swapping version values in custom fields, in addition to the swapping for &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; provided in this resource.  Alternative versions can be provided to update issues that use the deleted version in &#x60;fixVersion&#x60; or &#x60;affectedVersion&#x60;. If alternatives are not provided, occurrences of &#x60;fixVersion&#x60; and &#x60;affectedVersion&#x60; that contain the deleted version are cleared.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param moveFixIssuesTo The ID of the version to update &#x60;fixVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
+     * @param moveAffectedIssuesTo The ID of the version to update &#x60;affectedVersion&#x60; to when the field contains the deleted version. The replacement version must be in the same project as the version being deleted and cannot be the version being deleted. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call deleteVersionAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String moveFixIssuesTo, @javax.annotation.Nullable String moveAffectedIssuesTo, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteVersionValidateBeforeCall(id, moveFixIssuesTo, moveAffectedIssuesTo, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectVersions
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;operations&#x60;, which returns actions that can be performed on the version. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectVersionsCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/versions"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectVersionsValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getProjectVersions(Async)");
+        }
+
+        return getProjectVersionsCall(projectIdOrKey, expand, _callback);
+
+    }
+
+    /**
+     * Get project versions
+     * Returns all versions in a project. The response is not paginated. Use [Get project versions paginated](#api-rest-api-3-project-projectIdOrKey-version-get) if you want to get the versions in a project with pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;operations&#x60;, which returns actions that can be performed on the version. (optional)
+     * @return List&lt;Version&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<Version> getProjectVersions(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<List<Version>> localVarResp = getProjectVersionsWithHttpInfo(projectIdOrKey, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project versions
+     * Returns all versions in a project. The response is not paginated. Use [Get project versions paginated](#api-rest-api-3-project-projectIdOrKey-version-get) if you want to get the versions in a project with pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;operations&#x60;, which returns actions that can be performed on the version. (optional)
+     * @return ApiResponse&lt;List&lt;Version&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<Version>> getProjectVersionsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getProjectVersionsValidateBeforeCall(projectIdOrKey, expand, null);
+        Type localVarReturnType = new TypeToken<List<Version>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project versions (asynchronously)
+     * Returns all versions in a project. The response is not paginated. Use [Get project versions paginated](#api-rest-api-3-project-projectIdOrKey-version-get) if you want to get the versions in a project with pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts &#x60;operations&#x60;, which returns actions that can be performed on the version. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectVersionsAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable String expand, final ApiCallback<List<Version>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectVersionsValidateBeforeCall(projectIdOrKey, expand, _callback);
+        Type localVarReturnType = new TypeToken<List<Version>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectVersionsPaginated
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by version description.  *  &#x60;name&#x60; Sorts by version name.  *  &#x60;releaseDate&#x60; Sorts by release date, starting with the oldest date. Versions with no release date are listed last.  *  &#x60;sequence&#x60; Sorts by the order of appearance in the user interface.  *  &#x60;startDate&#x60; Sorts by start date, starting with the oldest date. Versions with no start date are listed last. (optional)
+     * @param query Filter the results using a literal string. Versions with matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @param status A list of status values used to filter the results by version status. This parameter accepts a comma-separated list. The status values are &#x60;released&#x60;, &#x60;unreleased&#x60;, and &#x60;archived&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;issuesstatus&#x60; Returns the number of issues in each status category for each version.  *  &#x60;operations&#x60; Returns actions that can be performed on the specified version.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the approvers for this version. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectVersionsPaginatedCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/version"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
+
+        if (query != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("query", query));
+        }
+
+        if (status != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("status", status));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectVersionsPaginatedValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getProjectVersionsPaginated(Async)");
+        }
+
+        return getProjectVersionsPaginatedCall(projectIdOrKey, startAt, maxResults, orderBy, query, status, expand, _callback);
+
+    }
+
+    /**
+     * Get project versions paginated
+     * Returns a [paginated](#pagination) list of all versions in a project. See the [Get project versions](#api-rest-api-3-project-projectIdOrKey-versions-get) resource if you want to get a full list of versions without pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by version description.  *  &#x60;name&#x60; Sorts by version name.  *  &#x60;releaseDate&#x60; Sorts by release date, starting with the oldest date. Versions with no release date are listed last.  *  &#x60;sequence&#x60; Sorts by the order of appearance in the user interface.  *  &#x60;startDate&#x60; Sorts by start date, starting with the oldest date. Versions with no start date are listed last. (optional)
+     * @param query Filter the results using a literal string. Versions with matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @param status A list of status values used to filter the results by version status. This parameter accepts a comma-separated list. The status values are &#x60;released&#x60;, &#x60;unreleased&#x60;, and &#x60;archived&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;issuesstatus&#x60; Returns the number of issues in each status category for each version.  *  &#x60;operations&#x60; Returns actions that can be performed on the specified version.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the approvers for this version. (optional)
+     * @return PageBeanVersion
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanVersion getProjectVersionsPaginated(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PageBeanVersion> localVarResp = getProjectVersionsPaginatedWithHttpInfo(projectIdOrKey, startAt, maxResults, orderBy, query, status, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project versions paginated
+     * Returns a [paginated](#pagination) list of all versions in a project. See the [Get project versions](#api-rest-api-3-project-projectIdOrKey-versions-get) resource if you want to get a full list of versions without pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by version description.  *  &#x60;name&#x60; Sorts by version name.  *  &#x60;releaseDate&#x60; Sorts by release date, starting with the oldest date. Versions with no release date are listed last.  *  &#x60;sequence&#x60; Sorts by the order of appearance in the user interface.  *  &#x60;startDate&#x60; Sorts by start date, starting with the oldest date. Versions with no start date are listed last. (optional)
+     * @param query Filter the results using a literal string. Versions with matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @param status A list of status values used to filter the results by version status. This parameter accepts a comma-separated list. The status values are &#x60;released&#x60;, &#x60;unreleased&#x60;, and &#x60;archived&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;issuesstatus&#x60; Returns the number of issues in each status category for each version.  *  &#x60;operations&#x60; Returns actions that can be performed on the specified version.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the approvers for this version. (optional)
+     * @return ApiResponse&lt;PageBeanVersion&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanVersion> getProjectVersionsPaginatedWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getProjectVersionsPaginatedValidateBeforeCall(projectIdOrKey, startAt, maxResults, orderBy, query, status, expand, null);
+        Type localVarReturnType = new TypeToken<PageBeanVersion>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project versions paginated (asynchronously)
+     * Returns a [paginated](#pagination) list of all versions in a project. See the [Get project versions](#api-rest-api-3-project-projectIdOrKey-versions-get) resource if you want to get a full list of versions without pagination.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;description&#x60; Sorts by version description.  *  &#x60;name&#x60; Sorts by version name.  *  &#x60;releaseDate&#x60; Sorts by release date, starting with the oldest date. Versions with no release date are listed last.  *  &#x60;sequence&#x60; Sorts by the order of appearance in the user interface.  *  &#x60;startDate&#x60; Sorts by start date, starting with the oldest date. Versions with no start date are listed last. (optional)
+     * @param query Filter the results using a literal string. Versions with matching &#x60;name&#x60; or &#x60;description&#x60; are returned (case insensitive). (optional)
+     * @param status A list of status values used to filter the results by version status. This parameter accepts a comma-separated list. The status values are &#x60;released&#x60;, &#x60;unreleased&#x60;, and &#x60;archived&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;issuesstatus&#x60; Returns the number of issues in each status category for each version.  *  &#x60;operations&#x60; Returns actions that can be performed on the specified version.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the approvers for this version. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectVersionsPaginatedAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String query, @javax.annotation.Nullable String status, @javax.annotation.Nullable String expand, final ApiCallback<PageBeanVersion> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectVersionsPaginatedValidateBeforeCall(projectIdOrKey, startAt, maxResults, orderBy, query, status, expand, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanVersion>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getRelatedWork
+     * @param id The ID of the version. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found or the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 500 </td><td> Returned if reading related work fails </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRelatedWorkCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}/relatedwork"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getRelatedWorkValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getRelatedWork(Async)");
+        }
+
+        return getRelatedWorkCall(id, _callback);
+
+    }
+
+    /**
+     * Get related work
+     * Returns related work items for the given version id.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
+     * @param id The ID of the version. (required)
+     * @return List&lt;VersionRelatedWork&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found or the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 500 </td><td> Returned if reading related work fails </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<VersionRelatedWork> getRelatedWork(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<List<VersionRelatedWork>> localVarResp = getRelatedWorkWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get related work
+     * Returns related work items for the given version id.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
+     * @param id The ID of the version. (required)
+     * @return ApiResponse&lt;List&lt;VersionRelatedWork&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found or the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 500 </td><td> Returned if reading related work fails </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<VersionRelatedWork>> getRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getRelatedWorkValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<List<VersionRelatedWork>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get related work (asynchronously)
+     * Returns related work items for the given version id.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
+     * @param id The ID of the version. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found or the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 500 </td><td> Returned if reading related work fails </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRelatedWorkAsync(@javax.annotation.Nonnull String id, final ApiCallback<List<VersionRelatedWork>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getRelatedWorkValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<List<VersionRelatedWork>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getVersion
+     * @param id The ID of the version. (required)
+     * @param expand Use [expand](#expansion) to include additional information about version in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;operations&#x60; Returns the list of operations available for this version.  *  &#x60;issuesstatus&#x60; Returns the count of issues in this version for each of the status categories *to do*, *in progress*, *done*, and *unmapped*. The *unmapped* property represents the number of issues with a status other than *to do*, *in progress*, and *done*.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the Atlassian account IDs of approvers for this version. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found or the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getVersionCall(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getVersionValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getVersion(Async)");
+        }
+
+        return getVersionCall(id, expand, _callback);
+
+    }
+
+    /**
+     * Get version
+     * Returns a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
+     * @param id The ID of the version. (required)
+     * @param expand Use [expand](#expansion) to include additional information about version in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;operations&#x60; Returns the list of operations available for this version.  *  &#x60;issuesstatus&#x60; Returns the count of issues in this version for each of the status categories *to do*, *in progress*, *done*, and *unmapped*. The *unmapped* property represents the number of issues with a status other than *to do*, *in progress*, and *done*.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the Atlassian account IDs of approvers for this version. (optional)
+     * @return Version
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found or the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Version getVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<Version> localVarResp = getVersionWithHttpInfo(id, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get version
+     * Returns a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
+     * @param id The ID of the version. (required)
+     * @param expand Use [expand](#expansion) to include additional information about version in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;operations&#x60; Returns the list of operations available for this version.  *  &#x60;issuesstatus&#x60; Returns the count of issues in this version for each of the status categories *to do*, *in progress*, *done*, and *unmapped*. The *unmapped* property represents the number of issues with a status other than *to do*, *in progress*, and *done*.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the Atlassian account IDs of approvers for this version. (optional)
+     * @return ApiResponse&lt;Version&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found or the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Version> getVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getVersionValidateBeforeCall(id, expand, null);
+        Type localVarReturnType = new TypeToken<Version>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get version (asynchronously)
+     * Returns a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the version.
+     * @param id The ID of the version. (required)
+     * @param expand Use [expand](#expansion) to include additional information about version in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;operations&#x60; Returns the list of operations available for this version.  *  &#x60;issuesstatus&#x60; Returns the count of issues in this version for each of the status categories *to do*, *in progress*, *done*, and *unmapped*. The *unmapped* property represents the number of issues with a status other than *to do*, *in progress*, and *done*.  *  &#x60;driver&#x60; Returns the Atlassian account ID of the version driver.  *  &#x60;approvers&#x60; Returns a list containing the Atlassian account IDs of approvers for this version. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found or the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getVersionAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback<Version> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getVersionValidateBeforeCall(id, expand, _callback);
+        Type localVarReturnType = new TypeToken<Version>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getVersionRelatedIssues
+     * @param id The ID of the version. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getVersionRelatedIssuesCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}/relatedIssueCounts"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getVersionRelatedIssuesValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getVersionRelatedIssues(Async)");
+        }
+
+        return getVersionRelatedIssuesCall(id, _callback);
+
+    }
+
+    /**
+     * Get version&#39;s related issues count
+     * Returns the following counts for a version:   *  Number of issues where the &#x60;fixVersion&#x60; is set to the version.  *  Number of issues where the &#x60;affectedVersion&#x60; is set to the version.  *  Number of issues where a version custom field is set to the version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @return VersionIssueCounts
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public VersionIssueCounts getVersionRelatedIssues(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<VersionIssueCounts> localVarResp = getVersionRelatedIssuesWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get version&#39;s related issues count
+     * Returns the following counts for a version:   *  Number of issues where the &#x60;fixVersion&#x60; is set to the version.  *  Number of issues where the &#x60;affectedVersion&#x60; is set to the version.  *  Number of issues where a version custom field is set to the version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @return ApiResponse&lt;VersionIssueCounts&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<VersionIssueCounts> getVersionRelatedIssuesWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getVersionRelatedIssuesValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<VersionIssueCounts>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get version&#39;s related issues count (asynchronously)
+     * Returns the following counts for a version:   *  Number of issues where the &#x60;fixVersion&#x60; is set to the version.  *  Number of issues where the &#x60;affectedVersion&#x60; is set to the version.  *  Number of issues where a version custom field is set to the version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getVersionRelatedIssuesAsync(@javax.annotation.Nonnull String id, final ApiCallback<VersionIssueCounts> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getVersionRelatedIssuesValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<VersionIssueCounts>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getVersionUnresolvedIssues
+     * @param id The ID of the version. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getVersionUnresolvedIssuesCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}/unresolvedIssueCount"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getVersionUnresolvedIssuesValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getVersionUnresolvedIssues(Async)");
+        }
+
+        return getVersionUnresolvedIssuesCall(id, _callback);
+
+    }
+
+    /**
+     * Get version&#39;s unresolved issues count
+     * Returns counts of the issues and unresolved issues for the project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @return VersionUnresolvedIssuesCount
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public VersionUnresolvedIssuesCount getVersionUnresolvedIssues(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<VersionUnresolvedIssuesCount> localVarResp = getVersionUnresolvedIssuesWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get version&#39;s unresolved issues count
+     * Returns counts of the issues and unresolved issues for the project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @return ApiResponse&lt;VersionUnresolvedIssuesCount&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<VersionUnresolvedIssuesCount> getVersionUnresolvedIssuesWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getVersionUnresolvedIssuesValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<VersionUnresolvedIssuesCount>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get version&#39;s unresolved issues count (asynchronously)
+     * Returns counts of the issues and unresolved issues for the project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the version is not found.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getVersionUnresolvedIssuesAsync(@javax.annotation.Nonnull String id, final ApiCallback<VersionUnresolvedIssuesCount> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getVersionUnresolvedIssuesValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<VersionUnresolvedIssuesCount>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for mergeVersions
+     * @param id The ID of the version to delete. (required)
+     * @param moveIssuesTo The ID of the version to merge into. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect or missing.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version to be deleted or the version to merge to are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call mergeVersionsCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}/mergeto/{moveIssuesTo}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()))
+            .replace("{" + "moveIssuesTo" + "}", localVarApiClient.escapeString(moveIssuesTo.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call mergeVersionsValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling mergeVersions(Async)");
+        }
+
+        // verify the required parameter 'moveIssuesTo' is set
+        if (moveIssuesTo == null) {
+            throw new ApiException("Missing the required parameter 'moveIssuesTo' when calling mergeVersions(Async)");
+        }
+
+        return mergeVersionsCall(id, moveIssuesTo, _callback);
+
+    }
+
+    /**
+     * Merge versions
+     * Merges two project versions. The merge is completed by deleting the version specified in &#x60;id&#x60; and replacing any occurrences of its ID in &#x60;fixVersion&#x60; with the version ID specified in &#x60;moveIssuesTo&#x60;.  Consider using [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) instead. This resource supports swapping version values in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and custom fields.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version to delete. (required)
+     * @param moveIssuesTo The ID of the version to merge into. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect or missing.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version to be deleted or the version to merge to are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object mergeVersions(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo) throws ApiException {
+        ApiResponse<Object> localVarResp = mergeVersionsWithHttpInfo(id, moveIssuesTo);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Merge versions
+     * Merges two project versions. The merge is completed by deleting the version specified in &#x60;id&#x60; and replacing any occurrences of its ID in &#x60;fixVersion&#x60; with the version ID specified in &#x60;moveIssuesTo&#x60;.  Consider using [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) instead. This resource supports swapping version values in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and custom fields.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version to delete. (required)
+     * @param moveIssuesTo The ID of the version to merge into. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect or missing.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version to be deleted or the version to merge to are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> mergeVersionsWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo) throws ApiException {
+        okhttp3.Call localVarCall = mergeVersionsValidateBeforeCall(id, moveIssuesTo, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Merge versions (asynchronously)
+     * Merges two project versions. The merge is completed by deleting the version specified in &#x60;id&#x60; and replacing any occurrences of its ID in &#x60;fixVersion&#x60; with the version ID specified in &#x60;moveIssuesTo&#x60;.  Consider using [ Delete and replace version](#api-rest-api-3-version-id-removeAndSwap-post) instead. This resource supports swapping version values in &#x60;fixVersion&#x60;, &#x60;affectedVersion&#x60;, and custom fields.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version to delete. (required)
+     * @param moveIssuesTo The ID of the version to merge into. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the version is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect or missing.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version to be deleted or the version to merge to are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call mergeVersionsAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull String moveIssuesTo, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = mergeVersionsValidateBeforeCall(id, moveIssuesTo, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for moveVersion
+     * @param id The ID of the version to be moved. (required)
+     * @param versionMoveBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  no body parameters are provided.  *  &#x60;after&#x60; and &#x60;position&#x60; are provided.  *  &#x60;position&#x60; is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect or missing  *  the user does not have the required commissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version or move after version are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call moveVersionCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = versionMoveBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}/move"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call moveVersionValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling moveVersion(Async)");
+        }
+
+        // verify the required parameter 'versionMoveBean' is set
+        if (versionMoveBean == null) {
+            throw new ApiException("Missing the required parameter 'versionMoveBean' when calling moveVersion(Async)");
+        }
+
+        return moveVersionCall(id, versionMoveBean, _callback);
+
+    }
+
+    /**
+     * Move version
+     * Modifies the version&#39;s sequence within the project, which affects the display order of the versions in Jira.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version to be moved. (required)
+     * @param versionMoveBean  (required)
+     * @return Version
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  no body parameters are provided.  *  &#x60;after&#x60; and &#x60;position&#x60; are provided.  *  &#x60;position&#x60; is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect or missing  *  the user does not have the required commissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version or move after version are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Version moveVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean) throws ApiException {
+        ApiResponse<Version> localVarResp = moveVersionWithHttpInfo(id, versionMoveBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Move version
+     * Modifies the version&#39;s sequence within the project, which affects the display order of the versions in Jira.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version to be moved. (required)
+     * @param versionMoveBean  (required)
+     * @return ApiResponse&lt;Version&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  no body parameters are provided.  *  &#x60;after&#x60; and &#x60;position&#x60; are provided.  *  &#x60;position&#x60; is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect or missing  *  the user does not have the required commissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version or move after version are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Version> moveVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean) throws ApiException {
+        okhttp3.Call localVarCall = moveVersionValidateBeforeCall(id, versionMoveBean, null);
+        Type localVarReturnType = new TypeToken<Version>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Move version (asynchronously)
+     * Modifies the version&#39;s sequence within the project, which affects the display order of the versions in Jira.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* project permission for the project that contains the version.
+     * @param id The ID of the version to be moved. (required)
+     * @param versionMoveBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  no body parameters are provided.  *  &#x60;after&#x60; and &#x60;position&#x60; are provided.  *  &#x60;position&#x60; is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if:   *  the authentication credentials are incorrect or missing  *  the user does not have the required commissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version or move after version are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call moveVersionAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionMoveBean versionMoveBean, final ApiCallback<Version> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = moveVersionValidateBeforeCall(id, versionMoveBean, _callback);
+        Type localVarReturnType = new TypeToken<Version>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateRelatedWork
+     * @param id The ID of the version to update the related work on. For the related work id, pass it to the input JSON. (required)
+     * @param versionRelatedWork  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful together with updated related work. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request data is invalid </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version or the related work is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateRelatedWorkCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = versionRelatedWork;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}/relatedwork"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateRelatedWorkValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateRelatedWork(Async)");
+        }
+
+        // verify the required parameter 'versionRelatedWork' is set
+        if (versionRelatedWork == null) {
+            throw new ApiException("Missing the required parameter 'versionRelatedWork' when calling updateRelatedWork(Async)");
+        }
+
+        return updateRelatedWorkCall(id, versionRelatedWork, _callback);
+
+    }
+
+    /**
+     * Update related work
+     * Updates the given related work. You can only update generic link related works via Rest APIs. Any archived version related works can&#39;t be edited.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param id The ID of the version to update the related work on. For the related work id, pass it to the input JSON. (required)
+     * @param versionRelatedWork  (required)
+     * @return VersionRelatedWork
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful together with updated related work. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request data is invalid </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version or the related work is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public VersionRelatedWork updateRelatedWork(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork) throws ApiException {
+        ApiResponse<VersionRelatedWork> localVarResp = updateRelatedWorkWithHttpInfo(id, versionRelatedWork);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update related work
+     * Updates the given related work. You can only update generic link related works via Rest APIs. Any archived version related works can&#39;t be edited.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param id The ID of the version to update the related work on. For the related work id, pass it to the input JSON. (required)
+     * @param versionRelatedWork  (required)
+     * @return ApiResponse&lt;VersionRelatedWork&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful together with updated related work. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request data is invalid </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version or the related work is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<VersionRelatedWork> updateRelatedWorkWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork) throws ApiException {
+        okhttp3.Call localVarCall = updateRelatedWorkValidateBeforeCall(id, versionRelatedWork, null);
+        Type localVarReturnType = new TypeToken<VersionRelatedWork>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update related work (asynchronously)
+     * Updates the given related work. You can only update generic link related works via Rest APIs. Any archived version related works can&#39;t be edited.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Resolve issues:* and *Edit issues* [Managing project permissions](https://confluence.atlassian.com/adminjiraserver/managing-project-permissions-938847145.html) for the project that contains the version.
+     * @param id The ID of the version to update the related work on. For the related work id, pass it to the input JSON. (required)
+     * @param versionRelatedWork  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful together with updated related work. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request data is invalid </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version or the related work is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateRelatedWorkAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull VersionRelatedWork versionRelatedWork, final ApiCallback<VersionRelatedWork> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateRelatedWorkValidateBeforeCall(id, versionRelatedWork, _callback);
+        Type localVarReturnType = new TypeToken<VersionRelatedWork>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateVersion
+     * @param id The ID of the version. (required)
+     * @param version  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the request is invalid.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateVersionCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = version;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/version/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateVersionValidateBeforeCall(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateVersion(Async)");
+        }
+
+        // verify the required parameter 'version' is set
+        if (version == null) {
+            throw new ApiException("Missing the required parameter 'version' when calling updateVersion(Async)");
+        }
+
+        return updateVersionCall(id, version, _callback);
+
+    }
+
+    /**
+     * Update version
+     * Updates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param version  (required)
+     * @return Version
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the request is invalid.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Version updateVersion(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version) throws ApiException {
+        ApiResponse<Version> localVarResp = updateVersionWithHttpInfo(id, version);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update version
+     * Updates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param version  (required)
+     * @return ApiResponse&lt;Version&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the request is invalid.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Version> updateVersionWithHttpInfo(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version) throws ApiException {
+        okhttp3.Call localVarCall = updateVersionValidateBeforeCall(id, version, null);
+        Type localVarReturnType = new TypeToken<Version>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update version (asynchronously)
+     * Updates a project version.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that contains the version.
+     * @param id The ID of the version. (required)
+     * @param version  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the request is invalid.  *  the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the version is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateVersionAsync(@javax.annotation.Nonnull String id, @javax.annotation.Nonnull Version version, final ApiCallback<Version> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateVersionValidateBeforeCall(id, version, _callback);
+        Type localVarReturnType = new TypeToken<Version>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

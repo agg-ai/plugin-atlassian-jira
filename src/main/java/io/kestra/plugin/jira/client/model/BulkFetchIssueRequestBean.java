@@ -13,58 +13,73 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * BulkFetchIssueRequestBean
  */
-@JsonPropertyOrder({
-  BulkFetchIssueRequestBean.JSON_PROPERTY_EXPAND,
-  BulkFetchIssueRequestBean.JSON_PROPERTY_FIELDS,
-  BulkFetchIssueRequestBean.JSON_PROPERTY_FIELDS_BY_KEYS,
-  BulkFetchIssueRequestBean.JSON_PROPERTY_ISSUE_IDS_OR_KEYS,
-  BulkFetchIssueRequestBean.JSON_PROPERTY_PROPERTIES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkFetchIssueRequestBean {
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private List<String> expand = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_FIELDS = "fields";
+  public static final String SERIALIZED_NAME_FIELDS = "fields";
+  @SerializedName(SERIALIZED_NAME_FIELDS)
   @javax.annotation.Nullable
   private List<String> fields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_FIELDS_BY_KEYS = "fieldsByKeys";
+  public static final String SERIALIZED_NAME_FIELDS_BY_KEYS = "fieldsByKeys";
+  @SerializedName(SERIALIZED_NAME_FIELDS_BY_KEYS)
   @javax.annotation.Nullable
   private Boolean fieldsByKeys;
 
-  public static final String JSON_PROPERTY_ISSUE_IDS_OR_KEYS = "issueIdsOrKeys";
+  public static final String SERIALIZED_NAME_ISSUE_IDS_OR_KEYS = "issueIdsOrKeys";
+  @SerializedName(SERIALIZED_NAME_ISSUE_IDS_OR_KEYS)
   @javax.annotation.Nonnull
   private List<String> issueIdsOrKeys = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private List<String> properties = new ArrayList<>();
 
-  public BulkFetchIssueRequestBean() { 
+  public BulkFetchIssueRequestBean() {
   }
 
   public BulkFetchIssueRequestBean expand(@javax.annotation.Nullable List<String> expand) {
@@ -85,15 +100,10 @@ public class BulkFetchIssueRequestBean {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getExpand() {
     return expand;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExpand(@javax.annotation.Nullable List<String> expand) {
     this.expand = expand;
   }
@@ -117,15 +127,10 @@ public class BulkFetchIssueRequestBean {
    * @return fields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getFields() {
     return fields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFields(@javax.annotation.Nullable List<String> fields) {
     this.fields = fields;
   }
@@ -141,15 +146,10 @@ public class BulkFetchIssueRequestBean {
    * @return fieldsByKeys
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS_BY_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getFieldsByKeys() {
     return fieldsByKeys;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELDS_BY_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldsByKeys(@javax.annotation.Nullable Boolean fieldsByKeys) {
     this.fieldsByKeys = fieldsByKeys;
   }
@@ -173,15 +173,10 @@ public class BulkFetchIssueRequestBean {
    * @return issueIdsOrKeys
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS_OR_KEYS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<String> getIssueIdsOrKeys() {
     return issueIdsOrKeys;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS_OR_KEYS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIssueIdsOrKeys(@javax.annotation.Nonnull List<String> issueIdsOrKeys) {
     this.issueIdsOrKeys = issueIdsOrKeys;
   }
@@ -205,23 +200,16 @@ public class BulkFetchIssueRequestBean {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable List<String> properties) {
     this.properties = properties;
   }
 
 
-  /**
-   * Return true if this BulkFetchIssueRequestBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -267,80 +255,113 @@ public class BulkFetchIssueRequestBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("expand", "fields", "fieldsByKeys", "issueIdsOrKeys", "properties"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("issueIdsOrKeys"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkFetchIssueRequestBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      for (int i = 0; i < getExpand().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sexpand%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getExpand().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkFetchIssueRequestBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkFetchIssueRequestBean is not found in the empty JSON string", BulkFetchIssueRequestBean.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `fields` to the URL query string
-    if (getFields() != null) {
-      for (int i = 0; i < getFields().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sfields%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getFields().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkFetchIssueRequestBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkFetchIssueRequestBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
 
-    // add `fieldsByKeys` to the URL query string
-    if (getFieldsByKeys() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldsByKeys%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldsByKeys()))));
-    }
-
-    // add `issueIdsOrKeys` to the URL query string
-    if (getIssueIdsOrKeys() != null) {
-      for (int i = 0; i < getIssueIdsOrKeys().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sissueIdsOrKeys%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getIssueIdsOrKeys().get(i)))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : BulkFetchIssueRequestBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
       }
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (int i = 0; i < getProperties().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(i)))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull() && !jsonObj.get("expand").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be an array in the JSON string but got `%s`", jsonObj.get("expand").toString()));
       }
-    }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("fields") != null && !jsonObj.get("fields").isJsonNull() && !jsonObj.get("fields").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fields` to be an array in the JSON string but got `%s`", jsonObj.get("fields").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("issueIdsOrKeys") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("issueIdsOrKeys").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueIdsOrKeys` to be an array in the JSON string but got `%s`", jsonObj.get("issueIdsOrKeys").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("properties") != null && !jsonObj.get("properties").isJsonNull() && !jsonObj.get("properties").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `properties` to be an array in the JSON string but got `%s`", jsonObj.get("properties").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkFetchIssueRequestBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkFetchIssueRequestBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkFetchIssueRequestBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkFetchIssueRequestBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<BulkFetchIssueRequestBean>() {
+           @Override
+           public void write(JsonWriter out, BulkFetchIssueRequestBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BulkFetchIssueRequestBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of BulkFetchIssueRequestBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkFetchIssueRequestBean
+   * @throws IOException if the JSON string is invalid with respect to BulkFetchIssueRequestBean
+   */
+  public static BulkFetchIssueRequestBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkFetchIssueRequestBean.class);
+  }
+
+  /**
+   * Convert an instance of BulkFetchIssueRequestBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

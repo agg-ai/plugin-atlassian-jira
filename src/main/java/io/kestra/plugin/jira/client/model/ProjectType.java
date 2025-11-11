@@ -13,67 +13,81 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a project type.
  */
-@JsonPropertyOrder({
-  ProjectType.JSON_PROPERTY_COLOR,
-  ProjectType.JSON_PROPERTY_DESCRIPTION_I18N_KEY,
-  ProjectType.JSON_PROPERTY_FORMATTED_KEY,
-  ProjectType.JSON_PROPERTY_ICON,
-  ProjectType.JSON_PROPERTY_KEY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectType {
-  public static final String JSON_PROPERTY_COLOR = "color";
+  public static final String SERIALIZED_NAME_COLOR = "color";
+  @SerializedName(SERIALIZED_NAME_COLOR)
   @javax.annotation.Nullable
   private String color;
 
-  public static final String JSON_PROPERTY_DESCRIPTION_I18N_KEY = "descriptionI18nKey";
+  public static final String SERIALIZED_NAME_DESCRIPTION_I18N_KEY = "descriptionI18nKey";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION_I18N_KEY)
   @javax.annotation.Nullable
   private String descriptionI18nKey;
 
-  public static final String JSON_PROPERTY_FORMATTED_KEY = "formattedKey";
+  public static final String SERIALIZED_NAME_FORMATTED_KEY = "formattedKey";
+  @SerializedName(SERIALIZED_NAME_FORMATTED_KEY)
   @javax.annotation.Nullable
   private String formattedKey;
 
-  public static final String JSON_PROPERTY_ICON = "icon";
+  public static final String SERIALIZED_NAME_ICON = "icon";
+  @SerializedName(SERIALIZED_NAME_ICON)
   @javax.annotation.Nullable
   private String icon;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public ProjectType() { 
+  public ProjectType() {
   }
 
-  @JsonCreator
   public ProjectType(
-    @JsonProperty(JSON_PROPERTY_COLOR) String color, 
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION_I18N_KEY) String descriptionI18nKey, 
-    @JsonProperty(JSON_PROPERTY_FORMATTED_KEY) String formattedKey, 
-    @JsonProperty(JSON_PROPERTY_ICON) String icon, 
-    @JsonProperty(JSON_PROPERTY_KEY) String key
+     String color, 
+     String descriptionI18nKey, 
+     String formattedKey, 
+     String icon, 
+     String key
   ) {
-  this();
+    this();
     this.color = color;
     this.descriptionI18nKey = descriptionI18nKey;
     this.formattedKey = formattedKey;
@@ -86,12 +100,9 @@ public class ProjectType {
    * @return color
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COLOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getColor() {
     return color;
   }
-
 
 
 
@@ -100,12 +111,9 @@ public class ProjectType {
    * @return descriptionI18nKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION_I18N_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescriptionI18nKey() {
     return descriptionI18nKey;
   }
-
 
 
 
@@ -114,12 +122,9 @@ public class ProjectType {
    * @return formattedKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FORMATTED_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFormattedKey() {
     return formattedKey;
   }
-
 
 
 
@@ -128,12 +133,9 @@ public class ProjectType {
    * @return icon
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ICON, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIcon() {
     return icon;
   }
-
 
 
 
@@ -142,8 +144,6 @@ public class ProjectType {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
@@ -151,9 +151,6 @@ public class ProjectType {
 
 
 
-  /**
-   * Return true if this ProjectType object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -199,64 +196,103 @@ public class ProjectType {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("color", "descriptionI18nKey", "formattedKey", "icon", "key"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectType
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectType.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectType is not found in the empty JSON string", ProjectType.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectType.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectType` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("color") != null && !jsonObj.get("color").isJsonNull()) && !jsonObj.get("color").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `color` to be a primitive type in the JSON string but got `%s`", jsonObj.get("color").toString()));
+      }
+      if ((jsonObj.get("descriptionI18nKey") != null && !jsonObj.get("descriptionI18nKey").isJsonNull()) && !jsonObj.get("descriptionI18nKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `descriptionI18nKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("descriptionI18nKey").toString()));
+      }
+      if ((jsonObj.get("formattedKey") != null && !jsonObj.get("formattedKey").isJsonNull()) && !jsonObj.get("formattedKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `formattedKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("formattedKey").toString()));
+      }
+      if ((jsonObj.get("icon") != null && !jsonObj.get("icon").isJsonNull()) && !jsonObj.get("icon").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `icon` to be a primitive type in the JSON string but got `%s`", jsonObj.get("icon").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectType.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectType' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectType> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectType.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ProjectType>() {
+           @Override
+           public void write(JsonWriter out, ProjectType value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectType read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ProjectType given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectType
+   * @throws IOException if the JSON string is invalid with respect to ProjectType
+   */
+  public static ProjectType fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectType.class);
+  }
 
-    // add `color` to the URL query string
-    if (getColor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scolor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColor()))));
-    }
-
-    // add `descriptionI18nKey` to the URL query string
-    if (getDescriptionI18nKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescriptionI18nKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescriptionI18nKey()))));
-    }
-
-    // add `formattedKey` to the URL query string
-    if (getFormattedKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sformattedKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFormattedKey()))));
-    }
-
-    // add `icon` to the URL query string
-    if (getIcon() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sicon%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIcon()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectType to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

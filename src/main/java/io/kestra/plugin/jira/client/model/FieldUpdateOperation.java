@@ -13,59 +13,76 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of an operation to perform on a field.
  */
-@JsonPropertyOrder({
-  FieldUpdateOperation.JSON_PROPERTY_ADD,
-  FieldUpdateOperation.JSON_PROPERTY_COPY,
-  FieldUpdateOperation.JSON_PROPERTY_EDIT,
-  FieldUpdateOperation.JSON_PROPERTY_REMOVE,
-  FieldUpdateOperation.JSON_PROPERTY_SET
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FieldUpdateOperation {
-  public static final String JSON_PROPERTY_ADD = "add";
-  private JsonNullable<Object> add = JsonNullable.<Object>of(null);
+  public static final String SERIALIZED_NAME_ADD = "add";
+  @SerializedName(SERIALIZED_NAME_ADD)
+  @javax.annotation.Nullable
+  private Object add = null;
 
-  public static final String JSON_PROPERTY_COPY = "copy";
-  private JsonNullable<Object> copy = JsonNullable.<Object>of(null);
+  public static final String SERIALIZED_NAME_COPY = "copy";
+  @SerializedName(SERIALIZED_NAME_COPY)
+  @javax.annotation.Nullable
+  private Object copy = null;
 
-  public static final String JSON_PROPERTY_EDIT = "edit";
-  private JsonNullable<Object> edit = JsonNullable.<Object>of(null);
+  public static final String SERIALIZED_NAME_EDIT = "edit";
+  @SerializedName(SERIALIZED_NAME_EDIT)
+  @javax.annotation.Nullable
+  private Object edit = null;
 
-  public static final String JSON_PROPERTY_REMOVE = "remove";
-  private JsonNullable<Object> remove = JsonNullable.<Object>of(null);
+  public static final String SERIALIZED_NAME_REMOVE = "remove";
+  @SerializedName(SERIALIZED_NAME_REMOVE)
+  @javax.annotation.Nullable
+  private Object remove = null;
 
-  public static final String JSON_PROPERTY_SET = "set";
-  private JsonNullable<Object> set = JsonNullable.<Object>of(null);
+  public static final String SERIALIZED_NAME_SET = "set";
+  @SerializedName(SERIALIZED_NAME_SET)
+  @javax.annotation.Nullable
+  private Object set = null;
 
-  public FieldUpdateOperation() { 
+  public FieldUpdateOperation() {
   }
 
   public FieldUpdateOperation add(@javax.annotation.Nullable Object add) {
-    this.add = JsonNullable.<Object>of(add);
+    this.add = add;
     return this;
   }
 
@@ -74,30 +91,17 @@ public class FieldUpdateOperation {
    * @return add
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Object getAdd() {
-        return add.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ADD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Object> getAdd_JsonNullable() {
     return add;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ADD)
-  public void setAdd_JsonNullable(JsonNullable<Object> add) {
-    this.add = add;
   }
 
   public void setAdd(@javax.annotation.Nullable Object add) {
-    this.add = JsonNullable.<Object>of(add);
+    this.add = add;
   }
 
 
   public FieldUpdateOperation copy(@javax.annotation.Nullable Object copy) {
-    this.copy = JsonNullable.<Object>of(copy);
+    this.copy = copy;
     return this;
   }
 
@@ -106,30 +110,17 @@ public class FieldUpdateOperation {
    * @return copy
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Object getCopy() {
-        return copy.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_COPY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Object> getCopy_JsonNullable() {
     return copy;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_COPY)
-  public void setCopy_JsonNullable(JsonNullable<Object> copy) {
-    this.copy = copy;
   }
 
   public void setCopy(@javax.annotation.Nullable Object copy) {
-    this.copy = JsonNullable.<Object>of(copy);
+    this.copy = copy;
   }
 
 
   public FieldUpdateOperation edit(@javax.annotation.Nullable Object edit) {
-    this.edit = JsonNullable.<Object>of(edit);
+    this.edit = edit;
     return this;
   }
 
@@ -138,30 +129,17 @@ public class FieldUpdateOperation {
    * @return edit
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Object getEdit() {
-        return edit.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_EDIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Object> getEdit_JsonNullable() {
     return edit;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_EDIT)
-  public void setEdit_JsonNullable(JsonNullable<Object> edit) {
-    this.edit = edit;
   }
 
   public void setEdit(@javax.annotation.Nullable Object edit) {
-    this.edit = JsonNullable.<Object>of(edit);
+    this.edit = edit;
   }
 
 
   public FieldUpdateOperation remove(@javax.annotation.Nullable Object remove) {
-    this.remove = JsonNullable.<Object>of(remove);
+    this.remove = remove;
     return this;
   }
 
@@ -170,30 +148,17 @@ public class FieldUpdateOperation {
    * @return remove
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Object getRemove() {
-        return remove.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_REMOVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Object> getRemove_JsonNullable() {
     return remove;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_REMOVE)
-  public void setRemove_JsonNullable(JsonNullable<Object> remove) {
-    this.remove = remove;
   }
 
   public void setRemove(@javax.annotation.Nullable Object remove) {
-    this.remove = JsonNullable.<Object>of(remove);
+    this.remove = remove;
   }
 
 
   public FieldUpdateOperation set(@javax.annotation.Nullable Object set) {
-    this.set = JsonNullable.<Object>of(set);
+    this.set = set;
     return this;
   }
 
@@ -202,31 +167,16 @@ public class FieldUpdateOperation {
    * @return set
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Object getSet() {
-        return set.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_SET, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Object> getSet_JsonNullable() {
     return set;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SET)
-  public void setSet_JsonNullable(JsonNullable<Object> set) {
-    this.set = set;
   }
 
   public void setSet(@javax.annotation.Nullable Object set) {
-    this.set = JsonNullable.<Object>of(set);
+    this.set = set;
   }
 
 
-  /**
-   * Return true if this FieldUpdateOperation object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -236,11 +186,11 @@ public class FieldUpdateOperation {
       return false;
     }
     FieldUpdateOperation fieldUpdateOperation = (FieldUpdateOperation) o;
-    return equalsNullable(this.add, fieldUpdateOperation.add) &&
-        equalsNullable(this.copy, fieldUpdateOperation.copy) &&
-        equalsNullable(this.edit, fieldUpdateOperation.edit) &&
-        equalsNullable(this.remove, fieldUpdateOperation.remove) &&
-        equalsNullable(this.set, fieldUpdateOperation.set);
+    return Objects.equals(this.add, fieldUpdateOperation.add) &&
+        Objects.equals(this.copy, fieldUpdateOperation.copy) &&
+        Objects.equals(this.edit, fieldUpdateOperation.edit) &&
+        Objects.equals(this.remove, fieldUpdateOperation.remove) &&
+        Objects.equals(this.set, fieldUpdateOperation.set);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -249,7 +199,7 @@ public class FieldUpdateOperation {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(add), hashCodeNullable(copy), hashCodeNullable(edit), hashCodeNullable(remove), hashCodeNullable(set));
+    return Objects.hash(add, copy, edit, remove, set);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -283,64 +233,88 @@ public class FieldUpdateOperation {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("add", "copy", "edit", "remove", "set"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FieldUpdateOperation
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FieldUpdateOperation.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FieldUpdateOperation is not found in the empty JSON string", FieldUpdateOperation.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FieldUpdateOperation.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FieldUpdateOperation` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FieldUpdateOperation.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FieldUpdateOperation' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FieldUpdateOperation> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FieldUpdateOperation.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<FieldUpdateOperation>() {
+           @Override
+           public void write(JsonWriter out, FieldUpdateOperation value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FieldUpdateOperation read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of FieldUpdateOperation given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FieldUpdateOperation
+   * @throws IOException if the JSON string is invalid with respect to FieldUpdateOperation
+   */
+  public static FieldUpdateOperation fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FieldUpdateOperation.class);
+  }
 
-    // add `add` to the URL query string
-    if (getAdd() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sadd%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAdd()))));
-    }
-
-    // add `copy` to the URL query string
-    if (getCopy() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scopy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCopy()))));
-    }
-
-    // add `edit` to the URL query string
-    if (getEdit() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sedit%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEdit()))));
-    }
-
-    // add `remove` to the URL query string
-    if (getRemove() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sremove%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRemove()))));
-    }
-
-    // add `set` to the URL query string
-    if (getSet() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sset%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSet()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of FieldUpdateOperation to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

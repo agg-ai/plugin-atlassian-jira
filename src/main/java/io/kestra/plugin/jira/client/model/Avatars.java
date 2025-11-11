@@ -13,52 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.Avatar;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about system and custom avatars.
  */
-@JsonPropertyOrder({
-  Avatars.JSON_PROPERTY_CUSTOM,
-  Avatars.JSON_PROPERTY_SYSTEM
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Avatars {
-  public static final String JSON_PROPERTY_CUSTOM = "custom";
+  public static final String SERIALIZED_NAME_CUSTOM = "custom";
+  @SerializedName(SERIALIZED_NAME_CUSTOM)
   @javax.annotation.Nullable
   private List<Avatar> custom = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SYSTEM = "system";
+  public static final String SERIALIZED_NAME_SYSTEM = "system";
+  @SerializedName(SERIALIZED_NAME_SYSTEM)
   @javax.annotation.Nullable
   private List<Avatar> system = new ArrayList<>();
 
-  public Avatars() { 
+  public Avatars() {
   }
 
-  @JsonCreator
   public Avatars(
-    @JsonProperty(JSON_PROPERTY_CUSTOM) List<Avatar> custom, 
-    @JsonProperty(JSON_PROPERTY_SYSTEM) List<Avatar> system
+     List<Avatar> custom, 
+     List<Avatar> system
   ) {
-  this();
+    this();
     this.custom = custom;
     this.system = system;
   }
@@ -68,12 +82,9 @@ public class Avatars {
    * @return custom
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Avatar> getCustom() {
     return custom;
   }
-
 
 
 
@@ -82,8 +93,6 @@ public class Avatars {
    * @return system
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SYSTEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Avatar> getSystem() {
     return system;
   }
@@ -91,9 +100,6 @@ public class Avatars {
 
 
 
-  /**
-   * Return true if this Avatars object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -133,61 +139,96 @@ public class Avatars {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("custom", "system"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Avatars
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `custom` to the URL query string
-    if (getCustom() != null) {
-      for (int i = 0; i < getCustom().size(); i++) {
-        if (getCustom().get(i) != null) {
-          joiner.add(String.format(Locale.ROOT, "%scustom%s%s=%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-              ApiClient.urlEncode(ApiClient.valueToString(getCustom().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Avatars.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Avatars is not found in the empty JSON string", Avatars.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `system` to the URL query string
-    if (getSystem() != null) {
-      for (int i = 0; i < getSystem().size(); i++) {
-        if (getSystem().get(i) != null) {
-          joiner.add(String.format(Locale.ROOT, "%ssystem%s%s=%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-              ApiClient.urlEncode(ApiClient.valueToString(getSystem().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Avatars.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Avatars` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("custom") != null && !jsonObj.get("custom").isJsonNull() && !jsonObj.get("custom").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `custom` to be an array in the JSON string but got `%s`", jsonObj.get("custom").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("system") != null && !jsonObj.get("system").isJsonNull() && !jsonObj.get("system").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `system` to be an array in the JSON string but got `%s`", jsonObj.get("system").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Avatars.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Avatars' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Avatars> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Avatars.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Avatars>() {
+           @Override
+           public void write(JsonWriter out, Avatars value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Avatars read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of Avatars given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Avatars
+   * @throws IOException if the JSON string is invalid with respect to Avatars
+   */
+  public static Avatars fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Avatars.class);
+  }
+
+  /**
+   * Convert an instance of Avatars to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.WorkflowCondition;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A compound workflow transition rule condition. This object returns &#x60;nodeType&#x60; as &#x60;compound&#x60;.
  */
-@JsonPropertyOrder({
-  WorkflowCompoundCondition.JSON_PROPERTY_CONDITIONS,
-  WorkflowCompoundCondition.JSON_PROPERTY_NODE_TYPE,
-  WorkflowCompoundCondition.JSON_PROPERTY_OPERATOR
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowCompoundCondition {
-  public static final String JSON_PROPERTY_CONDITIONS = "conditions";
+  public static final String SERIALIZED_NAME_CONDITIONS = "conditions";
+  @SerializedName(SERIALIZED_NAME_CONDITIONS)
   @javax.annotation.Nonnull
   private List<WorkflowCondition> conditions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_NODE_TYPE = "nodeType";
+  public static final String SERIALIZED_NAME_NODE_TYPE = "nodeType";
+  @SerializedName(SERIALIZED_NAME_NODE_TYPE)
   @javax.annotation.Nonnull
   private String nodeType;
 
   /**
    * The compound condition operator.
    */
+  @JsonAdapter(OperatorEnum.Adapter.class)
   public enum OperatorEnum {
-    AND(String.valueOf("AND")),
+    AND("AND"),
     
-    OR(String.valueOf("OR"));
+    OR("OR");
 
     private String value;
 
@@ -65,7 +80,6 @@ public class WorkflowCompoundCondition {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -75,7 +89,6 @@ public class WorkflowCompoundCondition {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static OperatorEnum fromValue(String value) {
       for (OperatorEnum b : OperatorEnum.values()) {
         if (b.value.equals(value)) {
@@ -84,13 +97,32 @@ public class WorkflowCompoundCondition {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<OperatorEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final OperatorEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public OperatorEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return OperatorEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      OperatorEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_OPERATOR = "operator";
+  public static final String SERIALIZED_NAME_OPERATOR = "operator";
+  @SerializedName(SERIALIZED_NAME_OPERATOR)
   @javax.annotation.Nonnull
   private OperatorEnum operator;
 
-  public WorkflowCompoundCondition() { 
+  public WorkflowCompoundCondition() {
   }
 
   public WorkflowCompoundCondition conditions(@javax.annotation.Nonnull List<WorkflowCondition> conditions) {
@@ -111,15 +143,10 @@ public class WorkflowCompoundCondition {
    * @return conditions
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<WorkflowCondition> getConditions() {
     return conditions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setConditions(@javax.annotation.Nonnull List<WorkflowCondition> conditions) {
     this.conditions = conditions;
   }
@@ -135,15 +162,10 @@ public class WorkflowCompoundCondition {
    * @return nodeType
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NODE_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getNodeType() {
     return nodeType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NODE_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setNodeType(@javax.annotation.Nonnull String nodeType) {
     this.nodeType = nodeType;
   }
@@ -159,23 +181,16 @@ public class WorkflowCompoundCondition {
    * @return operator
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OPERATOR, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public OperatorEnum getOperator() {
     return operator;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPERATOR, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOperator(@javax.annotation.Nonnull OperatorEnum operator) {
     this.operator = operator;
   }
 
 
-  /**
-   * Return true if this WorkflowCompoundCondition object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -217,59 +232,113 @@ public class WorkflowCompoundCondition {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("conditions", "nodeType", "operator"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("conditions", "nodeType", "operator"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowCompoundCondition
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `conditions` to the URL query string
-    if (getConditions() != null) {
-      for (int i = 0; i < getConditions().size(); i++) {
-        if (getConditions().get(i) != null) {
-          joiner.add(getConditions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sconditions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowCompoundCondition.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowCompoundCondition is not found in the empty JSON string", WorkflowCompoundCondition.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `nodeType` to the URL query string
-    if (getNodeType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snodeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNodeType()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowCompoundCondition.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowCompoundCondition` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    // add `operator` to the URL query string
-    if (getOperator() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soperator%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperator()))));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : WorkflowCompoundCondition.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the json data is an array
+      if (!jsonObj.get("conditions").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `conditions` to be an array in the JSON string but got `%s`", jsonObj.get("conditions").toString()));
+      }
 
-    return joiner.toString();
+      JsonArray jsonArrayconditions = jsonObj.getAsJsonArray("conditions");
+      // validate the required field `conditions` (array)
+      for (int i = 0; i < jsonArrayconditions.size(); i++) {
+        WorkflowCondition.validateJsonElement(jsonArrayconditions.get(i));
+      };
+      if (!jsonObj.get("nodeType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `nodeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("nodeType").toString()));
+      }
+      if (!jsonObj.get("operator").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `operator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("operator").toString()));
+      }
+      // validate the required field `operator`
+      OperatorEnum.validateJsonElement(jsonObj.get("operator"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowCompoundCondition.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowCompoundCondition' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowCompoundCondition> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowCompoundCondition.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowCompoundCondition>() {
+           @Override
+           public void write(JsonWriter out, WorkflowCompoundCondition value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowCompoundCondition read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowCompoundCondition given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowCompoundCondition
+   * @throws IOException if the JSON string is invalid with respect to WorkflowCompoundCondition
+   */
+  public static WorkflowCompoundCondition fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowCompoundCondition.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowCompoundCondition to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

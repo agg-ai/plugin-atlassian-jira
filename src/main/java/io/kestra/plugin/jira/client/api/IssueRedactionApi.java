@@ -10,382 +10,343 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.BulkRedactionRequest;
 import io.kestra.plugin.jira.client.model.ErrorCollection;
 import io.kestra.plugin.jira.client.model.RedactionJobStatusResponse;
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueRedactionApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueRedactionApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueRedactionApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for getRedactionStatus
+     * @param jobId Redaction job id (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the job status is successfully retrieved. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the AGP subscription is not present. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the job id is not found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call getRedactionStatusCall(@javax.annotation.Nonnull String jobId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueRedactionApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueRedactionApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Get redaction status
-   * Retrieves the current status of a redaction job ID.  The jobStatus will be one of the following:   *  IN\\_PROGRESS - The redaction job is currently in progress  *  COMPLETED - The redaction job has completed successfully.  *  PENDING - The redaction job has not started yet
-   * @param jobId Redaction job id (required)
-   * @return RedactionJobStatusResponse
-   * @throws ApiException if fails to make API call
-   */
-  public RedactionJobStatusResponse getRedactionStatus(@javax.annotation.Nonnull String jobId) throws ApiException {
-    return getRedactionStatus(jobId, null);
-  }
-
-  /**
-   * Get redaction status
-   * Retrieves the current status of a redaction job ID.  The jobStatus will be one of the following:   *  IN\\_PROGRESS - The redaction job is currently in progress  *  COMPLETED - The redaction job has completed successfully.  *  PENDING - The redaction job has not started yet
-   * @param jobId Redaction job id (required)
-   * @param headers Optional headers to include in the request
-   * @return RedactionJobStatusResponse
-   * @throws ApiException if fails to make API call
-   */
-  public RedactionJobStatusResponse getRedactionStatus(@javax.annotation.Nonnull String jobId, Map<String, String> headers) throws ApiException {
-    ApiResponse<RedactionJobStatusResponse> localVarResponse = getRedactionStatusWithHttpInfo(jobId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get redaction status
-   * Retrieves the current status of a redaction job ID.  The jobStatus will be one of the following:   *  IN\\_PROGRESS - The redaction job is currently in progress  *  COMPLETED - The redaction job has completed successfully.  *  PENDING - The redaction job has not started yet
-   * @param jobId Redaction job id (required)
-   * @return ApiResponse&lt;RedactionJobStatusResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<RedactionJobStatusResponse> getRedactionStatusWithHttpInfo(@javax.annotation.Nonnull String jobId) throws ApiException {
-    return getRedactionStatusWithHttpInfo(jobId, null);
-  }
-
-  /**
-   * Get redaction status
-   * Retrieves the current status of a redaction job ID.  The jobStatus will be one of the following:   *  IN\\_PROGRESS - The redaction job is currently in progress  *  COMPLETED - The redaction job has completed successfully.  *  PENDING - The redaction job has not started yet
-   * @param jobId Redaction job id (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;RedactionJobStatusResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<RedactionJobStatusResponse> getRedactionStatusWithHttpInfo(@javax.annotation.Nonnull String jobId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getRedactionStatusRequestBuilder(jobId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getRedactionStatus", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<RedactionJobStatusResponse>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        RedactionJobStatusResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<RedactionJobStatusResponse>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<RedactionJobStatusResponse>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/redact/status/{jobId}"
+            .replace("{" + "jobId" + "}", localVarApiClient.escapeString(jobId.toString()));
 
-  private HttpRequest.Builder getRedactionStatusRequestBuilder(@javax.annotation.Nonnull String jobId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'jobId' is set
-    if (jobId == null) {
-      throw new ApiException(400, "Missing the required parameter 'jobId' when calling getRedactionStatus");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/redact/status/{jobId}"
-        .replace("{jobId}", ApiClient.urlEncode(jobId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Redact
-   * Submit a job to redact issue field data. This will trigger the redaction of the data in the specified fields asynchronously.  The redaction status can be polled using the job id.
-   * @param bulkRedactionRequest List of redaction requests (required)
-   * @return UUID
-   * @throws ApiException if fails to make API call
-   */
-  public UUID redact(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest) throws ApiException {
-    return redact(bulkRedactionRequest, null);
-  }
-
-  /**
-   * Redact
-   * Submit a job to redact issue field data. This will trigger the redaction of the data in the specified fields asynchronously.  The redaction status can be polled using the job id.
-   * @param bulkRedactionRequest List of redaction requests (required)
-   * @param headers Optional headers to include in the request
-   * @return UUID
-   * @throws ApiException if fails to make API call
-   */
-  public UUID redact(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<UUID> localVarResponse = redactWithHttpInfo(bulkRedactionRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Redact
-   * Submit a job to redact issue field data. This will trigger the redaction of the data in the specified fields asynchronously.  The redaction status can be polled using the job id.
-   * @param bulkRedactionRequest List of redaction requests (required)
-   * @return ApiResponse&lt;UUID&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<UUID> redactWithHttpInfo(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest) throws ApiException {
-    return redactWithHttpInfo(bulkRedactionRequest, null);
-  }
-
-  /**
-   * Redact
-   * Submit a job to redact issue field data. This will trigger the redaction of the data in the specified fields asynchronously.  The redaction status can be polled using the job id.
-   * @param bulkRedactionRequest List of redaction requests (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;UUID&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<UUID> redactWithHttpInfo(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = redactRequestBuilder(bulkRedactionRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("redact", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<UUID>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        UUID responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<UUID>() {});
-        
-        localVarResponse.body().close();
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
 
-        return new ApiResponse<UUID>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder redactRequestBuilder(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'bulkRedactionRequest' is set
-    if (bulkRedactionRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'bulkRedactionRequest' when calling redact");
+        String[] localVarAuthNames = new String[] { "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getRedactionStatusValidateBeforeCall(@javax.annotation.Nonnull String jobId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'jobId' is set
+        if (jobId == null) {
+            throw new ApiException("Missing the required parameter 'jobId' when calling getRedactionStatus(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/redact";
+        return getRedactionStatusCall(jobId, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(bulkRedactionRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Get redaction status
+     * Retrieves the current status of a redaction job ID.  The jobStatus will be one of the following:   *  IN\\_PROGRESS - The redaction job is currently in progress  *  COMPLETED - The redaction job has completed successfully.  *  PENDING - The redaction job has not started yet
+     * @param jobId Redaction job id (required)
+     * @return RedactionJobStatusResponse
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the job status is successfully retrieved. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the AGP subscription is not present. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the job id is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public RedactionJobStatusResponse getRedactionStatus(@javax.annotation.Nonnull String jobId) throws ApiException {
+        ApiResponse<RedactionJobStatusResponse> localVarResp = getRedactionStatusWithHttpInfo(jobId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get redaction status
+     * Retrieves the current status of a redaction job ID.  The jobStatus will be one of the following:   *  IN\\_PROGRESS - The redaction job is currently in progress  *  COMPLETED - The redaction job has completed successfully.  *  PENDING - The redaction job has not started yet
+     * @param jobId Redaction job id (required)
+     * @return ApiResponse&lt;RedactionJobStatusResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the job status is successfully retrieved. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the AGP subscription is not present. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the job id is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<RedactionJobStatusResponse> getRedactionStatusWithHttpInfo(@javax.annotation.Nonnull String jobId) throws ApiException {
+        okhttp3.Call localVarCall = getRedactionStatusValidateBeforeCall(jobId, null);
+        Type localVarReturnType = new TypeToken<RedactionJobStatusResponse>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get redaction status (asynchronously)
+     * Retrieves the current status of a redaction job ID.  The jobStatus will be one of the following:   *  IN\\_PROGRESS - The redaction job is currently in progress  *  COMPLETED - The redaction job has completed successfully.  *  PENDING - The redaction job has not started yet
+     * @param jobId Redaction job id (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the job status is successfully retrieved. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the AGP subscription is not present. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the job id is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRedactionStatusAsync(@javax.annotation.Nonnull String jobId, final ApiCallback<RedactionJobStatusResponse> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getRedactionStatusValidateBeforeCall(jobId, _callback);
+        Type localVarReturnType = new TypeToken<RedactionJobStatusResponse>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for redact
+     * @param bulkRedactionRequest List of redaction requests (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the job submission is successful. The response contains the job id. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the redaction request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user / app is not authorised to redact data </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the AGP subscription is not present. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call redactCall(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = bulkRedactionRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/redact";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call redactValidateBeforeCall(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'bulkRedactionRequest' is set
+        if (bulkRedactionRequest == null) {
+            throw new ApiException("Missing the required parameter 'bulkRedactionRequest' when calling redact(Async)");
+        }
+
+        return redactCall(bulkRedactionRequest, _callback);
+
+    }
+
+    /**
+     * Redact
+     * Submit a job to redact issue field data. This will trigger the redaction of the data in the specified fields asynchronously.  The redaction status can be polled using the job id.
+     * @param bulkRedactionRequest List of redaction requests (required)
+     * @return UUID
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the job submission is successful. The response contains the job id. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the redaction request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user / app is not authorised to redact data </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the AGP subscription is not present. </td><td>  -  </td></tr>
+     </table>
+     */
+    public UUID redact(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest) throws ApiException {
+        ApiResponse<UUID> localVarResp = redactWithHttpInfo(bulkRedactionRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Redact
+     * Submit a job to redact issue field data. This will trigger the redaction of the data in the specified fields asynchronously.  The redaction status can be polled using the job id.
+     * @param bulkRedactionRequest List of redaction requests (required)
+     * @return ApiResponse&lt;UUID&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the job submission is successful. The response contains the job id. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the redaction request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user / app is not authorised to redact data </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the AGP subscription is not present. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<UUID> redactWithHttpInfo(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest) throws ApiException {
+        okhttp3.Call localVarCall = redactValidateBeforeCall(bulkRedactionRequest, null);
+        Type localVarReturnType = new TypeToken<UUID>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Redact (asynchronously)
+     * Submit a job to redact issue field data. This will trigger the redaction of the data in the specified fields asynchronously.  The redaction status can be polled using the job id.
+     * @param bulkRedactionRequest List of redaction requests (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the job submission is successful. The response contains the job id. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the redaction request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user / app is not authorised to redact data </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the AGP subscription is not present. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call redactAsync(@javax.annotation.Nonnull BulkRedactionRequest bulkRedactionRequest, final ApiCallback<UUID> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = redactValidateBeforeCall(bulkRedactionRequest, _callback);
+        Type localVarReturnType = new TypeToken<UUID>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

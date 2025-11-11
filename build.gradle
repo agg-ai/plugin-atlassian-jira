@@ -51,13 +51,27 @@ dependencies {
     compileOnly group: "io.kestra", name: "core", version: kestraVersion
     compileOnly group: "io.kestra", name: "script", version: kestraVersion
 
-    // OpenAPI generated client dependencies
+    // OpenAPI generated client dependencies (okhttp-gson library with Jackson serialization)
     compileOnly "io.swagger.core.v3:swagger-annotations:2.2.26"
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+    compileOnly "javax.annotation:javax.annotation-api:1.3.2"
+    
+    // OkHttp dependencies (HTTP client)
+    compileOnly "com.squareup.okhttp3:okhttp:4.12.0"
+    compileOnly "com.squareup.okhttp3:logging-interceptor:4.12.0"
+    compileOnly "com.squareup.okio:okio:3.6.0"
+    
+    // Jackson dependencies (for JSON serialization)
     compileOnly "com.fasterxml.jackson.core:jackson-databind"
     compileOnly "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     compileOnly "org.openapitools:jackson-databind-nullable:0.2.6"
-    compileOnly "javax.annotation:javax.annotation-api:1.3.2"
+    
+    // Gson dependencies (temporary - remove after regenerating with Jackson)
+    compileOnly "com.google.code.gson:gson:2.10.1"
+    compileOnly "io.gsonfire:gson-fire:1.9.0"
+    
+    // OAuth dependencies (for okhttp-gson library)
+    compileOnly "org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:1.0.2"
 }
 
 /**********************************************************************************************************************\
@@ -76,19 +90,12 @@ openApiGenerate {
         sourceFolder: "src/main/java"
     ]
     
-    // Skip generation of extra files we don't need
-    generateApiTests = false
-    generateModelTests = false
-    generateApiDocumentation = false
-    generateModelDocumentation = false
-    
     configOptions = [
-        library: "native",                    // Java 11+ HttpClient (no extra dependencies)
+        library: "okhttp-gson",              // OkHttp HTTP client (can use Jackson or Gson)
         dateLibrary: "java8",                 // Use java.time classes
-        serializationLibrary: "jackson",      // Use Jackson for JSON
+        serializationLibrary: "jackson",      // Use Jackson for JSON serialization
         hideGenerationTimestamp: "true",      // Better for version control
         useJakartaEe: "false",               // Use javax instead of jakarta
-        // openApiNullable: "false",            // Simpler code without JsonNullable wrapper
         documentationProvider: "source"      // Include Javadoc in generated code
     ]
 }

@@ -13,125 +13,139 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SharePermission;
 import io.kestra.plugin.jira.client.model.UserBean;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a dashboard.
  */
-@JsonPropertyOrder({
-  Dashboard.JSON_PROPERTY_AUTOMATIC_REFRESH_MS,
-  Dashboard.JSON_PROPERTY_DESCRIPTION,
-  Dashboard.JSON_PROPERTY_EDIT_PERMISSIONS,
-  Dashboard.JSON_PROPERTY_ID,
-  Dashboard.JSON_PROPERTY_IS_FAVOURITE,
-  Dashboard.JSON_PROPERTY_IS_WRITABLE,
-  Dashboard.JSON_PROPERTY_NAME,
-  Dashboard.JSON_PROPERTY_OWNER,
-  Dashboard.JSON_PROPERTY_POPULARITY,
-  Dashboard.JSON_PROPERTY_RANK,
-  Dashboard.JSON_PROPERTY_SELF,
-  Dashboard.JSON_PROPERTY_SHARE_PERMISSIONS,
-  Dashboard.JSON_PROPERTY_SYSTEM_DASHBOARD,
-  Dashboard.JSON_PROPERTY_VIEW
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Dashboard {
-  public static final String JSON_PROPERTY_AUTOMATIC_REFRESH_MS = "automaticRefreshMs";
+  public static final String SERIALIZED_NAME_AUTOMATIC_REFRESH_MS = "automaticRefreshMs";
+  @SerializedName(SERIALIZED_NAME_AUTOMATIC_REFRESH_MS)
   @javax.annotation.Nullable
   private Integer automaticRefreshMs;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_EDIT_PERMISSIONS = "editPermissions";
+  public static final String SERIALIZED_NAME_EDIT_PERMISSIONS = "editPermissions";
+  @SerializedName(SERIALIZED_NAME_EDIT_PERMISSIONS)
   @javax.annotation.Nullable
   private List<SharePermission> editPermissions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_IS_FAVOURITE = "isFavourite";
+  public static final String SERIALIZED_NAME_IS_FAVOURITE = "isFavourite";
+  @SerializedName(SERIALIZED_NAME_IS_FAVOURITE)
   @javax.annotation.Nullable
   private Boolean isFavourite;
 
-  public static final String JSON_PROPERTY_IS_WRITABLE = "isWritable";
+  public static final String SERIALIZED_NAME_IS_WRITABLE = "isWritable";
+  @SerializedName(SERIALIZED_NAME_IS_WRITABLE)
   @javax.annotation.Nullable
   private Boolean isWritable;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_OWNER = "owner";
+  public static final String SERIALIZED_NAME_OWNER = "owner";
+  @SerializedName(SERIALIZED_NAME_OWNER)
   @javax.annotation.Nullable
   private UserBean owner;
 
-  public static final String JSON_PROPERTY_POPULARITY = "popularity";
+  public static final String SERIALIZED_NAME_POPULARITY = "popularity";
+  @SerializedName(SERIALIZED_NAME_POPULARITY)
   @javax.annotation.Nullable
   private Long popularity;
 
-  public static final String JSON_PROPERTY_RANK = "rank";
+  public static final String SERIALIZED_NAME_RANK = "rank";
+  @SerializedName(SERIALIZED_NAME_RANK)
   @javax.annotation.Nullable
   private Integer rank;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_SHARE_PERMISSIONS = "sharePermissions";
+  public static final String SERIALIZED_NAME_SHARE_PERMISSIONS = "sharePermissions";
+  @SerializedName(SERIALIZED_NAME_SHARE_PERMISSIONS)
   @javax.annotation.Nullable
   private List<SharePermission> sharePermissions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SYSTEM_DASHBOARD = "systemDashboard";
+  public static final String SERIALIZED_NAME_SYSTEM_DASHBOARD = "systemDashboard";
+  @SerializedName(SERIALIZED_NAME_SYSTEM_DASHBOARD)
   @javax.annotation.Nullable
   private Boolean systemDashboard;
 
-  public static final String JSON_PROPERTY_VIEW = "view";
+  public static final String SERIALIZED_NAME_VIEW = "view";
+  @SerializedName(SERIALIZED_NAME_VIEW)
   @javax.annotation.Nullable
   private String view;
 
-  public Dashboard() { 
+  public Dashboard() {
   }
 
-  @JsonCreator
   public Dashboard(
-    @JsonProperty(JSON_PROPERTY_AUTOMATIC_REFRESH_MS) Integer automaticRefreshMs, 
-    @JsonProperty(JSON_PROPERTY_EDIT_PERMISSIONS) List<SharePermission> editPermissions, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_IS_FAVOURITE) Boolean isFavourite, 
-    @JsonProperty(JSON_PROPERTY_IS_WRITABLE) Boolean isWritable, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_OWNER) UserBean owner, 
-    @JsonProperty(JSON_PROPERTY_POPULARITY) Long popularity, 
-    @JsonProperty(JSON_PROPERTY_RANK) Integer rank, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self, 
-    @JsonProperty(JSON_PROPERTY_SHARE_PERMISSIONS) List<SharePermission> sharePermissions, 
-    @JsonProperty(JSON_PROPERTY_SYSTEM_DASHBOARD) Boolean systemDashboard, 
-    @JsonProperty(JSON_PROPERTY_VIEW) String view
+     Integer automaticRefreshMs, 
+     List<SharePermission> editPermissions, 
+     String id, 
+     Boolean isFavourite, 
+     Boolean isWritable, 
+     String name, 
+     UserBean owner, 
+     Long popularity, 
+     Integer rank, 
+     URI self, 
+     List<SharePermission> sharePermissions, 
+     Boolean systemDashboard, 
+     String view
   ) {
-  this();
+    this();
     this.automaticRefreshMs = automaticRefreshMs;
     this.editPermissions = editPermissions;
     this.id = id;
@@ -152,12 +166,9 @@ public class Dashboard {
    * @return automaticRefreshMs
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTOMATIC_REFRESH_MS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAutomaticRefreshMs() {
     return automaticRefreshMs;
   }
-
 
 
 
@@ -171,15 +182,10 @@ public class Dashboard {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -190,12 +196,9 @@ public class Dashboard {
    * @return editPermissions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EDIT_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SharePermission> getEditPermissions() {
     return editPermissions;
   }
-
 
 
 
@@ -204,12 +207,9 @@ public class Dashboard {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -218,12 +218,9 @@ public class Dashboard {
    * @return isFavourite
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_FAVOURITE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsFavourite() {
     return isFavourite;
   }
-
 
 
 
@@ -232,12 +229,9 @@ public class Dashboard {
    * @return isWritable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_WRITABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsWritable() {
     return isWritable;
   }
-
 
 
 
@@ -246,12 +240,9 @@ public class Dashboard {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -260,12 +251,9 @@ public class Dashboard {
    * @return owner
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserBean getOwner() {
     return owner;
   }
-
 
 
 
@@ -274,12 +262,9 @@ public class Dashboard {
    * @return popularity
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_POPULARITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPopularity() {
     return popularity;
   }
-
 
 
 
@@ -288,12 +273,9 @@ public class Dashboard {
    * @return rank
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RANK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getRank() {
     return rank;
   }
-
 
 
 
@@ -302,12 +284,9 @@ public class Dashboard {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -316,12 +295,9 @@ public class Dashboard {
    * @return sharePermissions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SHARE_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SharePermission> getSharePermissions() {
     return sharePermissions;
   }
-
 
 
 
@@ -330,12 +306,9 @@ public class Dashboard {
    * @return systemDashboard
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SYSTEM_DASHBOARD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSystemDashboard() {
     return systemDashboard;
   }
-
 
 
 
@@ -344,8 +317,6 @@ public class Dashboard {
    * @return view
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getView() {
     return view;
   }
@@ -353,9 +324,6 @@ public class Dashboard {
 
 
 
-  /**
-   * Return true if this Dashboard object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -419,119 +387,135 @@ public class Dashboard {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("automaticRefreshMs", "description", "editPermissions", "id", "isFavourite", "isWritable", "name", "owner", "popularity", "rank", "self", "sharePermissions", "systemDashboard", "view"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Dashboard
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `automaticRefreshMs` to the URL query string
-    if (getAutomaticRefreshMs() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sautomaticRefreshMs%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAutomaticRefreshMs()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `editPermissions` to the URL query string
-    if (getEditPermissions() != null) {
-      for (int i = 0; i < getEditPermissions().size(); i++) {
-        if (getEditPermissions().get(i) != null) {
-          joiner.add(getEditPermissions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%seditPermissions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Dashboard.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Dashboard is not found in the empty JSON string", Dashboard.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `isFavourite` to the URL query string
-    if (getIsFavourite() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisFavourite%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsFavourite()))));
-    }
-
-    // add `isWritable` to the URL query string
-    if (getIsWritable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisWritable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsWritable()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `owner` to the URL query string
-    if (getOwner() != null) {
-      joiner.add(getOwner().toUrlQueryString(prefix + "owner" + suffix));
-    }
-
-    // add `popularity` to the URL query string
-    if (getPopularity() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spopularity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPopularity()))));
-    }
-
-    // add `rank` to the URL query string
-    if (getRank() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srank%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRank()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `sharePermissions` to the URL query string
-    if (getSharePermissions() != null) {
-      for (int i = 0; i < getSharePermissions().size(); i++) {
-        if (getSharePermissions().get(i) != null) {
-          joiner.add(getSharePermissions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssharePermissions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Dashboard.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Dashboard` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (jsonObj.get("editPermissions") != null && !jsonObj.get("editPermissions").isJsonNull()) {
+        JsonArray jsonArrayeditPermissions = jsonObj.getAsJsonArray("editPermissions");
+        if (jsonArrayeditPermissions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("editPermissions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `editPermissions` to be an array in the JSON string but got `%s`", jsonObj.get("editPermissions").toString()));
+          }
 
-    // add `systemDashboard` to the URL query string
-    if (getSystemDashboard() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssystemDashboard%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSystemDashboard()))));
-    }
+          // validate the optional field `editPermissions` (array)
+          for (int i = 0; i < jsonArrayeditPermissions.size(); i++) {
+            SharePermission.validateJsonElement(jsonArrayeditPermissions.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `owner`
+      if (jsonObj.get("owner") != null && !jsonObj.get("owner").isJsonNull()) {
+        UserBean.validateJsonElement(jsonObj.get("owner"));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if (jsonObj.get("sharePermissions") != null && !jsonObj.get("sharePermissions").isJsonNull()) {
+        JsonArray jsonArraysharePermissions = jsonObj.getAsJsonArray("sharePermissions");
+        if (jsonArraysharePermissions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("sharePermissions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `sharePermissions` to be an array in the JSON string but got `%s`", jsonObj.get("sharePermissions").toString()));
+          }
 
-    // add `view` to the URL query string
-    if (getView() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sview%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getView()))));
-    }
+          // validate the optional field `sharePermissions` (array)
+          for (int i = 0; i < jsonArraysharePermissions.size(); i++) {
+            SharePermission.validateJsonElement(jsonArraysharePermissions.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("view") != null && !jsonObj.get("view").isJsonNull()) && !jsonObj.get("view").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `view` to be a primitive type in the JSON string but got `%s`", jsonObj.get("view").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Dashboard.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Dashboard' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Dashboard> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Dashboard.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Dashboard>() {
+           @Override
+           public void write(JsonWriter out, Dashboard value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Dashboard read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of Dashboard given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Dashboard
+   * @throws IOException if the JSON string is invalid with respect to Dashboard
+   */
+  public static Dashboard fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Dashboard.class);
+  }
+
+  /**
+   * Convert an instance of Dashboard to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

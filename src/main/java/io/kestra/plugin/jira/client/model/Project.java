@@ -13,18 +13,13 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.AvatarUrlsBean;
 import io.kestra.plugin.jira.client.model.Hierarchy;
 import io.kestra.plugin.jira.client.model.IssueTypeDetails;
@@ -35,6 +30,7 @@ import io.kestra.plugin.jira.client.model.ProjectLandingPageInfo;
 import io.kestra.plugin.jira.client.model.ProjectPermissions;
 import io.kestra.plugin.jira.client.model.User;
 import io.kestra.plugin.jira.client.model.Version;
+import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -43,70 +39,59 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a project.
  */
-@JsonPropertyOrder({
-  Project.JSON_PROPERTY_ARCHIVED,
-  Project.JSON_PROPERTY_ARCHIVED_BY,
-  Project.JSON_PROPERTY_ARCHIVED_DATE,
-  Project.JSON_PROPERTY_ASSIGNEE_TYPE,
-  Project.JSON_PROPERTY_AVATAR_URLS,
-  Project.JSON_PROPERTY_COMPONENTS,
-  Project.JSON_PROPERTY_DELETED,
-  Project.JSON_PROPERTY_DELETED_BY,
-  Project.JSON_PROPERTY_DELETED_DATE,
-  Project.JSON_PROPERTY_DESCRIPTION,
-  Project.JSON_PROPERTY_EMAIL,
-  Project.JSON_PROPERTY_EXPAND,
-  Project.JSON_PROPERTY_FAVOURITE,
-  Project.JSON_PROPERTY_ID,
-  Project.JSON_PROPERTY_INSIGHT,
-  Project.JSON_PROPERTY_IS_PRIVATE,
-  Project.JSON_PROPERTY_ISSUE_TYPE_HIERARCHY,
-  Project.JSON_PROPERTY_ISSUE_TYPES,
-  Project.JSON_PROPERTY_KEY,
-  Project.JSON_PROPERTY_LANDING_PAGE_INFO,
-  Project.JSON_PROPERTY_LEAD,
-  Project.JSON_PROPERTY_NAME,
-  Project.JSON_PROPERTY_PERMISSIONS,
-  Project.JSON_PROPERTY_PROJECT_CATEGORY,
-  Project.JSON_PROPERTY_PROJECT_TYPE_KEY,
-  Project.JSON_PROPERTY_PROPERTIES,
-  Project.JSON_PROPERTY_RETENTION_TILL_DATE,
-  Project.JSON_PROPERTY_ROLES,
-  Project.JSON_PROPERTY_SELF,
-  Project.JSON_PROPERTY_SIMPLIFIED,
-  Project.JSON_PROPERTY_STYLE,
-  Project.JSON_PROPERTY_URL,
-  Project.JSON_PROPERTY_UUID,
-  Project.JSON_PROPERTY_VERSIONS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Project {
-  public static final String JSON_PROPERTY_ARCHIVED = "archived";
+  public static final String SERIALIZED_NAME_ARCHIVED = "archived";
+  @SerializedName(SERIALIZED_NAME_ARCHIVED)
   @javax.annotation.Nullable
   private Boolean archived;
 
-  public static final String JSON_PROPERTY_ARCHIVED_BY = "archivedBy";
+  public static final String SERIALIZED_NAME_ARCHIVED_BY = "archivedBy";
+  @SerializedName(SERIALIZED_NAME_ARCHIVED_BY)
   @javax.annotation.Nullable
   private User archivedBy;
 
-  public static final String JSON_PROPERTY_ARCHIVED_DATE = "archivedDate";
+  public static final String SERIALIZED_NAME_ARCHIVED_DATE = "archivedDate";
+  @SerializedName(SERIALIZED_NAME_ARCHIVED_DATE)
   @javax.annotation.Nullable
   private OffsetDateTime archivedDate;
 
   /**
    * The default assignee when creating issues for this project.
    */
+  @JsonAdapter(AssigneeTypeEnum.Adapter.class)
   public enum AssigneeTypeEnum {
-    PROJECT_LEAD(String.valueOf("PROJECT_LEAD")),
+    PROJECT_LEAD("PROJECT_LEAD"),
     
-    UNASSIGNED(String.valueOf("UNASSIGNED"));
+    UNASSIGNED("UNASSIGNED");
 
     private String value;
 
@@ -114,7 +99,6 @@ public class Project {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -124,7 +108,6 @@ public class Project {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static AssigneeTypeEnum fromValue(String value) {
       for (AssigneeTypeEnum b : AssigneeTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -133,101 +116,141 @@ public class Project {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<AssigneeTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final AssigneeTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public AssigneeTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return AssigneeTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      AssigneeTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ASSIGNEE_TYPE = "assigneeType";
+  public static final String SERIALIZED_NAME_ASSIGNEE_TYPE = "assigneeType";
+  @SerializedName(SERIALIZED_NAME_ASSIGNEE_TYPE)
   @javax.annotation.Nullable
   private AssigneeTypeEnum assigneeType;
 
-  public static final String JSON_PROPERTY_AVATAR_URLS = "avatarUrls";
+  public static final String SERIALIZED_NAME_AVATAR_URLS = "avatarUrls";
+  @SerializedName(SERIALIZED_NAME_AVATAR_URLS)
   @javax.annotation.Nullable
   private AvatarUrlsBean avatarUrls;
 
-  public static final String JSON_PROPERTY_COMPONENTS = "components";
+  public static final String SERIALIZED_NAME_COMPONENTS = "components";
+  @SerializedName(SERIALIZED_NAME_COMPONENTS)
   @javax.annotation.Nullable
   private List<ProjectComponent> components = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_DELETED = "deleted";
+  public static final String SERIALIZED_NAME_DELETED = "deleted";
+  @SerializedName(SERIALIZED_NAME_DELETED)
   @javax.annotation.Nullable
   private Boolean deleted;
 
-  public static final String JSON_PROPERTY_DELETED_BY = "deletedBy";
+  public static final String SERIALIZED_NAME_DELETED_BY = "deletedBy";
+  @SerializedName(SERIALIZED_NAME_DELETED_BY)
   @javax.annotation.Nullable
   private User deletedBy;
 
-  public static final String JSON_PROPERTY_DELETED_DATE = "deletedDate";
+  public static final String SERIALIZED_NAME_DELETED_DATE = "deletedDate";
+  @SerializedName(SERIALIZED_NAME_DELETED_DATE)
   @javax.annotation.Nullable
   private OffsetDateTime deletedDate;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_EMAIL = "email";
+  public static final String SERIALIZED_NAME_EMAIL = "email";
+  @SerializedName(SERIALIZED_NAME_EMAIL)
   @javax.annotation.Nullable
   private String email;
 
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_FAVOURITE = "favourite";
+  public static final String SERIALIZED_NAME_FAVOURITE = "favourite";
+  @SerializedName(SERIALIZED_NAME_FAVOURITE)
   @javax.annotation.Nullable
   private Boolean favourite;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_INSIGHT = "insight";
+  public static final String SERIALIZED_NAME_INSIGHT = "insight";
+  @SerializedName(SERIALIZED_NAME_INSIGHT)
   @javax.annotation.Nullable
   private ProjectInsight insight;
 
-  public static final String JSON_PROPERTY_IS_PRIVATE = "isPrivate";
+  public static final String SERIALIZED_NAME_IS_PRIVATE = "isPrivate";
+  @SerializedName(SERIALIZED_NAME_IS_PRIVATE)
   @javax.annotation.Nullable
   private Boolean isPrivate;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_HIERARCHY = "issueTypeHierarchy";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_HIERARCHY = "issueTypeHierarchy";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_HIERARCHY)
   @javax.annotation.Nullable
   private Hierarchy issueTypeHierarchy;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPES = "issueTypes";
+  public static final String SERIALIZED_NAME_ISSUE_TYPES = "issueTypes";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPES)
   @javax.annotation.Nullable
   private List<IssueTypeDetails> issueTypes = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_LANDING_PAGE_INFO = "landingPageInfo";
+  public static final String SERIALIZED_NAME_LANDING_PAGE_INFO = "landingPageInfo";
+  @SerializedName(SERIALIZED_NAME_LANDING_PAGE_INFO)
   @javax.annotation.Nullable
   private ProjectLandingPageInfo landingPageInfo;
 
-  public static final String JSON_PROPERTY_LEAD = "lead";
+  public static final String SERIALIZED_NAME_LEAD = "lead";
+  @SerializedName(SERIALIZED_NAME_LEAD)
   @javax.annotation.Nullable
   private User lead;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PERMISSIONS = "permissions";
+  public static final String SERIALIZED_NAME_PERMISSIONS = "permissions";
+  @SerializedName(SERIALIZED_NAME_PERMISSIONS)
   @javax.annotation.Nullable
   private ProjectPermissions permissions;
 
-  public static final String JSON_PROPERTY_PROJECT_CATEGORY = "projectCategory";
+  public static final String SERIALIZED_NAME_PROJECT_CATEGORY = "projectCategory";
+  @SerializedName(SERIALIZED_NAME_PROJECT_CATEGORY)
   @javax.annotation.Nullable
   private ProjectCategory projectCategory;
 
   /**
    * The [project type](https://confluence.atlassian.com/x/GwiiLQ#Jiraapplicationsoverview-Productfeaturesandprojecttypes) of the project.
    */
+  @JsonAdapter(ProjectTypeKeyEnum.Adapter.class)
   public enum ProjectTypeKeyEnum {
-    SOFTWARE(String.valueOf("software")),
+    SOFTWARE("software"),
     
-    SERVICE_DESK(String.valueOf("service_desk")),
+    SERVICE_DESK("service_desk"),
     
-    BUSINESS(String.valueOf("business"));
+    BUSINESS("business");
 
     private String value;
 
@@ -235,7 +258,6 @@ public class Project {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -245,7 +267,6 @@ public class Project {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ProjectTypeKeyEnum fromValue(String value) {
       for (ProjectTypeKeyEnum b : ProjectTypeKeyEnum.values()) {
         if (b.value.equals(value)) {
@@ -254,39 +275,64 @@ public class Project {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ProjectTypeKeyEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ProjectTypeKeyEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ProjectTypeKeyEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ProjectTypeKeyEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ProjectTypeKeyEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_PROJECT_TYPE_KEY = "projectTypeKey";
+  public static final String SERIALIZED_NAME_PROJECT_TYPE_KEY = "projectTypeKey";
+  @SerializedName(SERIALIZED_NAME_PROJECT_TYPE_KEY)
   @javax.annotation.Nullable
   private ProjectTypeKeyEnum projectTypeKey;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private Map<String, Object> properties = new HashMap<>();
 
-  public static final String JSON_PROPERTY_RETENTION_TILL_DATE = "retentionTillDate";
+  public static final String SERIALIZED_NAME_RETENTION_TILL_DATE = "retentionTillDate";
+  @SerializedName(SERIALIZED_NAME_RETENTION_TILL_DATE)
   @javax.annotation.Nullable
   private OffsetDateTime retentionTillDate;
 
-  public static final String JSON_PROPERTY_ROLES = "roles";
+  public static final String SERIALIZED_NAME_ROLES = "roles";
+  @SerializedName(SERIALIZED_NAME_ROLES)
   @javax.annotation.Nullable
   private Map<String, URI> roles = new HashMap<>();
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_SIMPLIFIED = "simplified";
+  public static final String SERIALIZED_NAME_SIMPLIFIED = "simplified";
+  @SerializedName(SERIALIZED_NAME_SIMPLIFIED)
   @javax.annotation.Nullable
   private Boolean simplified;
 
   /**
    * The type of the project.
    */
+  @JsonAdapter(StyleEnum.Adapter.class)
   public enum StyleEnum {
-    CLASSIC(String.valueOf("classic")),
+    CLASSIC("classic"),
     
-    NEXT_GEN(String.valueOf("next-gen"));
+    NEXT_GEN("next-gen");
 
     private String value;
 
@@ -294,7 +340,6 @@ public class Project {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -304,7 +349,6 @@ public class Project {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static StyleEnum fromValue(String value) {
       for (StyleEnum b : StyleEnum.values()) {
         if (b.value.equals(value)) {
@@ -313,62 +357,83 @@ public class Project {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<StyleEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StyleEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StyleEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return StyleEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      StyleEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_STYLE = "style";
+  public static final String SERIALIZED_NAME_STYLE = "style";
+  @SerializedName(SERIALIZED_NAME_STYLE)
   @javax.annotation.Nullable
   private StyleEnum style;
 
-  public static final String JSON_PROPERTY_URL = "url";
+  public static final String SERIALIZED_NAME_URL = "url";
+  @SerializedName(SERIALIZED_NAME_URL)
   @javax.annotation.Nullable
   private String url;
 
-  public static final String JSON_PROPERTY_UUID = "uuid";
+  public static final String SERIALIZED_NAME_UUID = "uuid";
+  @SerializedName(SERIALIZED_NAME_UUID)
   @javax.annotation.Nullable
   private UUID uuid;
 
-  public static final String JSON_PROPERTY_VERSIONS = "versions";
+  public static final String SERIALIZED_NAME_VERSIONS = "versions";
+  @SerializedName(SERIALIZED_NAME_VERSIONS)
   @javax.annotation.Nullable
   private List<Version> versions = new ArrayList<>();
 
-  public Project() { 
+  public Project() {
   }
 
-  @JsonCreator
   public Project(
-    @JsonProperty(JSON_PROPERTY_ARCHIVED) Boolean archived, 
-    @JsonProperty(JSON_PROPERTY_ARCHIVED_BY) User archivedBy, 
-    @JsonProperty(JSON_PROPERTY_ARCHIVED_DATE) OffsetDateTime archivedDate, 
-    @JsonProperty(JSON_PROPERTY_ASSIGNEE_TYPE) AssigneeTypeEnum assigneeType, 
-    @JsonProperty(JSON_PROPERTY_AVATAR_URLS) AvatarUrlsBean avatarUrls, 
-    @JsonProperty(JSON_PROPERTY_COMPONENTS) List<ProjectComponent> components, 
-    @JsonProperty(JSON_PROPERTY_DELETED) Boolean deleted, 
-    @JsonProperty(JSON_PROPERTY_DELETED_BY) User deletedBy, 
-    @JsonProperty(JSON_PROPERTY_DELETED_DATE) OffsetDateTime deletedDate, 
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION) String description, 
-    @JsonProperty(JSON_PROPERTY_EXPAND) String expand, 
-    @JsonProperty(JSON_PROPERTY_INSIGHT) ProjectInsight insight, 
-    @JsonProperty(JSON_PROPERTY_IS_PRIVATE) Boolean isPrivate, 
-    @JsonProperty(JSON_PROPERTY_ISSUE_TYPE_HIERARCHY) Hierarchy issueTypeHierarchy, 
-    @JsonProperty(JSON_PROPERTY_ISSUE_TYPES) List<IssueTypeDetails> issueTypes, 
-    @JsonProperty(JSON_PROPERTY_KEY) String key, 
-    @JsonProperty(JSON_PROPERTY_LANDING_PAGE_INFO) ProjectLandingPageInfo landingPageInfo, 
-    @JsonProperty(JSON_PROPERTY_LEAD) User lead, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_PERMISSIONS) ProjectPermissions permissions, 
-    @JsonProperty(JSON_PROPERTY_PROJECT_CATEGORY) ProjectCategory projectCategory, 
-    @JsonProperty(JSON_PROPERTY_PROJECT_TYPE_KEY) ProjectTypeKeyEnum projectTypeKey, 
-    @JsonProperty(JSON_PROPERTY_PROPERTIES) Map<String, Object> properties, 
-    @JsonProperty(JSON_PROPERTY_RETENTION_TILL_DATE) OffsetDateTime retentionTillDate, 
-    @JsonProperty(JSON_PROPERTY_ROLES) Map<String, URI> roles, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self, 
-    @JsonProperty(JSON_PROPERTY_SIMPLIFIED) Boolean simplified, 
-    @JsonProperty(JSON_PROPERTY_STYLE) StyleEnum style, 
-    @JsonProperty(JSON_PROPERTY_URL) String url, 
-    @JsonProperty(JSON_PROPERTY_UUID) UUID uuid, 
-    @JsonProperty(JSON_PROPERTY_VERSIONS) List<Version> versions
+     Boolean archived, 
+     User archivedBy, 
+     OffsetDateTime archivedDate, 
+     AssigneeTypeEnum assigneeType, 
+     AvatarUrlsBean avatarUrls, 
+     List<ProjectComponent> components, 
+     Boolean deleted, 
+     User deletedBy, 
+     OffsetDateTime deletedDate, 
+     String description, 
+     String expand, 
+     ProjectInsight insight, 
+     Boolean isPrivate, 
+     Hierarchy issueTypeHierarchy, 
+     List<IssueTypeDetails> issueTypes, 
+     String key, 
+     ProjectLandingPageInfo landingPageInfo, 
+     User lead, 
+     String name, 
+     ProjectPermissions permissions, 
+     ProjectCategory projectCategory, 
+     ProjectTypeKeyEnum projectTypeKey, 
+     Map<String, Object> properties, 
+     OffsetDateTime retentionTillDate, 
+     Map<String, URI> roles, 
+     URI self, 
+     Boolean simplified, 
+     StyleEnum style, 
+     String url, 
+     UUID uuid, 
+     List<Version> versions
   ) {
-  this();
+    this();
     this.archived = archived;
     this.archivedBy = archivedBy;
     this.archivedDate = archivedDate;
@@ -407,12 +472,9 @@ public class Project {
    * @return archived
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ARCHIVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getArchived() {
     return archived;
   }
-
 
 
 
@@ -421,12 +483,9 @@ public class Project {
    * @return archivedBy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ARCHIVED_BY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getArchivedBy() {
     return archivedBy;
   }
-
 
 
 
@@ -435,12 +494,9 @@ public class Project {
    * @return archivedDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ARCHIVED_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getArchivedDate() {
     return archivedDate;
   }
-
 
 
 
@@ -449,12 +505,9 @@ public class Project {
    * @return assigneeType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ASSIGNEE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AssigneeTypeEnum getAssigneeType() {
     return assigneeType;
   }
-
 
 
 
@@ -463,12 +516,9 @@ public class Project {
    * @return avatarUrls
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_URLS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AvatarUrlsBean getAvatarUrls() {
     return avatarUrls;
   }
-
 
 
 
@@ -477,12 +527,9 @@ public class Project {
    * @return components
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COMPONENTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProjectComponent> getComponents() {
     return components;
   }
-
 
 
 
@@ -491,12 +538,9 @@ public class Project {
    * @return deleted
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DELETED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDeleted() {
     return deleted;
   }
-
 
 
 
@@ -505,12 +549,9 @@ public class Project {
    * @return deletedBy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DELETED_BY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getDeletedBy() {
     return deletedBy;
   }
-
 
 
 
@@ -519,12 +560,9 @@ public class Project {
    * @return deletedDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DELETED_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDeletedDate() {
     return deletedDate;
   }
-
 
 
 
@@ -533,12 +571,9 @@ public class Project {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
-
 
 
 
@@ -552,15 +587,10 @@ public class Project {
    * @return email
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EMAIL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEmail() {
     return email;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EMAIL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEmail(@javax.annotation.Nullable String email) {
     this.email = email;
   }
@@ -571,12 +601,9 @@ public class Project {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
-
 
 
 
@@ -590,15 +617,10 @@ public class Project {
    * @return favourite
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FAVOURITE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getFavourite() {
     return favourite;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FAVOURITE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFavourite(@javax.annotation.Nullable Boolean favourite) {
     this.favourite = favourite;
   }
@@ -614,15 +636,10 @@ public class Project {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -633,12 +650,9 @@ public class Project {
    * @return insight
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INSIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectInsight getInsight() {
     return insight;
   }
-
 
 
 
@@ -647,12 +661,9 @@ public class Project {
    * @return isPrivate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_PRIVATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPrivate() {
     return isPrivate;
   }
-
 
 
 
@@ -661,12 +672,9 @@ public class Project {
    * @return issueTypeHierarchy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_HIERARCHY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Hierarchy getIssueTypeHierarchy() {
     return issueTypeHierarchy;
   }
-
 
 
 
@@ -675,12 +683,9 @@ public class Project {
    * @return issueTypes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueTypeDetails> getIssueTypes() {
     return issueTypes;
   }
-
 
 
 
@@ -689,12 +694,9 @@ public class Project {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
-
 
 
 
@@ -703,12 +705,9 @@ public class Project {
    * @return landingPageInfo
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LANDING_PAGE_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectLandingPageInfo getLandingPageInfo() {
     return landingPageInfo;
   }
-
 
 
 
@@ -717,12 +716,9 @@ public class Project {
    * @return lead
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getLead() {
     return lead;
   }
-
 
 
 
@@ -731,12 +727,9 @@ public class Project {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -745,12 +738,9 @@ public class Project {
    * @return permissions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectPermissions getPermissions() {
     return permissions;
   }
-
 
 
 
@@ -759,12 +749,9 @@ public class Project {
    * @return projectCategory
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCategory getProjectCategory() {
     return projectCategory;
   }
-
 
 
 
@@ -773,12 +760,9 @@ public class Project {
    * @return projectTypeKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectTypeKeyEnum getProjectTypeKey() {
     return projectTypeKey;
   }
-
 
 
 
@@ -787,12 +771,9 @@ public class Project {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getProperties() {
     return properties;
   }
-
 
 
 
@@ -801,12 +782,9 @@ public class Project {
    * @return retentionTillDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RETENTION_TILL_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getRetentionTillDate() {
     return retentionTillDate;
   }
-
 
 
 
@@ -815,12 +793,9 @@ public class Project {
    * @return roles
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ROLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, URI> getRoles() {
     return roles;
   }
-
 
 
 
@@ -829,12 +804,9 @@ public class Project {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -843,12 +815,9 @@ public class Project {
    * @return simplified
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIMPLIFIED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSimplified() {
     return simplified;
   }
-
 
 
 
@@ -857,12 +826,9 @@ public class Project {
    * @return style
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STYLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public StyleEnum getStyle() {
     return style;
   }
-
 
 
 
@@ -871,12 +837,9 @@ public class Project {
    * @return url
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUrl() {
     return url;
   }
-
 
 
 
@@ -885,12 +848,9 @@ public class Project {
    * @return uuid
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UUID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getUuid() {
     return uuid;
   }
-
 
 
 
@@ -899,8 +859,6 @@ public class Project {
    * @return versions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VERSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Version> getVersions() {
     return versions;
   }
@@ -908,9 +866,6 @@ public class Project {
 
 
 
-  /**
-   * Return true if this Project object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -1014,232 +969,214 @@ public class Project {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("archived", "archivedBy", "archivedDate", "assigneeType", "avatarUrls", "components", "deleted", "deletedBy", "deletedDate", "description", "email", "expand", "favourite", "id", "insight", "isPrivate", "issueTypeHierarchy", "issueTypes", "key", "landingPageInfo", "lead", "name", "permissions", "projectCategory", "projectTypeKey", "properties", "retentionTillDate", "roles", "self", "simplified", "style", "url", "uuid", "versions"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Project
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `archived` to the URL query string
-    if (getArchived() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sarchived%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getArchived()))));
-    }
-
-    // add `archivedBy` to the URL query string
-    if (getArchivedBy() != null) {
-      joiner.add(getArchivedBy().toUrlQueryString(prefix + "archivedBy" + suffix));
-    }
-
-    // add `archivedDate` to the URL query string
-    if (getArchivedDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sarchivedDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getArchivedDate()))));
-    }
-
-    // add `assigneeType` to the URL query string
-    if (getAssigneeType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sassigneeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssigneeType()))));
-    }
-
-    // add `avatarUrls` to the URL query string
-    if (getAvatarUrls() != null) {
-      joiner.add(getAvatarUrls().toUrlQueryString(prefix + "avatarUrls" + suffix));
-    }
-
-    // add `components` to the URL query string
-    if (getComponents() != null) {
-      for (int i = 0; i < getComponents().size(); i++) {
-        if (getComponents().get(i) != null) {
-          joiner.add(getComponents().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scomponents%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Project.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Project is not found in the empty JSON string", Project.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `deleted` to the URL query string
-    if (getDeleted() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdeleted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeleted()))));
-    }
-
-    // add `deletedBy` to the URL query string
-    if (getDeletedBy() != null) {
-      joiner.add(getDeletedBy().toUrlQueryString(prefix + "deletedBy" + suffix));
-    }
-
-    // add `deletedDate` to the URL query string
-    if (getDeletedDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdeletedDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeletedDate()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `email` to the URL query string
-    if (getEmail() != null) {
-      joiner.add(String.format(Locale.ROOT, "%semail%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmail()))));
-    }
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `favourite` to the URL query string
-    if (getFavourite() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfavourite%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFavourite()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `insight` to the URL query string
-    if (getInsight() != null) {
-      joiner.add(getInsight().toUrlQueryString(prefix + "insight" + suffix));
-    }
-
-    // add `isPrivate` to the URL query string
-    if (getIsPrivate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisPrivate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsPrivate()))));
-    }
-
-    // add `issueTypeHierarchy` to the URL query string
-    if (getIssueTypeHierarchy() != null) {
-      joiner.add(getIssueTypeHierarchy().toUrlQueryString(prefix + "issueTypeHierarchy" + suffix));
-    }
-
-    // add `issueTypes` to the URL query string
-    if (getIssueTypes() != null) {
-      for (int i = 0; i < getIssueTypes().size(); i++) {
-        if (getIssueTypes().get(i) != null) {
-          joiner.add(getIssueTypes().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissueTypes%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Project.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Project` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `landingPageInfo` to the URL query string
-    if (getLandingPageInfo() != null) {
-      joiner.add(getLandingPageInfo().toUrlQueryString(prefix + "landingPageInfo" + suffix));
-    }
-
-    // add `lead` to the URL query string
-    if (getLead() != null) {
-      joiner.add(getLead().toUrlQueryString(prefix + "lead" + suffix));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `permissions` to the URL query string
-    if (getPermissions() != null) {
-      joiner.add(getPermissions().toUrlQueryString(prefix + "permissions" + suffix));
-    }
-
-    // add `projectCategory` to the URL query string
-    if (getProjectCategory() != null) {
-      joiner.add(getProjectCategory().toUrlQueryString(prefix + "projectCategory" + suffix));
-    }
-
-    // add `projectTypeKey` to the URL query string
-    if (getProjectTypeKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectTypeKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectTypeKey()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `archivedBy`
+      if (jsonObj.get("archivedBy") != null && !jsonObj.get("archivedBy").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("archivedBy"));
       }
-    }
-
-    // add `retentionTillDate` to the URL query string
-    if (getRetentionTillDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sretentionTillDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRetentionTillDate()))));
-    }
-
-    // add `roles` to the URL query string
-    if (getRoles() != null) {
-      for (String _key : getRoles().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sroles%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getRoles().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getRoles().get(_key)))));
+      if ((jsonObj.get("assigneeType") != null && !jsonObj.get("assigneeType").isJsonNull()) && !jsonObj.get("assigneeType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `assigneeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("assigneeType").toString()));
       }
-    }
+      // validate the optional field `assigneeType`
+      if (jsonObj.get("assigneeType") != null && !jsonObj.get("assigneeType").isJsonNull()) {
+        AssigneeTypeEnum.validateJsonElement(jsonObj.get("assigneeType"));
+      }
+      // validate the optional field `avatarUrls`
+      if (jsonObj.get("avatarUrls") != null && !jsonObj.get("avatarUrls").isJsonNull()) {
+        AvatarUrlsBean.validateJsonElement(jsonObj.get("avatarUrls"));
+      }
+      if (jsonObj.get("components") != null && !jsonObj.get("components").isJsonNull()) {
+        JsonArray jsonArraycomponents = jsonObj.getAsJsonArray("components");
+        if (jsonArraycomponents != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("components").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `components` to be an array in the JSON string but got `%s`", jsonObj.get("components").toString()));
+          }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `simplified` to the URL query string
-    if (getSimplified() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssimplified%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSimplified()))));
-    }
-
-    // add `style` to the URL query string
-    if (getStyle() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstyle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStyle()))));
-    }
-
-    // add `url` to the URL query string
-    if (getUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%surl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-    }
-
-    // add `uuid` to the URL query string
-    if (getUuid() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suuid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUuid()))));
-    }
-
-    // add `versions` to the URL query string
-    if (getVersions() != null) {
-      for (int i = 0; i < getVersions().size(); i++) {
-        if (getVersions().get(i) != null) {
-          joiner.add(getVersions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sversions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `components` (array)
+          for (int i = 0; i < jsonArraycomponents.size(); i++) {
+            ProjectComponent.validateJsonElement(jsonArraycomponents.get(i));
+          };
         }
       }
-    }
+      // validate the optional field `deletedBy`
+      if (jsonObj.get("deletedBy") != null && !jsonObj.get("deletedBy").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("deletedBy"));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("email") != null && !jsonObj.get("email").isJsonNull()) && !jsonObj.get("email").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `email` to be a primitive type in the JSON string but got `%s`", jsonObj.get("email").toString()));
+      }
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      // validate the optional field `insight`
+      if (jsonObj.get("insight") != null && !jsonObj.get("insight").isJsonNull()) {
+        ProjectInsight.validateJsonElement(jsonObj.get("insight"));
+      }
+      // validate the optional field `issueTypeHierarchy`
+      if (jsonObj.get("issueTypeHierarchy") != null && !jsonObj.get("issueTypeHierarchy").isJsonNull()) {
+        Hierarchy.validateJsonElement(jsonObj.get("issueTypeHierarchy"));
+      }
+      if (jsonObj.get("issueTypes") != null && !jsonObj.get("issueTypes").isJsonNull()) {
+        JsonArray jsonArrayissueTypes = jsonObj.getAsJsonArray("issueTypes");
+        if (jsonArrayissueTypes != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issueTypes").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypes` to be an array in the JSON string but got `%s`", jsonObj.get("issueTypes").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `issueTypes` (array)
+          for (int i = 0; i < jsonArrayissueTypes.size(); i++) {
+            IssueTypeDetails.validateJsonElement(jsonArrayissueTypes.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      // validate the optional field `landingPageInfo`
+      if (jsonObj.get("landingPageInfo") != null && !jsonObj.get("landingPageInfo").isJsonNull()) {
+        ProjectLandingPageInfo.validateJsonElement(jsonObj.get("landingPageInfo"));
+      }
+      // validate the optional field `lead`
+      if (jsonObj.get("lead") != null && !jsonObj.get("lead").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("lead"));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `permissions`
+      if (jsonObj.get("permissions") != null && !jsonObj.get("permissions").isJsonNull()) {
+        ProjectPermissions.validateJsonElement(jsonObj.get("permissions"));
+      }
+      // validate the optional field `projectCategory`
+      if (jsonObj.get("projectCategory") != null && !jsonObj.get("projectCategory").isJsonNull()) {
+        ProjectCategory.validateJsonElement(jsonObj.get("projectCategory"));
+      }
+      if ((jsonObj.get("projectTypeKey") != null && !jsonObj.get("projectTypeKey").isJsonNull()) && !jsonObj.get("projectTypeKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectTypeKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectTypeKey").toString()));
+      }
+      // validate the optional field `projectTypeKey`
+      if (jsonObj.get("projectTypeKey") != null && !jsonObj.get("projectTypeKey").isJsonNull()) {
+        ProjectTypeKeyEnum.validateJsonElement(jsonObj.get("projectTypeKey"));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("style") != null && !jsonObj.get("style").isJsonNull()) && !jsonObj.get("style").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `style` to be a primitive type in the JSON string but got `%s`", jsonObj.get("style").toString()));
+      }
+      // validate the optional field `style`
+      if (jsonObj.get("style") != null && !jsonObj.get("style").isJsonNull()) {
+        StyleEnum.validateJsonElement(jsonObj.get("style"));
+      }
+      if ((jsonObj.get("url") != null && !jsonObj.get("url").isJsonNull()) && !jsonObj.get("url").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("url").toString()));
+      }
+      if ((jsonObj.get("uuid") != null && !jsonObj.get("uuid").isJsonNull()) && !jsonObj.get("uuid").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `uuid` to be a primitive type in the JSON string but got `%s`", jsonObj.get("uuid").toString()));
+      }
+      if (jsonObj.get("versions") != null && !jsonObj.get("versions").isJsonNull()) {
+        JsonArray jsonArrayversions = jsonObj.getAsJsonArray("versions");
+        if (jsonArrayversions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("versions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `versions` to be an array in the JSON string but got `%s`", jsonObj.get("versions").toString()));
+          }
+
+          // validate the optional field `versions` (array)
+          for (int i = 0; i < jsonArrayversions.size(); i++) {
+            Version.validateJsonElement(jsonArrayversions.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Project.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Project' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Project> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Project.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Project>() {
+           @Override
+           public void write(JsonWriter out, Project value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Project read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of Project given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Project
+   * @throws IOException if the JSON string is invalid with respect to Project
+   */
+  public static Project fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Project.class);
+  }
+
+  /**
+   * Convert an instance of Project to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

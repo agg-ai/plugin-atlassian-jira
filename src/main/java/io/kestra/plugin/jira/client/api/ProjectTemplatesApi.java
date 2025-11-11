@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.EditTemplateRequest;
 import io.kestra.plugin.jira.client.model.ProjectCustomTemplateCreateRequestDTO;
@@ -24,738 +33,687 @@ import io.kestra.plugin.jira.client.model.ProjectTemplateModel;
 import io.kestra.plugin.jira.client.model.SaveTemplateRequest;
 import io.kestra.plugin.jira.client.model.SaveTemplateResponse;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectTemplatesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ProjectTemplatesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ProjectTemplatesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createProjectWithCustomTemplate
+     * @param projectCustomTemplateCreateRequestDTO The JSON payload containing the project details and capabilities (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> The project creation task has been queued for execution </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createProjectWithCustomTemplateCall(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ProjectTemplatesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ProjectTemplatesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create custom project
-   * Creates a project based on a custom template provided in the request.  The request body should contain the project details and the capabilities that comprise the project:   *  &#x60;details&#x60; \\- represents the project details settings  *  &#x60;template&#x60; \\- represents a list of capabilities responsible for creating specific parts of a project  A capability is defined as a unit of configuration for the project you want to create.  This operation is:   *  [asynchronous](#async). Follow the &#x60;Location&#x60; link in the response header to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  ***Note: This API is only supported for Jira Enterprise edition.***
-   * @param projectCustomTemplateCreateRequestDTO The JSON payload containing the project details and capabilities (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void createProjectWithCustomTemplate(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO) throws ApiException {
-    createProjectWithCustomTemplate(projectCustomTemplateCreateRequestDTO, null);
-  }
-
-  /**
-   * Create custom project
-   * Creates a project based on a custom template provided in the request.  The request body should contain the project details and the capabilities that comprise the project:   *  &#x60;details&#x60; \\- represents the project details settings  *  &#x60;template&#x60; \\- represents a list of capabilities responsible for creating specific parts of a project  A capability is defined as a unit of configuration for the project you want to create.  This operation is:   *  [asynchronous](#async). Follow the &#x60;Location&#x60; link in the response header to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  ***Note: This API is only supported for Jira Enterprise edition.***
-   * @param projectCustomTemplateCreateRequestDTO The JSON payload containing the project details and capabilities (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void createProjectWithCustomTemplate(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO, Map<String, String> headers) throws ApiException {
-    createProjectWithCustomTemplateWithHttpInfo(projectCustomTemplateCreateRequestDTO, headers);
-  }
-
-  /**
-   * Create custom project
-   * Creates a project based on a custom template provided in the request.  The request body should contain the project details and the capabilities that comprise the project:   *  &#x60;details&#x60; \\- represents the project details settings  *  &#x60;template&#x60; \\- represents a list of capabilities responsible for creating specific parts of a project  A capability is defined as a unit of configuration for the project you want to create.  This operation is:   *  [asynchronous](#async). Follow the &#x60;Location&#x60; link in the response header to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  ***Note: This API is only supported for Jira Enterprise edition.***
-   * @param projectCustomTemplateCreateRequestDTO The JSON payload containing the project details and capabilities (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> createProjectWithCustomTemplateWithHttpInfo(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO) throws ApiException {
-    return createProjectWithCustomTemplateWithHttpInfo(projectCustomTemplateCreateRequestDTO, null);
-  }
-
-  /**
-   * Create custom project
-   * Creates a project based on a custom template provided in the request.  The request body should contain the project details and the capabilities that comprise the project:   *  &#x60;details&#x60; \\- represents the project details settings  *  &#x60;template&#x60; \\- represents a list of capabilities responsible for creating specific parts of a project  A capability is defined as a unit of configuration for the project you want to create.  This operation is:   *  [asynchronous](#async). Follow the &#x60;Location&#x60; link in the response header to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  ***Note: This API is only supported for Jira Enterprise edition.***
-   * @param projectCustomTemplateCreateRequestDTO The JSON payload containing the project details and capabilities (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> createProjectWithCustomTemplateWithHttpInfo(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createProjectWithCustomTemplateRequestBuilder(projectCustomTemplateCreateRequestDTO, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createProjectWithCustomTemplate", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createProjectWithCustomTemplateRequestBuilder(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectCustomTemplateCreateRequestDTO' is set
-    if (projectCustomTemplateCreateRequestDTO == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectCustomTemplateCreateRequestDTO' when calling createProjectWithCustomTemplate");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project-template";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(projectCustomTemplateCreateRequestDTO);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Edit a custom project template
-   * Edit custom template  This API endpoint allows you to edit an existing customised template.  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param editTemplateRequest The object containing the updated template details: name, description (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object editTemplate(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest) throws ApiException {
-    return editTemplate(editTemplateRequest, null);
-  }
-
-  /**
-   * Edit a custom project template
-   * Edit custom template  This API endpoint allows you to edit an existing customised template.  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param editTemplateRequest The object containing the updated template details: name, description (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object editTemplate(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = editTemplateWithHttpInfo(editTemplateRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Edit a custom project template
-   * Edit custom template  This API endpoint allows you to edit an existing customised template.  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param editTemplateRequest The object containing the updated template details: name, description (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> editTemplateWithHttpInfo(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest) throws ApiException {
-    return editTemplateWithHttpInfo(editTemplateRequest, null);
-  }
-
-  /**
-   * Edit a custom project template
-   * Edit custom template  This API endpoint allows you to edit an existing customised template.  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param editTemplateRequest The object containing the updated template details: name, description (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> editTemplateWithHttpInfo(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = editTemplateRequestBuilder(editTemplateRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("editTemplate", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = projectCustomTemplateCreateRequestDTO;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project-template";
 
-  private HttpRequest.Builder editTemplateRequestBuilder(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'editTemplateRequest' is set
-    if (editTemplateRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'editTemplateRequest' when calling editTemplate");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project-template/edit-template";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(editTemplateRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Gets a custom project template
-   * Get custom template  This API endpoint allows you to get a live custom project template details by either templateKey or projectId  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param projectId optional - The \\{@link String\\} containing the project key linked to the custom template to retrieve (optional)
-   * @param templateKey optional - The \\{@link String\\} containing the key of the custom template to retrieve (optional)
-   * @return ProjectTemplateModel
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectTemplateModel liveTemplate(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey) throws ApiException {
-    return liveTemplate(projectId, templateKey, null);
-  }
-
-  /**
-   * Gets a custom project template
-   * Get custom template  This API endpoint allows you to get a live custom project template details by either templateKey or projectId  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param projectId optional - The \\{@link String\\} containing the project key linked to the custom template to retrieve (optional)
-   * @param templateKey optional - The \\{@link String\\} containing the key of the custom template to retrieve (optional)
-   * @param headers Optional headers to include in the request
-   * @return ProjectTemplateModel
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectTemplateModel liveTemplate(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectTemplateModel> localVarResponse = liveTemplateWithHttpInfo(projectId, templateKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Gets a custom project template
-   * Get custom template  This API endpoint allows you to get a live custom project template details by either templateKey or projectId  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param projectId optional - The \\{@link String\\} containing the project key linked to the custom template to retrieve (optional)
-   * @param templateKey optional - The \\{@link String\\} containing the key of the custom template to retrieve (optional)
-   * @return ApiResponse&lt;ProjectTemplateModel&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectTemplateModel> liveTemplateWithHttpInfo(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey) throws ApiException {
-    return liveTemplateWithHttpInfo(projectId, templateKey, null);
-  }
-
-  /**
-   * Gets a custom project template
-   * Get custom template  This API endpoint allows you to get a live custom project template details by either templateKey or projectId  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param projectId optional - The \\{@link String\\} containing the project key linked to the custom template to retrieve (optional)
-   * @param templateKey optional - The \\{@link String\\} containing the key of the custom template to retrieve (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectTemplateModel&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectTemplateModel> liveTemplateWithHttpInfo(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = liveTemplateRequestBuilder(projectId, templateKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("liveTemplate", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectTemplateModel>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectTemplateModel responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectTemplateModel>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ProjectTemplateModel>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder liveTemplateRequestBuilder(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project-template/live-template";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectId", projectId));
-    localVarQueryParameterBaseName = "templateKey";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("templateKey", templateKey));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Deletes a custom project template
-   * Remove custom template  This API endpoint allows you to remove a specified customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param templateKey The \\{@link String\\} containing the key of the custom template to remove (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeTemplate(@javax.annotation.Nonnull String templateKey) throws ApiException {
-    return removeTemplate(templateKey, null);
-  }
-
-  /**
-   * Deletes a custom project template
-   * Remove custom template  This API endpoint allows you to remove a specified customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param templateKey The \\{@link String\\} containing the key of the custom template to remove (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeTemplate(@javax.annotation.Nonnull String templateKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = removeTemplateWithHttpInfo(templateKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Deletes a custom project template
-   * Remove custom template  This API endpoint allows you to remove a specified customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param templateKey The \\{@link String\\} containing the key of the custom template to remove (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeTemplateWithHttpInfo(@javax.annotation.Nonnull String templateKey) throws ApiException {
-    return removeTemplateWithHttpInfo(templateKey, null);
-  }
-
-  /**
-   * Deletes a custom project template
-   * Remove custom template  This API endpoint allows you to remove a specified customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param templateKey The \\{@link String\\} containing the key of the custom template to remove (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeTemplateWithHttpInfo(@javax.annotation.Nonnull String templateKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeTemplateRequestBuilder(templateKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeTemplate", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder removeTemplateRequestBuilder(@javax.annotation.Nonnull String templateKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'templateKey' is set
-    if (templateKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'templateKey' when calling removeTemplate");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project-template/remove-template";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "templateKey";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("templateKey", templateKey));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Save a custom project template
-   * Save custom template  This API endpoint allows you to save a customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param saveTemplateRequest The object containing the template basic details: name, description (required)
-   * @return SaveTemplateResponse
-   * @throws ApiException if fails to make API call
-   */
-  public SaveTemplateResponse saveTemplate(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest) throws ApiException {
-    return saveTemplate(saveTemplateRequest, null);
-  }
-
-  /**
-   * Save a custom project template
-   * Save custom template  This API endpoint allows you to save a customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param saveTemplateRequest The object containing the template basic details: name, description (required)
-   * @param headers Optional headers to include in the request
-   * @return SaveTemplateResponse
-   * @throws ApiException if fails to make API call
-   */
-  public SaveTemplateResponse saveTemplate(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<SaveTemplateResponse> localVarResponse = saveTemplateWithHttpInfo(saveTemplateRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Save a custom project template
-   * Save custom template  This API endpoint allows you to save a customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param saveTemplateRequest The object containing the template basic details: name, description (required)
-   * @return ApiResponse&lt;SaveTemplateResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SaveTemplateResponse> saveTemplateWithHttpInfo(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest) throws ApiException {
-    return saveTemplateWithHttpInfo(saveTemplateRequest, null);
-  }
-
-  /**
-   * Save a custom project template
-   * Save custom template  This API endpoint allows you to save a customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
-   * @param saveTemplateRequest The object containing the template basic details: name, description (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SaveTemplateResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SaveTemplateResponse> saveTemplateWithHttpInfo(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = saveTemplateRequestBuilder(saveTemplateRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("saveTemplate", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SaveTemplateResponse>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createProjectWithCustomTemplateValidateBeforeCall(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectCustomTemplateCreateRequestDTO' is set
+        if (projectCustomTemplateCreateRequestDTO == null) {
+            throw new ApiException("Missing the required parameter 'projectCustomTemplateCreateRequestDTO' when calling createProjectWithCustomTemplate(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SaveTemplateResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SaveTemplateResponse>() {});
-        
-        localVarResponse.body().close();
+        return createProjectWithCustomTemplateCall(projectCustomTemplateCreateRequestDTO, _callback);
 
-        return new ApiResponse<SaveTemplateResponse>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder saveTemplateRequestBuilder(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'saveTemplateRequest' is set
-    if (saveTemplateRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'saveTemplateRequest' when calling saveTemplate");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project-template/save-template";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(saveTemplateRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create custom project
+     * Creates a project based on a custom template provided in the request.  The request body should contain the project details and the capabilities that comprise the project:   *  &#x60;details&#x60; \\- represents the project details settings  *  &#x60;template&#x60; \\- represents a list of capabilities responsible for creating specific parts of a project  A capability is defined as a unit of configuration for the project you want to create.  This operation is:   *  [asynchronous](#async). Follow the &#x60;Location&#x60; link in the response header to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  ***Note: This API is only supported for Jira Enterprise edition.***
+     * @param projectCustomTemplateCreateRequestDTO The JSON payload containing the project details and capabilities (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> The project creation task has been queued for execution </td><td>  -  </td></tr>
+     </table>
+     */
+    public void createProjectWithCustomTemplate(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO) throws ApiException {
+        createProjectWithCustomTemplateWithHttpInfo(projectCustomTemplateCreateRequestDTO);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create custom project
+     * Creates a project based on a custom template provided in the request.  The request body should contain the project details and the capabilities that comprise the project:   *  &#x60;details&#x60; \\- represents the project details settings  *  &#x60;template&#x60; \\- represents a list of capabilities responsible for creating specific parts of a project  A capability is defined as a unit of configuration for the project you want to create.  This operation is:   *  [asynchronous](#async). Follow the &#x60;Location&#x60; link in the response header to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  ***Note: This API is only supported for Jira Enterprise edition.***
+     * @param projectCustomTemplateCreateRequestDTO The JSON payload containing the project details and capabilities (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> The project creation task has been queued for execution </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> createProjectWithCustomTemplateWithHttpInfo(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO) throws ApiException {
+        okhttp3.Call localVarCall = createProjectWithCustomTemplateValidateBeforeCall(projectCustomTemplateCreateRequestDTO, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Create custom project (asynchronously)
+     * Creates a project based on a custom template provided in the request.  The request body should contain the project details and the capabilities that comprise the project:   *  &#x60;details&#x60; \\- represents the project details settings  *  &#x60;template&#x60; \\- represents a list of capabilities responsible for creating specific parts of a project  A capability is defined as a unit of configuration for the project you want to create.  This operation is:   *  [asynchronous](#async). Follow the &#x60;Location&#x60; link in the response header to determine the status of the task and use [Get task](#api-rest-api-3-task-taskId-get) to obtain subsequent updates.  ***Note: This API is only supported for Jira Enterprise edition.***
+     * @param projectCustomTemplateCreateRequestDTO The JSON payload containing the project details and capabilities (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> The project creation task has been queued for execution </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createProjectWithCustomTemplateAsync(@javax.annotation.Nonnull ProjectCustomTemplateCreateRequestDTO projectCustomTemplateCreateRequestDTO, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createProjectWithCustomTemplateValidateBeforeCall(projectCustomTemplateCreateRequestDTO, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for editTemplate
+     * @param editTemplateRequest The object containing the updated template details: name, description (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call editTemplateCall(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = editTemplateRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project-template/edit-template";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call editTemplateValidateBeforeCall(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'editTemplateRequest' is set
+        if (editTemplateRequest == null) {
+            throw new ApiException("Missing the required parameter 'editTemplateRequest' when calling editTemplate(Async)");
+        }
+
+        return editTemplateCall(editTemplateRequest, _callback);
+
+    }
+
+    /**
+     * Edit a custom project template
+     * Edit custom template  This API endpoint allows you to edit an existing customised template.  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param editTemplateRequest The object containing the updated template details: name, description (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object editTemplate(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = editTemplateWithHttpInfo(editTemplateRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Edit a custom project template
+     * Edit custom template  This API endpoint allows you to edit an existing customised template.  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param editTemplateRequest The object containing the updated template details: name, description (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> editTemplateWithHttpInfo(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest) throws ApiException {
+        okhttp3.Call localVarCall = editTemplateValidateBeforeCall(editTemplateRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Edit a custom project template (asynchronously)
+     * Edit custom template  This API endpoint allows you to edit an existing customised template.  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param editTemplateRequest The object containing the updated template details: name, description (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call editTemplateAsync(@javax.annotation.Nonnull EditTemplateRequest editTemplateRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = editTemplateValidateBeforeCall(editTemplateRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for liveTemplate
+     * @param projectId optional - The \\{@link String\\} containing the project key linked to the custom template to retrieve (optional)
+     * @param templateKey optional - The \\{@link String\\} containing the key of the custom template to retrieve (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call liveTemplateCall(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project-template/live-template";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (projectId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectId", projectId));
+        }
+
+        if (templateKey != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("templateKey", templateKey));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call liveTemplateValidateBeforeCall(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey, final ApiCallback _callback) throws ApiException {
+        return liveTemplateCall(projectId, templateKey, _callback);
+
+    }
+
+    /**
+     * Gets a custom project template
+     * Get custom template  This API endpoint allows you to get a live custom project template details by either templateKey or projectId  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param projectId optional - The \\{@link String\\} containing the project key linked to the custom template to retrieve (optional)
+     * @param templateKey optional - The \\{@link String\\} containing the key of the custom template to retrieve (optional)
+     * @return ProjectTemplateModel
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectTemplateModel liveTemplate(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey) throws ApiException {
+        ApiResponse<ProjectTemplateModel> localVarResp = liveTemplateWithHttpInfo(projectId, templateKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Gets a custom project template
+     * Get custom template  This API endpoint allows you to get a live custom project template details by either templateKey or projectId  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param projectId optional - The \\{@link String\\} containing the project key linked to the custom template to retrieve (optional)
+     * @param templateKey optional - The \\{@link String\\} containing the key of the custom template to retrieve (optional)
+     * @return ApiResponse&lt;ProjectTemplateModel&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectTemplateModel> liveTemplateWithHttpInfo(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey) throws ApiException {
+        okhttp3.Call localVarCall = liveTemplateValidateBeforeCall(projectId, templateKey, null);
+        Type localVarReturnType = new TypeToken<ProjectTemplateModel>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Gets a custom project template (asynchronously)
+     * Get custom template  This API endpoint allows you to get a live custom project template details by either templateKey or projectId  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param projectId optional - The \\{@link String\\} containing the project key linked to the custom template to retrieve (optional)
+     * @param templateKey optional - The \\{@link String\\} containing the key of the custom template to retrieve (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call liveTemplateAsync(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable String templateKey, final ApiCallback<ProjectTemplateModel> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = liveTemplateValidateBeforeCall(projectId, templateKey, _callback);
+        Type localVarReturnType = new TypeToken<ProjectTemplateModel>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeTemplate
+     * @param templateKey The \\{@link String\\} containing the key of the custom template to remove (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeTemplateCall(@javax.annotation.Nonnull String templateKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project-template/remove-template";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (templateKey != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("templateKey", templateKey));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeTemplateValidateBeforeCall(@javax.annotation.Nonnull String templateKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'templateKey' is set
+        if (templateKey == null) {
+            throw new ApiException("Missing the required parameter 'templateKey' when calling removeTemplate(Async)");
+        }
+
+        return removeTemplateCall(templateKey, _callback);
+
+    }
+
+    /**
+     * Deletes a custom project template
+     * Remove custom template  This API endpoint allows you to remove a specified customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param templateKey The \\{@link String\\} containing the key of the custom template to remove (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object removeTemplate(@javax.annotation.Nonnull String templateKey) throws ApiException {
+        ApiResponse<Object> localVarResp = removeTemplateWithHttpInfo(templateKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Deletes a custom project template
+     * Remove custom template  This API endpoint allows you to remove a specified customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param templateKey The \\{@link String\\} containing the key of the custom template to remove (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> removeTemplateWithHttpInfo(@javax.annotation.Nonnull String templateKey) throws ApiException {
+        okhttp3.Call localVarCall = removeTemplateValidateBeforeCall(templateKey, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Deletes a custom project template (asynchronously)
+     * Remove custom template  This API endpoint allows you to remove a specified customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param templateKey The \\{@link String\\} containing the key of the custom template to remove (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeTemplateAsync(@javax.annotation.Nonnull String templateKey, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeTemplateValidateBeforeCall(templateKey, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for saveTemplate
+     * @param saveTemplateRequest The object containing the template basic details: name, description (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call saveTemplateCall(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = saveTemplateRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project-template/save-template";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call saveTemplateValidateBeforeCall(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'saveTemplateRequest' is set
+        if (saveTemplateRequest == null) {
+            throw new ApiException("Missing the required parameter 'saveTemplateRequest' when calling saveTemplate(Async)");
+        }
+
+        return saveTemplateCall(saveTemplateRequest, _callback);
+
+    }
+
+    /**
+     * Save a custom project template
+     * Save custom template  This API endpoint allows you to save a customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param saveTemplateRequest The object containing the template basic details: name, description (required)
+     * @return SaveTemplateResponse
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public SaveTemplateResponse saveTemplate(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest) throws ApiException {
+        ApiResponse<SaveTemplateResponse> localVarResp = saveTemplateWithHttpInfo(saveTemplateRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Save a custom project template
+     * Save custom template  This API endpoint allows you to save a customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param saveTemplateRequest The object containing the template basic details: name, description (required)
+     * @return ApiResponse&lt;SaveTemplateResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SaveTemplateResponse> saveTemplateWithHttpInfo(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest) throws ApiException {
+        okhttp3.Call localVarCall = saveTemplateValidateBeforeCall(saveTemplateRequest, null);
+        Type localVarReturnType = new TypeToken<SaveTemplateResponse>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Save a custom project template (asynchronously)
+     * Save custom template  This API endpoint allows you to save a customised template  ***Note: Custom Templates are only supported for Jira Enterprise edition.***
+     * @param saveTemplateRequest The object containing the template basic details: name, description (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> 200 response </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call saveTemplateAsync(@javax.annotation.Nonnull SaveTemplateRequest saveTemplateRequest, final ApiCallback<SaveTemplateResponse> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = saveTemplateValidateBeforeCall(saveTemplateRequest, _callback);
+        Type localVarReturnType = new TypeToken<SaveTemplateResponse>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

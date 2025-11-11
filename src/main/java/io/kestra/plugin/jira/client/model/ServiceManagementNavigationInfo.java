@@ -13,46 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * ServiceManagementNavigationInfo
  */
-@JsonPropertyOrder({
-  ServiceManagementNavigationInfo.JSON_PROPERTY_QUEUE_CATEGORY,
-  ServiceManagementNavigationInfo.JSON_PROPERTY_QUEUE_ID,
-  ServiceManagementNavigationInfo.JSON_PROPERTY_QUEUE_NAME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ServiceManagementNavigationInfo {
-  public static final String JSON_PROPERTY_QUEUE_CATEGORY = "queueCategory";
+  public static final String SERIALIZED_NAME_QUEUE_CATEGORY = "queueCategory";
+  @SerializedName(SERIALIZED_NAME_QUEUE_CATEGORY)
   @javax.annotation.Nullable
   private String queueCategory;
 
-  public static final String JSON_PROPERTY_QUEUE_ID = "queueId";
+  public static final String SERIALIZED_NAME_QUEUE_ID = "queueId";
+  @SerializedName(SERIALIZED_NAME_QUEUE_ID)
   @javax.annotation.Nullable
   private Long queueId;
 
-  public static final String JSON_PROPERTY_QUEUE_NAME = "queueName";
+  public static final String SERIALIZED_NAME_QUEUE_NAME = "queueName";
+  @SerializedName(SERIALIZED_NAME_QUEUE_NAME)
   @javax.annotation.Nullable
   private String queueName;
 
-  public ServiceManagementNavigationInfo() { 
+  public ServiceManagementNavigationInfo() {
   }
 
   public ServiceManagementNavigationInfo queueCategory(@javax.annotation.Nullable String queueCategory) {
@@ -65,15 +80,10 @@ public class ServiceManagementNavigationInfo {
    * @return queueCategory
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getQueueCategory() {
     return queueCategory;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueueCategory(@javax.annotation.Nullable String queueCategory) {
     this.queueCategory = queueCategory;
   }
@@ -89,15 +99,10 @@ public class ServiceManagementNavigationInfo {
    * @return queueId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getQueueId() {
     return queueId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueueId(@javax.annotation.Nullable Long queueId) {
     this.queueId = queueId;
   }
@@ -113,23 +118,16 @@ public class ServiceManagementNavigationInfo {
    * @return queueName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getQueueName() {
     return queueName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUEUE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueueName(@javax.annotation.Nullable String queueName) {
     this.queueName = queueName;
   }
 
 
-  /**
-   * Return true if this ServiceManagementNavigationInfo object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -171,54 +169,94 @@ public class ServiceManagementNavigationInfo {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("queueCategory", "queueId", "queueName"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ServiceManagementNavigationInfo
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ServiceManagementNavigationInfo.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ServiceManagementNavigationInfo is not found in the empty JSON string", ServiceManagementNavigationInfo.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ServiceManagementNavigationInfo.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ServiceManagementNavigationInfo` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("queueCategory") != null && !jsonObj.get("queueCategory").isJsonNull()) && !jsonObj.get("queueCategory").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `queueCategory` to be a primitive type in the JSON string but got `%s`", jsonObj.get("queueCategory").toString()));
+      }
+      if ((jsonObj.get("queueName") != null && !jsonObj.get("queueName").isJsonNull()) && !jsonObj.get("queueName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `queueName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("queueName").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ServiceManagementNavigationInfo.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ServiceManagementNavigationInfo' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ServiceManagementNavigationInfo> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ServiceManagementNavigationInfo.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ServiceManagementNavigationInfo>() {
+           @Override
+           public void write(JsonWriter out, ServiceManagementNavigationInfo value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ServiceManagementNavigationInfo read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ServiceManagementNavigationInfo given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ServiceManagementNavigationInfo
+   * @throws IOException if the JSON string is invalid with respect to ServiceManagementNavigationInfo
+   */
+  public static ServiceManagementNavigationInfo fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ServiceManagementNavigationInfo.class);
+  }
 
-    // add `queueCategory` to the URL query string
-    if (getQueueCategory() != null) {
-      joiner.add(String.format(Locale.ROOT, "%squeueCategory%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQueueCategory()))));
-    }
-
-    // add `queueId` to the URL query string
-    if (getQueueId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%squeueId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQueueId()))));
-    }
-
-    // add `queueName` to the URL query string
-    if (getQueueName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%squeueName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQueueName()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ServiceManagementNavigationInfo to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,59 +13,74 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectCreateResourceIdentifier;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Defines the payload for the screen schemes. See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-screen-schemes/\\#api-rest-api-3-screenscheme-post
  */
-@JsonPropertyOrder({
-  ScreenSchemePayload.JSON_PROPERTY_DEFAULT_SCREEN,
-  ScreenSchemePayload.JSON_PROPERTY_DESCRIPTION,
-  ScreenSchemePayload.JSON_PROPERTY_NAME,
-  ScreenSchemePayload.JSON_PROPERTY_PCRI,
-  ScreenSchemePayload.JSON_PROPERTY_SCREENS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ScreenSchemePayload {
-  public static final String JSON_PROPERTY_DEFAULT_SCREEN = "defaultScreen";
+  public static final String SERIALIZED_NAME_DEFAULT_SCREEN = "defaultScreen";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_SCREEN)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier defaultScreen;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PCRI = "pcri";
+  public static final String SERIALIZED_NAME_PCRI = "pcri";
+  @SerializedName(SERIALIZED_NAME_PCRI)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier pcri;
 
-  public static final String JSON_PROPERTY_SCREENS = "screens";
+  public static final String SERIALIZED_NAME_SCREENS = "screens";
+  @SerializedName(SERIALIZED_NAME_SCREENS)
   @javax.annotation.Nullable
   private Map<String, ProjectCreateResourceIdentifier> screens = new HashMap<>();
 
-  public ScreenSchemePayload() { 
+  public ScreenSchemePayload() {
   }
 
   public ScreenSchemePayload defaultScreen(@javax.annotation.Nullable ProjectCreateResourceIdentifier defaultScreen) {
@@ -78,15 +93,10 @@ public class ScreenSchemePayload {
    * @return defaultScreen
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_SCREEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getDefaultScreen() {
     return defaultScreen;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_SCREEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultScreen(@javax.annotation.Nullable ProjectCreateResourceIdentifier defaultScreen) {
     this.defaultScreen = defaultScreen;
   }
@@ -102,15 +112,10 @@ public class ScreenSchemePayload {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -126,15 +131,10 @@ public class ScreenSchemePayload {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -150,15 +150,10 @@ public class ScreenSchemePayload {
    * @return pcri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getPcri() {
     return pcri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPcri(@javax.annotation.Nullable ProjectCreateResourceIdentifier pcri) {
     this.pcri = pcri;
   }
@@ -182,23 +177,16 @@ public class ScreenSchemePayload {
    * @return screens
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCREENS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, ProjectCreateResourceIdentifier> getScreens() {
     return screens;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCREENS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScreens(@javax.annotation.Nullable Map<String, ProjectCreateResourceIdentifier> screens) {
     this.screens = screens;
   }
 
 
-  /**
-   * Return true if this ScreenSchemePayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -244,69 +232,102 @@ public class ScreenSchemePayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("defaultScreen", "description", "name", "pcri", "screens"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ScreenSchemePayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `defaultScreen` to the URL query string
-    if (getDefaultScreen() != null) {
-      joiner.add(getDefaultScreen().toUrlQueryString(prefix + "defaultScreen" + suffix));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `pcri` to the URL query string
-    if (getPcri() != null) {
-      joiner.add(getPcri().toUrlQueryString(prefix + "pcri" + suffix));
-    }
-
-    // add `screens` to the URL query string
-    if (getScreens() != null) {
-      for (String _key : getScreens().keySet()) {
-        if (getScreens().get(_key) != null) {
-          joiner.add(getScreens().get(_key).toUrlQueryString(String.format(Locale.ROOT, "%sscreens%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ScreenSchemePayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ScreenSchemePayload is not found in the empty JSON string", ScreenSchemePayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ScreenSchemePayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ScreenSchemePayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `defaultScreen`
+      if (jsonObj.get("defaultScreen") != null && !jsonObj.get("defaultScreen").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("defaultScreen"));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `pcri`
+      if (jsonObj.get("pcri") != null && !jsonObj.get("pcri").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("pcri"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ScreenSchemePayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ScreenSchemePayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ScreenSchemePayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ScreenSchemePayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ScreenSchemePayload>() {
+           @Override
+           public void write(JsonWriter out, ScreenSchemePayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ScreenSchemePayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ScreenSchemePayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ScreenSchemePayload
+   * @throws IOException if the JSON string is invalid with respect to ScreenSchemePayload
+   */
+  public static ScreenSchemePayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ScreenSchemePayload.class);
+  }
+
+  /**
+   * Convert an instance of ScreenSchemePayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

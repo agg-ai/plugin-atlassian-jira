@@ -13,86 +13,100 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.TimeTrackingConfiguration;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the configuration of Jira.
  */
-@JsonPropertyOrder({
-  ModelConfiguration.JSON_PROPERTY_ATTACHMENTS_ENABLED,
-  ModelConfiguration.JSON_PROPERTY_ISSUE_LINKING_ENABLED,
-  ModelConfiguration.JSON_PROPERTY_SUB_TASKS_ENABLED,
-  ModelConfiguration.JSON_PROPERTY_TIME_TRACKING_CONFIGURATION,
-  ModelConfiguration.JSON_PROPERTY_TIME_TRACKING_ENABLED,
-  ModelConfiguration.JSON_PROPERTY_UNASSIGNED_ISSUES_ALLOWED,
-  ModelConfiguration.JSON_PROPERTY_VOTING_ENABLED,
-  ModelConfiguration.JSON_PROPERTY_WATCHING_ENABLED
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ModelConfiguration {
-  public static final String JSON_PROPERTY_ATTACHMENTS_ENABLED = "attachmentsEnabled";
+  public static final String SERIALIZED_NAME_ATTACHMENTS_ENABLED = "attachmentsEnabled";
+  @SerializedName(SERIALIZED_NAME_ATTACHMENTS_ENABLED)
   @javax.annotation.Nullable
   private Boolean attachmentsEnabled;
 
-  public static final String JSON_PROPERTY_ISSUE_LINKING_ENABLED = "issueLinkingEnabled";
+  public static final String SERIALIZED_NAME_ISSUE_LINKING_ENABLED = "issueLinkingEnabled";
+  @SerializedName(SERIALIZED_NAME_ISSUE_LINKING_ENABLED)
   @javax.annotation.Nullable
   private Boolean issueLinkingEnabled;
 
-  public static final String JSON_PROPERTY_SUB_TASKS_ENABLED = "subTasksEnabled";
+  public static final String SERIALIZED_NAME_SUB_TASKS_ENABLED = "subTasksEnabled";
+  @SerializedName(SERIALIZED_NAME_SUB_TASKS_ENABLED)
   @javax.annotation.Nullable
   private Boolean subTasksEnabled;
 
-  public static final String JSON_PROPERTY_TIME_TRACKING_CONFIGURATION = "timeTrackingConfiguration";
+  public static final String SERIALIZED_NAME_TIME_TRACKING_CONFIGURATION = "timeTrackingConfiguration";
+  @SerializedName(SERIALIZED_NAME_TIME_TRACKING_CONFIGURATION)
   @javax.annotation.Nullable
   private TimeTrackingConfiguration timeTrackingConfiguration;
 
-  public static final String JSON_PROPERTY_TIME_TRACKING_ENABLED = "timeTrackingEnabled";
+  public static final String SERIALIZED_NAME_TIME_TRACKING_ENABLED = "timeTrackingEnabled";
+  @SerializedName(SERIALIZED_NAME_TIME_TRACKING_ENABLED)
   @javax.annotation.Nullable
   private Boolean timeTrackingEnabled;
 
-  public static final String JSON_PROPERTY_UNASSIGNED_ISSUES_ALLOWED = "unassignedIssuesAllowed";
+  public static final String SERIALIZED_NAME_UNASSIGNED_ISSUES_ALLOWED = "unassignedIssuesAllowed";
+  @SerializedName(SERIALIZED_NAME_UNASSIGNED_ISSUES_ALLOWED)
   @javax.annotation.Nullable
   private Boolean unassignedIssuesAllowed;
 
-  public static final String JSON_PROPERTY_VOTING_ENABLED = "votingEnabled";
+  public static final String SERIALIZED_NAME_VOTING_ENABLED = "votingEnabled";
+  @SerializedName(SERIALIZED_NAME_VOTING_ENABLED)
   @javax.annotation.Nullable
   private Boolean votingEnabled;
 
-  public static final String JSON_PROPERTY_WATCHING_ENABLED = "watchingEnabled";
+  public static final String SERIALIZED_NAME_WATCHING_ENABLED = "watchingEnabled";
+  @SerializedName(SERIALIZED_NAME_WATCHING_ENABLED)
   @javax.annotation.Nullable
   private Boolean watchingEnabled;
 
-  public ModelConfiguration() { 
+  public ModelConfiguration() {
   }
 
-  @JsonCreator
   public ModelConfiguration(
-    @JsonProperty(JSON_PROPERTY_ATTACHMENTS_ENABLED) Boolean attachmentsEnabled, 
-    @JsonProperty(JSON_PROPERTY_ISSUE_LINKING_ENABLED) Boolean issueLinkingEnabled, 
-    @JsonProperty(JSON_PROPERTY_SUB_TASKS_ENABLED) Boolean subTasksEnabled, 
-    @JsonProperty(JSON_PROPERTY_TIME_TRACKING_CONFIGURATION) TimeTrackingConfiguration timeTrackingConfiguration, 
-    @JsonProperty(JSON_PROPERTY_TIME_TRACKING_ENABLED) Boolean timeTrackingEnabled, 
-    @JsonProperty(JSON_PROPERTY_UNASSIGNED_ISSUES_ALLOWED) Boolean unassignedIssuesAllowed, 
-    @JsonProperty(JSON_PROPERTY_VOTING_ENABLED) Boolean votingEnabled, 
-    @JsonProperty(JSON_PROPERTY_WATCHING_ENABLED) Boolean watchingEnabled
+     Boolean attachmentsEnabled, 
+     Boolean issueLinkingEnabled, 
+     Boolean subTasksEnabled, 
+     TimeTrackingConfiguration timeTrackingConfiguration, 
+     Boolean timeTrackingEnabled, 
+     Boolean unassignedIssuesAllowed, 
+     Boolean votingEnabled, 
+     Boolean watchingEnabled
   ) {
-  this();
+    this();
     this.attachmentsEnabled = attachmentsEnabled;
     this.issueLinkingEnabled = issueLinkingEnabled;
     this.subTasksEnabled = subTasksEnabled;
@@ -108,12 +122,9 @@ public class ModelConfiguration {
    * @return attachmentsEnabled
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ATTACHMENTS_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAttachmentsEnabled() {
     return attachmentsEnabled;
   }
-
 
 
 
@@ -122,12 +133,9 @@ public class ModelConfiguration {
    * @return issueLinkingEnabled
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_LINKING_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIssueLinkingEnabled() {
     return issueLinkingEnabled;
   }
-
 
 
 
@@ -136,12 +144,9 @@ public class ModelConfiguration {
    * @return subTasksEnabled
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUB_TASKS_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSubTasksEnabled() {
     return subTasksEnabled;
   }
-
 
 
 
@@ -150,12 +155,9 @@ public class ModelConfiguration {
    * @return timeTrackingConfiguration
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_TRACKING_CONFIGURATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TimeTrackingConfiguration getTimeTrackingConfiguration() {
     return timeTrackingConfiguration;
   }
-
 
 
 
@@ -164,12 +166,9 @@ public class ModelConfiguration {
    * @return timeTrackingEnabled
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_TRACKING_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getTimeTrackingEnabled() {
     return timeTrackingEnabled;
   }
-
 
 
 
@@ -178,12 +177,9 @@ public class ModelConfiguration {
    * @return unassignedIssuesAllowed
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UNASSIGNED_ISSUES_ALLOWED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getUnassignedIssuesAllowed() {
     return unassignedIssuesAllowed;
   }
-
 
 
 
@@ -192,12 +188,9 @@ public class ModelConfiguration {
    * @return votingEnabled
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VOTING_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getVotingEnabled() {
     return votingEnabled;
   }
-
 
 
 
@@ -206,8 +199,6 @@ public class ModelConfiguration {
    * @return watchingEnabled
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WATCHING_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getWatchingEnabled() {
     return watchingEnabled;
   }
@@ -215,9 +206,6 @@ public class ModelConfiguration {
 
 
 
-  /**
-   * Return true if this Configuration object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -269,79 +257,92 @@ public class ModelConfiguration {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("attachmentsEnabled", "issueLinkingEnabled", "subTasksEnabled", "timeTrackingConfiguration", "timeTrackingEnabled", "unassignedIssuesAllowed", "votingEnabled", "watchingEnabled"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ModelConfiguration
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ModelConfiguration.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ModelConfiguration is not found in the empty JSON string", ModelConfiguration.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ModelConfiguration.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ModelConfiguration` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `timeTrackingConfiguration`
+      if (jsonObj.get("timeTrackingConfiguration") != null && !jsonObj.get("timeTrackingConfiguration").isJsonNull()) {
+        TimeTrackingConfiguration.validateJsonElement(jsonObj.get("timeTrackingConfiguration"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ModelConfiguration.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ModelConfiguration' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ModelConfiguration> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ModelConfiguration.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ModelConfiguration>() {
+           @Override
+           public void write(JsonWriter out, ModelConfiguration value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ModelConfiguration read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ModelConfiguration given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ModelConfiguration
+   * @throws IOException if the JSON string is invalid with respect to ModelConfiguration
+   */
+  public static ModelConfiguration fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ModelConfiguration.class);
+  }
 
-    // add `attachmentsEnabled` to the URL query string
-    if (getAttachmentsEnabled() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sattachmentsEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAttachmentsEnabled()))));
-    }
-
-    // add `issueLinkingEnabled` to the URL query string
-    if (getIssueLinkingEnabled() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueLinkingEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueLinkingEnabled()))));
-    }
-
-    // add `subTasksEnabled` to the URL query string
-    if (getSubTasksEnabled() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssubTasksEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubTasksEnabled()))));
-    }
-
-    // add `timeTrackingConfiguration` to the URL query string
-    if (getTimeTrackingConfiguration() != null) {
-      joiner.add(getTimeTrackingConfiguration().toUrlQueryString(prefix + "timeTrackingConfiguration" + suffix));
-    }
-
-    // add `timeTrackingEnabled` to the URL query string
-    if (getTimeTrackingEnabled() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeTrackingEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeTrackingEnabled()))));
-    }
-
-    // add `unassignedIssuesAllowed` to the URL query string
-    if (getUnassignedIssuesAllowed() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sunassignedIssuesAllowed%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUnassignedIssuesAllowed()))));
-    }
-
-    // add `votingEnabled` to the URL query string
-    if (getVotingEnabled() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svotingEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVotingEnabled()))));
-    }
-
-    // add `watchingEnabled` to the URL query string
-    if (getWatchingEnabled() != null) {
-      joiner.add(String.format(Locale.ROOT, "%swatchingEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWatchingEnabled()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ModelConfiguration to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

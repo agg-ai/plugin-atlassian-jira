@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.AddAtlassianTeamRequest;
 import io.kestra.plugin.jira.client.model.CreatePlanOnlyTeamRequest;
@@ -25,1297 +34,1462 @@ import io.kestra.plugin.jira.client.model.GetAtlassianTeamResponse;
 import io.kestra.plugin.jira.client.model.GetPlanOnlyTeamResponse;
 import io.kestra.plugin.jira.client.model.PageWithCursorGetTeamResponseForPage;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TeamsInPlanApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public TeamsInPlanApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public TeamsInPlanApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addAtlassianTeam
+     * @param planId The ID of the plan. (required)
+     * @param addAtlassianTeamRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addAtlassianTeamCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public TeamsInPlanApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public TeamsInPlanApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Add Atlassian team to plan
-   * Adds an existing Atlassian team to a plan and configures their plannning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param addAtlassianTeamRequest  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object addAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest) throws ApiException {
-    return addAtlassianTeam(planId, addAtlassianTeamRequest, null);
-  }
-
-  /**
-   * Add Atlassian team to plan
-   * Adds an existing Atlassian team to a plan and configures their plannning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param addAtlassianTeamRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object addAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = addAtlassianTeamWithHttpInfo(planId, addAtlassianTeamRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add Atlassian team to plan
-   * Adds an existing Atlassian team to a plan and configures their plannning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param addAtlassianTeamRequest  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> addAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest) throws ApiException {
-    return addAtlassianTeamWithHttpInfo(planId, addAtlassianTeamRequest, null);
-  }
-
-  /**
-   * Add Atlassian team to plan
-   * Adds an existing Atlassian team to a plan and configures their plannning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param addAtlassianTeamRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> addAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addAtlassianTeamRequestBuilder(planId, addAtlassianTeamRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addAtlassianTeam", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = addAtlassianTeamRequest;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team/atlassian"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()));
 
-  private HttpRequest.Builder addAtlassianTeamRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling addAtlassianTeam");
-    }
-    // verify the required parameter 'addAtlassianTeamRequest' is set
-    if (addAtlassianTeamRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'addAtlassianTeamRequest' when calling addAtlassianTeam");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team/atlassian"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(addAtlassianTeamRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create plan-only team
-   * Creates a plan-only team and configures their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param createPlanOnlyTeamRequest  (required)
-   * @return Long
-   * @throws ApiException if fails to make API call
-   */
-  public Long createPlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest) throws ApiException {
-    return createPlanOnlyTeam(planId, createPlanOnlyTeamRequest, null);
-  }
-
-  /**
-   * Create plan-only team
-   * Creates a plan-only team and configures their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param createPlanOnlyTeamRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Long
-   * @throws ApiException if fails to make API call
-   */
-  public Long createPlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Long> localVarResponse = createPlanOnlyTeamWithHttpInfo(planId, createPlanOnlyTeamRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create plan-only team
-   * Creates a plan-only team and configures their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param createPlanOnlyTeamRequest  (required)
-   * @return ApiResponse&lt;Long&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Long> createPlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest) throws ApiException {
-    return createPlanOnlyTeamWithHttpInfo(planId, createPlanOnlyTeamRequest, null);
-  }
-
-  /**
-   * Create plan-only team
-   * Creates a plan-only team and configures their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param createPlanOnlyTeamRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Long&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Long> createPlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createPlanOnlyTeamRequestBuilder(planId, createPlanOnlyTeamRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createPlanOnlyTeam", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Long>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Long responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Long>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Long>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createPlanOnlyTeamRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling createPlanOnlyTeam");
-    }
-    // verify the required parameter 'createPlanOnlyTeamRequest' is set
-    if (createPlanOnlyTeamRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'createPlanOnlyTeamRequest' when calling createPlanOnlyTeam");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team/planonly"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createPlanOnlyTeamRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete plan-only team
-   * Deletes a plan-only team and their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deletePlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId) throws ApiException {
-    return deletePlanOnlyTeam(planId, planOnlyTeamId, null);
-  }
-
-  /**
-   * Delete plan-only team
-   * Deletes a plan-only team and their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deletePlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deletePlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete plan-only team
-   * Deletes a plan-only team and their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deletePlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId) throws ApiException {
-    return deletePlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId, null);
-  }
-
-  /**
-   * Delete plan-only team
-   * Deletes a plan-only team and their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deletePlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deletePlanOnlyTeamRequestBuilder(planId, planOnlyTeamId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deletePlanOnlyTeam", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deletePlanOnlyTeamRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling deletePlanOnlyTeam");
-    }
-    // verify the required parameter 'planOnlyTeamId' is set
-    if (planOnlyTeamId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planOnlyTeamId' when calling deletePlanOnlyTeam");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()))
-        .replace("{planOnlyTeamId}", ApiClient.urlEncode(planOnlyTeamId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get Atlassian team in plan
-   * Returns planning settings for an Atlassian team in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @return GetAtlassianTeamResponse
-   * @throws ApiException if fails to make API call
-   */
-  public GetAtlassianTeamResponse getAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId) throws ApiException {
-    return getAtlassianTeam(planId, atlassianTeamId, null);
-  }
-
-  /**
-   * Get Atlassian team in plan
-   * Returns planning settings for an Atlassian team in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @param headers Optional headers to include in the request
-   * @return GetAtlassianTeamResponse
-   * @throws ApiException if fails to make API call
-   */
-  public GetAtlassianTeamResponse getAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, Map<String, String> headers) throws ApiException {
-    ApiResponse<GetAtlassianTeamResponse> localVarResponse = getAtlassianTeamWithHttpInfo(planId, atlassianTeamId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get Atlassian team in plan
-   * Returns planning settings for an Atlassian team in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @return ApiResponse&lt;GetAtlassianTeamResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetAtlassianTeamResponse> getAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId) throws ApiException {
-    return getAtlassianTeamWithHttpInfo(planId, atlassianTeamId, null);
-  }
-
-  /**
-   * Get Atlassian team in plan
-   * Returns planning settings for an Atlassian team in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;GetAtlassianTeamResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetAtlassianTeamResponse> getAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAtlassianTeamRequestBuilder(planId, atlassianTeamId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAtlassianTeam", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<GetAtlassianTeamResponse>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addAtlassianTeamValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling addAtlassianTeam(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        GetAtlassianTeamResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<GetAtlassianTeamResponse>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<GetAtlassianTeamResponse>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAtlassianTeamRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling getAtlassianTeam");
-    }
-    // verify the required parameter 'atlassianTeamId' is set
-    if (atlassianTeamId == null) {
-      throw new ApiException(400, "Missing the required parameter 'atlassianTeamId' when calling getAtlassianTeam");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()))
-        .replace("{atlassianTeamId}", ApiClient.urlEncode(atlassianTeamId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get plan-only team
-   * Returns planning settings for a plan-only team.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @return GetPlanOnlyTeamResponse
-   * @throws ApiException if fails to make API call
-   */
-  public GetPlanOnlyTeamResponse getPlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId) throws ApiException {
-    return getPlanOnlyTeam(planId, planOnlyTeamId, null);
-  }
-
-  /**
-   * Get plan-only team
-   * Returns planning settings for a plan-only team.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @param headers Optional headers to include in the request
-   * @return GetPlanOnlyTeamResponse
-   * @throws ApiException if fails to make API call
-   */
-  public GetPlanOnlyTeamResponse getPlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, Map<String, String> headers) throws ApiException {
-    ApiResponse<GetPlanOnlyTeamResponse> localVarResponse = getPlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get plan-only team
-   * Returns planning settings for a plan-only team.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @return ApiResponse&lt;GetPlanOnlyTeamResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetPlanOnlyTeamResponse> getPlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId) throws ApiException {
-    return getPlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId, null);
-  }
-
-  /**
-   * Get plan-only team
-   * Returns planning settings for a plan-only team.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;GetPlanOnlyTeamResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<GetPlanOnlyTeamResponse> getPlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getPlanOnlyTeamRequestBuilder(planId, planOnlyTeamId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getPlanOnlyTeam", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<GetPlanOnlyTeamResponse>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'addAtlassianTeamRequest' is set
+        if (addAtlassianTeamRequest == null) {
+            throw new ApiException("Missing the required parameter 'addAtlassianTeamRequest' when calling addAtlassianTeam(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        GetPlanOnlyTeamResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<GetPlanOnlyTeamResponse>() {});
-        
-        localVarResponse.body().close();
+        return addAtlassianTeamCall(planId, addAtlassianTeamRequest, _callback);
 
-        return new ApiResponse<GetPlanOnlyTeamResponse>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getPlanOnlyTeamRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling getPlanOnlyTeam");
-    }
-    // verify the required parameter 'planOnlyTeamId' is set
-    if (planOnlyTeamId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planOnlyTeamId' when calling getPlanOnlyTeam");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()))
-        .replace("{planOnlyTeamId}", ApiClient.urlEncode(planOnlyTeamId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Add Atlassian team to plan
+     * Adds an existing Atlassian team to a plan and configures their plannning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param addAtlassianTeamRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object addAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = addAtlassianTeamWithHttpInfo(planId, addAtlassianTeamRequest);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Add Atlassian team to plan
+     * Adds an existing Atlassian team to a plan and configures their plannning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param addAtlassianTeamRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> addAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest) throws ApiException {
+        okhttp3.Call localVarCall = addAtlassianTeamValidateBeforeCall(planId, addAtlassianTeamRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Get teams in plan paginated
-   * Returns a [paginated](#pagination) list of plan-only and Atlassian teams in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
-   * @param maxResults The maximum number of plan teams to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
-   * @return PageWithCursorGetTeamResponseForPage
-   * @throws ApiException if fails to make API call
-   */
-  public PageWithCursorGetTeamResponseForPage getTeams(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getTeams(planId, cursor, maxResults, null);
-  }
+    /**
+     * Add Atlassian team to plan (asynchronously)
+     * Adds an existing Atlassian team to a plan and configures their plannning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param addAtlassianTeamRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addAtlassianTeamAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull AddAtlassianTeamRequest addAtlassianTeamRequest, final ApiCallback<Object> _callback) throws ApiException {
 
-  /**
-   * Get teams in plan paginated
-   * Returns a [paginated](#pagination) list of plan-only and Atlassian teams in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
-   * @param maxResults The maximum number of plan teams to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return PageWithCursorGetTeamResponseForPage
-   * @throws ApiException if fails to make API call
-   */
-  public PageWithCursorGetTeamResponseForPage getTeams(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageWithCursorGetTeamResponseForPage> localVarResponse = getTeamsWithHttpInfo(planId, cursor, maxResults, headers);
-    return localVarResponse.getData();
-  }
+        okhttp3.Call localVarCall = addAtlassianTeamValidateBeforeCall(planId, addAtlassianTeamRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for createPlanOnlyTeam
+     * @param planId The ID of the plan. (required)
+     * @param createPlanOnlyTeamRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createPlanOnlyTeamCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get teams in plan paginated
-   * Returns a [paginated](#pagination) list of plan-only and Atlassian teams in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
-   * @param maxResults The maximum number of plan teams to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
-   * @return ApiResponse&lt;PageWithCursorGetTeamResponseForPage&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageWithCursorGetTeamResponseForPage> getTeamsWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getTeamsWithHttpInfo(planId, cursor, maxResults, null);
-  }
-
-  /**
-   * Get teams in plan paginated
-   * Returns a [paginated](#pagination) list of plan-only and Atlassian teams in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
-   * @param maxResults The maximum number of plan teams to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageWithCursorGetTeamResponseForPage&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageWithCursorGetTeamResponseForPage> getTeamsWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getTeamsRequestBuilder(planId, cursor, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getTeams", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageWithCursorGetTeamResponseForPage>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageWithCursorGetTeamResponseForPage responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageWithCursorGetTeamResponseForPage>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = createPlanOnlyTeamRequest;
 
-        return new ApiResponse<PageWithCursorGetTeamResponseForPage>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team/planonly"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()));
 
-  private HttpRequest.Builder getTeamsRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling getTeams");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "cursor";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("cursor", cursor));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Remove Atlassian team from plan
-   * Removes an Atlassian team from a plan and deletes their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId) throws ApiException {
-    return removeAtlassianTeam(planId, atlassianTeamId, null);
-  }
-
-  /**
-   * Remove Atlassian team from plan
-   * Removes an Atlassian team from a plan and deletes their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = removeAtlassianTeamWithHttpInfo(planId, atlassianTeamId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Remove Atlassian team from plan
-   * Removes an Atlassian team from a plan and deletes their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId) throws ApiException {
-    return removeAtlassianTeamWithHttpInfo(planId, atlassianTeamId, null);
-  }
-
-  /**
-   * Remove Atlassian team from plan
-   * Removes an Atlassian team from a plan and deletes their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeAtlassianTeamRequestBuilder(planId, atlassianTeamId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeAtlassianTeam", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder removeAtlassianTeamRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling removeAtlassianTeam");
-    }
-    // verify the required parameter 'atlassianTeamId' is set
-    if (atlassianTeamId == null) {
-      throw new ApiException(400, "Missing the required parameter 'atlassianTeamId' when calling removeAtlassianTeam");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()))
-        .replace("{atlassianTeamId}", ApiClient.urlEncode(atlassianTeamId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update Atlassian team in plan
-   * Updates any of the following planning settings of an Atlassian team in a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get Atlassian team in plan\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @param body  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body) throws ApiException {
-    return updateAtlassianTeam(planId, atlassianTeamId, body, null);
-  }
-
-  /**
-   * Update Atlassian team in plan
-   * Updates any of the following planning settings of an Atlassian team in a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get Atlassian team in plan\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @param body  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateAtlassianTeamWithHttpInfo(planId, atlassianTeamId, body, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update Atlassian team in plan
-   * Updates any of the following planning settings of an Atlassian team in a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get Atlassian team in plan\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @param body  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body) throws ApiException {
-    return updateAtlassianTeamWithHttpInfo(planId, atlassianTeamId, body, null);
-  }
-
-  /**
-   * Update Atlassian team in plan
-   * Updates any of the following planning settings of an Atlassian team in a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get Atlassian team in plan\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param atlassianTeamId The ID of the Atlassian team. (required)
-   * @param body  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateAtlassianTeamRequestBuilder(planId, atlassianTeamId, body, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateAtlassianTeam", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateAtlassianTeamRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling updateAtlassianTeam");
-    }
-    // verify the required parameter 'atlassianTeamId' is set
-    if (atlassianTeamId == null) {
-      throw new ApiException(400, "Missing the required parameter 'atlassianTeamId' when calling updateAtlassianTeam");
-    }
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling updateAtlassianTeam");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()))
-        .replace("{atlassianTeamId}", ApiClient.urlEncode(atlassianTeamId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json-patch+json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update plan-only team
-   * Updates any of the following planning settings of a plan-only team using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  *  memberAccountIds  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan-only team\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @param body  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updatePlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body) throws ApiException {
-    return updatePlanOnlyTeam(planId, planOnlyTeamId, body, null);
-  }
-
-  /**
-   * Update plan-only team
-   * Updates any of the following planning settings of a plan-only team using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  *  memberAccountIds  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan-only team\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @param body  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updatePlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updatePlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId, body, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update plan-only team
-   * Updates any of the following planning settings of a plan-only team using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  *  memberAccountIds  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan-only team\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @param body  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updatePlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body) throws ApiException {
-    return updatePlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId, body, null);
-  }
-
-  /**
-   * Update plan-only team
-   * Updates any of the following planning settings of a plan-only team using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  *  memberAccountIds  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan-only team\&quot; endpoint to find out the order of array elements.*
-   * @param planId The ID of the plan. (required)
-   * @param planOnlyTeamId The ID of the plan-only team. (required)
-   * @param body  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updatePlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updatePlanOnlyTeamRequestBuilder(planId, planOnlyTeamId, body, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updatePlanOnlyTeam", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createPlanOnlyTeamValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling createPlanOnlyTeam(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        // verify the required parameter 'createPlanOnlyTeamRequest' is set
+        if (createPlanOnlyTeamRequest == null) {
+            throw new ApiException("Missing the required parameter 'createPlanOnlyTeamRequest' when calling createPlanOnlyTeam(Async)");
+        }
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        return createPlanOnlyTeamCall(planId, createPlanOnlyTeamRequest, _callback);
 
-  private HttpRequest.Builder updatePlanOnlyTeamRequestBuilder(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'planId' is set
-    if (planId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planId' when calling updatePlanOnlyTeam");
-    }
-    // verify the required parameter 'planOnlyTeamId' is set
-    if (planOnlyTeamId == null) {
-      throw new ApiException(400, "Missing the required parameter 'planOnlyTeamId' when calling updatePlanOnlyTeam");
-    }
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling updatePlanOnlyTeam");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
-        .replace("{planId}", ApiClient.urlEncode(planId.toString()))
-        .replace("{planOnlyTeamId}", ApiClient.urlEncode(planOnlyTeamId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json-patch+json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create plan-only team
+     * Creates a plan-only team and configures their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param createPlanOnlyTeamRequest  (required)
+     * @return Long
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Long createPlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest) throws ApiException {
+        ApiResponse<Long> localVarResp = createPlanOnlyTeamWithHttpInfo(planId, createPlanOnlyTeamRequest);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create plan-only team
+     * Creates a plan-only team and configures their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param createPlanOnlyTeamRequest  (required)
+     * @return ApiResponse&lt;Long&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Long> createPlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest) throws ApiException {
+        okhttp3.Call localVarCall = createPlanOnlyTeamValidateBeforeCall(planId, createPlanOnlyTeamRequest, null);
+        Type localVarReturnType = new TypeToken<Long>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create plan-only team (asynchronously)
+     * Creates a plan-only team and configures their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param createPlanOnlyTeamRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createPlanOnlyTeamAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull CreatePlanOnlyTeamRequest createPlanOnlyTeamRequest, final ApiCallback<Long> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createPlanOnlyTeamValidateBeforeCall(planId, createPlanOnlyTeamRequest, _callback);
+        Type localVarReturnType = new TypeToken<Long>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deletePlanOnlyTeam
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deletePlanOnlyTeamCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()))
+            .replace("{" + "planOnlyTeamId" + "}", localVarApiClient.escapeString(planOnlyTeamId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deletePlanOnlyTeamValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling deletePlanOnlyTeam(Async)");
+        }
+
+        // verify the required parameter 'planOnlyTeamId' is set
+        if (planOnlyTeamId == null) {
+            throw new ApiException("Missing the required parameter 'planOnlyTeamId' when calling deletePlanOnlyTeam(Async)");
+        }
+
+        return deletePlanOnlyTeamCall(planId, planOnlyTeamId, _callback);
+
+    }
+
+    /**
+     * Delete plan-only team
+     * Deletes a plan-only team and their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deletePlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId) throws ApiException {
+        ApiResponse<Object> localVarResp = deletePlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Delete plan-only team
+     * Deletes a plan-only team and their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deletePlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId) throws ApiException {
+        okhttp3.Call localVarCall = deletePlanOnlyTeamValidateBeforeCall(planId, planOnlyTeamId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete plan-only team (asynchronously)
+     * Deletes a plan-only team and their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deletePlanOnlyTeamAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deletePlanOnlyTeamValidateBeforeCall(planId, planOnlyTeamId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAtlassianTeam
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAtlassianTeamCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()))
+            .replace("{" + "atlassianTeamId" + "}", localVarApiClient.escapeString(atlassianTeamId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAtlassianTeamValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling getAtlassianTeam(Async)");
+        }
+
+        // verify the required parameter 'atlassianTeamId' is set
+        if (atlassianTeamId == null) {
+            throw new ApiException("Missing the required parameter 'atlassianTeamId' when calling getAtlassianTeam(Async)");
+        }
+
+        return getAtlassianTeamCall(planId, atlassianTeamId, _callback);
+
+    }
+
+    /**
+     * Get Atlassian team in plan
+     * Returns planning settings for an Atlassian team in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @return GetAtlassianTeamResponse
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public GetAtlassianTeamResponse getAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId) throws ApiException {
+        ApiResponse<GetAtlassianTeamResponse> localVarResp = getAtlassianTeamWithHttpInfo(planId, atlassianTeamId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get Atlassian team in plan
+     * Returns planning settings for an Atlassian team in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @return ApiResponse&lt;GetAtlassianTeamResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<GetAtlassianTeamResponse> getAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId) throws ApiException {
+        okhttp3.Call localVarCall = getAtlassianTeamValidateBeforeCall(planId, atlassianTeamId, null);
+        Type localVarReturnType = new TypeToken<GetAtlassianTeamResponse>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get Atlassian team in plan (asynchronously)
+     * Returns planning settings for an Atlassian team in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAtlassianTeamAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, final ApiCallback<GetAtlassianTeamResponse> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAtlassianTeamValidateBeforeCall(planId, atlassianTeamId, _callback);
+        Type localVarReturnType = new TypeToken<GetAtlassianTeamResponse>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getPlanOnlyTeam
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPlanOnlyTeamCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()))
+            .replace("{" + "planOnlyTeamId" + "}", localVarApiClient.escapeString(planOnlyTeamId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getPlanOnlyTeamValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling getPlanOnlyTeam(Async)");
+        }
+
+        // verify the required parameter 'planOnlyTeamId' is set
+        if (planOnlyTeamId == null) {
+            throw new ApiException("Missing the required parameter 'planOnlyTeamId' when calling getPlanOnlyTeam(Async)");
+        }
+
+        return getPlanOnlyTeamCall(planId, planOnlyTeamId, _callback);
+
+    }
+
+    /**
+     * Get plan-only team
+     * Returns planning settings for a plan-only team.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @return GetPlanOnlyTeamResponse
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public GetPlanOnlyTeamResponse getPlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId) throws ApiException {
+        ApiResponse<GetPlanOnlyTeamResponse> localVarResp = getPlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get plan-only team
+     * Returns planning settings for a plan-only team.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @return ApiResponse&lt;GetPlanOnlyTeamResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<GetPlanOnlyTeamResponse> getPlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId) throws ApiException {
+        okhttp3.Call localVarCall = getPlanOnlyTeamValidateBeforeCall(planId, planOnlyTeamId, null);
+        Type localVarReturnType = new TypeToken<GetPlanOnlyTeamResponse>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get plan-only team (asynchronously)
+     * Returns planning settings for a plan-only team.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPlanOnlyTeamAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, final ApiCallback<GetPlanOnlyTeamResponse> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getPlanOnlyTeamValidateBeforeCall(planId, planOnlyTeamId, _callback);
+        Type localVarReturnType = new TypeToken<GetPlanOnlyTeamResponse>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getTeams
+     * @param planId The ID of the plan. (required)
+     * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
+     * @param maxResults The maximum number of plan teams to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getTeamsCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (cursor != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("cursor", cursor));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getTeamsValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling getTeams(Async)");
+        }
+
+        return getTeamsCall(planId, cursor, maxResults, _callback);
+
+    }
+
+    /**
+     * Get teams in plan paginated
+     * Returns a [paginated](#pagination) list of plan-only and Atlassian teams in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
+     * @param maxResults The maximum number of plan teams to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
+     * @return PageWithCursorGetTeamResponseForPage
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageWithCursorGetTeamResponseForPage getTeams(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageWithCursorGetTeamResponseForPage> localVarResp = getTeamsWithHttpInfo(planId, cursor, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get teams in plan paginated
+     * Returns a [paginated](#pagination) list of plan-only and Atlassian teams in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
+     * @param maxResults The maximum number of plan teams to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
+     * @return ApiResponse&lt;PageWithCursorGetTeamResponseForPage&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageWithCursorGetTeamResponseForPage> getTeamsWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getTeamsValidateBeforeCall(planId, cursor, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageWithCursorGetTeamResponseForPage>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get teams in plan paginated (asynchronously)
+     * Returns a [paginated](#pagination) list of plan-only and Atlassian teams in a plan.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param cursor The cursor to start from. If not provided, the first page will be returned. (optional, default to )
+     * @param maxResults The maximum number of plan teams to return per page. The maximum value is 50. The default value is 50. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getTeamsAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nullable String cursor, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageWithCursorGetTeamResponseForPage> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getTeamsValidateBeforeCall(planId, cursor, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageWithCursorGetTeamResponseForPage>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeAtlassianTeam
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeAtlassianTeamCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()))
+            .replace("{" + "atlassianTeamId" + "}", localVarApiClient.escapeString(atlassianTeamId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeAtlassianTeamValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling removeAtlassianTeam(Async)");
+        }
+
+        // verify the required parameter 'atlassianTeamId' is set
+        if (atlassianTeamId == null) {
+            throw new ApiException("Missing the required parameter 'atlassianTeamId' when calling removeAtlassianTeam(Async)");
+        }
+
+        return removeAtlassianTeamCall(planId, atlassianTeamId, _callback);
+
+    }
+
+    /**
+     * Remove Atlassian team from plan
+     * Removes an Atlassian team from a plan and deletes their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object removeAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId) throws ApiException {
+        ApiResponse<Object> localVarResp = removeAtlassianTeamWithHttpInfo(planId, atlassianTeamId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Remove Atlassian team from plan
+     * Removes an Atlassian team from a plan and deletes their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> removeAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId) throws ApiException {
+        okhttp3.Call localVarCall = removeAtlassianTeamValidateBeforeCall(planId, atlassianTeamId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Remove Atlassian team from plan (asynchronously)
+     * Removes an Atlassian team from a plan and deletes their planning settings.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeAtlassianTeamAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeAtlassianTeamValidateBeforeCall(planId, atlassianTeamId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateAtlassianTeam
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @param body  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateAtlassianTeamCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = body;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()))
+            .replace("{" + "atlassianTeamId" + "}", localVarApiClient.escapeString(atlassianTeamId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json-patch+json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateAtlassianTeamValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling updateAtlassianTeam(Async)");
+        }
+
+        // verify the required parameter 'atlassianTeamId' is set
+        if (atlassianTeamId == null) {
+            throw new ApiException("Missing the required parameter 'atlassianTeamId' when calling updateAtlassianTeam(Async)");
+        }
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling updateAtlassianTeam(Async)");
+        }
+
+        return updateAtlassianTeamCall(planId, atlassianTeamId, body, _callback);
+
+    }
+
+    /**
+     * Update Atlassian team in plan
+     * Updates any of the following planning settings of an Atlassian team in a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get Atlassian team in plan\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @param body  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateAtlassianTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body) throws ApiException {
+        ApiResponse<Object> localVarResp = updateAtlassianTeamWithHttpInfo(planId, atlassianTeamId, body);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update Atlassian team in plan
+     * Updates any of the following planning settings of an Atlassian team in a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get Atlassian team in plan\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @param body  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateAtlassianTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body) throws ApiException {
+        okhttp3.Call localVarCall = updateAtlassianTeamValidateBeforeCall(planId, atlassianTeamId, body, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update Atlassian team in plan (asynchronously)
+     * Updates any of the following planning settings of an Atlassian team in a plan using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get Atlassian team in plan\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param atlassianTeamId The ID of the Atlassian team. (required)
+     * @param body  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or Atlassian team is not found, or the Atlassian team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateAtlassianTeamAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull String atlassianTeamId, @javax.annotation.Nonnull Object body, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateAtlassianTeamValidateBeforeCall(planId, atlassianTeamId, body, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updatePlanOnlyTeam
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @param body  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updatePlanOnlyTeamCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = body;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
+            .replace("{" + "planId" + "}", localVarApiClient.escapeString(planId.toString()))
+            .replace("{" + "planOnlyTeamId" + "}", localVarApiClient.escapeString(planOnlyTeamId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json-patch+json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updatePlanOnlyTeamValidateBeforeCall(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'planId' is set
+        if (planId == null) {
+            throw new ApiException("Missing the required parameter 'planId' when calling updatePlanOnlyTeam(Async)");
+        }
+
+        // verify the required parameter 'planOnlyTeamId' is set
+        if (planOnlyTeamId == null) {
+            throw new ApiException("Missing the required parameter 'planOnlyTeamId' when calling updatePlanOnlyTeam(Async)");
+        }
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling updatePlanOnlyTeam(Async)");
+        }
+
+        return updatePlanOnlyTeamCall(planId, planOnlyTeamId, body, _callback);
+
+    }
+
+    /**
+     * Update plan-only team
+     * Updates any of the following planning settings of a plan-only team using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  *  memberAccountIds  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan-only team\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @param body  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updatePlanOnlyTeam(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body) throws ApiException {
+        ApiResponse<Object> localVarResp = updatePlanOnlyTeamWithHttpInfo(planId, planOnlyTeamId, body);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update plan-only team
+     * Updates any of the following planning settings of a plan-only team using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  *  memberAccountIds  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan-only team\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @param body  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updatePlanOnlyTeamWithHttpInfo(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body) throws ApiException {
+        okhttp3.Call localVarCall = updatePlanOnlyTeamValidateBeforeCall(planId, planOnlyTeamId, body, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update plan-only team (asynchronously)
+     * Updates any of the following planning settings of a plan-only team using [JSON Patch](https://datatracker.ietf.org/doc/html/rfc6902).   *  name  *  planningStyle  *  issueSourceId  *  sprintLength  *  capacity  *  memberAccountIds  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *Note that \&quot;add\&quot; operations do not respect array indexes in target locations. Call the \&quot;Get plan-only team\&quot; endpoint to find out the order of array elements.*
+     * @param planId The ID of the plan. (required)
+     * @param planOnlyTeamId The ID of the plan-only team. (required)
+     * @param body  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the user is not logged in. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the plan or plan-only team is not found, or the plan-only team is not associated with the plan. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the plan is not active. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updatePlanOnlyTeamAsync(@javax.annotation.Nonnull Long planId, @javax.annotation.Nonnull Long planOnlyTeamId, @javax.annotation.Nonnull Object body, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updatePlanOnlyTeamValidateBeforeCall(planId, planOnlyTeamId, body, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

@@ -13,42 +13,57 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Result for requested redactions
  */
-@JsonPropertyOrder({
-  SingleRedactionResponse.JSON_PROPERTY_EXTERNAL_ID,
-  SingleRedactionResponse.JSON_PROPERTY_SUCCESSFUL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SingleRedactionResponse {
-  public static final String JSON_PROPERTY_EXTERNAL_ID = "externalId";
+  public static final String SERIALIZED_NAME_EXTERNAL_ID = "externalId";
+  @SerializedName(SERIALIZED_NAME_EXTERNAL_ID)
   @javax.annotation.Nonnull
   private UUID externalId;
 
-  public static final String JSON_PROPERTY_SUCCESSFUL = "successful";
+  public static final String SERIALIZED_NAME_SUCCESSFUL = "successful";
+  @SerializedName(SERIALIZED_NAME_SUCCESSFUL)
   @javax.annotation.Nonnull
   private Boolean successful;
 
-  public SingleRedactionResponse() { 
+  public SingleRedactionResponse() {
   }
 
   public SingleRedactionResponse externalId(@javax.annotation.Nonnull UUID externalId) {
@@ -61,15 +76,10 @@ public class SingleRedactionResponse {
    * @return externalId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public UUID getExternalId() {
     return externalId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setExternalId(@javax.annotation.Nonnull UUID externalId) {
     this.externalId = externalId;
   }
@@ -85,23 +95,16 @@ public class SingleRedactionResponse {
    * @return successful
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SUCCESSFUL, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getSuccessful() {
     return successful;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SUCCESSFUL, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSuccessful(@javax.annotation.Nonnull Boolean successful) {
     this.successful = successful;
   }
 
 
-  /**
-   * Return true if this SingleRedactionResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -141,49 +144,98 @@ public class SingleRedactionResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("externalId", "successful"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("externalId", "successful"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SingleRedactionResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SingleRedactionResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SingleRedactionResponse is not found in the empty JSON string", SingleRedactionResponse.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SingleRedactionResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SingleRedactionResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : SingleRedactionResponse.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("externalId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `externalId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("externalId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SingleRedactionResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SingleRedactionResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SingleRedactionResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SingleRedactionResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SingleRedactionResponse>() {
+           @Override
+           public void write(JsonWriter out, SingleRedactionResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SingleRedactionResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of SingleRedactionResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SingleRedactionResponse
+   * @throws IOException if the JSON string is invalid with respect to SingleRedactionResponse
+   */
+  public static SingleRedactionResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SingleRedactionResponse.class);
+  }
 
-    // add `externalId` to the URL query string
-    if (getExternalId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexternalId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExternalId()))));
-    }
-
-    // add `successful` to the URL query string
-    if (getSuccessful() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssuccessful%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSuccessful()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of SingleRedactionResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

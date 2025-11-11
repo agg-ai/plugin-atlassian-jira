@@ -13,70 +13,84 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.AttachmentArchiveItemReadable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Metadata for an archive (for example a zip) and its contents.
  */
-@JsonPropertyOrder({
-  AttachmentArchiveMetadataReadable.JSON_PROPERTY_ENTRIES,
-  AttachmentArchiveMetadataReadable.JSON_PROPERTY_ID,
-  AttachmentArchiveMetadataReadable.JSON_PROPERTY_MEDIA_TYPE,
-  AttachmentArchiveMetadataReadable.JSON_PROPERTY_NAME,
-  AttachmentArchiveMetadataReadable.JSON_PROPERTY_TOTAL_ENTRY_COUNT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AttachmentArchiveMetadataReadable {
-  public static final String JSON_PROPERTY_ENTRIES = "entries";
+  public static final String SERIALIZED_NAME_ENTRIES = "entries";
+  @SerializedName(SERIALIZED_NAME_ENTRIES)
   @javax.annotation.Nullable
   private List<AttachmentArchiveItemReadable> entries = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_MEDIA_TYPE = "mediaType";
+  public static final String SERIALIZED_NAME_MEDIA_TYPE = "mediaType";
+  @SerializedName(SERIALIZED_NAME_MEDIA_TYPE)
   @javax.annotation.Nullable
   private String mediaType;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_TOTAL_ENTRY_COUNT = "totalEntryCount";
+  public static final String SERIALIZED_NAME_TOTAL_ENTRY_COUNT = "totalEntryCount";
+  @SerializedName(SERIALIZED_NAME_TOTAL_ENTRY_COUNT)
   @javax.annotation.Nullable
   private Long totalEntryCount;
 
-  public AttachmentArchiveMetadataReadable() { 
+  public AttachmentArchiveMetadataReadable() {
   }
 
-  @JsonCreator
   public AttachmentArchiveMetadataReadable(
-    @JsonProperty(JSON_PROPERTY_ENTRIES) List<AttachmentArchiveItemReadable> entries, 
-    @JsonProperty(JSON_PROPERTY_ID) Long id, 
-    @JsonProperty(JSON_PROPERTY_MEDIA_TYPE) String mediaType, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_TOTAL_ENTRY_COUNT) Long totalEntryCount
+     List<AttachmentArchiveItemReadable> entries, 
+     Long id, 
+     String mediaType, 
+     String name, 
+     Long totalEntryCount
   ) {
-  this();
+    this();
     this.entries = entries;
     this.id = id;
     this.mediaType = mediaType;
@@ -89,12 +103,9 @@ public class AttachmentArchiveMetadataReadable {
    * @return entries
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ENTRIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<AttachmentArchiveItemReadable> getEntries() {
     return entries;
   }
-
 
 
 
@@ -103,12 +114,9 @@ public class AttachmentArchiveMetadataReadable {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
-
 
 
 
@@ -117,12 +125,9 @@ public class AttachmentArchiveMetadataReadable {
    * @return mediaType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMediaType() {
     return mediaType;
   }
-
 
 
 
@@ -131,12 +136,9 @@ public class AttachmentArchiveMetadataReadable {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -145,8 +147,6 @@ public class AttachmentArchiveMetadataReadable {
    * @return totalEntryCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_ENTRY_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getTotalEntryCount() {
     return totalEntryCount;
   }
@@ -154,9 +154,6 @@ public class AttachmentArchiveMetadataReadable {
 
 
 
-  /**
-   * Return true if this AttachmentArchiveMetadataReadable object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,69 +199,108 @@ public class AttachmentArchiveMetadataReadable {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("entries", "id", "mediaType", "name", "totalEntryCount"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AttachmentArchiveMetadataReadable
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `entries` to the URL query string
-    if (getEntries() != null) {
-      for (int i = 0; i < getEntries().size(); i++) {
-        if (getEntries().get(i) != null) {
-          joiner.add(getEntries().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sentries%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AttachmentArchiveMetadataReadable.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AttachmentArchiveMetadataReadable is not found in the empty JSON string", AttachmentArchiveMetadataReadable.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AttachmentArchiveMetadataReadable.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AttachmentArchiveMetadataReadable` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("entries") != null && !jsonObj.get("entries").isJsonNull()) {
+        JsonArray jsonArrayentries = jsonObj.getAsJsonArray("entries");
+        if (jsonArrayentries != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("entries").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `entries` to be an array in the JSON string but got `%s`", jsonObj.get("entries").toString()));
+          }
 
-    // add `mediaType` to the URL query string
-    if (getMediaType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smediaType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMediaType()))));
-    }
+          // validate the optional field `entries` (array)
+          for (int i = 0; i < jsonArrayentries.size(); i++) {
+            AttachmentArchiveItemReadable.validateJsonElement(jsonArrayentries.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("mediaType") != null && !jsonObj.get("mediaType").isJsonNull()) && !jsonObj.get("mediaType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `mediaType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("mediaType").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+  }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AttachmentArchiveMetadataReadable.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AttachmentArchiveMetadataReadable' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AttachmentArchiveMetadataReadable> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AttachmentArchiveMetadataReadable.class));
 
-    // add `totalEntryCount` to the URL query string
-    if (getTotalEntryCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stotalEntryCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTotalEntryCount()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<AttachmentArchiveMetadataReadable>() {
+           @Override
+           public void write(JsonWriter out, AttachmentArchiveMetadataReadable value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public AttachmentArchiveMetadataReadable read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of AttachmentArchiveMetadataReadable given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AttachmentArchiveMetadataReadable
+   * @throws IOException if the JSON string is invalid with respect to AttachmentArchiveMetadataReadable
+   */
+  public static AttachmentArchiveMetadataReadable fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AttachmentArchiveMetadataReadable.class);
+  }
+
+  /**
+   * Convert an instance of AttachmentArchiveMetadataReadable to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

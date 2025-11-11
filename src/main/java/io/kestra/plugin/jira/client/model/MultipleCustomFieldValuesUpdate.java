@@ -13,48 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A custom field and its new value with a list of issue to update.
  */
-@JsonPropertyOrder({
-  MultipleCustomFieldValuesUpdate.JSON_PROPERTY_CUSTOM_FIELD,
-  MultipleCustomFieldValuesUpdate.JSON_PROPERTY_ISSUE_IDS,
-  MultipleCustomFieldValuesUpdate.JSON_PROPERTY_VALUE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class MultipleCustomFieldValuesUpdate {
-  public static final String JSON_PROPERTY_CUSTOM_FIELD = "customField";
+  public static final String SERIALIZED_NAME_CUSTOM_FIELD = "customField";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_FIELD)
   @javax.annotation.Nonnull
   private String customField;
 
-  public static final String JSON_PROPERTY_ISSUE_IDS = "issueIds";
+  public static final String SERIALIZED_NAME_ISSUE_IDS = "issueIds";
+  @SerializedName(SERIALIZED_NAME_ISSUE_IDS)
   @javax.annotation.Nonnull
   private List<Long> issueIds = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_VALUE = "value";
+  public static final String SERIALIZED_NAME_VALUE = "value";
+  @SerializedName(SERIALIZED_NAME_VALUE)
   @javax.annotation.Nullable
   private Object value = null;
 
-  public MultipleCustomFieldValuesUpdate() { 
+  public MultipleCustomFieldValuesUpdate() {
   }
 
   public MultipleCustomFieldValuesUpdate customField(@javax.annotation.Nonnull String customField) {
@@ -67,15 +82,10 @@ public class MultipleCustomFieldValuesUpdate {
    * @return customField
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELD, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getCustomField() {
     return customField;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_FIELD, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCustomField(@javax.annotation.Nonnull String customField) {
     this.customField = customField;
   }
@@ -99,15 +109,10 @@ public class MultipleCustomFieldValuesUpdate {
    * @return issueIds
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<Long> getIssueIds() {
     return issueIds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIssueIds(@javax.annotation.Nonnull List<Long> issueIds) {
     this.issueIds = issueIds;
   }
@@ -123,23 +128,16 @@ public class MultipleCustomFieldValuesUpdate {
    * @return value
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Object getValue() {
     return value;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setValue(@javax.annotation.Nullable Object value) {
     this.value = value;
   }
 
 
-  /**
-   * Return true if this MultipleCustomFieldValuesUpdate object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -181,58 +179,104 @@ public class MultipleCustomFieldValuesUpdate {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("customField", "issueIds", "value"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("customField", "issueIds", "value"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to MultipleCustomFieldValuesUpdate
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `customField` to the URL query string
-    if (getCustomField() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scustomField%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustomField()))));
-    }
-
-    // add `issueIds` to the URL query string
-    if (getIssueIds() != null) {
-      for (int i = 0; i < getIssueIds().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sissueIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getIssueIds().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!MultipleCustomFieldValuesUpdate.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in MultipleCustomFieldValuesUpdate is not found in the empty JSON string", MultipleCustomFieldValuesUpdate.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `value` to the URL query string
-    if (getValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!MultipleCustomFieldValuesUpdate.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `MultipleCustomFieldValuesUpdate` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : MultipleCustomFieldValuesUpdate.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("customField").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customField` to be a primitive type in the JSON string but got `%s`", jsonObj.get("customField").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("issueIds") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("issueIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueIds` to be an array in the JSON string but got `%s`", jsonObj.get("issueIds").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!MultipleCustomFieldValuesUpdate.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'MultipleCustomFieldValuesUpdate' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<MultipleCustomFieldValuesUpdate> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(MultipleCustomFieldValuesUpdate.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<MultipleCustomFieldValuesUpdate>() {
+           @Override
+           public void write(JsonWriter out, MultipleCustomFieldValuesUpdate value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public MultipleCustomFieldValuesUpdate read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of MultipleCustomFieldValuesUpdate given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of MultipleCustomFieldValuesUpdate
+   * @throws IOException if the JSON string is invalid with respect to MultipleCustomFieldValuesUpdate
+   */
+  public static MultipleCustomFieldValuesUpdate fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, MultipleCustomFieldValuesUpdate.class);
+  }
+
+  /**
+   * Convert an instance of MultipleCustomFieldValuesUpdate to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,64 +13,79 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SimpleLink;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details a link group, which defines issue operations.
  */
-@JsonPropertyOrder({
-  LinkGroup.JSON_PROPERTY_GROUPS,
-  LinkGroup.JSON_PROPERTY_HEADER,
-  LinkGroup.JSON_PROPERTY_ID,
-  LinkGroup.JSON_PROPERTY_LINKS,
-  LinkGroup.JSON_PROPERTY_STYLE_CLASS,
-  LinkGroup.JSON_PROPERTY_WEIGHT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class LinkGroup {
-  public static final String JSON_PROPERTY_GROUPS = "groups";
+  public static final String SERIALIZED_NAME_GROUPS = "groups";
+  @SerializedName(SERIALIZED_NAME_GROUPS)
   @javax.annotation.Nullable
   private List<LinkGroup> groups = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_HEADER = "header";
+  public static final String SERIALIZED_NAME_HEADER = "header";
+  @SerializedName(SERIALIZED_NAME_HEADER)
   @javax.annotation.Nullable
   private SimpleLink header;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_LINKS = "links";
+  public static final String SERIALIZED_NAME_LINKS = "links";
+  @SerializedName(SERIALIZED_NAME_LINKS)
   @javax.annotation.Nullable
   private List<SimpleLink> links = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_STYLE_CLASS = "styleClass";
+  public static final String SERIALIZED_NAME_STYLE_CLASS = "styleClass";
+  @SerializedName(SERIALIZED_NAME_STYLE_CLASS)
   @javax.annotation.Nullable
   private String styleClass;
 
-  public static final String JSON_PROPERTY_WEIGHT = "weight";
+  public static final String SERIALIZED_NAME_WEIGHT = "weight";
+  @SerializedName(SERIALIZED_NAME_WEIGHT)
   @javax.annotation.Nullable
   private Integer weight;
 
-  public LinkGroup() { 
+  public LinkGroup() {
   }
 
   public LinkGroup groups(@javax.annotation.Nullable List<LinkGroup> groups) {
@@ -91,15 +106,10 @@ public class LinkGroup {
    * @return groups
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LinkGroup> getGroups() {
     return groups;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroups(@javax.annotation.Nullable List<LinkGroup> groups) {
     this.groups = groups;
   }
@@ -115,15 +125,10 @@ public class LinkGroup {
    * @return header
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HEADER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SimpleLink getHeader() {
     return header;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_HEADER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHeader(@javax.annotation.Nullable SimpleLink header) {
     this.header = header;
   }
@@ -139,15 +144,10 @@ public class LinkGroup {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -171,15 +171,10 @@ public class LinkGroup {
    * @return links
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LINKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SimpleLink> getLinks() {
     return links;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LINKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLinks(@javax.annotation.Nullable List<SimpleLink> links) {
     this.links = links;
   }
@@ -195,15 +190,10 @@ public class LinkGroup {
    * @return styleClass
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STYLE_CLASS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStyleClass() {
     return styleClass;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STYLE_CLASS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStyleClass(@javax.annotation.Nullable String styleClass) {
     this.styleClass = styleClass;
   }
@@ -219,23 +209,16 @@ public class LinkGroup {
    * @return weight
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getWeight() {
     return weight;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWeight(@javax.annotation.Nullable Integer weight) {
     this.weight = weight;
   }
 
 
-  /**
-   * Return true if this LinkGroup object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -283,79 +266,126 @@ public class LinkGroup {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("groups", "header", "id", "links", "styleClass", "weight"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to LinkGroup
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `groups` to the URL query string
-    if (getGroups() != null) {
-      for (int i = 0; i < getGroups().size(); i++) {
-        if (getGroups().get(i) != null) {
-          joiner.add(getGroups().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sgroups%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!LinkGroup.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in LinkGroup is not found in the empty JSON string", LinkGroup.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `header` to the URL query string
-    if (getHeader() != null) {
-      joiner.add(getHeader().toUrlQueryString(prefix + "header" + suffix));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `links` to the URL query string
-    if (getLinks() != null) {
-      for (int i = 0; i < getLinks().size(); i++) {
-        if (getLinks().get(i) != null) {
-          joiner.add(getLinks().get(i).toUrlQueryString(String.format(Locale.ROOT, "%slinks%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!LinkGroup.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `LinkGroup` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("groups") != null && !jsonObj.get("groups").isJsonNull()) {
+        JsonArray jsonArraygroups = jsonObj.getAsJsonArray("groups");
+        if (jsonArraygroups != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("groups").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groups` to be an array in the JSON string but got `%s`", jsonObj.get("groups").toString()));
+          }
 
-    // add `styleClass` to the URL query string
-    if (getStyleClass() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstyleClass%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStyleClass()))));
-    }
+          // validate the optional field `groups` (array)
+          for (int i = 0; i < jsonArraygroups.size(); i++) {
+            LinkGroup.validateJsonElement(jsonArraygroups.get(i));
+          };
+        }
+      }
+      // validate the optional field `header`
+      if (jsonObj.get("header") != null && !jsonObj.get("header").isJsonNull()) {
+        SimpleLink.validateJsonElement(jsonObj.get("header"));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (jsonObj.get("links") != null && !jsonObj.get("links").isJsonNull()) {
+        JsonArray jsonArraylinks = jsonObj.getAsJsonArray("links");
+        if (jsonArraylinks != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("links").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `links` to be an array in the JSON string but got `%s`", jsonObj.get("links").toString()));
+          }
 
-    // add `weight` to the URL query string
-    if (getWeight() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sweight%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWeight()))));
-    }
+          // validate the optional field `links` (array)
+          for (int i = 0; i < jsonArraylinks.size(); i++) {
+            SimpleLink.validateJsonElement(jsonArraylinks.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("styleClass") != null && !jsonObj.get("styleClass").isJsonNull()) && !jsonObj.get("styleClass").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `styleClass` to be a primitive type in the JSON string but got `%s`", jsonObj.get("styleClass").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!LinkGroup.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'LinkGroup' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<LinkGroup> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(LinkGroup.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<LinkGroup>() {
+           @Override
+           public void write(JsonWriter out, LinkGroup value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public LinkGroup read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of LinkGroup given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of LinkGroup
+   * @throws IOException if the JSON string is invalid with respect to LinkGroup
+   */
+  public static LinkGroup fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, LinkGroup.class);
+  }
+
+  /**
+   * Convert an instance of LinkGroup to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

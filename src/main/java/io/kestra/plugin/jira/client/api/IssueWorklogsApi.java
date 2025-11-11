@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.ChangedWorklogs;
 import io.kestra.plugin.jira.client.model.PageOfWorklogs;
@@ -24,1617 +33,1696 @@ import io.kestra.plugin.jira.client.model.Worklog;
 import io.kestra.plugin.jira.client.model.WorklogIdsRequestBean;
 import io.kestra.plugin.jira.client.model.WorklogsMoveRequestBean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueWorklogsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueWorklogsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueWorklogsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addWorklog
+     * @param issueIdOrKey The ID or key the issue. (required)
+     * @param worklog  (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Reduces the estimate by amount specified in &#x60;reduceBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param reduceBy The amount to reduce the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param overrideEditableFlag Whether the worklog entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  &#x60;adjustEstimate&#x60; is set to &#x60;manual&#x60; but &#x60;reduceBy&#x60; is not provided or is invalid.  *  the user does not have permission to add the worklog.  *  the request JSON is malformed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit has been breached for one of the following fields:   *  worklogs  *  attachments </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addWorklogCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueWorklogsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueWorklogsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Add worklog
-   * Adds a worklog to an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Work on issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key the issue. (required)
-   * @param worklog  (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Reduces the estimate by amount specified in &#x60;reduceBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param reduceBy The amount to reduce the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param overrideEditableFlag Whether the worklog entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
-   * @return Worklog
-   * @throws ApiException if fails to make API call
-   */
-  public Worklog addWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    return addWorklog(issueIdOrKey, worklog, notifyUsers, adjustEstimate, newEstimate, reduceBy, expand, overrideEditableFlag, null);
-  }
-
-  /**
-   * Add worklog
-   * Adds a worklog to an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Work on issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key the issue. (required)
-   * @param worklog  (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Reduces the estimate by amount specified in &#x60;reduceBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param reduceBy The amount to reduce the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param overrideEditableFlag Whether the worklog entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return Worklog
-   * @throws ApiException if fails to make API call
-   */
-  public Worklog addWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    ApiResponse<Worklog> localVarResponse = addWorklogWithHttpInfo(issueIdOrKey, worklog, notifyUsers, adjustEstimate, newEstimate, reduceBy, expand, overrideEditableFlag, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add worklog
-   * Adds a worklog to an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Work on issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key the issue. (required)
-   * @param worklog  (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Reduces the estimate by amount specified in &#x60;reduceBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param reduceBy The amount to reduce the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param overrideEditableFlag Whether the worklog entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
-   * @return ApiResponse&lt;Worklog&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Worklog> addWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    return addWorklogWithHttpInfo(issueIdOrKey, worklog, notifyUsers, adjustEstimate, newEstimate, reduceBy, expand, overrideEditableFlag, null);
-  }
-
-  /**
-   * Add worklog
-   * Adds a worklog to an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Work on issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key the issue. (required)
-   * @param worklog  (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Reduces the estimate by amount specified in &#x60;reduceBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param reduceBy The amount to reduce the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param overrideEditableFlag Whether the worklog entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Worklog&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Worklog> addWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addWorklogRequestBuilder(issueIdOrKey, worklog, notifyUsers, adjustEstimate, newEstimate, reduceBy, expand, overrideEditableFlag, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addWorklog", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Worklog>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Worklog responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Worklog>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = worklog;
 
-        return new ApiResponse<Worklog>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
 
-  private HttpRequest.Builder addWorklogRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling addWorklog");
-    }
-    // verify the required parameter 'worklog' is set
-    if (worklog == null) {
-      throw new ApiException(400, "Missing the required parameter 'worklog' when calling addWorklog");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "notifyUsers";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("notifyUsers", notifyUsers));
-    localVarQueryParameterBaseName = "adjustEstimate";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("adjustEstimate", adjustEstimate));
-    localVarQueryParameterBaseName = "newEstimate";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("newEstimate", newEstimate));
-    localVarQueryParameterBaseName = "reduceBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("reduceBy", reduceBy));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-    localVarQueryParameterBaseName = "overrideEditableFlag";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("overrideEditableFlag", overrideEditableFlag));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(worklog);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk delete worklogs
-   * Deletes a list of worklogs from an issue. This is an experimental API with limitations:   *  You can&#39;t delete more than 5000 worklogs at once.  *  No notifications will be sent for deleted worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the issue.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog.  *  If any worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being deleted. (optional, default to auto)
-   * @param overrideEditableFlag Whether the work log entries should be removed to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @throws ApiException if fails to make API call
-   */
-  public void bulkDeleteWorklogs(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    bulkDeleteWorklogs(issueIdOrKey, worklogIdsRequestBean, adjustEstimate, overrideEditableFlag, null);
-  }
-
-  /**
-   * Bulk delete worklogs
-   * Deletes a list of worklogs from an issue. This is an experimental API with limitations:   *  You can&#39;t delete more than 5000 worklogs at once.  *  No notifications will be sent for deleted worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the issue.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog.  *  If any worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being deleted. (optional, default to auto)
-   * @param overrideEditableFlag Whether the work log entries should be removed to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void bulkDeleteWorklogs(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    bulkDeleteWorklogsWithHttpInfo(issueIdOrKey, worklogIdsRequestBean, adjustEstimate, overrideEditableFlag, headers);
-  }
-
-  /**
-   * Bulk delete worklogs
-   * Deletes a list of worklogs from an issue. This is an experimental API with limitations:   *  You can&#39;t delete more than 5000 worklogs at once.  *  No notifications will be sent for deleted worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the issue.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog.  *  If any worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being deleted. (optional, default to auto)
-   * @param overrideEditableFlag Whether the work log entries should be removed to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> bulkDeleteWorklogsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    return bulkDeleteWorklogsWithHttpInfo(issueIdOrKey, worklogIdsRequestBean, adjustEstimate, overrideEditableFlag, null);
-  }
-
-  /**
-   * Bulk delete worklogs
-   * Deletes a list of worklogs from an issue. This is an experimental API with limitations:   *  You can&#39;t delete more than 5000 worklogs at once.  *  No notifications will be sent for deleted worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the issue.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog.  *  If any worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being deleted. (optional, default to auto)
-   * @param overrideEditableFlag Whether the work log entries should be removed to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> bulkDeleteWorklogsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = bulkDeleteWorklogsRequestBuilder(issueIdOrKey, worklogIdsRequestBean, adjustEstimate, overrideEditableFlag, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("bulkDeleteWorklogs", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder bulkDeleteWorklogsRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling bulkDeleteWorklogs");
-    }
-    // verify the required parameter 'worklogIdsRequestBean' is set
-    if (worklogIdsRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'worklogIdsRequestBean' when calling bulkDeleteWorklogs");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "adjustEstimate";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("adjustEstimate", adjustEstimate));
-    localVarQueryParameterBaseName = "overrideEditableFlag";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("overrideEditableFlag", overrideEditableFlag));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(worklogIdsRequestBean);
-      localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk move worklogs
-   * Moves a list of worklogs from one issue to another. This is an experimental API with several limitations:   *  You can&#39;t move more than 5000 worklogs at once.  *  You can&#39;t move worklogs containing an attachment.  *  You can&#39;t move worklogs restricted by project roles.  *  No notifications will be sent for moved worklogs.  *  No webhooks or events will be sent for moved worklogs.  *  No issue history will be recorded for moved worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the projects containing the source and destination issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ and *Edit all worklogs*](https://confluence.atlassian.com/x/yodKLg)[project permission](https://confluence.atlassian.com/x/yodKLg)  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey  (required)
-   * @param worklogsMoveRequestBean A JSON object containing a list of worklog IDs and the ID or key of the destination issue. (required)
-   * @param adjustEstimate Defines how to update the issues&#39; time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being moved in the source issue, and increases it in the destination issue. (optional, default to auto)
-   * @param overrideEditableFlag Whether the work log entry should be moved to and from the issues even if the issues are not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @throws ApiException if fails to make API call
-   */
-  public void bulkMoveWorklogs(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    bulkMoveWorklogs(issueIdOrKey, worklogsMoveRequestBean, adjustEstimate, overrideEditableFlag, null);
-  }
-
-  /**
-   * Bulk move worklogs
-   * Moves a list of worklogs from one issue to another. This is an experimental API with several limitations:   *  You can&#39;t move more than 5000 worklogs at once.  *  You can&#39;t move worklogs containing an attachment.  *  You can&#39;t move worklogs restricted by project roles.  *  No notifications will be sent for moved worklogs.  *  No webhooks or events will be sent for moved worklogs.  *  No issue history will be recorded for moved worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the projects containing the source and destination issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ and *Edit all worklogs*](https://confluence.atlassian.com/x/yodKLg)[project permission](https://confluence.atlassian.com/x/yodKLg)  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey  (required)
-   * @param worklogsMoveRequestBean A JSON object containing a list of worklog IDs and the ID or key of the destination issue. (required)
-   * @param adjustEstimate Defines how to update the issues&#39; time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being moved in the source issue, and increases it in the destination issue. (optional, default to auto)
-   * @param overrideEditableFlag Whether the work log entry should be moved to and from the issues even if the issues are not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void bulkMoveWorklogs(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    bulkMoveWorklogsWithHttpInfo(issueIdOrKey, worklogsMoveRequestBean, adjustEstimate, overrideEditableFlag, headers);
-  }
-
-  /**
-   * Bulk move worklogs
-   * Moves a list of worklogs from one issue to another. This is an experimental API with several limitations:   *  You can&#39;t move more than 5000 worklogs at once.  *  You can&#39;t move worklogs containing an attachment.  *  You can&#39;t move worklogs restricted by project roles.  *  No notifications will be sent for moved worklogs.  *  No webhooks or events will be sent for moved worklogs.  *  No issue history will be recorded for moved worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the projects containing the source and destination issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ and *Edit all worklogs*](https://confluence.atlassian.com/x/yodKLg)[project permission](https://confluence.atlassian.com/x/yodKLg)  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey  (required)
-   * @param worklogsMoveRequestBean A JSON object containing a list of worklog IDs and the ID or key of the destination issue. (required)
-   * @param adjustEstimate Defines how to update the issues&#39; time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being moved in the source issue, and increases it in the destination issue. (optional, default to auto)
-   * @param overrideEditableFlag Whether the work log entry should be moved to and from the issues even if the issues are not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> bulkMoveWorklogsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    return bulkMoveWorklogsWithHttpInfo(issueIdOrKey, worklogsMoveRequestBean, adjustEstimate, overrideEditableFlag, null);
-  }
-
-  /**
-   * Bulk move worklogs
-   * Moves a list of worklogs from one issue to another. This is an experimental API with several limitations:   *  You can&#39;t move more than 5000 worklogs at once.  *  You can&#39;t move worklogs containing an attachment.  *  You can&#39;t move worklogs restricted by project roles.  *  No notifications will be sent for moved worklogs.  *  No webhooks or events will be sent for moved worklogs.  *  No issue history will be recorded for moved worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the projects containing the source and destination issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ and *Edit all worklogs*](https://confluence.atlassian.com/x/yodKLg)[project permission](https://confluence.atlassian.com/x/yodKLg)  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey  (required)
-   * @param worklogsMoveRequestBean A JSON object containing a list of worklog IDs and the ID or key of the destination issue. (required)
-   * @param adjustEstimate Defines how to update the issues&#39; time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being moved in the source issue, and increases it in the destination issue. (optional, default to auto)
-   * @param overrideEditableFlag Whether the work log entry should be moved to and from the issues even if the issues are not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> bulkMoveWorklogsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = bulkMoveWorklogsRequestBuilder(issueIdOrKey, worklogsMoveRequestBean, adjustEstimate, overrideEditableFlag, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("bulkMoveWorklogs", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder bulkMoveWorklogsRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling bulkMoveWorklogs");
-    }
-    // verify the required parameter 'worklogsMoveRequestBean' is set
-    if (worklogsMoveRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'worklogsMoveRequestBean' when calling bulkMoveWorklogs");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog/move"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "adjustEstimate";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("adjustEstimate", adjustEstimate));
-    localVarQueryParameterBaseName = "overrideEditableFlag";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("overrideEditableFlag", overrideEditableFlag));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(worklogsMoveRequestBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete worklog
-   * Deletes a worklog from an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog or *Delete own worklogs* to delete worklogs created by the user,  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Increases the estimate by amount specified in &#x60;increaseBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param increaseBy The amount to increase the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
-   * @param overrideEditableFlag Whether the work log entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    deleteWorklog(issueIdOrKey, id, notifyUsers, adjustEstimate, newEstimate, increaseBy, overrideEditableFlag, null);
-  }
-
-  /**
-   * Delete worklog
-   * Deletes a worklog from an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog or *Delete own worklogs* to delete worklogs created by the user,  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Increases the estimate by amount specified in &#x60;increaseBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param increaseBy The amount to increase the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
-   * @param overrideEditableFlag Whether the work log entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    deleteWorklogWithHttpInfo(issueIdOrKey, id, notifyUsers, adjustEstimate, newEstimate, increaseBy, overrideEditableFlag, headers);
-  }
-
-  /**
-   * Delete worklog
-   * Deletes a worklog from an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog or *Delete own worklogs* to delete worklogs created by the user,  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Increases the estimate by amount specified in &#x60;increaseBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param increaseBy The amount to increase the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
-   * @param overrideEditableFlag Whether the work log entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    return deleteWorklogWithHttpInfo(issueIdOrKey, id, notifyUsers, adjustEstimate, newEstimate, increaseBy, overrideEditableFlag, null);
-  }
-
-  /**
-   * Delete worklog
-   * Deletes a worklog from an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog or *Delete own worklogs* to delete worklogs created by the user,  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Increases the estimate by amount specified in &#x60;increaseBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param increaseBy The amount to increase the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
-   * @param overrideEditableFlag Whether the work log entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteWorklogRequestBuilder(issueIdOrKey, id, notifyUsers, adjustEstimate, newEstimate, increaseBy, overrideEditableFlag, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteWorklog", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteWorklogRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling deleteWorklog");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteWorklog");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "notifyUsers";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("notifyUsers", notifyUsers));
-    localVarQueryParameterBaseName = "adjustEstimate";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("adjustEstimate", adjustEstimate));
-    localVarQueryParameterBaseName = "newEstimate";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("newEstimate", newEstimate));
-    localVarQueryParameterBaseName = "increaseBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("increaseBy", increaseBy));
-    localVarQueryParameterBaseName = "overrideEditableFlag";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("overrideEditableFlag", overrideEditableFlag));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get IDs of deleted worklogs
-   * Returns a list of IDs and delete timestamps for worklogs deleted after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs deleted during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param since The date and time, as a UNIX timestamp in milliseconds, after which deleted worklogs are returned. (optional, default to 0)
-   * @return ChangedWorklogs
-   * @throws ApiException if fails to make API call
-   */
-  public ChangedWorklogs getIdsOfWorklogsDeletedSince(@javax.annotation.Nullable Long since) throws ApiException {
-    return getIdsOfWorklogsDeletedSince(since, null);
-  }
-
-  /**
-   * Get IDs of deleted worklogs
-   * Returns a list of IDs and delete timestamps for worklogs deleted after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs deleted during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param since The date and time, as a UNIX timestamp in milliseconds, after which deleted worklogs are returned. (optional, default to 0)
-   * @param headers Optional headers to include in the request
-   * @return ChangedWorklogs
-   * @throws ApiException if fails to make API call
-   */
-  public ChangedWorklogs getIdsOfWorklogsDeletedSince(@javax.annotation.Nullable Long since, Map<String, String> headers) throws ApiException {
-    ApiResponse<ChangedWorklogs> localVarResponse = getIdsOfWorklogsDeletedSinceWithHttpInfo(since, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get IDs of deleted worklogs
-   * Returns a list of IDs and delete timestamps for worklogs deleted after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs deleted during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param since The date and time, as a UNIX timestamp in milliseconds, after which deleted worklogs are returned. (optional, default to 0)
-   * @return ApiResponse&lt;ChangedWorklogs&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ChangedWorklogs> getIdsOfWorklogsDeletedSinceWithHttpInfo(@javax.annotation.Nullable Long since) throws ApiException {
-    return getIdsOfWorklogsDeletedSinceWithHttpInfo(since, null);
-  }
-
-  /**
-   * Get IDs of deleted worklogs
-   * Returns a list of IDs and delete timestamps for worklogs deleted after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs deleted during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param since The date and time, as a UNIX timestamp in milliseconds, after which deleted worklogs are returned. (optional, default to 0)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ChangedWorklogs&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ChangedWorklogs> getIdsOfWorklogsDeletedSinceWithHttpInfo(@javax.annotation.Nullable Long since, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIdsOfWorklogsDeletedSinceRequestBuilder(since, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIdsOfWorklogsDeletedSince", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ChangedWorklogs>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (notifyUsers != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("notifyUsers", notifyUsers));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ChangedWorklogs responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ChangedWorklogs>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ChangedWorklogs>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getIdsOfWorklogsDeletedSinceRequestBuilder(@javax.annotation.Nullable Long since, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/worklog/deleted";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "since";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("since", since));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get IDs of updated worklogs
-   * Returns a list of IDs and update timestamps for worklogs updated after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs updated during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
-   * @param since The date and time, as a UNIX timestamp in milliseconds, after which updated worklogs are returned. (optional, default to 0)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
-   * @return ChangedWorklogs
-   * @throws ApiException if fails to make API call
-   */
-  public ChangedWorklogs getIdsOfWorklogsModifiedSince(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand) throws ApiException {
-    return getIdsOfWorklogsModifiedSince(since, expand, null);
-  }
-
-  /**
-   * Get IDs of updated worklogs
-   * Returns a list of IDs and update timestamps for worklogs updated after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs updated during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
-   * @param since The date and time, as a UNIX timestamp in milliseconds, after which updated worklogs are returned. (optional, default to 0)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return ChangedWorklogs
-   * @throws ApiException if fails to make API call
-   */
-  public ChangedWorklogs getIdsOfWorklogsModifiedSince(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<ChangedWorklogs> localVarResponse = getIdsOfWorklogsModifiedSinceWithHttpInfo(since, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get IDs of updated worklogs
-   * Returns a list of IDs and update timestamps for worklogs updated after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs updated during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
-   * @param since The date and time, as a UNIX timestamp in milliseconds, after which updated worklogs are returned. (optional, default to 0)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
-   * @return ApiResponse&lt;ChangedWorklogs&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ChangedWorklogs> getIdsOfWorklogsModifiedSinceWithHttpInfo(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand) throws ApiException {
-    return getIdsOfWorklogsModifiedSinceWithHttpInfo(since, expand, null);
-  }
-
-  /**
-   * Get IDs of updated worklogs
-   * Returns a list of IDs and update timestamps for worklogs updated after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs updated during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
-   * @param since The date and time, as a UNIX timestamp in milliseconds, after which updated worklogs are returned. (optional, default to 0)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ChangedWorklogs&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ChangedWorklogs> getIdsOfWorklogsModifiedSinceWithHttpInfo(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIdsOfWorklogsModifiedSinceRequestBuilder(since, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIdsOfWorklogsModifiedSince", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ChangedWorklogs>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (adjustEstimate != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("adjustEstimate", adjustEstimate));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ChangedWorklogs responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ChangedWorklogs>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ChangedWorklogs>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getIdsOfWorklogsModifiedSinceRequestBuilder(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/worklog/updated";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "since";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("since", since));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue worklogs
-   * Returns worklogs for an issue (ordered by created time), starting from the oldest worklog or from the worklog started on or after a date and time.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Workloads are only returned where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 5000)
-   * @param startedAfter The worklog start date and time, as a UNIX timestamp in milliseconds, after which worklogs are returned. (optional)
-   * @param startedBefore The worklog start date and time, as a UNIX timestamp in milliseconds, before which worklogs are returned. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts&#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @return PageOfWorklogs
-   * @throws ApiException if fails to make API call
-   */
-  public PageOfWorklogs getIssueWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand) throws ApiException {
-    return getIssueWorklog(issueIdOrKey, startAt, maxResults, startedAfter, startedBefore, expand, null);
-  }
-
-  /**
-   * Get issue worklogs
-   * Returns worklogs for an issue (ordered by created time), starting from the oldest worklog or from the worklog started on or after a date and time.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Workloads are only returned where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 5000)
-   * @param startedAfter The worklog start date and time, as a UNIX timestamp in milliseconds, after which worklogs are returned. (optional)
-   * @param startedBefore The worklog start date and time, as a UNIX timestamp in milliseconds, before which worklogs are returned. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts&#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return PageOfWorklogs
-   * @throws ApiException if fails to make API call
-   */
-  public PageOfWorklogs getIssueWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageOfWorklogs> localVarResponse = getIssueWorklogWithHttpInfo(issueIdOrKey, startAt, maxResults, startedAfter, startedBefore, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue worklogs
-   * Returns worklogs for an issue (ordered by created time), starting from the oldest worklog or from the worklog started on or after a date and time.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Workloads are only returned where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 5000)
-   * @param startedAfter The worklog start date and time, as a UNIX timestamp in milliseconds, after which worklogs are returned. (optional)
-   * @param startedBefore The worklog start date and time, as a UNIX timestamp in milliseconds, before which worklogs are returned. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts&#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @return ApiResponse&lt;PageOfWorklogs&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageOfWorklogs> getIssueWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand) throws ApiException {
-    return getIssueWorklogWithHttpInfo(issueIdOrKey, startAt, maxResults, startedAfter, startedBefore, expand, null);
-  }
-
-  /**
-   * Get issue worklogs
-   * Returns worklogs for an issue (ordered by created time), starting from the oldest worklog or from the worklog started on or after a date and time.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Workloads are only returned where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 5000)
-   * @param startedAfter The worklog start date and time, as a UNIX timestamp in milliseconds, after which worklogs are returned. (optional)
-   * @param startedBefore The worklog start date and time, as a UNIX timestamp in milliseconds, before which worklogs are returned. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts&#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageOfWorklogs&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageOfWorklogs> getIssueWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueWorklogRequestBuilder(issueIdOrKey, startAt, maxResults, startedAfter, startedBefore, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueWorklog", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageOfWorklogs>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (newEstimate != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("newEstimate", newEstimate));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageOfWorklogs responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageOfWorklogs>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageOfWorklogs>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getIssueWorklogRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling getIssueWorklog");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "startedAfter";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startedAfter", startedAfter));
-    localVarQueryParameterBaseName = "startedBefore";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startedBefore", startedBefore));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get worklog
-   * Returns a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts  &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @return Worklog
-   * @throws ApiException if fails to make API call
-   */
-  public Worklog getWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
-    return getWorklog(issueIdOrKey, id, expand, null);
-  }
-
-  /**
-   * Get worklog
-   * Returns a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts  &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return Worklog
-   * @throws ApiException if fails to make API call
-   */
-  public Worklog getWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<Worklog> localVarResponse = getWorklogWithHttpInfo(issueIdOrKey, id, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get worklog
-   * Returns a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts  &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @return ApiResponse&lt;Worklog&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Worklog> getWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
-    return getWorklogWithHttpInfo(issueIdOrKey, id, expand, null);
-  }
-
-  /**
-   * Get worklog
-   * Returns a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts  &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Worklog&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Worklog> getWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getWorklogRequestBuilder(issueIdOrKey, id, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getWorklog", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Worklog>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (reduceBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("reduceBy", reduceBy));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Worklog responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Worklog>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Worklog>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getWorklogRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling getWorklog");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getWorklog");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get worklogs
-   * Returns worklog details for a list of worklog IDs.  The returned list of worklogs is limited to 1000 items.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
-   * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
-   * @return List&lt;Worklog&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<Worklog> getWorklogsForIds(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand) throws ApiException {
-    return getWorklogsForIds(worklogIdsRequestBean, expand, null);
-  }
-
-  /**
-   * Get worklogs
-   * Returns worklog details for a list of worklog IDs.  The returned list of worklogs is limited to 1000 items.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
-   * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return List&lt;Worklog&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<Worklog> getWorklogsForIds(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<Worklog>> localVarResponse = getWorklogsForIdsWithHttpInfo(worklogIdsRequestBean, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get worklogs
-   * Returns worklog details for a list of worklog IDs.  The returned list of worklogs is limited to 1000 items.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
-   * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
-   * @return ApiResponse&lt;List&lt;Worklog&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<Worklog>> getWorklogsForIdsWithHttpInfo(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand) throws ApiException {
-    return getWorklogsForIdsWithHttpInfo(worklogIdsRequestBean, expand, null);
-  }
-
-  /**
-   * Get worklogs
-   * Returns worklog details for a list of worklog IDs.  The returned list of worklogs is limited to 1000 items.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
-   * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;Worklog&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<Worklog>> getWorklogsForIdsWithHttpInfo(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getWorklogsForIdsRequestBuilder(worklogIdsRequestBean, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getWorklogsForIds", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<Worklog>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<Worklog> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<Worklog>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<Worklog>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getWorklogsForIdsRequestBuilder(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'worklogIdsRequestBean' is set
-    if (worklogIdsRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'worklogIdsRequestBean' when calling getWorklogsForIds");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/worklog/list";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(worklogIdsRequestBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update worklog
-   * Updates a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any worklog or *Edit own worklogs* to update worklogs created by the user.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param worklog  (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Updates the estimate by the difference between the original and updated value of &#x60;timeSpent&#x60; or &#x60;timeSpentSeconds&#x60;. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param overrideEditableFlag Whether the worklog should be added to the issue even if the issue is not editable. For example, because the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
-   * @return Worklog
-   * @throws ApiException if fails to make API call
-   */
-  public Worklog updateWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    return updateWorklog(issueIdOrKey, id, worklog, notifyUsers, adjustEstimate, newEstimate, expand, overrideEditableFlag, null);
-  }
-
-  /**
-   * Update worklog
-   * Updates a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any worklog or *Edit own worklogs* to update worklogs created by the user.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param worklog  (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Updates the estimate by the difference between the original and updated value of &#x60;timeSpent&#x60; or &#x60;timeSpentSeconds&#x60;. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param overrideEditableFlag Whether the worklog should be added to the issue even if the issue is not editable. For example, because the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return Worklog
-   * @throws ApiException if fails to make API call
-   */
-  public Worklog updateWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    ApiResponse<Worklog> localVarResponse = updateWorklogWithHttpInfo(issueIdOrKey, id, worklog, notifyUsers, adjustEstimate, newEstimate, expand, overrideEditableFlag, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update worklog
-   * Updates a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any worklog or *Edit own worklogs* to update worklogs created by the user.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param worklog  (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Updates the estimate by the difference between the original and updated value of &#x60;timeSpent&#x60; or &#x60;timeSpentSeconds&#x60;. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param overrideEditableFlag Whether the worklog should be added to the issue even if the issue is not editable. For example, because the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
-   * @return ApiResponse&lt;Worklog&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Worklog> updateWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
-    return updateWorklogWithHttpInfo(issueIdOrKey, id, worklog, notifyUsers, adjustEstimate, newEstimate, expand, overrideEditableFlag, null);
-  }
-
-  /**
-   * Update worklog
-   * Updates a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any worklog or *Edit own worklogs* to update worklogs created by the user.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key the issue. (required)
-   * @param id The ID of the worklog. (required)
-   * @param worklog  (required)
-   * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
-   * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Updates the estimate by the difference between the original and updated value of &#x60;timeSpent&#x60; or &#x60;timeSpentSeconds&#x60;. (optional, default to auto)
-   * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
-   * @param overrideEditableFlag Whether the worklog should be added to the issue even if the issue is not editable. For example, because the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Worklog&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Worklog> updateWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateWorklogRequestBuilder(issueIdOrKey, id, worklog, notifyUsers, adjustEstimate, newEstimate, expand, overrideEditableFlag, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateWorklog", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Worklog>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (overrideEditableFlag != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("overrideEditableFlag", overrideEditableFlag));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Worklog responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Worklog>() {});
-        
-        localVarResponse.body().close();
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
 
-        return new ApiResponse<Worklog>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
 
-  private HttpRequest.Builder updateWorklogRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling updateWorklog");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateWorklog");
-    }
-    // verify the required parameter 'worklog' is set
-    if (worklog == null) {
-      throw new ApiException(400, "Missing the required parameter 'worklog' when calling updateWorklog");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addWorklogValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling addWorklog(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
+        // verify the required parameter 'worklog' is set
+        if (worklog == null) {
+            throw new ApiException("Missing the required parameter 'worklog' when calling addWorklog(Async)");
+        }
 
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "notifyUsers";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("notifyUsers", notifyUsers));
-    localVarQueryParameterBaseName = "adjustEstimate";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("adjustEstimate", adjustEstimate));
-    localVarQueryParameterBaseName = "newEstimate";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("newEstimate", newEstimate));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-    localVarQueryParameterBaseName = "overrideEditableFlag";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("overrideEditableFlag", overrideEditableFlag));
+        return addWorklogCall(issueIdOrKey, worklog, notifyUsers, adjustEstimate, newEstimate, reduceBy, expand, overrideEditableFlag, _callback);
 
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
+    /**
+     * Add worklog
+     * Adds a worklog to an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Work on issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key the issue. (required)
+     * @param worklog  (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Reduces the estimate by amount specified in &#x60;reduceBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param reduceBy The amount to reduce the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param overrideEditableFlag Whether the worklog entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
+     * @return Worklog
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  &#x60;adjustEstimate&#x60; is set to &#x60;manual&#x60; but &#x60;reduceBy&#x60; is not provided or is invalid.  *  the user does not have permission to add the worklog.  *  the request JSON is malformed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit has been breached for one of the following fields:   *  worklogs  *  attachments </td><td>  -  </td></tr>
+     </table>
+     */
+    public Worklog addWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        ApiResponse<Worklog> localVarResp = addWorklogWithHttpInfo(issueIdOrKey, worklog, notifyUsers, adjustEstimate, newEstimate, reduceBy, expand, overrideEditableFlag);
+        return localVarResp.getData();
+    }
 
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(worklog);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Add worklog
+     * Adds a worklog to an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Work on issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key the issue. (required)
+     * @param worklog  (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Reduces the estimate by amount specified in &#x60;reduceBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param reduceBy The amount to reduce the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param overrideEditableFlag Whether the worklog entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
+     * @return ApiResponse&lt;Worklog&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  &#x60;adjustEstimate&#x60; is set to &#x60;manual&#x60; but &#x60;reduceBy&#x60; is not provided or is invalid.  *  the user does not have permission to add the worklog.  *  the request JSON is malformed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit has been breached for one of the following fields:   *  worklogs  *  attachments </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Worklog> addWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        okhttp3.Call localVarCall = addWorklogValidateBeforeCall(issueIdOrKey, worklog, notifyUsers, adjustEstimate, newEstimate, reduceBy, expand, overrideEditableFlag, null);
+        Type localVarReturnType = new TypeToken<Worklog>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Add worklog (asynchronously)
+     * Adds a worklog to an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Work on issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key the issue. (required)
+     * @param worklog  (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Reduces the estimate by amount specified in &#x60;reduceBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param reduceBy The amount to reduce the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param overrideEditableFlag Whether the worklog entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  &#x60;adjustEstimate&#x60; is set to &#x60;manual&#x60; but &#x60;reduceBy&#x60; is not provided or is invalid.  *  the user does not have permission to add the worklog.  *  the request JSON is malformed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit has been breached for one of the following fields:   *  worklogs  *  attachments </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addWorklogAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String reduceBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback<Worklog> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = addWorklogValidateBeforeCall(issueIdOrKey, worklog, notifyUsers, adjustEstimate, newEstimate, reduceBy, expand, overrideEditableFlag, _callback);
+        Type localVarReturnType = new TypeToken<Worklog>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for bulkDeleteWorklogs
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being deleted. (optional, default to auto)
+     * @param overrideEditableFlag Whether the work log entries should be removed to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the bulk deletion request was partially successful, with a message indicating partial success. </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;request&#x60; is not provided or is invalid  *  the user does not have permission to delete the worklogs  *  the number of worklogs being deleted exceeds the limit </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue  *  at least one of the worklogs is not associated with the provided issue  *  time tracking is disabled </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call bulkDeleteWorklogsCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = worklogIdsRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (adjustEstimate != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("adjustEstimate", adjustEstimate));
+        }
+
+        if (overrideEditableFlag != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("overrideEditableFlag", overrideEditableFlag));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call bulkDeleteWorklogsValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling bulkDeleteWorklogs(Async)");
+        }
+
+        // verify the required parameter 'worklogIdsRequestBean' is set
+        if (worklogIdsRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'worklogIdsRequestBean' when calling bulkDeleteWorklogs(Async)");
+        }
+
+        return bulkDeleteWorklogsCall(issueIdOrKey, worklogIdsRequestBean, adjustEstimate, overrideEditableFlag, _callback);
+
+    }
+
+    /**
+     * Bulk delete worklogs
+     * Deletes a list of worklogs from an issue. This is an experimental API with limitations:   *  You can&#39;t delete more than 5000 worklogs at once.  *  No notifications will be sent for deleted worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the issue.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog.  *  If any worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being deleted. (optional, default to auto)
+     * @param overrideEditableFlag Whether the work log entries should be removed to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the bulk deletion request was partially successful, with a message indicating partial success. </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;request&#x60; is not provided or is invalid  *  the user does not have permission to delete the worklogs  *  the number of worklogs being deleted exceeds the limit </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue  *  at least one of the worklogs is not associated with the provided issue  *  time tracking is disabled </td><td>  -  </td></tr>
+     </table>
+     */
+    public void bulkDeleteWorklogs(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        bulkDeleteWorklogsWithHttpInfo(issueIdOrKey, worklogIdsRequestBean, adjustEstimate, overrideEditableFlag);
+    }
+
+    /**
+     * Bulk delete worklogs
+     * Deletes a list of worklogs from an issue. This is an experimental API with limitations:   *  You can&#39;t delete more than 5000 worklogs at once.  *  No notifications will be sent for deleted worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the issue.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog.  *  If any worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being deleted. (optional, default to auto)
+     * @param overrideEditableFlag Whether the work log entries should be removed to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the bulk deletion request was partially successful, with a message indicating partial success. </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;request&#x60; is not provided or is invalid  *  the user does not have permission to delete the worklogs  *  the number of worklogs being deleted exceeds the limit </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue  *  at least one of the worklogs is not associated with the provided issue  *  time tracking is disabled </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> bulkDeleteWorklogsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        okhttp3.Call localVarCall = bulkDeleteWorklogsValidateBeforeCall(issueIdOrKey, worklogIdsRequestBean, adjustEstimate, overrideEditableFlag, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Bulk delete worklogs (asynchronously)
+     * Deletes a list of worklogs from an issue. This is an experimental API with limitations:   *  You can&#39;t delete more than 5000 worklogs at once.  *  No notifications will be sent for deleted worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the issue.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog.  *  If any worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being deleted. (optional, default to auto)
+     * @param overrideEditableFlag Whether the work log entries should be removed to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the bulk deletion request was partially successful, with a message indicating partial success. </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;request&#x60; is not provided or is invalid  *  the user does not have permission to delete the worklogs  *  the number of worklogs being deleted exceeds the limit </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue  *  at least one of the worklogs is not associated with the provided issue  *  time tracking is disabled </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call bulkDeleteWorklogsAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = bulkDeleteWorklogsValidateBeforeCall(issueIdOrKey, worklogIdsRequestBean, adjustEstimate, overrideEditableFlag, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for bulkMoveWorklogs
+     * @param issueIdOrKey  (required)
+     * @param worklogsMoveRequestBean A JSON object containing a list of worklog IDs and the ID or key of the destination issue. (required)
+     * @param adjustEstimate Defines how to update the issues&#39; time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being moved in the source issue, and increases it in the destination issue. (optional, default to auto)
+     * @param overrideEditableFlag Whether the work log entry should be moved to and from the issues even if the issues are not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is partially successful. </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;request&#x60; is not provided or is invalid  *  the user does not have permission to move the worklogs  *  the number of worklogs being moved exceeds the limit  *  the total size of worklogs being moved is too large  *  any worklog contains attachments </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the source or destination issue is not found or the user does not have permission to view the issues  *  at least one of the worklogs is not associated with the provided issue  *  time tracking is disabled </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call bulkMoveWorklogsCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = worklogsMoveRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog/move"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (adjustEstimate != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("adjustEstimate", adjustEstimate));
+        }
+
+        if (overrideEditableFlag != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("overrideEditableFlag", overrideEditableFlag));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call bulkMoveWorklogsValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling bulkMoveWorklogs(Async)");
+        }
+
+        // verify the required parameter 'worklogsMoveRequestBean' is set
+        if (worklogsMoveRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'worklogsMoveRequestBean' when calling bulkMoveWorklogs(Async)");
+        }
+
+        return bulkMoveWorklogsCall(issueIdOrKey, worklogsMoveRequestBean, adjustEstimate, overrideEditableFlag, _callback);
+
+    }
+
+    /**
+     * Bulk move worklogs
+     * Moves a list of worklogs from one issue to another. This is an experimental API with several limitations:   *  You can&#39;t move more than 5000 worklogs at once.  *  You can&#39;t move worklogs containing an attachment.  *  You can&#39;t move worklogs restricted by project roles.  *  No notifications will be sent for moved worklogs.  *  No webhooks or events will be sent for moved worklogs.  *  No issue history will be recorded for moved worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the projects containing the source and destination issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ and *Edit all worklogs*](https://confluence.atlassian.com/x/yodKLg)[project permission](https://confluence.atlassian.com/x/yodKLg)  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey  (required)
+     * @param worklogsMoveRequestBean A JSON object containing a list of worklog IDs and the ID or key of the destination issue. (required)
+     * @param adjustEstimate Defines how to update the issues&#39; time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being moved in the source issue, and increases it in the destination issue. (optional, default to auto)
+     * @param overrideEditableFlag Whether the work log entry should be moved to and from the issues even if the issues are not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is partially successful. </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;request&#x60; is not provided or is invalid  *  the user does not have permission to move the worklogs  *  the number of worklogs being moved exceeds the limit  *  the total size of worklogs being moved is too large  *  any worklog contains attachments </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the source or destination issue is not found or the user does not have permission to view the issues  *  at least one of the worklogs is not associated with the provided issue  *  time tracking is disabled </td><td>  -  </td></tr>
+     </table>
+     */
+    public void bulkMoveWorklogs(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        bulkMoveWorklogsWithHttpInfo(issueIdOrKey, worklogsMoveRequestBean, adjustEstimate, overrideEditableFlag);
+    }
+
+    /**
+     * Bulk move worklogs
+     * Moves a list of worklogs from one issue to another. This is an experimental API with several limitations:   *  You can&#39;t move more than 5000 worklogs at once.  *  You can&#39;t move worklogs containing an attachment.  *  You can&#39;t move worklogs restricted by project roles.  *  No notifications will be sent for moved worklogs.  *  No webhooks or events will be sent for moved worklogs.  *  No issue history will be recorded for moved worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the projects containing the source and destination issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ and *Edit all worklogs*](https://confluence.atlassian.com/x/yodKLg)[project permission](https://confluence.atlassian.com/x/yodKLg)  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey  (required)
+     * @param worklogsMoveRequestBean A JSON object containing a list of worklog IDs and the ID or key of the destination issue. (required)
+     * @param adjustEstimate Defines how to update the issues&#39; time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being moved in the source issue, and increases it in the destination issue. (optional, default to auto)
+     * @param overrideEditableFlag Whether the work log entry should be moved to and from the issues even if the issues are not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is partially successful. </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;request&#x60; is not provided or is invalid  *  the user does not have permission to move the worklogs  *  the number of worklogs being moved exceeds the limit  *  the total size of worklogs being moved is too large  *  any worklog contains attachments </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the source or destination issue is not found or the user does not have permission to view the issues  *  at least one of the worklogs is not associated with the provided issue  *  time tracking is disabled </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> bulkMoveWorklogsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        okhttp3.Call localVarCall = bulkMoveWorklogsValidateBeforeCall(issueIdOrKey, worklogsMoveRequestBean, adjustEstimate, overrideEditableFlag, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Bulk move worklogs (asynchronously)
+     * Moves a list of worklogs from one issue to another. This is an experimental API with several limitations:   *  You can&#39;t move more than 5000 worklogs at once.  *  You can&#39;t move worklogs containing an attachment.  *  You can&#39;t move worklogs restricted by project roles.  *  No notifications will be sent for moved worklogs.  *  No webhooks or events will be sent for moved worklogs.  *  No issue history will be recorded for moved worklogs.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the projects containing the source and destination issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ and *Edit all worklogs*](https://confluence.atlassian.com/x/yodKLg)[project permission](https://confluence.atlassian.com/x/yodKLg)  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey  (required)
+     * @param worklogsMoveRequestBean A JSON object containing a list of worklog IDs and the ID or key of the destination issue. (required)
+     * @param adjustEstimate Defines how to update the issues&#39; time estimate, the options are:   *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Reduces the estimate by the aggregate value of &#x60;timeSpent&#x60; across all worklogs being moved in the source issue, and increases it in the destination issue. (optional, default to auto)
+     * @param overrideEditableFlag Whether the work log entry should be moved to and from the issues even if the issues are not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is partially successful. </td><td>  -  </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;request&#x60; is not provided or is invalid  *  the user does not have permission to move the worklogs  *  the number of worklogs being moved exceeds the limit  *  the total size of worklogs being moved is too large  *  any worklog contains attachments </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the source or destination issue is not found or the user does not have permission to view the issues  *  at least one of the worklogs is not associated with the provided issue  *  time tracking is disabled </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call bulkMoveWorklogsAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull WorklogsMoveRequestBean worklogsMoveRequestBean, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = bulkMoveWorklogsValidateBeforeCall(issueIdOrKey, worklogsMoveRequestBean, adjustEstimate, overrideEditableFlag, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteWorklog
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Increases the estimate by amount specified in &#x60;increaseBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param increaseBy The amount to increase the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
+     * @param overrideEditableFlag Whether the work log entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  &#x60;adjustEstimate&#x60; is set to &#x60;manual&#x60; but &#x60;reduceBy&#x60; is not provided or is invalid.  *  the user does not have permission to delete the worklog. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorklogCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (notifyUsers != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("notifyUsers", notifyUsers));
+        }
+
+        if (adjustEstimate != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("adjustEstimate", adjustEstimate));
+        }
+
+        if (newEstimate != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("newEstimate", newEstimate));
+        }
+
+        if (increaseBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("increaseBy", increaseBy));
+        }
+
+        if (overrideEditableFlag != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("overrideEditableFlag", overrideEditableFlag));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteWorklogValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling deleteWorklog(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteWorklog(Async)");
+        }
+
+        return deleteWorklogCall(issueIdOrKey, id, notifyUsers, adjustEstimate, newEstimate, increaseBy, overrideEditableFlag, _callback);
+
+    }
+
+    /**
+     * Delete worklog
+     * Deletes a worklog from an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog or *Delete own worklogs* to delete worklogs created by the user,  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Increases the estimate by amount specified in &#x60;increaseBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param increaseBy The amount to increase the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
+     * @param overrideEditableFlag Whether the work log entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  &#x60;adjustEstimate&#x60; is set to &#x60;manual&#x60; but &#x60;reduceBy&#x60; is not provided or is invalid.  *  the user does not have permission to delete the worklog. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        deleteWorklogWithHttpInfo(issueIdOrKey, id, notifyUsers, adjustEstimate, newEstimate, increaseBy, overrideEditableFlag);
+    }
+
+    /**
+     * Delete worklog
+     * Deletes a worklog from an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog or *Delete own worklogs* to delete worklogs created by the user,  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Increases the estimate by amount specified in &#x60;increaseBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param increaseBy The amount to increase the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
+     * @param overrideEditableFlag Whether the work log entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  &#x60;adjustEstimate&#x60; is set to &#x60;manual&#x60; but &#x60;reduceBy&#x60; is not provided or is invalid.  *  the user does not have permission to delete the worklog. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        okhttp3.Call localVarCall = deleteWorklogValidateBeforeCall(issueIdOrKey, id, notifyUsers, adjustEstimate, newEstimate, increaseBy, overrideEditableFlag, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete worklog (asynchronously)
+     * Deletes a worklog from an issue.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any worklog or *Delete own worklogs* to delete worklogs created by the user,  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;manual&#x60; Increases the estimate by amount specified in &#x60;increaseBy&#x60;.  *  &#x60;auto&#x60; Reduces the estimate by the value of &#x60;timeSpent&#x60; in the worklog. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param increaseBy The amount to increase the issue&#39;s remaining estimate by, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;manual&#x60;. (optional)
+     * @param overrideEditableFlag Whether the work log entry should be added to the issue even if the issue is not editable, because jira.issue.editable set to false or missing. For example, the issue is closed. Connect and Forge app users with admin permission can use this flag. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  &#x60;adjustEstimate&#x60; is set to &#x60;manual&#x60; but &#x60;reduceBy&#x60; is not provided or is invalid.  *  the user does not have permission to delete the worklog. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorklogAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String increaseBy, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteWorklogValidateBeforeCall(issueIdOrKey, id, notifyUsers, adjustEstimate, newEstimate, increaseBy, overrideEditableFlag, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIdsOfWorklogsDeletedSince
+     * @param since The date and time, as a UNIX timestamp in milliseconds, after which deleted worklogs are returned. (optional, default to 0)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIdsOfWorklogsDeletedSinceCall(@javax.annotation.Nullable Long since, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/worklog/deleted";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (since != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("since", since));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIdsOfWorklogsDeletedSinceValidateBeforeCall(@javax.annotation.Nullable Long since, final ApiCallback _callback) throws ApiException {
+        return getIdsOfWorklogsDeletedSinceCall(since, _callback);
+
+    }
+
+    /**
+     * Get IDs of deleted worklogs
+     * Returns a list of IDs and delete timestamps for worklogs deleted after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs deleted during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param since The date and time, as a UNIX timestamp in milliseconds, after which deleted worklogs are returned. (optional, default to 0)
+     * @return ChangedWorklogs
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ChangedWorklogs getIdsOfWorklogsDeletedSince(@javax.annotation.Nullable Long since) throws ApiException {
+        ApiResponse<ChangedWorklogs> localVarResp = getIdsOfWorklogsDeletedSinceWithHttpInfo(since);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get IDs of deleted worklogs
+     * Returns a list of IDs and delete timestamps for worklogs deleted after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs deleted during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param since The date and time, as a UNIX timestamp in milliseconds, after which deleted worklogs are returned. (optional, default to 0)
+     * @return ApiResponse&lt;ChangedWorklogs&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ChangedWorklogs> getIdsOfWorklogsDeletedSinceWithHttpInfo(@javax.annotation.Nullable Long since) throws ApiException {
+        okhttp3.Call localVarCall = getIdsOfWorklogsDeletedSinceValidateBeforeCall(since, null);
+        Type localVarReturnType = new TypeToken<ChangedWorklogs>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get IDs of deleted worklogs (asynchronously)
+     * Returns a list of IDs and delete timestamps for worklogs deleted after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs deleted during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param since The date and time, as a UNIX timestamp in milliseconds, after which deleted worklogs are returned. (optional, default to 0)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIdsOfWorklogsDeletedSinceAsync(@javax.annotation.Nullable Long since, final ApiCallback<ChangedWorklogs> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIdsOfWorklogsDeletedSinceValidateBeforeCall(since, _callback);
+        Type localVarReturnType = new TypeToken<ChangedWorklogs>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIdsOfWorklogsModifiedSince
+     * @param since The date and time, as a UNIX timestamp in milliseconds, after which updated worklogs are returned. (optional, default to 0)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIdsOfWorklogsModifiedSinceCall(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/worklog/updated";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (since != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("since", since));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIdsOfWorklogsModifiedSinceValidateBeforeCall(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        return getIdsOfWorklogsModifiedSinceCall(since, expand, _callback);
+
+    }
+
+    /**
+     * Get IDs of updated worklogs
+     * Returns a list of IDs and update timestamps for worklogs updated after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs updated during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
+     * @param since The date and time, as a UNIX timestamp in milliseconds, after which updated worklogs are returned. (optional, default to 0)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
+     * @return ChangedWorklogs
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ChangedWorklogs getIdsOfWorklogsModifiedSince(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<ChangedWorklogs> localVarResp = getIdsOfWorklogsModifiedSinceWithHttpInfo(since, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get IDs of updated worklogs
+     * Returns a list of IDs and update timestamps for worklogs updated after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs updated during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
+     * @param since The date and time, as a UNIX timestamp in milliseconds, after which updated worklogs are returned. (optional, default to 0)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
+     * @return ApiResponse&lt;ChangedWorklogs&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ChangedWorklogs> getIdsOfWorklogsModifiedSinceWithHttpInfo(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getIdsOfWorklogsModifiedSinceValidateBeforeCall(since, expand, null);
+        Type localVarReturnType = new TypeToken<ChangedWorklogs>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get IDs of updated worklogs (asynchronously)
+     * Returns a list of IDs and update timestamps for worklogs updated after a date and time.  This resource is paginated, with a limit of 1000 worklogs per page. Each page lists worklogs from oldest to youngest. If the number of items in the date range exceeds 1000, &#x60;until&#x60; indicates the timestamp of the youngest item on the page. Also, &#x60;nextPage&#x60; provides the URL for the next page of worklogs. The &#x60;lastPage&#x60; parameter is set to true on the last page of worklogs.  This resource does not return worklogs updated during the minute preceding the request.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
+     * @param since The date and time, as a UNIX timestamp in milliseconds, after which updated worklogs are returned. (optional, default to 0)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIdsOfWorklogsModifiedSinceAsync(@javax.annotation.Nullable Long since, @javax.annotation.Nullable String expand, final ApiCallback<ChangedWorklogs> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIdsOfWorklogsModifiedSinceValidateBeforeCall(since, expand, _callback);
+        Type localVarReturnType = new TypeToken<ChangedWorklogs>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueWorklog
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 5000)
+     * @param startedAfter The worklog start date and time, as a UNIX timestamp in milliseconds, after which worklogs are returned. (optional)
+     * @param startedBefore The worklog start date and time, as a UNIX timestamp in milliseconds, before which worklogs are returned. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts&#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or the user does not have permission to view the issue.  *  &#x60;startAt&#x60; or &#x60;maxResults&#x60; has non-numeric values.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueWorklogCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (startedAfter != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startedAfter", startedAfter));
+        }
+
+        if (startedBefore != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startedBefore", startedBefore));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueWorklogValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling getIssueWorklog(Async)");
+        }
+
+        return getIssueWorklogCall(issueIdOrKey, startAt, maxResults, startedAfter, startedBefore, expand, _callback);
+
+    }
+
+    /**
+     * Get issue worklogs
+     * Returns worklogs for an issue (ordered by created time), starting from the oldest worklog or from the worklog started on or after a date and time.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Workloads are only returned where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 5000)
+     * @param startedAfter The worklog start date and time, as a UNIX timestamp in milliseconds, after which worklogs are returned. (optional)
+     * @param startedBefore The worklog start date and time, as a UNIX timestamp in milliseconds, before which worklogs are returned. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts&#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @return PageOfWorklogs
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or the user does not have permission to view the issue.  *  &#x60;startAt&#x60; or &#x60;maxResults&#x60; has non-numeric values.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageOfWorklogs getIssueWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PageOfWorklogs> localVarResp = getIssueWorklogWithHttpInfo(issueIdOrKey, startAt, maxResults, startedAfter, startedBefore, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue worklogs
+     * Returns worklogs for an issue (ordered by created time), starting from the oldest worklog or from the worklog started on or after a date and time.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Workloads are only returned where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 5000)
+     * @param startedAfter The worklog start date and time, as a UNIX timestamp in milliseconds, after which worklogs are returned. (optional)
+     * @param startedBefore The worklog start date and time, as a UNIX timestamp in milliseconds, before which worklogs are returned. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts&#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @return ApiResponse&lt;PageOfWorklogs&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or the user does not have permission to view the issue.  *  &#x60;startAt&#x60; or &#x60;maxResults&#x60; has non-numeric values.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageOfWorklogs> getIssueWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getIssueWorklogValidateBeforeCall(issueIdOrKey, startAt, maxResults, startedAfter, startedBefore, expand, null);
+        Type localVarReturnType = new TypeToken<PageOfWorklogs>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue worklogs (asynchronously)
+     * Returns worklogs for an issue (ordered by created time), starting from the oldest worklog or from the worklog started on or after a date and time.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Workloads are only returned where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 5000)
+     * @param startedAfter The worklog start date and time, as a UNIX timestamp in milliseconds, after which worklogs are returned. (optional)
+     * @param startedBefore The worklog start date and time, as a UNIX timestamp in milliseconds, before which worklogs are returned. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts&#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or the user does not have permission to view the issue.  *  &#x60;startAt&#x60; or &#x60;maxResults&#x60; has non-numeric values.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueWorklogAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long startedAfter, @javax.annotation.Nullable Long startedBefore, @javax.annotation.Nullable String expand, final ApiCallback<PageOfWorklogs> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueWorklogValidateBeforeCall(issueIdOrKey, startAt, maxResults, startedAfter, startedBefore, expand, _callback);
+        Type localVarReturnType = new TypeToken<PageOfWorklogs>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getWorklog
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts  &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or the user does not have permission to view it.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled.  . </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorklogCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getWorklogValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling getWorklog(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getWorklog(Async)");
+        }
+
+        return getWorklogCall(issueIdOrKey, id, expand, _callback);
+
+    }
+
+    /**
+     * Get worklog
+     * Returns a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts  &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @return Worklog
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or the user does not have permission to view it.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled.  . </td><td>  -  </td></tr>
+     </table>
+     */
+    public Worklog getWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<Worklog> localVarResp = getWorklogWithHttpInfo(issueIdOrKey, id, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get worklog
+     * Returns a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts  &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @return ApiResponse&lt;Worklog&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or the user does not have permission to view it.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled.  . </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Worklog> getWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getWorklogValidateBeforeCall(issueIdOrKey, id, expand, null);
+        Type localVarReturnType = new TypeToken<Worklog>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get worklog (asynchronously)
+     * Returns a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param expand Use [expand](#expansion) to include additional information about work logs in the response. This parameter accepts  &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or the user does not have permission to view it.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled.  . </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorklogAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback<Worklog> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getWorklogValidateBeforeCall(issueIdOrKey, id, expand, _callback);
+        Type localVarReturnType = new TypeToken<Worklog>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getWorklogsForIds
+     * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request contains more than 1000 worklog IDs or is empty. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorklogsForIdsCall(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = worklogIdsRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/worklog/list";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getWorklogsForIdsValidateBeforeCall(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'worklogIdsRequestBean' is set
+        if (worklogIdsRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'worklogIdsRequestBean' when calling getWorklogsForIds(Async)");
+        }
+
+        return getWorklogsForIdsCall(worklogIdsRequestBean, expand, _callback);
+
+    }
+
+    /**
+     * Get worklogs
+     * Returns worklog details for a list of worklog IDs.  The returned list of worklogs is limited to 1000 items.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
+     * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
+     * @return List&lt;Worklog&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request contains more than 1000 worklog IDs or is empty. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<Worklog> getWorklogsForIds(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<List<Worklog>> localVarResp = getWorklogsForIdsWithHttpInfo(worklogIdsRequestBean, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get worklogs
+     * Returns worklog details for a list of worklog IDs.  The returned list of worklogs is limited to 1000 items.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
+     * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
+     * @return ApiResponse&lt;List&lt;Worklog&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request contains more than 1000 worklog IDs or is empty. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<Worklog>> getWorklogsForIdsWithHttpInfo(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getWorklogsForIdsValidateBeforeCall(worklogIdsRequestBean, expand, null);
+        Type localVarReturnType = new TypeToken<List<Worklog>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get worklogs (asynchronously)
+     * Returns worklog details for a list of worklog IDs.  The returned list of worklogs is limited to 1000 items.  **[Permissions](#permissions) required:** Permission to access Jira, however, worklogs are only returned where either of the following is true:   *  the worklog is set as *Viewable by All Users*.  *  the user is a member of a project role or group with permission to view the worklog.
+     * @param worklogIdsRequestBean A JSON object containing a list of worklog IDs. (required)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60; that returns the properties of each worklog. (optional, default to )
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request contains more than 1000 worklog IDs or is empty. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorklogsForIdsAsync(@javax.annotation.Nonnull WorklogIdsRequestBean worklogIdsRequestBean, @javax.annotation.Nullable String expand, final ApiCallback<List<Worklog>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getWorklogsForIdsValidateBeforeCall(worklogIdsRequestBean, expand, _callback);
+        Type localVarReturnType = new TypeToken<List<Worklog>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateWorklog
+     * @param issueIdOrKey The ID or key the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param worklog  (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Updates the estimate by the difference between the original and updated value of &#x60;timeSpent&#x60; or &#x60;timeSpentSeconds&#x60;. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param overrideEditableFlag Whether the worklog should be added to the issue even if the issue is not editable. For example, because the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  the user does not have permission to update the worklog.  *  the request JSON is malformed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateWorklogCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = worklog;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (notifyUsers != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("notifyUsers", notifyUsers));
+        }
+
+        if (adjustEstimate != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("adjustEstimate", adjustEstimate));
+        }
+
+        if (newEstimate != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("newEstimate", newEstimate));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        if (overrideEditableFlag != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("overrideEditableFlag", overrideEditableFlag));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateWorklogValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling updateWorklog(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateWorklog(Async)");
+        }
+
+        // verify the required parameter 'worklog' is set
+        if (worklog == null) {
+            throw new ApiException("Missing the required parameter 'worklog' when calling updateWorklog(Async)");
+        }
+
+        return updateWorklogCall(issueIdOrKey, id, worklog, notifyUsers, adjustEstimate, newEstimate, expand, overrideEditableFlag, _callback);
+
+    }
+
+    /**
+     * Update worklog
+     * Updates a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any worklog or *Edit own worklogs* to update worklogs created by the user.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param worklog  (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Updates the estimate by the difference between the original and updated value of &#x60;timeSpent&#x60; or &#x60;timeSpentSeconds&#x60;. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param overrideEditableFlag Whether the worklog should be added to the issue even if the issue is not editable. For example, because the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
+     * @return Worklog
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  the user does not have permission to update the worklog.  *  the request JSON is malformed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Worklog updateWorklog(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        ApiResponse<Worklog> localVarResp = updateWorklogWithHttpInfo(issueIdOrKey, id, worklog, notifyUsers, adjustEstimate, newEstimate, expand, overrideEditableFlag);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update worklog
+     * Updates a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any worklog or *Edit own worklogs* to update worklogs created by the user.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param worklog  (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Updates the estimate by the difference between the original and updated value of &#x60;timeSpent&#x60; or &#x60;timeSpentSeconds&#x60;. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param overrideEditableFlag Whether the worklog should be added to the issue even if the issue is not editable. For example, because the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
+     * @return ApiResponse&lt;Worklog&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  the user does not have permission to update the worklog.  *  the request JSON is malformed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Worklog> updateWorklogWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag) throws ApiException {
+        okhttp3.Call localVarCall = updateWorklogValidateBeforeCall(issueIdOrKey, id, worklog, notifyUsers, adjustEstimate, newEstimate, expand, overrideEditableFlag, null);
+        Type localVarReturnType = new TypeToken<Worklog>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update worklog (asynchronously)
+     * Updates a worklog.  Time tracking must be enabled in Jira, otherwise this operation returns an error. For more information, see [Configuring time tracking](https://confluence.atlassian.com/x/qoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all worklogs*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any worklog or *Edit own worklogs* to update worklogs created by the user.  *  If the worklog has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key the issue. (required)
+     * @param id The ID of the worklog. (required)
+     * @param worklog  (required)
+     * @param notifyUsers Whether users watching the issue are notified by email. (optional, default to true)
+     * @param adjustEstimate Defines how to update the issue&#39;s time estimate, the options are:   *  &#x60;new&#x60; Sets the estimate to a specific value, defined in &#x60;newEstimate&#x60;.  *  &#x60;leave&#x60; Leaves the estimate unchanged.  *  &#x60;auto&#x60; Updates the estimate by the difference between the original and updated value of &#x60;timeSpent&#x60; or &#x60;timeSpentSeconds&#x60;. (optional, default to auto)
+     * @param newEstimate The value to set as the issue&#39;s remaining time estimate, as days (\\#d), hours (\\#h), or minutes (\\#m or \\#). For example, *2d*. Required when &#x60;adjustEstimate&#x60; is &#x60;new&#x60;. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about worklogs in the response. This parameter accepts &#x60;properties&#x60;, which returns worklog properties. (optional, default to )
+     * @param overrideEditableFlag Whether the worklog should be added to the issue even if the issue is not editable. For example, because the issue is closed. Connect and Forge app users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) can use this flag. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;adjustEstimate&#x60; is set to &#x60;new&#x60; but &#x60;newEstimate&#x60; is not provided or is invalid.  *  the user does not have permission to update the worklog.  *  the request JSON is malformed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the issue is not found or user does not have permission to view the issue.  *  the worklog is not found or the user does not have permission to view it.  *  time tracking is disabled. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateWorklogAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Worklog worklog, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable String adjustEstimate, @javax.annotation.Nullable String newEstimate, @javax.annotation.Nullable String expand, @javax.annotation.Nullable Boolean overrideEditableFlag, final ApiCallback<Worklog> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateWorklogValidateBeforeCall(issueIdOrKey, id, worklog, notifyUsers, adjustEstimate, newEstimate, expand, overrideEditableFlag, _callback);
+        Type localVarReturnType = new TypeToken<Worklog>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

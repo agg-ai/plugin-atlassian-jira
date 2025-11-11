@@ -13,63 +13,78 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Every project-created entity has an ID that must be unique within the scope of the project creation. PCRI (Project Create Resource Identifier) is a standard format for creating IDs and references to other project entities. PCRI format is defined as follows: pcri:\\[entityType\\]:\\[type\\]:\\[entityId\\] entityType - the type of an entity, e.g. status, role, workflow type - PCRI type, either &#x60;id&#x60; - The ID of an entity that already exists in the target site, or &#x60;ref&#x60; - A unique reference to an entity that is being created entityId - entity identifier, if type is &#x60;id&#x60; - must be an existing entity ID that exists in the Jira site, if &#x60;ref&#x60; - must be unique across all entities in the scope of this project template creation
  */
-@JsonPropertyOrder({
-  ProjectCreateResourceIdentifier.JSON_PROPERTY_AN_I_D,
-  ProjectCreateResourceIdentifier.JSON_PROPERTY_AREFERENCE,
-  ProjectCreateResourceIdentifier.JSON_PROPERTY_ENTITY_ID,
-  ProjectCreateResourceIdentifier.JSON_PROPERTY_ENTITY_TYPE,
-  ProjectCreateResourceIdentifier.JSON_PROPERTY_ID,
-  ProjectCreateResourceIdentifier.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectCreateResourceIdentifier {
-  public static final String JSON_PROPERTY_AN_I_D = "anID";
+  public static final String SERIALIZED_NAME_AN_I_D = "anID";
+  @SerializedName(SERIALIZED_NAME_AN_I_D)
   @javax.annotation.Nullable
   private Boolean anID;
 
-  public static final String JSON_PROPERTY_AREFERENCE = "areference";
+  public static final String SERIALIZED_NAME_AREFERENCE = "areference";
+  @SerializedName(SERIALIZED_NAME_AREFERENCE)
   @javax.annotation.Nullable
   private Boolean areference;
 
-  public static final String JSON_PROPERTY_ENTITY_ID = "entityId";
+  public static final String SERIALIZED_NAME_ENTITY_ID = "entityId";
+  @SerializedName(SERIALIZED_NAME_ENTITY_ID)
   @javax.annotation.Nullable
   private String entityId;
 
-  public static final String JSON_PROPERTY_ENTITY_TYPE = "entityType";
+  public static final String SERIALIZED_NAME_ENTITY_TYPE = "entityType";
+  @SerializedName(SERIALIZED_NAME_ENTITY_TYPE)
   @javax.annotation.Nullable
   private String entityType;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
   /**
    * Gets or Sets type
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    ID(String.valueOf("id")),
+    ID("id"),
     
-    REF(String.valueOf("ref"));
+    REF("ref");
 
     private String value;
 
@@ -77,7 +92,6 @@ public class ProjectCreateResourceIdentifier {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -87,7 +101,6 @@ public class ProjectCreateResourceIdentifier {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -96,13 +109,32 @@ public class ProjectCreateResourceIdentifier {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private TypeEnum type;
 
-  public ProjectCreateResourceIdentifier() { 
+  public ProjectCreateResourceIdentifier() {
   }
 
   public ProjectCreateResourceIdentifier anID(@javax.annotation.Nullable Boolean anID) {
@@ -115,15 +147,10 @@ public class ProjectCreateResourceIdentifier {
    * @return anID
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AN_I_D, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAnID() {
     return anID;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_AN_I_D, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAnID(@javax.annotation.Nullable Boolean anID) {
     this.anID = anID;
   }
@@ -139,15 +166,10 @@ public class ProjectCreateResourceIdentifier {
    * @return areference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AREFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAreference() {
     return areference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_AREFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAreference(@javax.annotation.Nullable Boolean areference) {
     this.areference = areference;
   }
@@ -163,15 +185,10 @@ public class ProjectCreateResourceIdentifier {
    * @return entityId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEntityId() {
     return entityId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEntityId(@javax.annotation.Nullable String entityId) {
     this.entityId = entityId;
   }
@@ -187,15 +204,10 @@ public class ProjectCreateResourceIdentifier {
    * @return entityType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEntityType() {
     return entityType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEntityType(@javax.annotation.Nullable String entityType) {
     this.entityType = entityType;
   }
@@ -211,15 +223,10 @@ public class ProjectCreateResourceIdentifier {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -235,23 +242,16 @@ public class ProjectCreateResourceIdentifier {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable TypeEnum type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this ProjectCreateResourceIdentifier object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -299,69 +299,104 @@ public class ProjectCreateResourceIdentifier {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("anID", "areference", "entityId", "entityType", "id", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectCreateResourceIdentifier
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectCreateResourceIdentifier.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectCreateResourceIdentifier is not found in the empty JSON string", ProjectCreateResourceIdentifier.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectCreateResourceIdentifier.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectCreateResourceIdentifier` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("entityId") != null && !jsonObj.get("entityId").isJsonNull()) && !jsonObj.get("entityId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `entityId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("entityId").toString()));
+      }
+      if ((jsonObj.get("entityType") != null && !jsonObj.get("entityType").isJsonNull()) && !jsonObj.get("entityType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `entityType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("entityType").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the optional field `type`
+      if (jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) {
+        TypeEnum.validateJsonElement(jsonObj.get("type"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectCreateResourceIdentifier.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectCreateResourceIdentifier' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectCreateResourceIdentifier> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectCreateResourceIdentifier.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ProjectCreateResourceIdentifier>() {
+           @Override
+           public void write(JsonWriter out, ProjectCreateResourceIdentifier value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectCreateResourceIdentifier read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ProjectCreateResourceIdentifier given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectCreateResourceIdentifier
+   * @throws IOException if the JSON string is invalid with respect to ProjectCreateResourceIdentifier
+   */
+  public static ProjectCreateResourceIdentifier fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectCreateResourceIdentifier.class);
+  }
 
-    // add `anID` to the URL query string
-    if (getAnID() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sanID%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAnID()))));
-    }
-
-    // add `areference` to the URL query string
-    if (getAreference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sareference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAreference()))));
-    }
-
-    // add `entityId` to the URL query string
-    if (getEntityId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sentityId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEntityId()))));
-    }
-
-    // add `entityType` to the URL query string
-    if (getEntityType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sentityType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEntityType()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectCreateResourceIdentifier to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

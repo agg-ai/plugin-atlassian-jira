@@ -13,88 +13,99 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.User;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * BulkOperationProgress
  */
-@JsonPropertyOrder({
-  BulkOperationProgress.JSON_PROPERTY_CREATED,
-  BulkOperationProgress.JSON_PROPERTY_FAILED_ACCESSIBLE_ISSUES,
-  BulkOperationProgress.JSON_PROPERTY_INVALID_OR_INACCESSIBLE_ISSUE_COUNT,
-  BulkOperationProgress.JSON_PROPERTY_PROCESSED_ACCESSIBLE_ISSUES,
-  BulkOperationProgress.JSON_PROPERTY_PROGRESS_PERCENT,
-  BulkOperationProgress.JSON_PROPERTY_STARTED,
-  BulkOperationProgress.JSON_PROPERTY_STATUS,
-  BulkOperationProgress.JSON_PROPERTY_SUBMITTED_BY,
-  BulkOperationProgress.JSON_PROPERTY_TASK_ID,
-  BulkOperationProgress.JSON_PROPERTY_TOTAL_ISSUE_COUNT,
-  BulkOperationProgress.JSON_PROPERTY_UPDATED
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkOperationProgress {
-  public static final String JSON_PROPERTY_CREATED = "created";
+  public static final String SERIALIZED_NAME_CREATED = "created";
+  @SerializedName(SERIALIZED_NAME_CREATED)
   @javax.annotation.Nullable
   private OffsetDateTime created;
 
-  public static final String JSON_PROPERTY_FAILED_ACCESSIBLE_ISSUES = "failedAccessibleIssues";
+  public static final String SERIALIZED_NAME_FAILED_ACCESSIBLE_ISSUES = "failedAccessibleIssues";
+  @SerializedName(SERIALIZED_NAME_FAILED_ACCESSIBLE_ISSUES)
   @javax.annotation.Nullable
   private Map<String, List<String>> failedAccessibleIssues = new HashMap<>();
 
-  public static final String JSON_PROPERTY_INVALID_OR_INACCESSIBLE_ISSUE_COUNT = "invalidOrInaccessibleIssueCount";
+  public static final String SERIALIZED_NAME_INVALID_OR_INACCESSIBLE_ISSUE_COUNT = "invalidOrInaccessibleIssueCount";
+  @SerializedName(SERIALIZED_NAME_INVALID_OR_INACCESSIBLE_ISSUE_COUNT)
   @javax.annotation.Nullable
   private Integer invalidOrInaccessibleIssueCount;
 
-  public static final String JSON_PROPERTY_PROCESSED_ACCESSIBLE_ISSUES = "processedAccessibleIssues";
+  public static final String SERIALIZED_NAME_PROCESSED_ACCESSIBLE_ISSUES = "processedAccessibleIssues";
+  @SerializedName(SERIALIZED_NAME_PROCESSED_ACCESSIBLE_ISSUES)
   @javax.annotation.Nullable
   private List<Long> processedAccessibleIssues = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PROGRESS_PERCENT = "progressPercent";
+  public static final String SERIALIZED_NAME_PROGRESS_PERCENT = "progressPercent";
+  @SerializedName(SERIALIZED_NAME_PROGRESS_PERCENT)
   @javax.annotation.Nullable
   private Long progressPercent;
 
-  public static final String JSON_PROPERTY_STARTED = "started";
+  public static final String SERIALIZED_NAME_STARTED = "started";
+  @SerializedName(SERIALIZED_NAME_STARTED)
   @javax.annotation.Nullable
   private OffsetDateTime started;
 
   /**
    * The status of the task.
    */
+  @JsonAdapter(StatusEnum.Adapter.class)
   public enum StatusEnum {
-    ENQUEUED(String.valueOf("ENQUEUED")),
+    ENQUEUED("ENQUEUED"),
     
-    RUNNING(String.valueOf("RUNNING")),
+    RUNNING("RUNNING"),
     
-    COMPLETE(String.valueOf("COMPLETE")),
+    COMPLETE("COMPLETE"),
     
-    FAILED(String.valueOf("FAILED")),
+    FAILED("FAILED"),
     
-    CANCEL_REQUESTED(String.valueOf("CANCEL_REQUESTED")),
+    CANCEL_REQUESTED("CANCEL_REQUESTED"),
     
-    CANCELLED(String.valueOf("CANCELLED")),
+    CANCELLED("CANCELLED"),
     
-    DEAD(String.valueOf("DEAD"));
+    DEAD("DEAD");
 
     private String value;
 
@@ -102,7 +113,6 @@ public class BulkOperationProgress {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -112,7 +122,6 @@ public class BulkOperationProgress {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static StatusEnum fromValue(String value) {
       for (StatusEnum b : StatusEnum.values()) {
         if (b.value.equals(value)) {
@@ -121,36 +130,58 @@ public class BulkOperationProgress {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<StatusEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StatusEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StatusEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return StatusEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      StatusEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_STATUS = "status";
+  public static final String SERIALIZED_NAME_STATUS = "status";
+  @SerializedName(SERIALIZED_NAME_STATUS)
   @javax.annotation.Nullable
   private StatusEnum status;
 
-  public static final String JSON_PROPERTY_SUBMITTED_BY = "submittedBy";
+  public static final String SERIALIZED_NAME_SUBMITTED_BY = "submittedBy";
+  @SerializedName(SERIALIZED_NAME_SUBMITTED_BY)
   @javax.annotation.Nullable
   private User submittedBy;
 
-  public static final String JSON_PROPERTY_TASK_ID = "taskId";
+  public static final String SERIALIZED_NAME_TASK_ID = "taskId";
+  @SerializedName(SERIALIZED_NAME_TASK_ID)
   @javax.annotation.Nullable
   private String taskId;
 
-  public static final String JSON_PROPERTY_TOTAL_ISSUE_COUNT = "totalIssueCount";
+  public static final String SERIALIZED_NAME_TOTAL_ISSUE_COUNT = "totalIssueCount";
+  @SerializedName(SERIALIZED_NAME_TOTAL_ISSUE_COUNT)
   @javax.annotation.Nullable
   private Integer totalIssueCount;
 
-  public static final String JSON_PROPERTY_UPDATED = "updated";
+  public static final String SERIALIZED_NAME_UPDATED = "updated";
+  @SerializedName(SERIALIZED_NAME_UPDATED)
   @javax.annotation.Nullable
   private OffsetDateTime updated;
 
-  public BulkOperationProgress() { 
+  public BulkOperationProgress() {
   }
 
-  @JsonCreator
   public BulkOperationProgress(
-    @JsonProperty(JSON_PROPERTY_TASK_ID) String taskId
+     String taskId
   ) {
-  this();
+    this();
     this.taskId = taskId;
   }
 
@@ -164,15 +195,10 @@ public class BulkOperationProgress {
    * @return created
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getCreated() {
     return created;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCreated(@javax.annotation.Nullable OffsetDateTime created) {
     this.created = created;
   }
@@ -196,15 +222,10 @@ public class BulkOperationProgress {
    * @return failedAccessibleIssues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FAILED_ACCESSIBLE_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, List<String>> getFailedAccessibleIssues() {
     return failedAccessibleIssues;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FAILED_ACCESSIBLE_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFailedAccessibleIssues(@javax.annotation.Nullable Map<String, List<String>> failedAccessibleIssues) {
     this.failedAccessibleIssues = failedAccessibleIssues;
   }
@@ -220,15 +241,10 @@ public class BulkOperationProgress {
    * @return invalidOrInaccessibleIssueCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INVALID_OR_INACCESSIBLE_ISSUE_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInvalidOrInaccessibleIssueCount() {
     return invalidOrInaccessibleIssueCount;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INVALID_OR_INACCESSIBLE_ISSUE_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInvalidOrInaccessibleIssueCount(@javax.annotation.Nullable Integer invalidOrInaccessibleIssueCount) {
     this.invalidOrInaccessibleIssueCount = invalidOrInaccessibleIssueCount;
   }
@@ -252,15 +268,10 @@ public class BulkOperationProgress {
    * @return processedAccessibleIssues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROCESSED_ACCESSIBLE_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Long> getProcessedAccessibleIssues() {
     return processedAccessibleIssues;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROCESSED_ACCESSIBLE_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProcessedAccessibleIssues(@javax.annotation.Nullable List<Long> processedAccessibleIssues) {
     this.processedAccessibleIssues = processedAccessibleIssues;
   }
@@ -276,15 +287,10 @@ public class BulkOperationProgress {
    * @return progressPercent
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROGRESS_PERCENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getProgressPercent() {
     return progressPercent;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROGRESS_PERCENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProgressPercent(@javax.annotation.Nullable Long progressPercent) {
     this.progressPercent = progressPercent;
   }
@@ -300,15 +306,10 @@ public class BulkOperationProgress {
    * @return started
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STARTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getStarted() {
     return started;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STARTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStarted(@javax.annotation.Nullable OffsetDateTime started) {
     this.started = started;
   }
@@ -324,15 +325,10 @@ public class BulkOperationProgress {
    * @return status
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public StatusEnum getStatus() {
     return status;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatus(@javax.annotation.Nullable StatusEnum status) {
     this.status = status;
   }
@@ -348,15 +344,10 @@ public class BulkOperationProgress {
    * @return submittedBy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUBMITTED_BY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getSubmittedBy() {
     return submittedBy;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SUBMITTED_BY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubmittedBy(@javax.annotation.Nullable User submittedBy) {
     this.submittedBy = submittedBy;
   }
@@ -367,12 +358,9 @@ public class BulkOperationProgress {
    * @return taskId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TASK_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTaskId() {
     return taskId;
   }
-
 
 
 
@@ -386,15 +374,10 @@ public class BulkOperationProgress {
    * @return totalIssueCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_ISSUE_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTotalIssueCount() {
     return totalIssueCount;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_ISSUE_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTotalIssueCount(@javax.annotation.Nullable Integer totalIssueCount) {
     this.totalIssueCount = totalIssueCount;
   }
@@ -410,23 +393,16 @@ public class BulkOperationProgress {
    * @return updated
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getUpdated() {
     return updated;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_UPDATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUpdated(@javax.annotation.Nullable OffsetDateTime updated) {
     this.updated = updated;
   }
 
 
-  /**
-   * Return true if this BulkOperationProgress object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -484,102 +460,106 @@ public class BulkOperationProgress {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("created", "failedAccessibleIssues", "invalidOrInaccessibleIssueCount", "processedAccessibleIssues", "progressPercent", "started", "status", "submittedBy", "taskId", "totalIssueCount", "updated"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkOperationProgress
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `created` to the URL query string
-    if (getCreated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreated()))));
-    }
-
-    // add `failedAccessibleIssues` to the URL query string
-    if (getFailedAccessibleIssues() != null) {
-      for (String _key : getFailedAccessibleIssues().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sfailedAccessibleIssues%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getFailedAccessibleIssues().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getFailedAccessibleIssues().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkOperationProgress.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkOperationProgress is not found in the empty JSON string", BulkOperationProgress.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `invalidOrInaccessibleIssueCount` to the URL query string
-    if (getInvalidOrInaccessibleIssueCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sinvalidOrInaccessibleIssueCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInvalidOrInaccessibleIssueCount()))));
-    }
-
-    // add `processedAccessibleIssues` to the URL query string
-    if (getProcessedAccessibleIssues() != null) {
-      for (int i = 0; i < getProcessedAccessibleIssues().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sprocessedAccessibleIssues%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getProcessedAccessibleIssues().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkOperationProgress.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkOperationProgress` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("processedAccessibleIssues") != null && !jsonObj.get("processedAccessibleIssues").isJsonNull() && !jsonObj.get("processedAccessibleIssues").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `processedAccessibleIssues` to be an array in the JSON string but got `%s`", jsonObj.get("processedAccessibleIssues").toString()));
+      }
+      if ((jsonObj.get("status") != null && !jsonObj.get("status").isJsonNull()) && !jsonObj.get("status").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `status` to be a primitive type in the JSON string but got `%s`", jsonObj.get("status").toString()));
+      }
+      // validate the optional field `status`
+      if (jsonObj.get("status") != null && !jsonObj.get("status").isJsonNull()) {
+        StatusEnum.validateJsonElement(jsonObj.get("status"));
+      }
+      // validate the optional field `submittedBy`
+      if (jsonObj.get("submittedBy") != null && !jsonObj.get("submittedBy").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("submittedBy"));
+      }
+      if ((jsonObj.get("taskId") != null && !jsonObj.get("taskId").isJsonNull()) && !jsonObj.get("taskId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `taskId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("taskId").toString()));
+      }
+  }
 
-    // add `progressPercent` to the URL query string
-    if (getProgressPercent() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprogressPercent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProgressPercent()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkOperationProgress.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkOperationProgress' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkOperationProgress> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkOperationProgress.class));
 
-    // add `started` to the URL query string
-    if (getStarted() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstarted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStarted()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<BulkOperationProgress>() {
+           @Override
+           public void write(JsonWriter out, BulkOperationProgress value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `status` to the URL query string
-    if (getStatus() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-    }
+           @Override
+           public BulkOperationProgress read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `submittedBy` to the URL query string
-    if (getSubmittedBy() != null) {
-      joiner.add(getSubmittedBy().toUrlQueryString(prefix + "submittedBy" + suffix));
+       }.nullSafe();
     }
+  }
 
-    // add `taskId` to the URL query string
-    if (getTaskId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%staskId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTaskId()))));
-    }
+  /**
+   * Create an instance of BulkOperationProgress given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkOperationProgress
+   * @throws IOException if the JSON string is invalid with respect to BulkOperationProgress
+   */
+  public static BulkOperationProgress fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkOperationProgress.class);
+  }
 
-    // add `totalIssueCount` to the URL query string
-    if (getTotalIssueCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stotalIssueCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTotalIssueCount()))));
-    }
-
-    // add `updated` to the URL query string
-    if (getUpdated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%supdated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUpdated()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of BulkOperationProgress to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

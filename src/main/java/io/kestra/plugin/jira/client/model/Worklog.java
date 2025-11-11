@@ -13,123 +13,131 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.EntityProperty;
 import io.kestra.plugin.jira.client.model.UserDetails;
 import io.kestra.plugin.jira.client.model.Visibility;
+import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a worklog.
  */
-@JsonPropertyOrder({
-  Worklog.JSON_PROPERTY_AUTHOR,
-  Worklog.JSON_PROPERTY_COMMENT,
-  Worklog.JSON_PROPERTY_CREATED,
-  Worklog.JSON_PROPERTY_ID,
-  Worklog.JSON_PROPERTY_ISSUE_ID,
-  Worklog.JSON_PROPERTY_PROPERTIES,
-  Worklog.JSON_PROPERTY_SELF,
-  Worklog.JSON_PROPERTY_STARTED,
-  Worklog.JSON_PROPERTY_TIME_SPENT,
-  Worklog.JSON_PROPERTY_TIME_SPENT_SECONDS,
-  Worklog.JSON_PROPERTY_UPDATE_AUTHOR,
-  Worklog.JSON_PROPERTY_UPDATED,
-  Worklog.JSON_PROPERTY_VISIBILITY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Worklog {
-  public static final String JSON_PROPERTY_AUTHOR = "author";
+  public static final String SERIALIZED_NAME_AUTHOR = "author";
+  @SerializedName(SERIALIZED_NAME_AUTHOR)
   @javax.annotation.Nullable
   private UserDetails author;
 
-  public static final String JSON_PROPERTY_COMMENT = "comment";
-  private JsonNullable<Object> comment = JsonNullable.<Object>of(null);
+  public static final String SERIALIZED_NAME_COMMENT = "comment";
+  @SerializedName(SERIALIZED_NAME_COMMENT)
+  @javax.annotation.Nullable
+  private Object comment = null;
 
-  public static final String JSON_PROPERTY_CREATED = "created";
+  public static final String SERIALIZED_NAME_CREATED = "created";
+  @SerializedName(SERIALIZED_NAME_CREATED)
   @javax.annotation.Nullable
   private OffsetDateTime created;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_ISSUE_ID = "issueId";
+  public static final String SERIALIZED_NAME_ISSUE_ID = "issueId";
+  @SerializedName(SERIALIZED_NAME_ISSUE_ID)
   @javax.annotation.Nullable
   private String issueId;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private List<EntityProperty> properties = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_STARTED = "started";
+  public static final String SERIALIZED_NAME_STARTED = "started";
+  @SerializedName(SERIALIZED_NAME_STARTED)
   @javax.annotation.Nullable
   private OffsetDateTime started;
 
-  public static final String JSON_PROPERTY_TIME_SPENT = "timeSpent";
+  public static final String SERIALIZED_NAME_TIME_SPENT = "timeSpent";
+  @SerializedName(SERIALIZED_NAME_TIME_SPENT)
   @javax.annotation.Nullable
   private String timeSpent;
 
-  public static final String JSON_PROPERTY_TIME_SPENT_SECONDS = "timeSpentSeconds";
+  public static final String SERIALIZED_NAME_TIME_SPENT_SECONDS = "timeSpentSeconds";
+  @SerializedName(SERIALIZED_NAME_TIME_SPENT_SECONDS)
   @javax.annotation.Nullable
   private Long timeSpentSeconds;
 
-  public static final String JSON_PROPERTY_UPDATE_AUTHOR = "updateAuthor";
+  public static final String SERIALIZED_NAME_UPDATE_AUTHOR = "updateAuthor";
+  @SerializedName(SERIALIZED_NAME_UPDATE_AUTHOR)
   @javax.annotation.Nullable
   private UserDetails updateAuthor;
 
-  public static final String JSON_PROPERTY_UPDATED = "updated";
+  public static final String SERIALIZED_NAME_UPDATED = "updated";
+  @SerializedName(SERIALIZED_NAME_UPDATED)
   @javax.annotation.Nullable
   private OffsetDateTime updated;
 
-  public static final String JSON_PROPERTY_VISIBILITY = "visibility";
+  public static final String SERIALIZED_NAME_VISIBILITY = "visibility";
+  @SerializedName(SERIALIZED_NAME_VISIBILITY)
   @javax.annotation.Nullable
   private Visibility visibility;
 
-  public Worklog() { 
+  public Worklog() {
   }
 
-  @JsonCreator
   public Worklog(
-    @JsonProperty(JSON_PROPERTY_AUTHOR) UserDetails author, 
-    @JsonProperty(JSON_PROPERTY_CREATED) OffsetDateTime created, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_ISSUE_ID) String issueId, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self, 
-    @JsonProperty(JSON_PROPERTY_UPDATE_AUTHOR) UserDetails updateAuthor, 
-    @JsonProperty(JSON_PROPERTY_UPDATED) OffsetDateTime updated
+     UserDetails author, 
+     OffsetDateTime created, 
+     String id, 
+     String issueId, 
+     URI self, 
+     UserDetails updateAuthor, 
+     OffsetDateTime updated
   ) {
-  this();
+    this();
     this.author = author;
     this.created = created;
     this.id = id;
@@ -144,17 +152,14 @@ public class Worklog {
    * @return author
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserDetails getAuthor() {
     return author;
   }
 
 
 
-
   public Worklog comment(@javax.annotation.Nullable Object comment) {
-    this.comment = JsonNullable.<Object>of(comment);
+    this.comment = comment;
     return this;
   }
 
@@ -163,25 +168,12 @@ public class Worklog {
    * @return comment
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Object getComment() {
-        return comment.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Object> getComment_JsonNullable() {
     return comment;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_COMMENT)
-  public void setComment_JsonNullable(JsonNullable<Object> comment) {
-    this.comment = comment;
   }
 
   public void setComment(@javax.annotation.Nullable Object comment) {
-    this.comment = JsonNullable.<Object>of(comment);
+    this.comment = comment;
   }
 
 
@@ -190,12 +182,9 @@ public class Worklog {
    * @return created
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getCreated() {
     return created;
   }
-
 
 
 
@@ -204,12 +193,9 @@ public class Worklog {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -218,12 +204,9 @@ public class Worklog {
    * @return issueId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIssueId() {
     return issueId;
   }
-
 
 
 
@@ -245,15 +228,10 @@ public class Worklog {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<EntityProperty> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable List<EntityProperty> properties) {
     this.properties = properties;
   }
@@ -264,12 +242,9 @@ public class Worklog {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -283,15 +258,10 @@ public class Worklog {
    * @return started
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STARTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getStarted() {
     return started;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STARTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStarted(@javax.annotation.Nullable OffsetDateTime started) {
     this.started = started;
   }
@@ -307,15 +277,10 @@ public class Worklog {
    * @return timeSpent
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_SPENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTimeSpent() {
     return timeSpent;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TIME_SPENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTimeSpent(@javax.annotation.Nullable String timeSpent) {
     this.timeSpent = timeSpent;
   }
@@ -331,15 +296,10 @@ public class Worklog {
    * @return timeSpentSeconds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_SPENT_SECONDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getTimeSpentSeconds() {
     return timeSpentSeconds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TIME_SPENT_SECONDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTimeSpentSeconds(@javax.annotation.Nullable Long timeSpentSeconds) {
     this.timeSpentSeconds = timeSpentSeconds;
   }
@@ -350,12 +310,9 @@ public class Worklog {
    * @return updateAuthor
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_AUTHOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserDetails getUpdateAuthor() {
     return updateAuthor;
   }
-
 
 
 
@@ -364,12 +321,9 @@ public class Worklog {
    * @return updated
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getUpdated() {
     return updated;
   }
-
 
 
 
@@ -383,15 +337,10 @@ public class Worklog {
    * @return visibility
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VISIBILITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Visibility getVisibility() {
     return visibility;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VISIBILITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVisibility(@javax.annotation.Nullable Visibility visibility) {
     this.visibility = visibility;
   }
@@ -406,11 +355,11 @@ public class Worklog {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the Worklog instance itself
    */
-  @JsonAnySetter
   public Worklog putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -420,18 +369,19 @@ public class Worklog {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -440,9 +390,7 @@ public class Worklog {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this Worklog object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -453,7 +401,7 @@ public class Worklog {
     }
     Worklog worklog = (Worklog) o;
     return Objects.equals(this.author, worklog.author) &&
-        equalsNullable(this.comment, worklog.comment) &&
+        Objects.equals(this.comment, worklog.comment) &&
         Objects.equals(this.created, worklog.created) &&
         Objects.equals(this.id, worklog.id) &&
         Objects.equals(this.issueId, worklog.issueId) &&
@@ -474,7 +422,7 @@ public class Worklog {
 
   @Override
   public int hashCode() {
-    return Objects.hash(author, hashCodeNullable(comment), created, id, issueId, properties, self, started, timeSpent, timeSpentSeconds, updateAuthor, updated, visibility, additionalProperties);
+    return Objects.hash(author, comment, created, id, issueId, properties, self, started, timeSpent, timeSpentSeconds, updateAuthor, updated, visibility, additionalProperties);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -517,109 +465,157 @@ public class Worklog {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("author", "comment", "created", "id", "issueId", "properties", "self", "started", "timeSpent", "timeSpentSeconds", "updateAuthor", "updated", "visibility"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Worklog
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `author` to the URL query string
-    if (getAuthor() != null) {
-      joiner.add(getAuthor().toUrlQueryString(prefix + "author" + suffix));
-    }
-
-    // add `comment` to the URL query string
-    if (getComment() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scomment%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
-    }
-
-    // add `created` to the URL query string
-    if (getCreated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreated()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `issueId` to the URL query string
-    if (getIssueId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueId()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (int i = 0; i < getProperties().size(); i++) {
-        if (getProperties().get(i) != null) {
-          joiner.add(getProperties().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sproperties%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Worklog.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Worklog is not found in the empty JSON string", Worklog.openapiRequiredFields.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `author`
+      if (jsonObj.get("author") != null && !jsonObj.get("author").isJsonNull()) {
+        UserDetails.validateJsonElement(jsonObj.get("author"));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("issueId") != null && !jsonObj.get("issueId").isJsonNull()) && !jsonObj.get("issueId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("issueId").toString()));
+      }
+      if (jsonObj.get("properties") != null && !jsonObj.get("properties").isJsonNull()) {
+        JsonArray jsonArrayproperties = jsonObj.getAsJsonArray("properties");
+        if (jsonArrayproperties != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("properties").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `properties` to be an array in the JSON string but got `%s`", jsonObj.get("properties").toString()));
+          }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+          // validate the optional field `properties` (array)
+          for (int i = 0; i < jsonArrayproperties.size(); i++) {
+            EntityProperty.validateJsonElement(jsonArrayproperties.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("timeSpent") != null && !jsonObj.get("timeSpent").isJsonNull()) && !jsonObj.get("timeSpent").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `timeSpent` to be a primitive type in the JSON string but got `%s`", jsonObj.get("timeSpent").toString()));
+      }
+      // validate the optional field `updateAuthor`
+      if (jsonObj.get("updateAuthor") != null && !jsonObj.get("updateAuthor").isJsonNull()) {
+        UserDetails.validateJsonElement(jsonObj.get("updateAuthor"));
+      }
+  }
 
-    // add `started` to the URL query string
-    if (getStarted() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstarted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStarted()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Worklog.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Worklog' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Worklog> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Worklog.class));
 
-    // add `timeSpent` to the URL query string
-    if (getTimeSpent() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeSpent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeSpent()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<Worklog>() {
+           @Override
+           public void write(JsonWriter out, Worklog value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
 
-    // add `timeSpentSeconds` to the URL query string
-    if (getTimeSpentSeconds() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeSpentSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeSpentSeconds()))));
-    }
+           @Override
+           public Worklog read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             Worklog instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
 
-    // add `updateAuthor` to the URL query string
-    if (getUpdateAuthor() != null) {
-      joiner.add(getUpdateAuthor().toUrlQueryString(prefix + "updateAuthor" + suffix));
+       }.nullSafe();
     }
+  }
 
-    // add `updated` to the URL query string
-    if (getUpdated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%supdated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUpdated()))));
-    }
+  /**
+   * Create an instance of Worklog given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Worklog
+   * @throws IOException if the JSON string is invalid with respect to Worklog
+   */
+  public static Worklog fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Worklog.class);
+  }
 
-    // add `visibility` to the URL query string
-    if (getVisibility() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svisibility%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVisibility()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of Worklog to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

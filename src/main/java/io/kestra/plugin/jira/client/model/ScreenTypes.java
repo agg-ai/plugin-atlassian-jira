@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The IDs of the screens for the screen types of the screen scheme.
  */
-@JsonPropertyOrder({
-  ScreenTypes.JSON_PROPERTY_CREATE,
-  ScreenTypes.JSON_PROPERTY_DEFAULT,
-  ScreenTypes.JSON_PROPERTY_EDIT,
-  ScreenTypes.JSON_PROPERTY_VIEW
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ScreenTypes {
-  public static final String JSON_PROPERTY_CREATE = "create";
+  public static final String SERIALIZED_NAME_CREATE = "create";
+  @SerializedName(SERIALIZED_NAME_CREATE)
   @javax.annotation.Nullable
   private Long create;
 
-  public static final String JSON_PROPERTY_DEFAULT = "default";
+  public static final String SERIALIZED_NAME_DEFAULT = "default";
+  @SerializedName(SERIALIZED_NAME_DEFAULT)
   @javax.annotation.Nonnull
   private Long _default;
 
-  public static final String JSON_PROPERTY_EDIT = "edit";
+  public static final String SERIALIZED_NAME_EDIT = "edit";
+  @SerializedName(SERIALIZED_NAME_EDIT)
   @javax.annotation.Nullable
   private Long edit;
 
-  public static final String JSON_PROPERTY_VIEW = "view";
+  public static final String SERIALIZED_NAME_VIEW = "view";
+  @SerializedName(SERIALIZED_NAME_VIEW)
   @javax.annotation.Nullable
   private Long view;
 
-  public ScreenTypes() { 
+  public ScreenTypes() {
   }
 
   public ScreenTypes create(@javax.annotation.Nullable Long create) {
@@ -70,15 +85,10 @@ public class ScreenTypes {
    * @return create
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getCreate() {
     return create;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CREATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCreate(@javax.annotation.Nullable Long create) {
     this.create = create;
   }
@@ -94,15 +104,10 @@ public class ScreenTypes {
    * @return _default
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getDefault() {
     return _default;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setDefault(@javax.annotation.Nonnull Long _default) {
     this._default = _default;
   }
@@ -118,15 +123,10 @@ public class ScreenTypes {
    * @return edit
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EDIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getEdit() {
     return edit;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EDIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEdit(@javax.annotation.Nullable Long edit) {
     this.edit = edit;
   }
@@ -142,23 +142,16 @@ public class ScreenTypes {
    * @return view
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getView() {
     return view;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setView(@javax.annotation.Nullable Long view) {
     this.view = view;
   }
 
 
-  /**
-   * Return true if this ScreenTypes object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,59 +195,95 @@ public class ScreenTypes {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("create", "default", "edit", "view"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("default"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ScreenTypes
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ScreenTypes.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ScreenTypes is not found in the empty JSON string", ScreenTypes.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ScreenTypes.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ScreenTypes` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : ScreenTypes.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ScreenTypes.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ScreenTypes' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ScreenTypes> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ScreenTypes.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ScreenTypes>() {
+           @Override
+           public void write(JsonWriter out, ScreenTypes value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ScreenTypes read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ScreenTypes given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ScreenTypes
+   * @throws IOException if the JSON string is invalid with respect to ScreenTypes
+   */
+  public static ScreenTypes fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ScreenTypes.class);
+  }
 
-    // add `create` to the URL query string
-    if (getCreate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreate()))));
-    }
-
-    // add `default` to the URL query string
-    if (getDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefault()))));
-    }
-
-    // add `edit` to the URL query string
-    if (getEdit() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sedit%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEdit()))));
-    }
-
-    // add `view` to the URL query string
-    if (getView() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sview%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getView()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ScreenTypes to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

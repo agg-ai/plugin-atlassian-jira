@@ -13,56 +13,70 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueTransitionStatus;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * SimplifiedIssueTransition
  */
-@JsonPropertyOrder({
-  SimplifiedIssueTransition.JSON_PROPERTY_TO,
-  SimplifiedIssueTransition.JSON_PROPERTY_TRANSITION_ID,
-  SimplifiedIssueTransition.JSON_PROPERTY_TRANSITION_NAME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SimplifiedIssueTransition {
-  public static final String JSON_PROPERTY_TO = "to";
+  public static final String SERIALIZED_NAME_TO = "to";
+  @SerializedName(SERIALIZED_NAME_TO)
   @javax.annotation.Nullable
   private IssueTransitionStatus to;
 
-  public static final String JSON_PROPERTY_TRANSITION_ID = "transitionId";
+  public static final String SERIALIZED_NAME_TRANSITION_ID = "transitionId";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_ID)
   @javax.annotation.Nullable
   private Integer transitionId;
 
-  public static final String JSON_PROPERTY_TRANSITION_NAME = "transitionName";
+  public static final String SERIALIZED_NAME_TRANSITION_NAME = "transitionName";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_NAME)
   @javax.annotation.Nullable
   private String transitionName;
 
-  public SimplifiedIssueTransition() { 
+  public SimplifiedIssueTransition() {
   }
 
-  @JsonCreator
   public SimplifiedIssueTransition(
-    @JsonProperty(JSON_PROPERTY_TO) IssueTransitionStatus to, 
-    @JsonProperty(JSON_PROPERTY_TRANSITION_ID) Integer transitionId, 
-    @JsonProperty(JSON_PROPERTY_TRANSITION_NAME) String transitionName
+     IssueTransitionStatus to, 
+     Integer transitionId, 
+     String transitionName
   ) {
-  this();
+    this();
     this.to = to;
     this.transitionId = transitionId;
     this.transitionName = transitionName;
@@ -73,12 +87,9 @@ public class SimplifiedIssueTransition {
    * @return to
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IssueTransitionStatus getTo() {
     return to;
   }
-
 
 
 
@@ -87,12 +98,9 @@ public class SimplifiedIssueTransition {
    * @return transitionId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTransitionId() {
     return transitionId;
   }
-
 
 
 
@@ -101,8 +109,6 @@ public class SimplifiedIssueTransition {
    * @return transitionName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTransitionName() {
     return transitionName;
   }
@@ -110,9 +116,6 @@ public class SimplifiedIssueTransition {
 
 
 
-  /**
-   * Return true if this SimplifiedIssueTransition object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -154,54 +157,95 @@ public class SimplifiedIssueTransition {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("to", "transitionId", "transitionName"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SimplifiedIssueTransition
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SimplifiedIssueTransition.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SimplifiedIssueTransition is not found in the empty JSON string", SimplifiedIssueTransition.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SimplifiedIssueTransition.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SimplifiedIssueTransition` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `to`
+      if (jsonObj.get("to") != null && !jsonObj.get("to").isJsonNull()) {
+        IssueTransitionStatus.validateJsonElement(jsonObj.get("to"));
+      }
+      if ((jsonObj.get("transitionName") != null && !jsonObj.get("transitionName").isJsonNull()) && !jsonObj.get("transitionName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `transitionName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("transitionName").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SimplifiedIssueTransition.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SimplifiedIssueTransition' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SimplifiedIssueTransition> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SimplifiedIssueTransition.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SimplifiedIssueTransition>() {
+           @Override
+           public void write(JsonWriter out, SimplifiedIssueTransition value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SimplifiedIssueTransition read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of SimplifiedIssueTransition given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SimplifiedIssueTransition
+   * @throws IOException if the JSON string is invalid with respect to SimplifiedIssueTransition
+   */
+  public static SimplifiedIssueTransition fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SimplifiedIssueTransition.class);
+  }
 
-    // add `to` to the URL query string
-    if (getTo() != null) {
-      joiner.add(getTo().toUrlQueryString(prefix + "to" + suffix));
-    }
-
-    // add `transitionId` to the URL query string
-    if (getTransitionId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stransitionId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransitionId()))));
-    }
-
-    // add `transitionName` to the URL query string
-    if (getTransitionName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stransitionName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransitionName()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of SimplifiedIssueTransition to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

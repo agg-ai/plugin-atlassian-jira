@@ -13,86 +13,100 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JsonTypeBean;
 import io.kestra.plugin.jira.client.model.Scope;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a field.
  */
-@JsonPropertyOrder({
-  FieldDetails.JSON_PROPERTY_CLAUSE_NAMES,
-  FieldDetails.JSON_PROPERTY_CUSTOM,
-  FieldDetails.JSON_PROPERTY_ID,
-  FieldDetails.JSON_PROPERTY_KEY,
-  FieldDetails.JSON_PROPERTY_NAME,
-  FieldDetails.JSON_PROPERTY_NAVIGABLE,
-  FieldDetails.JSON_PROPERTY_ORDERABLE,
-  FieldDetails.JSON_PROPERTY_SCHEMA,
-  FieldDetails.JSON_PROPERTY_SCOPE,
-  FieldDetails.JSON_PROPERTY_SEARCHABLE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FieldDetails {
-  public static final String JSON_PROPERTY_CLAUSE_NAMES = "clauseNames";
+  public static final String SERIALIZED_NAME_CLAUSE_NAMES = "clauseNames";
+  @SerializedName(SERIALIZED_NAME_CLAUSE_NAMES)
   @javax.annotation.Nullable
   private Set<String> clauseNames = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_CUSTOM = "custom";
+  public static final String SERIALIZED_NAME_CUSTOM = "custom";
+  @SerializedName(SERIALIZED_NAME_CUSTOM)
   @javax.annotation.Nullable
   private Boolean custom;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_NAVIGABLE = "navigable";
+  public static final String SERIALIZED_NAME_NAVIGABLE = "navigable";
+  @SerializedName(SERIALIZED_NAME_NAVIGABLE)
   @javax.annotation.Nullable
   private Boolean navigable;
 
-  public static final String JSON_PROPERTY_ORDERABLE = "orderable";
+  public static final String SERIALIZED_NAME_ORDERABLE = "orderable";
+  @SerializedName(SERIALIZED_NAME_ORDERABLE)
   @javax.annotation.Nullable
   private Boolean orderable;
 
-  public static final String JSON_PROPERTY_SCHEMA = "schema";
+  public static final String SERIALIZED_NAME_SCHEMA = "schema";
+  @SerializedName(SERIALIZED_NAME_SCHEMA)
   @javax.annotation.Nullable
   private JsonTypeBean schema;
 
-  public static final String JSON_PROPERTY_SCOPE = "scope";
+  public static final String SERIALIZED_NAME_SCOPE = "scope";
+  @SerializedName(SERIALIZED_NAME_SCOPE)
   @javax.annotation.Nullable
   private Scope scope;
 
-  public static final String JSON_PROPERTY_SEARCHABLE = "searchable";
+  public static final String SERIALIZED_NAME_SEARCHABLE = "searchable";
+  @SerializedName(SERIALIZED_NAME_SEARCHABLE)
   @javax.annotation.Nullable
   private Boolean searchable;
 
-  public FieldDetails() { 
+  public FieldDetails() {
   }
 
   public FieldDetails clauseNames(@javax.annotation.Nullable Set<String> clauseNames) {
@@ -113,16 +127,10 @@ public class FieldDetails {
    * @return clauseNames
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CLAUSE_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getClauseNames() {
     return clauseNames;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_CLAUSE_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setClauseNames(@javax.annotation.Nullable Set<String> clauseNames) {
     this.clauseNames = clauseNames;
   }
@@ -138,15 +146,10 @@ public class FieldDetails {
    * @return custom
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCustom() {
     return custom;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustom(@javax.annotation.Nullable Boolean custom) {
     this.custom = custom;
   }
@@ -162,15 +165,10 @@ public class FieldDetails {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -186,15 +184,10 @@ public class FieldDetails {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
@@ -210,15 +203,10 @@ public class FieldDetails {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -234,15 +222,10 @@ public class FieldDetails {
    * @return navigable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAVIGABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getNavigable() {
     return navigable;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAVIGABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNavigable(@javax.annotation.Nullable Boolean navigable) {
     this.navigable = navigable;
   }
@@ -258,15 +241,10 @@ public class FieldDetails {
    * @return orderable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ORDERABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getOrderable() {
     return orderable;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ORDERABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOrderable(@javax.annotation.Nullable Boolean orderable) {
     this.orderable = orderable;
   }
@@ -282,15 +260,10 @@ public class FieldDetails {
    * @return schema
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCHEMA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JsonTypeBean getSchema() {
     return schema;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCHEMA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSchema(@javax.annotation.Nullable JsonTypeBean schema) {
     this.schema = schema;
   }
@@ -306,15 +279,10 @@ public class FieldDetails {
    * @return scope
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Scope getScope() {
     return scope;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScope(@javax.annotation.Nullable Scope scope) {
     this.scope = scope;
   }
@@ -330,23 +298,16 @@ public class FieldDetails {
    * @return searchable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SEARCHABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSearchable() {
     return searchable;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SEARCHABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearchable(@javax.annotation.Nullable Boolean searchable) {
     this.searchable = searchable;
   }
 
 
-  /**
-   * Return true if this FieldDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -402,95 +363,105 @@ public class FieldDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("clauseNames", "custom", "id", "key", "name", "navigable", "orderable", "schema", "scope", "searchable"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FieldDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `clauseNames` to the URL query string
-    if (getClauseNames() != null) {
-      int i = 0;
-      for (String _item : getClauseNames()) {
-        joiner.add(String.format(Locale.ROOT, "%sclauseNames%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FieldDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FieldDetails is not found in the empty JSON string", FieldDetails.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `custom` to the URL query string
-    if (getCustom() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scustom%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustom()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FieldDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FieldDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("clauseNames") != null && !jsonObj.get("clauseNames").isJsonNull() && !jsonObj.get("clauseNames").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `clauseNames` to be an array in the JSON string but got `%s`", jsonObj.get("clauseNames").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `schema`
+      if (jsonObj.get("schema") != null && !jsonObj.get("schema").isJsonNull()) {
+        JsonTypeBean.validateJsonElement(jsonObj.get("schema"));
+      }
+  }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FieldDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FieldDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FieldDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FieldDetails.class));
 
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<FieldDetails>() {
+           @Override
+           public void write(JsonWriter out, FieldDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+           @Override
+           public FieldDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `navigable` to the URL query string
-    if (getNavigable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snavigable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNavigable()))));
+       }.nullSafe();
     }
+  }
 
-    // add `orderable` to the URL query string
-    if (getOrderable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sorderable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOrderable()))));
-    }
+  /**
+   * Create an instance of FieldDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FieldDetails
+   * @throws IOException if the JSON string is invalid with respect to FieldDetails
+   */
+  public static FieldDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FieldDetails.class);
+  }
 
-    // add `schema` to the URL query string
-    if (getSchema() != null) {
-      joiner.add(getSchema().toUrlQueryString(prefix + "schema" + suffix));
-    }
-
-    // add `scope` to the URL query string
-    if (getScope() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sscope%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScope()))));
-    }
-
-    // add `searchable` to the URL query string
-    if (getSearchable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssearchable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearchable()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of FieldDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,67 +13,81 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of an item associated with the changed record.
  */
-@JsonPropertyOrder({
-  AssociatedItemBean.JSON_PROPERTY_ID,
-  AssociatedItemBean.JSON_PROPERTY_NAME,
-  AssociatedItemBean.JSON_PROPERTY_PARENT_ID,
-  AssociatedItemBean.JSON_PROPERTY_PARENT_NAME,
-  AssociatedItemBean.JSON_PROPERTY_TYPE_NAME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AssociatedItemBean {
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PARENT_ID = "parentId";
+  public static final String SERIALIZED_NAME_PARENT_ID = "parentId";
+  @SerializedName(SERIALIZED_NAME_PARENT_ID)
   @javax.annotation.Nullable
   private String parentId;
 
-  public static final String JSON_PROPERTY_PARENT_NAME = "parentName";
+  public static final String SERIALIZED_NAME_PARENT_NAME = "parentName";
+  @SerializedName(SERIALIZED_NAME_PARENT_NAME)
   @javax.annotation.Nullable
   private String parentName;
 
-  public static final String JSON_PROPERTY_TYPE_NAME = "typeName";
+  public static final String SERIALIZED_NAME_TYPE_NAME = "typeName";
+  @SerializedName(SERIALIZED_NAME_TYPE_NAME)
   @javax.annotation.Nullable
   private String typeName;
 
-  public AssociatedItemBean() { 
+  public AssociatedItemBean() {
   }
 
-  @JsonCreator
   public AssociatedItemBean(
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_PARENT_ID) String parentId, 
-    @JsonProperty(JSON_PROPERTY_PARENT_NAME) String parentName, 
-    @JsonProperty(JSON_PROPERTY_TYPE_NAME) String typeName
+     String id, 
+     String name, 
+     String parentId, 
+     String parentName, 
+     String typeName
   ) {
-  this();
+    this();
     this.id = id;
     this.name = name;
     this.parentId = parentId;
@@ -86,12 +100,9 @@ public class AssociatedItemBean {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -100,12 +111,9 @@ public class AssociatedItemBean {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -114,12 +122,9 @@ public class AssociatedItemBean {
    * @return parentId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PARENT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getParentId() {
     return parentId;
   }
-
 
 
 
@@ -128,12 +133,9 @@ public class AssociatedItemBean {
    * @return parentName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PARENT_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getParentName() {
     return parentName;
   }
-
 
 
 
@@ -142,8 +144,6 @@ public class AssociatedItemBean {
    * @return typeName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTypeName() {
     return typeName;
   }
@@ -151,9 +151,6 @@ public class AssociatedItemBean {
 
 
 
-  /**
-   * Return true if this AssociatedItemBean object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -199,64 +196,103 @@ public class AssociatedItemBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("id", "name", "parentId", "parentName", "typeName"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AssociatedItemBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AssociatedItemBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AssociatedItemBean is not found in the empty JSON string", AssociatedItemBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AssociatedItemBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AssociatedItemBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("parentId") != null && !jsonObj.get("parentId").isJsonNull()) && !jsonObj.get("parentId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `parentId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("parentId").toString()));
+      }
+      if ((jsonObj.get("parentName") != null && !jsonObj.get("parentName").isJsonNull()) && !jsonObj.get("parentName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `parentName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("parentName").toString()));
+      }
+      if ((jsonObj.get("typeName") != null && !jsonObj.get("typeName").isJsonNull()) && !jsonObj.get("typeName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `typeName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("typeName").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AssociatedItemBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AssociatedItemBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AssociatedItemBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AssociatedItemBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<AssociatedItemBean>() {
+           @Override
+           public void write(JsonWriter out, AssociatedItemBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public AssociatedItemBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of AssociatedItemBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AssociatedItemBean
+   * @throws IOException if the JSON string is invalid with respect to AssociatedItemBean
+   */
+  public static AssociatedItemBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AssociatedItemBean.class);
+  }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `parentId` to the URL query string
-    if (getParentId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sparentId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getParentId()))));
-    }
-
-    // add `parentName` to the URL query string
-    if (getParentName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sparentName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getParentName()))));
-    }
-
-    // add `typeName` to the URL query string
-    if (getTypeName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stypeName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTypeName()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of AssociatedItemBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

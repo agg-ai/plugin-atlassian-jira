@@ -13,71 +13,85 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * CustomFieldDefinitionJsonBean
  */
-@JsonPropertyOrder({
-  CustomFieldDefinitionJsonBean.JSON_PROPERTY_DESCRIPTION,
-  CustomFieldDefinitionJsonBean.JSON_PROPERTY_NAME,
-  CustomFieldDefinitionJsonBean.JSON_PROPERTY_SEARCHER_KEY,
-  CustomFieldDefinitionJsonBean.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CustomFieldDefinitionJsonBean {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
   /**
    * The searcher defines the way the field is searched in Jira. For example, *com.atlassian.jira.plugin.system.customfieldtypes:grouppickersearcher*.   The search UI (basic search and JQL search) will display different operations and values for the field, based on the field searcher. You must specify a searcher that is valid for the field type, as listed below (abbreviated values shown):   *  &#x60;cascadingselect&#x60;: &#x60;cascadingselectsearcher&#x60;  *  &#x60;datepicker&#x60;: &#x60;daterange&#x60;  *  &#x60;datetime&#x60;: &#x60;datetimerange&#x60;  *  &#x60;float&#x60;: &#x60;exactnumber&#x60; or &#x60;numberrange&#x60;  *  &#x60;grouppicker&#x60;: &#x60;grouppickersearcher&#x60;  *  &#x60;importid&#x60;: &#x60;exactnumber&#x60; or &#x60;numberrange&#x60;  *  &#x60;labels&#x60;: &#x60;labelsearcher&#x60;  *  &#x60;multicheckboxes&#x60;: &#x60;multiselectsearcher&#x60;  *  &#x60;multigrouppicker&#x60;: &#x60;multiselectsearcher&#x60;  *  &#x60;multiselect&#x60;: &#x60;multiselectsearcher&#x60;  *  &#x60;multiuserpicker&#x60;: &#x60;userpickergroupsearcher&#x60;  *  &#x60;multiversion&#x60;: &#x60;versionsearcher&#x60;  *  &#x60;project&#x60;: &#x60;projectsearcher&#x60;  *  &#x60;radiobuttons&#x60;: &#x60;multiselectsearcher&#x60;  *  &#x60;readonlyfield&#x60;: &#x60;textsearcher&#x60;  *  &#x60;select&#x60;: &#x60;multiselectsearcher&#x60;  *  &#x60;textarea&#x60;: &#x60;textsearcher&#x60;  *  &#x60;textfield&#x60;: &#x60;textsearcher&#x60;  *  &#x60;url&#x60;: &#x60;exacttextsearcher&#x60;  *  &#x60;userpicker&#x60;: &#x60;userpickergroupsearcher&#x60;  *  &#x60;version&#x60;: &#x60;versionsearcher&#x60;  If no searcher is provided, the field isn&#39;t searchable. However, [Forge custom fields](https://developer.atlassian.com/platform/forge/manifest-reference/modules/#jira-custom-field-type--beta-) have a searcher set automatically, so are always searchable.
    */
+  @JsonAdapter(SearcherKeyEnum.Adapter.class)
   public enum SearcherKeyEnum {
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_CASCADINGSELECTSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:cascadingselectsearcher")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_CASCADINGSELECTSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:cascadingselectsearcher"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_DATERANGE(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:daterange")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_DATERANGE("com.atlassian.jira.plugin.system.customfieldtypes:daterange"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_DATETIMERANGE(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:datetimerange")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_DATETIMERANGE("com.atlassian.jira.plugin.system.customfieldtypes:datetimerange"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_EXACTNUMBER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:exactnumber")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_EXACTNUMBER("com.atlassian.jira.plugin.system.customfieldtypes:exactnumber"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_EXACTTEXTSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:exacttextsearcher")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_EXACTTEXTSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:exacttextsearcher"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_GROUPPICKERSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:grouppickersearcher")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_GROUPPICKERSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:grouppickersearcher"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_LABELSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:labelsearcher")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_LABELSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:labelsearcher"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_MULTISELECTSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:multiselectsearcher")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_MULTISELECTSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:multiselectsearcher"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_NUMBERRANGE(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:numberrange")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_NUMBERRANGE("com.atlassian.jira.plugin.system.customfieldtypes:numberrange"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_PROJECTSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:projectsearcher")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_PROJECTSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:projectsearcher"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_TEXTSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:textsearcher")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_TEXTSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:textsearcher"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_USERPICKERGROUPSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:userpickergroupsearcher")),
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_USERPICKERGROUPSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:userpickergroupsearcher"),
     
-    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_VERSIONSEARCHER(String.valueOf("com.atlassian.jira.plugin.system.customfieldtypes:versionsearcher"));
+    COM_ATLASSIAN_JIRA_PLUGIN_SYSTEM_CUSTOMFIELDTYPES_VERSIONSEARCHER("com.atlassian.jira.plugin.system.customfieldtypes:versionsearcher");
 
     private String value;
 
@@ -85,7 +99,6 @@ public class CustomFieldDefinitionJsonBean {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -95,7 +108,6 @@ public class CustomFieldDefinitionJsonBean {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static SearcherKeyEnum fromValue(String value) {
       for (SearcherKeyEnum b : SearcherKeyEnum.values()) {
         if (b.value.equals(value)) {
@@ -104,17 +116,37 @@ public class CustomFieldDefinitionJsonBean {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<SearcherKeyEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final SearcherKeyEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public SearcherKeyEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return SearcherKeyEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      SearcherKeyEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_SEARCHER_KEY = "searcherKey";
+  public static final String SERIALIZED_NAME_SEARCHER_KEY = "searcherKey";
+  @SerializedName(SERIALIZED_NAME_SEARCHER_KEY)
   @javax.annotation.Nullable
   private SearcherKeyEnum searcherKey;
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nonnull
   private String type;
 
-  public CustomFieldDefinitionJsonBean() { 
+  public CustomFieldDefinitionJsonBean() {
   }
 
   public CustomFieldDefinitionJsonBean description(@javax.annotation.Nullable String description) {
@@ -127,15 +159,10 @@ public class CustomFieldDefinitionJsonBean {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -151,15 +178,10 @@ public class CustomFieldDefinitionJsonBean {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -175,15 +197,10 @@ public class CustomFieldDefinitionJsonBean {
    * @return searcherKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SEARCHER_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SearcherKeyEnum getSearcherKey() {
     return searcherKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SEARCHER_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearcherKey(@javax.annotation.Nullable SearcherKeyEnum searcherKey) {
     this.searcherKey = searcherKey;
   }
@@ -199,23 +216,16 @@ public class CustomFieldDefinitionJsonBean {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(@javax.annotation.Nonnull String type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this CustomFieldDefinitionJsonBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -259,59 +269,111 @@ public class CustomFieldDefinitionJsonBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "name", "searcherKey", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("name", "type"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CustomFieldDefinitionJsonBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CustomFieldDefinitionJsonBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CustomFieldDefinitionJsonBean is not found in the empty JSON string", CustomFieldDefinitionJsonBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CustomFieldDefinitionJsonBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CustomFieldDefinitionJsonBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CustomFieldDefinitionJsonBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("searcherKey") != null && !jsonObj.get("searcherKey").isJsonNull()) && !jsonObj.get("searcherKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `searcherKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("searcherKey").toString()));
+      }
+      // validate the optional field `searcherKey`
+      if (jsonObj.get("searcherKey") != null && !jsonObj.get("searcherKey").isJsonNull()) {
+        SearcherKeyEnum.validateJsonElement(jsonObj.get("searcherKey"));
+      }
+      if (!jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CustomFieldDefinitionJsonBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CustomFieldDefinitionJsonBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CustomFieldDefinitionJsonBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldDefinitionJsonBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CustomFieldDefinitionJsonBean>() {
+           @Override
+           public void write(JsonWriter out, CustomFieldDefinitionJsonBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CustomFieldDefinitionJsonBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CustomFieldDefinitionJsonBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CustomFieldDefinitionJsonBean
+   * @throws IOException if the JSON string is invalid with respect to CustomFieldDefinitionJsonBean
+   */
+  public static CustomFieldDefinitionJsonBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CustomFieldDefinitionJsonBean.class);
+  }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `searcherKey` to the URL query string
-    if (getSearcherKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssearcherKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearcherKey()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CustomFieldDefinitionJsonBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

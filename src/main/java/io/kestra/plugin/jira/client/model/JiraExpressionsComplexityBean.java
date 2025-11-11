@@ -13,52 +13,67 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraExpressionsComplexityValueBean;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraExpressionsComplexityBean
  */
-@JsonPropertyOrder({
-  JiraExpressionsComplexityBean.JSON_PROPERTY_BEANS,
-  JiraExpressionsComplexityBean.JSON_PROPERTY_EXPENSIVE_OPERATIONS,
-  JiraExpressionsComplexityBean.JSON_PROPERTY_PRIMITIVE_VALUES,
-  JiraExpressionsComplexityBean.JSON_PROPERTY_STEPS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraExpressionsComplexityBean {
-  public static final String JSON_PROPERTY_BEANS = "beans";
+  public static final String SERIALIZED_NAME_BEANS = "beans";
+  @SerializedName(SERIALIZED_NAME_BEANS)
   @javax.annotation.Nonnull
   private JiraExpressionsComplexityValueBean beans;
 
-  public static final String JSON_PROPERTY_EXPENSIVE_OPERATIONS = "expensiveOperations";
+  public static final String SERIALIZED_NAME_EXPENSIVE_OPERATIONS = "expensiveOperations";
+  @SerializedName(SERIALIZED_NAME_EXPENSIVE_OPERATIONS)
   @javax.annotation.Nonnull
   private JiraExpressionsComplexityValueBean expensiveOperations;
 
-  public static final String JSON_PROPERTY_PRIMITIVE_VALUES = "primitiveValues";
+  public static final String SERIALIZED_NAME_PRIMITIVE_VALUES = "primitiveValues";
+  @SerializedName(SERIALIZED_NAME_PRIMITIVE_VALUES)
   @javax.annotation.Nonnull
   private JiraExpressionsComplexityValueBean primitiveValues;
 
-  public static final String JSON_PROPERTY_STEPS = "steps";
+  public static final String SERIALIZED_NAME_STEPS = "steps";
+  @SerializedName(SERIALIZED_NAME_STEPS)
   @javax.annotation.Nonnull
   private JiraExpressionsComplexityValueBean steps;
 
-  public JiraExpressionsComplexityBean() { 
+  public JiraExpressionsComplexityBean() {
   }
 
   public JiraExpressionsComplexityBean beans(@javax.annotation.Nonnull JiraExpressionsComplexityValueBean beans) {
@@ -71,15 +86,10 @@ public class JiraExpressionsComplexityBean {
    * @return beans
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_BEANS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JiraExpressionsComplexityValueBean getBeans() {
     return beans;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BEANS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setBeans(@javax.annotation.Nonnull JiraExpressionsComplexityValueBean beans) {
     this.beans = beans;
   }
@@ -95,15 +105,10 @@ public class JiraExpressionsComplexityBean {
    * @return expensiveOperations
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EXPENSIVE_OPERATIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JiraExpressionsComplexityValueBean getExpensiveOperations() {
     return expensiveOperations;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPENSIVE_OPERATIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setExpensiveOperations(@javax.annotation.Nonnull JiraExpressionsComplexityValueBean expensiveOperations) {
     this.expensiveOperations = expensiveOperations;
   }
@@ -119,15 +124,10 @@ public class JiraExpressionsComplexityBean {
    * @return primitiveValues
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PRIMITIVE_VALUES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JiraExpressionsComplexityValueBean getPrimitiveValues() {
     return primitiveValues;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PRIMITIVE_VALUES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setPrimitiveValues(@javax.annotation.Nonnull JiraExpressionsComplexityValueBean primitiveValues) {
     this.primitiveValues = primitiveValues;
   }
@@ -143,23 +143,16 @@ public class JiraExpressionsComplexityBean {
    * @return steps
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_STEPS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JiraExpressionsComplexityValueBean getSteps() {
     return steps;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STEPS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSteps(@javax.annotation.Nonnull JiraExpressionsComplexityValueBean steps) {
     this.steps = steps;
   }
 
 
-  /**
-   * Return true if this JiraExpressionsComplexityBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -203,59 +196,103 @@ public class JiraExpressionsComplexityBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("beans", "expensiveOperations", "primitiveValues", "steps"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("beans", "expensiveOperations", "primitiveValues", "steps"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraExpressionsComplexityBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraExpressionsComplexityBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraExpressionsComplexityBean is not found in the empty JSON string", JiraExpressionsComplexityBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraExpressionsComplexityBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraExpressionsComplexityBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraExpressionsComplexityBean.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the required field `beans`
+      JiraExpressionsComplexityValueBean.validateJsonElement(jsonObj.get("beans"));
+      // validate the required field `expensiveOperations`
+      JiraExpressionsComplexityValueBean.validateJsonElement(jsonObj.get("expensiveOperations"));
+      // validate the required field `primitiveValues`
+      JiraExpressionsComplexityValueBean.validateJsonElement(jsonObj.get("primitiveValues"));
+      // validate the required field `steps`
+      JiraExpressionsComplexityValueBean.validateJsonElement(jsonObj.get("steps"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraExpressionsComplexityBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraExpressionsComplexityBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraExpressionsComplexityBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraExpressionsComplexityBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraExpressionsComplexityBean>() {
+           @Override
+           public void write(JsonWriter out, JiraExpressionsComplexityBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraExpressionsComplexityBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of JiraExpressionsComplexityBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraExpressionsComplexityBean
+   * @throws IOException if the JSON string is invalid with respect to JiraExpressionsComplexityBean
+   */
+  public static JiraExpressionsComplexityBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraExpressionsComplexityBean.class);
+  }
 
-    // add `beans` to the URL query string
-    if (getBeans() != null) {
-      joiner.add(getBeans().toUrlQueryString(prefix + "beans" + suffix));
-    }
-
-    // add `expensiveOperations` to the URL query string
-    if (getExpensiveOperations() != null) {
-      joiner.add(getExpensiveOperations().toUrlQueryString(prefix + "expensiveOperations" + suffix));
-    }
-
-    // add `primitiveValues` to the URL query string
-    if (getPrimitiveValues() != null) {
-      joiner.add(getPrimitiveValues().toUrlQueryString(prefix + "primitiveValues" + suffix));
-    }
-
-    // add `steps` to the URL query string
-    if (getSteps() != null) {
-      joiner.add(getSteps().toUrlQueryString(prefix + "steps" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JiraExpressionsComplexityBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

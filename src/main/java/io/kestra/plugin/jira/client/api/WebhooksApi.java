@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.ContainerForRegisteredWebhooks;
 import io.kestra.plugin.jira.client.model.ContainerForWebhookIDs;
@@ -26,740 +35,730 @@ import io.kestra.plugin.jira.client.model.PageBeanWebhook;
 import io.kestra.plugin.jira.client.model.WebhookRegistrationDetails;
 import io.kestra.plugin.jira.client.model.WebhooksExpirationDate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WebhooksApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public WebhooksApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public WebhooksApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for deleteWebhookById
+     * @param containerForWebhookIDs  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the list of webhook IDs is missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call deleteWebhookByIdCall(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public WebhooksApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public WebhooksApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Delete webhooks by ID
-   * Removes webhooks by ID. Only webhooks registered by the calling app are removed. If webhooks created by other apps are specified, they are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param containerForWebhookIDs  (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteWebhookById(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs) throws ApiException {
-    deleteWebhookById(containerForWebhookIDs, null);
-  }
-
-  /**
-   * Delete webhooks by ID
-   * Removes webhooks by ID. Only webhooks registered by the calling app are removed. If webhooks created by other apps are specified, they are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param containerForWebhookIDs  (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteWebhookById(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, Map<String, String> headers) throws ApiException {
-    deleteWebhookByIdWithHttpInfo(containerForWebhookIDs, headers);
-  }
-
-  /**
-   * Delete webhooks by ID
-   * Removes webhooks by ID. Only webhooks registered by the calling app are removed. If webhooks created by other apps are specified, they are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param containerForWebhookIDs  (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteWebhookByIdWithHttpInfo(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs) throws ApiException {
-    return deleteWebhookByIdWithHttpInfo(containerForWebhookIDs, null);
-  }
-
-  /**
-   * Delete webhooks by ID
-   * Removes webhooks by ID. Only webhooks registered by the calling app are removed. If webhooks created by other apps are specified, they are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param containerForWebhookIDs  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteWebhookByIdWithHttpInfo(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteWebhookByIdRequestBuilder(containerForWebhookIDs, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteWebhookById", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteWebhookByIdRequestBuilder(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'containerForWebhookIDs' is set
-    if (containerForWebhookIDs == null) {
-      throw new ApiException(400, "Missing the required parameter 'containerForWebhookIDs' when calling deleteWebhookById");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/webhook";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(containerForWebhookIDs);
-      localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get dynamic webhooks for app
-   * Returns a [paginated](#pagination) list of the webhooks registered by the calling app.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @return PageBeanWebhook
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanWebhook getDynamicWebhooksForApp(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getDynamicWebhooksForApp(startAt, maxResults, null);
-  }
-
-  /**
-   * Get dynamic webhooks for app
-   * Returns a [paginated](#pagination) list of the webhooks registered by the calling app.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanWebhook
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanWebhook getDynamicWebhooksForApp(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanWebhook> localVarResponse = getDynamicWebhooksForAppWithHttpInfo(startAt, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get dynamic webhooks for app
-   * Returns a [paginated](#pagination) list of the webhooks registered by the calling app.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @return ApiResponse&lt;PageBeanWebhook&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanWebhook> getDynamicWebhooksForAppWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getDynamicWebhooksForAppWithHttpInfo(startAt, maxResults, null);
-  }
-
-  /**
-   * Get dynamic webhooks for app
-   * Returns a [paginated](#pagination) list of the webhooks registered by the calling app.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanWebhook&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanWebhook> getDynamicWebhooksForAppWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getDynamicWebhooksForAppRequestBuilder(startAt, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getDynamicWebhooksForApp", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanWebhook>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanWebhook responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanWebhook>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = containerForWebhookIDs;
 
-        return new ApiResponse<PageBeanWebhook>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/webhook";
 
-  private HttpRequest.Builder getDynamicWebhooksForAppRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/webhook";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get failed webhooks
-   * Returns webhooks that have recently failed to be delivered to the requesting app after the maximum number of retries.  After 72 hours the failure may no longer be returned by this operation.  The oldest failure is returned first.  This method uses a cursor-based pagination. To request the next page use the failure time of the last webhook on the list as the &#x60;failedAfter&#x60; value or use the URL provided in &#x60;next&#x60;.  **[Permissions](#permissions) required:** Only [Connect apps](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) can use this operation.
-   * @param maxResults The maximum number of webhooks to return per page. If obeying the maxResults directive would result in records with the same failure time being split across pages, the directive is ignored and all records with the same failure time included on the page. (optional)
-   * @param after The time after which any webhook failure must have occurred for the record to be returned, expressed as milliseconds since the UNIX epoch. (optional)
-   * @return FailedWebhooks
-   * @throws ApiException if fails to make API call
-   */
-  public FailedWebhooks getFailedWebhooks(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after) throws ApiException {
-    return getFailedWebhooks(maxResults, after, null);
-  }
-
-  /**
-   * Get failed webhooks
-   * Returns webhooks that have recently failed to be delivered to the requesting app after the maximum number of retries.  After 72 hours the failure may no longer be returned by this operation.  The oldest failure is returned first.  This method uses a cursor-based pagination. To request the next page use the failure time of the last webhook on the list as the &#x60;failedAfter&#x60; value or use the URL provided in &#x60;next&#x60;.  **[Permissions](#permissions) required:** Only [Connect apps](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) can use this operation.
-   * @param maxResults The maximum number of webhooks to return per page. If obeying the maxResults directive would result in records with the same failure time being split across pages, the directive is ignored and all records with the same failure time included on the page. (optional)
-   * @param after The time after which any webhook failure must have occurred for the record to be returned, expressed as milliseconds since the UNIX epoch. (optional)
-   * @param headers Optional headers to include in the request
-   * @return FailedWebhooks
-   * @throws ApiException if fails to make API call
-   */
-  public FailedWebhooks getFailedWebhooks(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after, Map<String, String> headers) throws ApiException {
-    ApiResponse<FailedWebhooks> localVarResponse = getFailedWebhooksWithHttpInfo(maxResults, after, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get failed webhooks
-   * Returns webhooks that have recently failed to be delivered to the requesting app after the maximum number of retries.  After 72 hours the failure may no longer be returned by this operation.  The oldest failure is returned first.  This method uses a cursor-based pagination. To request the next page use the failure time of the last webhook on the list as the &#x60;failedAfter&#x60; value or use the URL provided in &#x60;next&#x60;.  **[Permissions](#permissions) required:** Only [Connect apps](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) can use this operation.
-   * @param maxResults The maximum number of webhooks to return per page. If obeying the maxResults directive would result in records with the same failure time being split across pages, the directive is ignored and all records with the same failure time included on the page. (optional)
-   * @param after The time after which any webhook failure must have occurred for the record to be returned, expressed as milliseconds since the UNIX epoch. (optional)
-   * @return ApiResponse&lt;FailedWebhooks&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FailedWebhooks> getFailedWebhooksWithHttpInfo(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after) throws ApiException {
-    return getFailedWebhooksWithHttpInfo(maxResults, after, null);
-  }
-
-  /**
-   * Get failed webhooks
-   * Returns webhooks that have recently failed to be delivered to the requesting app after the maximum number of retries.  After 72 hours the failure may no longer be returned by this operation.  The oldest failure is returned first.  This method uses a cursor-based pagination. To request the next page use the failure time of the last webhook on the list as the &#x60;failedAfter&#x60; value or use the URL provided in &#x60;next&#x60;.  **[Permissions](#permissions) required:** Only [Connect apps](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) can use this operation.
-   * @param maxResults The maximum number of webhooks to return per page. If obeying the maxResults directive would result in records with the same failure time being split across pages, the directive is ignored and all records with the same failure time included on the page. (optional)
-   * @param after The time after which any webhook failure must have occurred for the record to be returned, expressed as milliseconds since the UNIX epoch. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;FailedWebhooks&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FailedWebhooks> getFailedWebhooksWithHttpInfo(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getFailedWebhooksRequestBuilder(maxResults, after, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getFailedWebhooks", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<FailedWebhooks>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        FailedWebhooks responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<FailedWebhooks>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<FailedWebhooks>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getFailedWebhooksRequestBuilder(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/webhook/failed";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "after";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("after", after));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Extend webhook life
-   * Extends the life of webhook. Webhooks registered through the REST API expire after 30 days. Call this operation to keep them alive.  Unrecognized webhook IDs (those that are not found or belong to other apps) are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param containerForWebhookIDs  (required)
-   * @return WebhooksExpirationDate
-   * @throws ApiException if fails to make API call
-   */
-  public WebhooksExpirationDate refreshWebhooks(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs) throws ApiException {
-    return refreshWebhooks(containerForWebhookIDs, null);
-  }
-
-  /**
-   * Extend webhook life
-   * Extends the life of webhook. Webhooks registered through the REST API expire after 30 days. Call this operation to keep them alive.  Unrecognized webhook IDs (those that are not found or belong to other apps) are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param containerForWebhookIDs  (required)
-   * @param headers Optional headers to include in the request
-   * @return WebhooksExpirationDate
-   * @throws ApiException if fails to make API call
-   */
-  public WebhooksExpirationDate refreshWebhooks(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, Map<String, String> headers) throws ApiException {
-    ApiResponse<WebhooksExpirationDate> localVarResponse = refreshWebhooksWithHttpInfo(containerForWebhookIDs, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Extend webhook life
-   * Extends the life of webhook. Webhooks registered through the REST API expire after 30 days. Call this operation to keep them alive.  Unrecognized webhook IDs (those that are not found or belong to other apps) are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param containerForWebhookIDs  (required)
-   * @return ApiResponse&lt;WebhooksExpirationDate&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WebhooksExpirationDate> refreshWebhooksWithHttpInfo(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs) throws ApiException {
-    return refreshWebhooksWithHttpInfo(containerForWebhookIDs, null);
-  }
-
-  /**
-   * Extend webhook life
-   * Extends the life of webhook. Webhooks registered through the REST API expire after 30 days. Call this operation to keep them alive.  Unrecognized webhook IDs (those that are not found or belong to other apps) are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param containerForWebhookIDs  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WebhooksExpirationDate&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WebhooksExpirationDate> refreshWebhooksWithHttpInfo(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = refreshWebhooksRequestBuilder(containerForWebhookIDs, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("refreshWebhooks", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WebhooksExpirationDate>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WebhooksExpirationDate responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WebhooksExpirationDate>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<WebhooksExpirationDate>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder refreshWebhooksRequestBuilder(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'containerForWebhookIDs' is set
-    if (containerForWebhookIDs == null) {
-      throw new ApiException(400, "Missing the required parameter 'containerForWebhookIDs' when calling refreshWebhooks");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/webhook/refresh";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(containerForWebhookIDs);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Register dynamic webhooks
-   * Registers webhooks.  **NOTE:** for non-public OAuth apps, webhooks are delivered only if there is a match between the app owner and the user who registered a dynamic webhook.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param webhookRegistrationDetails  (required)
-   * @return ContainerForRegisteredWebhooks
-   * @throws ApiException if fails to make API call
-   */
-  public ContainerForRegisteredWebhooks registerDynamicWebhooks(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails) throws ApiException {
-    return registerDynamicWebhooks(webhookRegistrationDetails, null);
-  }
-
-  /**
-   * Register dynamic webhooks
-   * Registers webhooks.  **NOTE:** for non-public OAuth apps, webhooks are delivered only if there is a match between the app owner and the user who registered a dynamic webhook.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param webhookRegistrationDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ContainerForRegisteredWebhooks
-   * @throws ApiException if fails to make API call
-   */
-  public ContainerForRegisteredWebhooks registerDynamicWebhooks(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<ContainerForRegisteredWebhooks> localVarResponse = registerDynamicWebhooksWithHttpInfo(webhookRegistrationDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Register dynamic webhooks
-   * Registers webhooks.  **NOTE:** for non-public OAuth apps, webhooks are delivered only if there is a match between the app owner and the user who registered a dynamic webhook.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param webhookRegistrationDetails  (required)
-   * @return ApiResponse&lt;ContainerForRegisteredWebhooks&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ContainerForRegisteredWebhooks> registerDynamicWebhooksWithHttpInfo(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails) throws ApiException {
-    return registerDynamicWebhooksWithHttpInfo(webhookRegistrationDetails, null);
-  }
-
-  /**
-   * Register dynamic webhooks
-   * Registers webhooks.  **NOTE:** for non-public OAuth apps, webhooks are delivered only if there is a match between the app owner and the user who registered a dynamic webhook.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
-   * @param webhookRegistrationDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ContainerForRegisteredWebhooks&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ContainerForRegisteredWebhooks> registerDynamicWebhooksWithHttpInfo(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = registerDynamicWebhooksRequestBuilder(webhookRegistrationDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("registerDynamicWebhooks", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ContainerForRegisteredWebhooks>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteWebhookByIdValidateBeforeCall(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'containerForWebhookIDs' is set
+        if (containerForWebhookIDs == null) {
+            throw new ApiException("Missing the required parameter 'containerForWebhookIDs' when calling deleteWebhookById(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ContainerForRegisteredWebhooks responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ContainerForRegisteredWebhooks>() {});
-        
-        localVarResponse.body().close();
+        return deleteWebhookByIdCall(containerForWebhookIDs, _callback);
 
-        return new ApiResponse<ContainerForRegisteredWebhooks>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder registerDynamicWebhooksRequestBuilder(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'webhookRegistrationDetails' is set
-    if (webhookRegistrationDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'webhookRegistrationDetails' when calling registerDynamicWebhooks");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/webhook";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(webhookRegistrationDetails);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Delete webhooks by ID
+     * Removes webhooks by ID. Only webhooks registered by the calling app are removed. If webhooks created by other apps are specified, they are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param containerForWebhookIDs  (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the list of webhook IDs is missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteWebhookById(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs) throws ApiException {
+        deleteWebhookByIdWithHttpInfo(containerForWebhookIDs);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete webhooks by ID
+     * Removes webhooks by ID. Only webhooks registered by the calling app are removed. If webhooks created by other apps are specified, they are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param containerForWebhookIDs  (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the list of webhook IDs is missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteWebhookByIdWithHttpInfo(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs) throws ApiException {
+        okhttp3.Call localVarCall = deleteWebhookByIdValidateBeforeCall(containerForWebhookIDs, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete webhooks by ID (asynchronously)
+     * Removes webhooks by ID. Only webhooks registered by the calling app are removed. If webhooks created by other apps are specified, they are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param containerForWebhookIDs  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 202 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the list of webhook IDs is missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWebhookByIdAsync(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteWebhookByIdValidateBeforeCall(containerForWebhookIDs, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getDynamicWebhooksForApp
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getDynamicWebhooksForAppCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/webhook";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getDynamicWebhooksForAppValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        return getDynamicWebhooksForAppCall(startAt, maxResults, _callback);
+
+    }
+
+    /**
+     * Get dynamic webhooks for app
+     * Returns a [paginated](#pagination) list of the webhooks registered by the calling app.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @return PageBeanWebhook
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanWebhook getDynamicWebhooksForApp(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageBeanWebhook> localVarResp = getDynamicWebhooksForAppWithHttpInfo(startAt, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get dynamic webhooks for app
+     * Returns a [paginated](#pagination) list of the webhooks registered by the calling app.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @return ApiResponse&lt;PageBeanWebhook&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanWebhook> getDynamicWebhooksForAppWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getDynamicWebhooksForAppValidateBeforeCall(startAt, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageBeanWebhook>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get dynamic webhooks for app (asynchronously)
+     * Returns a [paginated](#pagination) list of the webhooks registered by the calling app.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getDynamicWebhooksForAppAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageBeanWebhook> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getDynamicWebhooksForAppValidateBeforeCall(startAt, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanWebhook>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getFailedWebhooks
+     * @param maxResults The maximum number of webhooks to return per page. If obeying the maxResults directive would result in records with the same failure time being split across pages, the directive is ignored and all records with the same failure time included on the page. (optional)
+     * @param after The time after which any webhook failure must have occurred for the record to be returned, expressed as milliseconds since the UNIX epoch. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> 400 response </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFailedWebhooksCall(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/webhook/failed";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (after != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("after", after));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getFailedWebhooksValidateBeforeCall(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after, final ApiCallback _callback) throws ApiException {
+        return getFailedWebhooksCall(maxResults, after, _callback);
+
+    }
+
+    /**
+     * Get failed webhooks
+     * Returns webhooks that have recently failed to be delivered to the requesting app after the maximum number of retries.  After 72 hours the failure may no longer be returned by this operation.  The oldest failure is returned first.  This method uses a cursor-based pagination. To request the next page use the failure time of the last webhook on the list as the &#x60;failedAfter&#x60; value or use the URL provided in &#x60;next&#x60;.  **[Permissions](#permissions) required:** Only [Connect apps](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) can use this operation.
+     * @param maxResults The maximum number of webhooks to return per page. If obeying the maxResults directive would result in records with the same failure time being split across pages, the directive is ignored and all records with the same failure time included on the page. (optional)
+     * @param after The time after which any webhook failure must have occurred for the record to be returned, expressed as milliseconds since the UNIX epoch. (optional)
+     * @return FailedWebhooks
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> 400 response </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public FailedWebhooks getFailedWebhooks(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after) throws ApiException {
+        ApiResponse<FailedWebhooks> localVarResp = getFailedWebhooksWithHttpInfo(maxResults, after);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get failed webhooks
+     * Returns webhooks that have recently failed to be delivered to the requesting app after the maximum number of retries.  After 72 hours the failure may no longer be returned by this operation.  The oldest failure is returned first.  This method uses a cursor-based pagination. To request the next page use the failure time of the last webhook on the list as the &#x60;failedAfter&#x60; value or use the URL provided in &#x60;next&#x60;.  **[Permissions](#permissions) required:** Only [Connect apps](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) can use this operation.
+     * @param maxResults The maximum number of webhooks to return per page. If obeying the maxResults directive would result in records with the same failure time being split across pages, the directive is ignored and all records with the same failure time included on the page. (optional)
+     * @param after The time after which any webhook failure must have occurred for the record to be returned, expressed as milliseconds since the UNIX epoch. (optional)
+     * @return ApiResponse&lt;FailedWebhooks&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> 400 response </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<FailedWebhooks> getFailedWebhooksWithHttpInfo(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after) throws ApiException {
+        okhttp3.Call localVarCall = getFailedWebhooksValidateBeforeCall(maxResults, after, null);
+        Type localVarReturnType = new TypeToken<FailedWebhooks>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get failed webhooks (asynchronously)
+     * Returns webhooks that have recently failed to be delivered to the requesting app after the maximum number of retries.  After 72 hours the failure may no longer be returned by this operation.  The oldest failure is returned first.  This method uses a cursor-based pagination. To request the next page use the failure time of the last webhook on the list as the &#x60;failedAfter&#x60; value or use the URL provided in &#x60;next&#x60;.  **[Permissions](#permissions) required:** Only [Connect apps](https://developer.atlassian.com/cloud/jira/platform/index/#connect-apps) can use this operation.
+     * @param maxResults The maximum number of webhooks to return per page. If obeying the maxResults directive would result in records with the same failure time being split across pages, the directive is ignored and all records with the same failure time included on the page. (optional)
+     * @param after The time after which any webhook failure must have occurred for the record to be returned, expressed as milliseconds since the UNIX epoch. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> 400 response </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller is not a Connect app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFailedWebhooksAsync(@javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Long after, final ApiCallback<FailedWebhooks> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getFailedWebhooksValidateBeforeCall(maxResults, after, _callback);
+        Type localVarReturnType = new TypeToken<FailedWebhooks>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for refreshWebhooks
+     * @param containerForWebhookIDs  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call refreshWebhooksCall(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = containerForWebhookIDs;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/webhook/refresh";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call refreshWebhooksValidateBeforeCall(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'containerForWebhookIDs' is set
+        if (containerForWebhookIDs == null) {
+            throw new ApiException("Missing the required parameter 'containerForWebhookIDs' when calling refreshWebhooks(Async)");
+        }
+
+        return refreshWebhooksCall(containerForWebhookIDs, _callback);
+
+    }
+
+    /**
+     * Extend webhook life
+     * Extends the life of webhook. Webhooks registered through the REST API expire after 30 days. Call this operation to keep them alive.  Unrecognized webhook IDs (those that are not found or belong to other apps) are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param containerForWebhookIDs  (required)
+     * @return WebhooksExpirationDate
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WebhooksExpirationDate refreshWebhooks(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs) throws ApiException {
+        ApiResponse<WebhooksExpirationDate> localVarResp = refreshWebhooksWithHttpInfo(containerForWebhookIDs);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Extend webhook life
+     * Extends the life of webhook. Webhooks registered through the REST API expire after 30 days. Call this operation to keep them alive.  Unrecognized webhook IDs (those that are not found or belong to other apps) are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param containerForWebhookIDs  (required)
+     * @return ApiResponse&lt;WebhooksExpirationDate&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WebhooksExpirationDate> refreshWebhooksWithHttpInfo(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs) throws ApiException {
+        okhttp3.Call localVarCall = refreshWebhooksValidateBeforeCall(containerForWebhookIDs, null);
+        Type localVarReturnType = new TypeToken<WebhooksExpirationDate>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Extend webhook life (asynchronously)
+     * Extends the life of webhook. Webhooks registered through the REST API expire after 30 days. Call this operation to keep them alive.  Unrecognized webhook IDs (those that are not found or belong to other apps) are ignored.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param containerForWebhookIDs  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call refreshWebhooksAsync(@javax.annotation.Nonnull ContainerForWebhookIDs containerForWebhookIDs, final ApiCallback<WebhooksExpirationDate> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = refreshWebhooksValidateBeforeCall(containerForWebhookIDs, _callback);
+        Type localVarReturnType = new TypeToken<WebhooksExpirationDate>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for registerDynamicWebhooks
+     * @param webhookRegistrationDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call registerDynamicWebhooksCall(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = webhookRegistrationDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/webhook";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call registerDynamicWebhooksValidateBeforeCall(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'webhookRegistrationDetails' is set
+        if (webhookRegistrationDetails == null) {
+            throw new ApiException("Missing the required parameter 'webhookRegistrationDetails' when calling registerDynamicWebhooks(Async)");
+        }
+
+        return registerDynamicWebhooksCall(webhookRegistrationDetails, _callback);
+
+    }
+
+    /**
+     * Register dynamic webhooks
+     * Registers webhooks.  **NOTE:** for non-public OAuth apps, webhooks are delivered only if there is a match between the app owner and the user who registered a dynamic webhook.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param webhookRegistrationDetails  (required)
+     * @return ContainerForRegisteredWebhooks
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ContainerForRegisteredWebhooks registerDynamicWebhooks(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails) throws ApiException {
+        ApiResponse<ContainerForRegisteredWebhooks> localVarResp = registerDynamicWebhooksWithHttpInfo(webhookRegistrationDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Register dynamic webhooks
+     * Registers webhooks.  **NOTE:** for non-public OAuth apps, webhooks are delivered only if there is a match between the app owner and the user who registered a dynamic webhook.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param webhookRegistrationDetails  (required)
+     * @return ApiResponse&lt;ContainerForRegisteredWebhooks&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ContainerForRegisteredWebhooks> registerDynamicWebhooksWithHttpInfo(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails) throws ApiException {
+        okhttp3.Call localVarCall = registerDynamicWebhooksValidateBeforeCall(webhookRegistrationDetails, null);
+        Type localVarReturnType = new TypeToken<ContainerForRegisteredWebhooks>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Register dynamic webhooks (asynchronously)
+     * Registers webhooks.  **NOTE:** for non-public OAuth apps, webhooks are delivered only if there is a match between the app owner and the user who registered a dynamic webhook.  **[Permissions](#permissions) required:** Only [Connect](https://developer.atlassian.com/cloud/jira/platform/#connect-apps) and [OAuth 2.0](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps) apps can use this operation.
+     * @param webhookRegistrationDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the caller isn&#39;t an app. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call registerDynamicWebhooksAsync(@javax.annotation.Nonnull WebhookRegistrationDetails webhookRegistrationDetails, final ApiCallback<ContainerForRegisteredWebhooks> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = registerDynamicWebhooksValidateBeforeCall(webhookRegistrationDetails, _callback);
+        Type localVarReturnType = new TypeToken<ContainerForRegisteredWebhooks>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

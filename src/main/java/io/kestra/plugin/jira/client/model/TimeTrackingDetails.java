@@ -13,73 +13,87 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Time tracking details.
  */
-@JsonPropertyOrder({
-  TimeTrackingDetails.JSON_PROPERTY_ORIGINAL_ESTIMATE,
-  TimeTrackingDetails.JSON_PROPERTY_ORIGINAL_ESTIMATE_SECONDS,
-  TimeTrackingDetails.JSON_PROPERTY_REMAINING_ESTIMATE,
-  TimeTrackingDetails.JSON_PROPERTY_REMAINING_ESTIMATE_SECONDS,
-  TimeTrackingDetails.JSON_PROPERTY_TIME_SPENT,
-  TimeTrackingDetails.JSON_PROPERTY_TIME_SPENT_SECONDS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TimeTrackingDetails {
-  public static final String JSON_PROPERTY_ORIGINAL_ESTIMATE = "originalEstimate";
+  public static final String SERIALIZED_NAME_ORIGINAL_ESTIMATE = "originalEstimate";
+  @SerializedName(SERIALIZED_NAME_ORIGINAL_ESTIMATE)
   @javax.annotation.Nullable
   private String originalEstimate;
 
-  public static final String JSON_PROPERTY_ORIGINAL_ESTIMATE_SECONDS = "originalEstimateSeconds";
+  public static final String SERIALIZED_NAME_ORIGINAL_ESTIMATE_SECONDS = "originalEstimateSeconds";
+  @SerializedName(SERIALIZED_NAME_ORIGINAL_ESTIMATE_SECONDS)
   @javax.annotation.Nullable
   private Long originalEstimateSeconds;
 
-  public static final String JSON_PROPERTY_REMAINING_ESTIMATE = "remainingEstimate";
+  public static final String SERIALIZED_NAME_REMAINING_ESTIMATE = "remainingEstimate";
+  @SerializedName(SERIALIZED_NAME_REMAINING_ESTIMATE)
   @javax.annotation.Nullable
   private String remainingEstimate;
 
-  public static final String JSON_PROPERTY_REMAINING_ESTIMATE_SECONDS = "remainingEstimateSeconds";
+  public static final String SERIALIZED_NAME_REMAINING_ESTIMATE_SECONDS = "remainingEstimateSeconds";
+  @SerializedName(SERIALIZED_NAME_REMAINING_ESTIMATE_SECONDS)
   @javax.annotation.Nullable
   private Long remainingEstimateSeconds;
 
-  public static final String JSON_PROPERTY_TIME_SPENT = "timeSpent";
+  public static final String SERIALIZED_NAME_TIME_SPENT = "timeSpent";
+  @SerializedName(SERIALIZED_NAME_TIME_SPENT)
   @javax.annotation.Nullable
   private String timeSpent;
 
-  public static final String JSON_PROPERTY_TIME_SPENT_SECONDS = "timeSpentSeconds";
+  public static final String SERIALIZED_NAME_TIME_SPENT_SECONDS = "timeSpentSeconds";
+  @SerializedName(SERIALIZED_NAME_TIME_SPENT_SECONDS)
   @javax.annotation.Nullable
   private Long timeSpentSeconds;
 
-  public TimeTrackingDetails() { 
+  public TimeTrackingDetails() {
   }
 
-  @JsonCreator
   public TimeTrackingDetails(
-    @JsonProperty(JSON_PROPERTY_ORIGINAL_ESTIMATE) String originalEstimate, 
-    @JsonProperty(JSON_PROPERTY_ORIGINAL_ESTIMATE_SECONDS) Long originalEstimateSeconds, 
-    @JsonProperty(JSON_PROPERTY_REMAINING_ESTIMATE) String remainingEstimate, 
-    @JsonProperty(JSON_PROPERTY_REMAINING_ESTIMATE_SECONDS) Long remainingEstimateSeconds, 
-    @JsonProperty(JSON_PROPERTY_TIME_SPENT) String timeSpent, 
-    @JsonProperty(JSON_PROPERTY_TIME_SPENT_SECONDS) Long timeSpentSeconds
+     String originalEstimate, 
+     Long originalEstimateSeconds, 
+     String remainingEstimate, 
+     Long remainingEstimateSeconds, 
+     String timeSpent, 
+     Long timeSpentSeconds
   ) {
-  this();
+    this();
     this.originalEstimate = originalEstimate;
     this.originalEstimateSeconds = originalEstimateSeconds;
     this.remainingEstimate = remainingEstimate;
@@ -93,12 +107,9 @@ public class TimeTrackingDetails {
    * @return originalEstimate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_ESTIMATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOriginalEstimate() {
     return originalEstimate;
   }
-
 
 
 
@@ -107,12 +118,9 @@ public class TimeTrackingDetails {
    * @return originalEstimateSeconds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_ESTIMATE_SECONDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getOriginalEstimateSeconds() {
     return originalEstimateSeconds;
   }
-
 
 
 
@@ -121,12 +129,9 @@ public class TimeTrackingDetails {
    * @return remainingEstimate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REMAINING_ESTIMATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRemainingEstimate() {
     return remainingEstimate;
   }
-
 
 
 
@@ -135,12 +140,9 @@ public class TimeTrackingDetails {
    * @return remainingEstimateSeconds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REMAINING_ESTIMATE_SECONDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getRemainingEstimateSeconds() {
     return remainingEstimateSeconds;
   }
-
 
 
 
@@ -149,12 +151,9 @@ public class TimeTrackingDetails {
    * @return timeSpent
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_SPENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTimeSpent() {
     return timeSpent;
   }
-
 
 
 
@@ -163,8 +162,6 @@ public class TimeTrackingDetails {
    * @return timeSpentSeconds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_SPENT_SECONDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getTimeSpentSeconds() {
     return timeSpentSeconds;
   }
@@ -172,9 +169,6 @@ public class TimeTrackingDetails {
 
 
 
-  /**
-   * Return true if this TimeTrackingDetails object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -222,69 +216,97 @@ public class TimeTrackingDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("originalEstimate", "originalEstimateSeconds", "remainingEstimate", "remainingEstimateSeconds", "timeSpent", "timeSpentSeconds"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TimeTrackingDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TimeTrackingDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TimeTrackingDetails is not found in the empty JSON string", TimeTrackingDetails.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!TimeTrackingDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `TimeTrackingDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("originalEstimate") != null && !jsonObj.get("originalEstimate").isJsonNull()) && !jsonObj.get("originalEstimate").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `originalEstimate` to be a primitive type in the JSON string but got `%s`", jsonObj.get("originalEstimate").toString()));
+      }
+      if ((jsonObj.get("remainingEstimate") != null && !jsonObj.get("remainingEstimate").isJsonNull()) && !jsonObj.get("remainingEstimate").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `remainingEstimate` to be a primitive type in the JSON string but got `%s`", jsonObj.get("remainingEstimate").toString()));
+      }
+      if ((jsonObj.get("timeSpent") != null && !jsonObj.get("timeSpent").isJsonNull()) && !jsonObj.get("timeSpent").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `timeSpent` to be a primitive type in the JSON string but got `%s`", jsonObj.get("timeSpent").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TimeTrackingDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TimeTrackingDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TimeTrackingDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TimeTrackingDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TimeTrackingDetails>() {
+           @Override
+           public void write(JsonWriter out, TimeTrackingDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TimeTrackingDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of TimeTrackingDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TimeTrackingDetails
+   * @throws IOException if the JSON string is invalid with respect to TimeTrackingDetails
+   */
+  public static TimeTrackingDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TimeTrackingDetails.class);
+  }
 
-    // add `originalEstimate` to the URL query string
-    if (getOriginalEstimate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soriginalEstimate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOriginalEstimate()))));
-    }
-
-    // add `originalEstimateSeconds` to the URL query string
-    if (getOriginalEstimateSeconds() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soriginalEstimateSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOriginalEstimateSeconds()))));
-    }
-
-    // add `remainingEstimate` to the URL query string
-    if (getRemainingEstimate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sremainingEstimate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRemainingEstimate()))));
-    }
-
-    // add `remainingEstimateSeconds` to the URL query string
-    if (getRemainingEstimateSeconds() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sremainingEstimateSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRemainingEstimateSeconds()))));
-    }
-
-    // add `timeSpent` to the URL query string
-    if (getTimeSpent() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeSpent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeSpent()))));
-    }
-
-    // add `timeSpentSeconds` to the URL query string
-    if (getTimeSpentSeconds() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeSpentSeconds%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeSpentSeconds()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of TimeTrackingDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

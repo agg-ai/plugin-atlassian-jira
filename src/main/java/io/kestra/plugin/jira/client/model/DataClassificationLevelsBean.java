@@ -13,39 +13,54 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.DataClassificationTagBean;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The data classification.
  */
-@JsonPropertyOrder({
-  DataClassificationLevelsBean.JSON_PROPERTY_CLASSIFICATIONS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class DataClassificationLevelsBean {
-  public static final String JSON_PROPERTY_CLASSIFICATIONS = "classifications";
+  public static final String SERIALIZED_NAME_CLASSIFICATIONS = "classifications";
+  @SerializedName(SERIALIZED_NAME_CLASSIFICATIONS)
   @javax.annotation.Nullable
   private List<DataClassificationTagBean> classifications = new ArrayList<>();
 
-  public DataClassificationLevelsBean() { 
+  public DataClassificationLevelsBean() {
   }
 
   public DataClassificationLevelsBean classifications(@javax.annotation.Nullable List<DataClassificationTagBean> classifications) {
@@ -66,23 +81,16 @@ public class DataClassificationLevelsBean {
    * @return classifications
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CLASSIFICATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<DataClassificationTagBean> getClassifications() {
     return classifications;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CLASSIFICATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setClassifications(@javax.annotation.Nullable List<DataClassificationTagBean> classifications) {
     this.classifications = classifications;
   }
 
 
-  /**
-   * Return true if this DataClassificationLevelsBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -120,49 +128,102 @@ public class DataClassificationLevelsBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("classifications"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to DataClassificationLevelsBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `classifications` to the URL query string
-    if (getClassifications() != null) {
-      for (int i = 0; i < getClassifications().size(); i++) {
-        if (getClassifications().get(i) != null) {
-          joiner.add(getClassifications().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sclassifications%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!DataClassificationLevelsBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in DataClassificationLevelsBean is not found in the empty JSON string", DataClassificationLevelsBean.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!DataClassificationLevelsBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `DataClassificationLevelsBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("classifications") != null && !jsonObj.get("classifications").isJsonNull()) {
+        JsonArray jsonArrayclassifications = jsonObj.getAsJsonArray("classifications");
+        if (jsonArrayclassifications != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("classifications").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `classifications` to be an array in the JSON string but got `%s`", jsonObj.get("classifications").toString()));
+          }
+
+          // validate the optional field `classifications` (array)
+          for (int i = 0; i < jsonArrayclassifications.size(); i++) {
+            DataClassificationTagBean.validateJsonElement(jsonArrayclassifications.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!DataClassificationLevelsBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'DataClassificationLevelsBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<DataClassificationLevelsBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(DataClassificationLevelsBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<DataClassificationLevelsBean>() {
+           @Override
+           public void write(JsonWriter out, DataClassificationLevelsBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public DataClassificationLevelsBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of DataClassificationLevelsBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of DataClassificationLevelsBean
+   * @throws IOException if the JSON string is invalid with respect to DataClassificationLevelsBean
+   */
+  public static DataClassificationLevelsBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, DataClassificationLevelsBean.class);
+  }
+
+  /**
+   * Convert an instance of DataClassificationLevelsBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

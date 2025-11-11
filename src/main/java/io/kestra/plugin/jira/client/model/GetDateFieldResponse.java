@@ -13,47 +13,62 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * GetDateFieldResponse
  */
-@JsonPropertyOrder({
-  GetDateFieldResponse.JSON_PROPERTY_DATE_CUSTOM_FIELD_ID,
-  GetDateFieldResponse.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class GetDateFieldResponse {
-  public static final String JSON_PROPERTY_DATE_CUSTOM_FIELD_ID = "dateCustomFieldId";
+  public static final String SERIALIZED_NAME_DATE_CUSTOM_FIELD_ID = "dateCustomFieldId";
+  @SerializedName(SERIALIZED_NAME_DATE_CUSTOM_FIELD_ID)
   @javax.annotation.Nullable
   private Long dateCustomFieldId;
 
   /**
    * The date field type. This is \&quot;DueDate\&quot;, \&quot;TargetStartDate\&quot;, \&quot;TargetEndDate\&quot; or \&quot;DateCustomField\&quot;.
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    DUE_DATE(String.valueOf("DueDate")),
+    DUE_DATE("DueDate"),
     
-    TARGET_START_DATE(String.valueOf("TargetStartDate")),
+    TARGET_START_DATE("TargetStartDate"),
     
-    TARGET_END_DATE(String.valueOf("TargetEndDate")),
+    TARGET_END_DATE("TargetEndDate"),
     
-    DATE_CUSTOM_FIELD(String.valueOf("DateCustomField"));
+    DATE_CUSTOM_FIELD("DateCustomField");
 
     private String value;
 
@@ -61,7 +76,6 @@ public class GetDateFieldResponse {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -71,7 +85,6 @@ public class GetDateFieldResponse {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -80,13 +93,32 @@ public class GetDateFieldResponse {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nonnull
   private TypeEnum type;
 
-  public GetDateFieldResponse() { 
+  public GetDateFieldResponse() {
   }
 
   public GetDateFieldResponse dateCustomFieldId(@javax.annotation.Nullable Long dateCustomFieldId) {
@@ -99,15 +131,10 @@ public class GetDateFieldResponse {
    * @return dateCustomFieldId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DATE_CUSTOM_FIELD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getDateCustomFieldId() {
     return dateCustomFieldId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DATE_CUSTOM_FIELD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateCustomFieldId(@javax.annotation.Nullable Long dateCustomFieldId) {
     this.dateCustomFieldId = dateCustomFieldId;
   }
@@ -123,23 +150,16 @@ public class GetDateFieldResponse {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this GetDateFieldResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -179,49 +199,100 @@ public class GetDateFieldResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("dateCustomFieldId", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("type"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to GetDateFieldResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!GetDateFieldResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in GetDateFieldResponse is not found in the empty JSON string", GetDateFieldResponse.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!GetDateFieldResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `GetDateFieldResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : GetDateFieldResponse.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the required field `type`
+      TypeEnum.validateJsonElement(jsonObj.get("type"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!GetDateFieldResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'GetDateFieldResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<GetDateFieldResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(GetDateFieldResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<GetDateFieldResponse>() {
+           @Override
+           public void write(JsonWriter out, GetDateFieldResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public GetDateFieldResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of GetDateFieldResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of GetDateFieldResponse
+   * @throws IOException if the JSON string is invalid with respect to GetDateFieldResponse
+   */
+  public static GetDateFieldResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, GetDateFieldResponse.class);
+  }
 
-    // add `dateCustomFieldId` to the URL query string
-    if (getDateCustomFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdateCustomFieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDateCustomFieldId()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of GetDateFieldResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

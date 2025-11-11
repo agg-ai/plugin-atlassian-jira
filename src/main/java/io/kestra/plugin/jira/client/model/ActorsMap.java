@@ -13,48 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * ActorsMap
  */
-@JsonPropertyOrder({
-  ActorsMap.JSON_PROPERTY_GROUP,
-  ActorsMap.JSON_PROPERTY_GROUP_ID,
-  ActorsMap.JSON_PROPERTY_USER
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ActorsMap {
-  public static final String JSON_PROPERTY_GROUP = "group";
+  public static final String SERIALIZED_NAME_GROUP = "group";
+  @SerializedName(SERIALIZED_NAME_GROUP)
   @javax.annotation.Nullable
   private List<String> group = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_GROUP_ID = "groupId";
+  public static final String SERIALIZED_NAME_GROUP_ID = "groupId";
+  @SerializedName(SERIALIZED_NAME_GROUP_ID)
   @javax.annotation.Nullable
   private List<String> groupId = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_USER = "user";
+  public static final String SERIALIZED_NAME_USER = "user";
+  @SerializedName(SERIALIZED_NAME_USER)
   @javax.annotation.Nullable
   private List<String> user = new ArrayList<>();
 
-  public ActorsMap() { 
+  public ActorsMap() {
   }
 
   public ActorsMap group(@javax.annotation.Nullable List<String> group) {
@@ -75,15 +90,10 @@ public class ActorsMap {
    * @return group
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getGroup() {
     return group;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroup(@javax.annotation.Nullable List<String> group) {
     this.group = group;
   }
@@ -107,15 +117,10 @@ public class ActorsMap {
    * @return groupId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getGroupId() {
     return groupId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupId(@javax.annotation.Nullable List<String> groupId) {
     this.groupId = groupId;
   }
@@ -139,23 +144,16 @@ public class ActorsMap {
    * @return user
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getUser() {
     return user;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUser(@javax.annotation.Nullable List<String> user) {
     this.user = user;
   }
 
 
-  /**
-   * Return true if this ActorsMap object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -197,66 +195,100 @@ public class ActorsMap {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("group", "groupId", "user"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ActorsMap
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `group` to the URL query string
-    if (getGroup() != null) {
-      for (int i = 0; i < getGroup().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sgroup%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getGroup().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ActorsMap.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ActorsMap is not found in the empty JSON string", ActorsMap.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `groupId` to the URL query string
-    if (getGroupId() != null) {
-      for (int i = 0; i < getGroupId().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sgroupId%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getGroupId().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ActorsMap.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ActorsMap` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
-
-    // add `user` to the URL query string
-    if (getUser() != null) {
-      for (int i = 0; i < getUser().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%suser%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getUser().get(i)))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("group") != null && !jsonObj.get("group").isJsonNull() && !jsonObj.get("group").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `group` to be an array in the JSON string but got `%s`", jsonObj.get("group").toString()));
       }
-    }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("groupId") != null && !jsonObj.get("groupId").isJsonNull() && !jsonObj.get("groupId").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groupId` to be an array in the JSON string but got `%s`", jsonObj.get("groupId").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("user") != null && !jsonObj.get("user").isJsonNull() && !jsonObj.get("user").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `user` to be an array in the JSON string but got `%s`", jsonObj.get("user").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ActorsMap.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ActorsMap' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ActorsMap> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ActorsMap.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ActorsMap>() {
+           @Override
+           public void write(JsonWriter out, ActorsMap value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ActorsMap read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ActorsMap given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ActorsMap
+   * @throws IOException if the JSON string is invalid with respect to ActorsMap
+   */
+  public static ActorsMap fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ActorsMap.class);
+  }
+
+  /**
+   * Convert an instance of ActorsMap to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

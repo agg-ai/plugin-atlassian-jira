@@ -10,657 +10,647 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.IdBean;
 import io.kestra.plugin.jira.client.model.PermissionScheme;
 import io.kestra.plugin.jira.client.model.ProjectIssueSecurityLevels;
 import io.kestra.plugin.jira.client.model.SecurityScheme;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectPermissionSchemesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ProjectPermissionSchemesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ProjectPermissionSchemesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for assignPermissionScheme
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param idBean  (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if:   *  the user does not have the necessary permission to edit the project&#39;s configuration.  *  the Jira instance is Jira Core Free or Jira Software Free. Permission schemes cannot be assigned to projects on free plans. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or permission scheme is not found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call assignPermissionSchemeCall(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ProjectPermissionSchemesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ProjectPermissionSchemesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Assign permission scheme
-   * Assigns a permission scheme with a project. See [Managing project permissions](https://confluence.atlassian.com/x/yodKLg) for more information about permission schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg)
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param idBean  (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
-   * @return PermissionScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PermissionScheme assignPermissionScheme(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand) throws ApiException {
-    return assignPermissionScheme(projectKeyOrId, idBean, expand, null);
-  }
-
-  /**
-   * Assign permission scheme
-   * Assigns a permission scheme with a project. See [Managing project permissions](https://confluence.atlassian.com/x/yodKLg) for more information about permission schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg)
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param idBean  (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PermissionScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PermissionScheme assignPermissionScheme(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PermissionScheme> localVarResponse = assignPermissionSchemeWithHttpInfo(projectKeyOrId, idBean, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Assign permission scheme
-   * Assigns a permission scheme with a project. See [Managing project permissions](https://confluence.atlassian.com/x/yodKLg) for more information about permission schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg)
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param idBean  (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
-   * @return ApiResponse&lt;PermissionScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PermissionScheme> assignPermissionSchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand) throws ApiException {
-    return assignPermissionSchemeWithHttpInfo(projectKeyOrId, idBean, expand, null);
-  }
-
-  /**
-   * Assign permission scheme
-   * Assigns a permission scheme with a project. See [Managing project permissions](https://confluence.atlassian.com/x/yodKLg) for more information about permission schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg)
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param idBean  (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PermissionScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PermissionScheme> assignPermissionSchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = assignPermissionSchemeRequestBuilder(projectKeyOrId, idBean, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("assignPermissionScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PermissionScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PermissionScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PermissionScheme>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = idBean;
 
-        return new ApiResponse<PermissionScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectKeyOrId}/permissionscheme"
+            .replace("{" + "projectKeyOrId" + "}", localVarApiClient.escapeString(projectKeyOrId.toString()));
 
-  private HttpRequest.Builder assignPermissionSchemeRequestBuilder(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectKeyOrId' is set
-    if (projectKeyOrId == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectKeyOrId' when calling assignPermissionScheme");
-    }
-    // verify the required parameter 'idBean' is set
-    if (idBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'idBean' when calling assignPermissionScheme");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectKeyOrId}/permissionscheme"
-        .replace("{projectKeyOrId}", ApiClient.urlEncode(projectKeyOrId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(idBean);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get assigned permission scheme
-   * Gets the [permission scheme](https://confluence.atlassian.com/x/yodKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
-   * @return PermissionScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PermissionScheme getAssignedPermissionScheme(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand) throws ApiException {
-    return getAssignedPermissionScheme(projectKeyOrId, expand, null);
-  }
-
-  /**
-   * Get assigned permission scheme
-   * Gets the [permission scheme](https://confluence.atlassian.com/x/yodKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PermissionScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PermissionScheme getAssignedPermissionScheme(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PermissionScheme> localVarResponse = getAssignedPermissionSchemeWithHttpInfo(projectKeyOrId, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get assigned permission scheme
-   * Gets the [permission scheme](https://confluence.atlassian.com/x/yodKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
-   * @return ApiResponse&lt;PermissionScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PermissionScheme> getAssignedPermissionSchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand) throws ApiException {
-    return getAssignedPermissionSchemeWithHttpInfo(projectKeyOrId, expand, null);
-  }
-
-  /**
-   * Get assigned permission scheme
-   * Gets the [permission scheme](https://confluence.atlassian.com/x/yodKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PermissionScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PermissionScheme> getAssignedPermissionSchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAssignedPermissionSchemeRequestBuilder(projectKeyOrId, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAssignedPermissionScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PermissionScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PermissionScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PermissionScheme>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PermissionScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAssignedPermissionSchemeRequestBuilder(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectKeyOrId' is set
-    if (projectKeyOrId == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectKeyOrId' when calling getAssignedPermissionScheme");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectKeyOrId}/permissionscheme"
-        .replace("{projectKeyOrId}", ApiClient.urlEncode(projectKeyOrId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project issue security scheme
-   * Returns the [issue security scheme](https://confluence.atlassian.com/x/J4lKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or the *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @return SecurityScheme
-   * @throws ApiException if fails to make API call
-   */
-  public SecurityScheme getProjectIssueSecurityScheme(@javax.annotation.Nonnull String projectKeyOrId) throws ApiException {
-    return getProjectIssueSecurityScheme(projectKeyOrId, null);
-  }
-
-  /**
-   * Get project issue security scheme
-   * Returns the [issue security scheme](https://confluence.atlassian.com/x/J4lKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or the *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param headers Optional headers to include in the request
-   * @return SecurityScheme
-   * @throws ApiException if fails to make API call
-   */
-  public SecurityScheme getProjectIssueSecurityScheme(@javax.annotation.Nonnull String projectKeyOrId, Map<String, String> headers) throws ApiException {
-    ApiResponse<SecurityScheme> localVarResponse = getProjectIssueSecuritySchemeWithHttpInfo(projectKeyOrId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project issue security scheme
-   * Returns the [issue security scheme](https://confluence.atlassian.com/x/J4lKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or the *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @return ApiResponse&lt;SecurityScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SecurityScheme> getProjectIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId) throws ApiException {
-    return getProjectIssueSecuritySchemeWithHttpInfo(projectKeyOrId, null);
-  }
-
-  /**
-   * Get project issue security scheme
-   * Returns the [issue security scheme](https://confluence.atlassian.com/x/J4lKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or the *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SecurityScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SecurityScheme> getProjectIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectIssueSecuritySchemeRequestBuilder(projectKeyOrId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectIssueSecurityScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SecurityScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SecurityScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SecurityScheme>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<SecurityScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectIssueSecuritySchemeRequestBuilder(@javax.annotation.Nonnull String projectKeyOrId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectKeyOrId' is set
-    if (projectKeyOrId == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectKeyOrId' when calling getProjectIssueSecurityScheme");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectKeyOrId}/issuesecuritylevelscheme"
-        .replace("{projectKeyOrId}", ApiClient.urlEncode(projectKeyOrId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project issue security levels
-   * Returns all [issue security](https://confluence.atlassian.com/x/J4lKLg) levels for the project that the user has access to.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project, however, issue security levels are only returned for authenticated user with *Set Issue Security* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project.
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @return ProjectIssueSecurityLevels
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectIssueSecurityLevels getSecurityLevelsForProject(@javax.annotation.Nonnull String projectKeyOrId) throws ApiException {
-    return getSecurityLevelsForProject(projectKeyOrId, null);
-  }
-
-  /**
-   * Get project issue security levels
-   * Returns all [issue security](https://confluence.atlassian.com/x/J4lKLg) levels for the project that the user has access to.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project, however, issue security levels are only returned for authenticated user with *Set Issue Security* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project.
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectIssueSecurityLevels
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectIssueSecurityLevels getSecurityLevelsForProject(@javax.annotation.Nonnull String projectKeyOrId, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectIssueSecurityLevels> localVarResponse = getSecurityLevelsForProjectWithHttpInfo(projectKeyOrId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project issue security levels
-   * Returns all [issue security](https://confluence.atlassian.com/x/J4lKLg) levels for the project that the user has access to.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project, however, issue security levels are only returned for authenticated user with *Set Issue Security* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project.
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @return ApiResponse&lt;ProjectIssueSecurityLevels&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectIssueSecurityLevels> getSecurityLevelsForProjectWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId) throws ApiException {
-    return getSecurityLevelsForProjectWithHttpInfo(projectKeyOrId, null);
-  }
-
-  /**
-   * Get project issue security levels
-   * Returns all [issue security](https://confluence.atlassian.com/x/J4lKLg) levels for the project that the user has access to.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project, however, issue security levels are only returned for authenticated user with *Set Issue Security* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project.
-   * @param projectKeyOrId The project ID or project key (case sensitive). (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectIssueSecurityLevels&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectIssueSecurityLevels> getSecurityLevelsForProjectWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getSecurityLevelsForProjectRequestBuilder(projectKeyOrId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getSecurityLevelsForProject", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectIssueSecurityLevels>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectIssueSecurityLevels responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectIssueSecurityLevels>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ProjectIssueSecurityLevels>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getSecurityLevelsForProjectRequestBuilder(@javax.annotation.Nonnull String projectKeyOrId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectKeyOrId' is set
-    if (projectKeyOrId == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectKeyOrId' when calling getSecurityLevelsForProject");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call assignPermissionSchemeValidateBeforeCall(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectKeyOrId' is set
+        if (projectKeyOrId == null) {
+            throw new ApiException("Missing the required parameter 'projectKeyOrId' when calling assignPermissionScheme(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/project/{projectKeyOrId}/securitylevel"
-        .replace("{projectKeyOrId}", ApiClient.urlEncode(projectKeyOrId.toString()));
+        // verify the required parameter 'idBean' is set
+        if (idBean == null) {
+            throw new ApiException("Missing the required parameter 'idBean' when calling assignPermissionScheme(Async)");
+        }
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        return assignPermissionSchemeCall(projectKeyOrId, idBean, expand, _callback);
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Assign permission scheme
+     * Assigns a permission scheme with a project. See [Managing project permissions](https://confluence.atlassian.com/x/yodKLg) for more information about permission schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg)
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param idBean  (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
+     * @return PermissionScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if:   *  the user does not have the necessary permission to edit the project&#39;s configuration.  *  the Jira instance is Jira Core Free or Jira Software Free. Permission schemes cannot be assigned to projects on free plans. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or permission scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PermissionScheme assignPermissionScheme(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PermissionScheme> localVarResp = assignPermissionSchemeWithHttpInfo(projectKeyOrId, idBean, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Assign permission scheme
+     * Assigns a permission scheme with a project. See [Managing project permissions](https://confluence.atlassian.com/x/yodKLg) for more information about permission schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg)
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param idBean  (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
+     * @return ApiResponse&lt;PermissionScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if:   *  the user does not have the necessary permission to edit the project&#39;s configuration.  *  the Jira instance is Jira Core Free or Jira Software Free. Permission schemes cannot be assigned to projects on free plans. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or permission scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PermissionScheme> assignPermissionSchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = assignPermissionSchemeValidateBeforeCall(projectKeyOrId, idBean, expand, null);
+        Type localVarReturnType = new TypeToken<PermissionScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Assign permission scheme (asynchronously)
+     * Assigns a permission scheme with a project. See [Managing project permissions](https://confluence.atlassian.com/x/yodKLg) for more information about permission schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg)
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param idBean  (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if:   *  the user does not have the necessary permission to edit the project&#39;s configuration.  *  the Jira instance is Jira Core Free or Jira Software Free. Permission schemes cannot be assigned to projects on free plans. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or permission scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call assignPermissionSchemeAsync(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nonnull IdBean idBean, @javax.annotation.Nullable String expand, final ApiCallback<PermissionScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = assignPermissionSchemeValidateBeforeCall(projectKeyOrId, idBean, expand, _callback);
+        Type localVarReturnType = new TypeToken<PermissionScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAssignedPermissionScheme
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to view the project&#39;s configuration. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAssignedPermissionSchemeCall(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectKeyOrId}/permissionscheme"
+            .replace("{" + "projectKeyOrId" + "}", localVarApiClient.escapeString(projectKeyOrId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAssignedPermissionSchemeValidateBeforeCall(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectKeyOrId' is set
+        if (projectKeyOrId == null) {
+            throw new ApiException("Missing the required parameter 'projectKeyOrId' when calling getAssignedPermissionScheme(Async)");
+        }
+
+        return getAssignedPermissionSchemeCall(projectKeyOrId, expand, _callback);
+
+    }
+
+    /**
+     * Get assigned permission scheme
+     * Gets the [permission scheme](https://confluence.atlassian.com/x/yodKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
+     * @return PermissionScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to view the project&#39;s configuration. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PermissionScheme getAssignedPermissionScheme(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PermissionScheme> localVarResp = getAssignedPermissionSchemeWithHttpInfo(projectKeyOrId, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get assigned permission scheme
+     * Gets the [permission scheme](https://confluence.atlassian.com/x/yodKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
+     * @return ApiResponse&lt;PermissionScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to view the project&#39;s configuration. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PermissionScheme> getAssignedPermissionSchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getAssignedPermissionSchemeValidateBeforeCall(projectKeyOrId, expand, null);
+        Type localVarReturnType = new TypeToken<PermissionScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get assigned permission scheme (asynchronously)
+     * Gets the [permission scheme](https://confluence.atlassian.com/x/yodKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Note that permissions are included when you specify any value. Expand options include:   *  &#x60;all&#x60; Returns all expandable information.  *  &#x60;field&#x60; Returns information about the custom field granted the permission.  *  &#x60;group&#x60; Returns information about the group that is granted the permission.  *  &#x60;permissions&#x60; Returns all permission grants for each permission scheme.  *  &#x60;projectRole&#x60; Returns information about the project role granted the permission.  *  &#x60;user&#x60; Returns information about the user who is granted the permission. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to view the project&#39;s configuration. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAssignedPermissionSchemeAsync(@javax.annotation.Nonnull String projectKeyOrId, @javax.annotation.Nullable String expand, final ApiCallback<PermissionScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAssignedPermissionSchemeValidateBeforeCall(projectKeyOrId, expand, _callback);
+        Type localVarReturnType = new TypeToken<PermissionScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectIssueSecurityScheme
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the project is visible to the user but the user doesn&#39;t have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectIssueSecuritySchemeCall(@javax.annotation.Nonnull String projectKeyOrId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectKeyOrId}/issuesecuritylevelscheme"
+            .replace("{" + "projectKeyOrId" + "}", localVarApiClient.escapeString(projectKeyOrId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectIssueSecuritySchemeValidateBeforeCall(@javax.annotation.Nonnull String projectKeyOrId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectKeyOrId' is set
+        if (projectKeyOrId == null) {
+            throw new ApiException("Missing the required parameter 'projectKeyOrId' when calling getProjectIssueSecurityScheme(Async)");
+        }
+
+        return getProjectIssueSecuritySchemeCall(projectKeyOrId, _callback);
+
+    }
+
+    /**
+     * Get project issue security scheme
+     * Returns the [issue security scheme](https://confluence.atlassian.com/x/J4lKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or the *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @return SecurityScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the project is visible to the user but the user doesn&#39;t have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SecurityScheme getProjectIssueSecurityScheme(@javax.annotation.Nonnull String projectKeyOrId) throws ApiException {
+        ApiResponse<SecurityScheme> localVarResp = getProjectIssueSecuritySchemeWithHttpInfo(projectKeyOrId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project issue security scheme
+     * Returns the [issue security scheme](https://confluence.atlassian.com/x/J4lKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or the *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @return ApiResponse&lt;SecurityScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the project is visible to the user but the user doesn&#39;t have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SecurityScheme> getProjectIssueSecuritySchemeWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId) throws ApiException {
+        okhttp3.Call localVarCall = getProjectIssueSecuritySchemeValidateBeforeCall(projectKeyOrId, null);
+        Type localVarReturnType = new TypeToken<SecurityScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project issue security scheme (asynchronously)
+     * Returns the [issue security scheme](https://confluence.atlassian.com/x/J4lKLg) associated with the project.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or the *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the project is visible to the user but the user doesn&#39;t have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectIssueSecuritySchemeAsync(@javax.annotation.Nonnull String projectKeyOrId, final ApiCallback<SecurityScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectIssueSecuritySchemeValidateBeforeCall(projectKeyOrId, _callback);
+        Type localVarReturnType = new TypeToken<SecurityScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getSecurityLevelsForProject
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSecurityLevelsForProjectCall(@javax.annotation.Nonnull String projectKeyOrId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectKeyOrId}/securitylevel"
+            .replace("{" + "projectKeyOrId" + "}", localVarApiClient.escapeString(projectKeyOrId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getSecurityLevelsForProjectValidateBeforeCall(@javax.annotation.Nonnull String projectKeyOrId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectKeyOrId' is set
+        if (projectKeyOrId == null) {
+            throw new ApiException("Missing the required parameter 'projectKeyOrId' when calling getSecurityLevelsForProject(Async)");
+        }
+
+        return getSecurityLevelsForProjectCall(projectKeyOrId, _callback);
+
+    }
+
+    /**
+     * Get project issue security levels
+     * Returns all [issue security](https://confluence.atlassian.com/x/J4lKLg) levels for the project that the user has access to.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project, however, issue security levels are only returned for authenticated user with *Set Issue Security* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project.
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @return ProjectIssueSecurityLevels
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectIssueSecurityLevels getSecurityLevelsForProject(@javax.annotation.Nonnull String projectKeyOrId) throws ApiException {
+        ApiResponse<ProjectIssueSecurityLevels> localVarResp = getSecurityLevelsForProjectWithHttpInfo(projectKeyOrId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project issue security levels
+     * Returns all [issue security](https://confluence.atlassian.com/x/J4lKLg) levels for the project that the user has access to.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project, however, issue security levels are only returned for authenticated user with *Set Issue Security* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project.
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @return ApiResponse&lt;ProjectIssueSecurityLevels&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectIssueSecurityLevels> getSecurityLevelsForProjectWithHttpInfo(@javax.annotation.Nonnull String projectKeyOrId) throws ApiException {
+        okhttp3.Call localVarCall = getSecurityLevelsForProjectValidateBeforeCall(projectKeyOrId, null);
+        Type localVarReturnType = new TypeToken<ProjectIssueSecurityLevels>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project issue security levels (asynchronously)
+     * Returns all [issue security](https://confluence.atlassian.com/x/J4lKLg) levels for the project that the user has access to.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project, however, issue security levels are only returned for authenticated user with *Set Issue Security* [global permission](https://confluence.atlassian.com/x/x4dKLg) for the project.
+     * @param projectKeyOrId The project ID or project key (case sensitive). (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getSecurityLevelsForProjectAsync(@javax.annotation.Nonnull String projectKeyOrId, final ApiCallback<ProjectIssueSecurityLevels> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getSecurityLevelsForProjectValidateBeforeCall(projectKeyOrId, _callback);
+        Type localVarReturnType = new TypeToken<ProjectIssueSecurityLevels>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

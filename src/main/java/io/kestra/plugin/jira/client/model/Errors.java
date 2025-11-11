@@ -13,57 +13,72 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.Error;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Errors
  */
-@JsonPropertyOrder({
-  Errors.JSON_PROPERTY_ISSUE_IS_SUBTASK,
-  Errors.JSON_PROPERTY_ISSUES_IN_ARCHIVED_PROJECTS,
-  Errors.JSON_PROPERTY_ISSUES_IN_UNLICENSED_PROJECTS,
-  Errors.JSON_PROPERTY_ISSUES_NOT_FOUND,
-  Errors.JSON_PROPERTY_USER_DOES_NOT_HAVE_PERMISSION
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Errors {
-  public static final String JSON_PROPERTY_ISSUE_IS_SUBTASK = "issueIsSubtask";
+  public static final String SERIALIZED_NAME_ISSUE_IS_SUBTASK = "issueIsSubtask";
+  @SerializedName(SERIALIZED_NAME_ISSUE_IS_SUBTASK)
   @javax.annotation.Nullable
   private Error issueIsSubtask;
 
-  public static final String JSON_PROPERTY_ISSUES_IN_ARCHIVED_PROJECTS = "issuesInArchivedProjects";
+  public static final String SERIALIZED_NAME_ISSUES_IN_ARCHIVED_PROJECTS = "issuesInArchivedProjects";
+  @SerializedName(SERIALIZED_NAME_ISSUES_IN_ARCHIVED_PROJECTS)
   @javax.annotation.Nullable
   private Error issuesInArchivedProjects;
 
-  public static final String JSON_PROPERTY_ISSUES_IN_UNLICENSED_PROJECTS = "issuesInUnlicensedProjects";
+  public static final String SERIALIZED_NAME_ISSUES_IN_UNLICENSED_PROJECTS = "issuesInUnlicensedProjects";
+  @SerializedName(SERIALIZED_NAME_ISSUES_IN_UNLICENSED_PROJECTS)
   @javax.annotation.Nullable
   private Error issuesInUnlicensedProjects;
 
-  public static final String JSON_PROPERTY_ISSUES_NOT_FOUND = "issuesNotFound";
+  public static final String SERIALIZED_NAME_ISSUES_NOT_FOUND = "issuesNotFound";
+  @SerializedName(SERIALIZED_NAME_ISSUES_NOT_FOUND)
   @javax.annotation.Nullable
   private Error issuesNotFound;
 
-  public static final String JSON_PROPERTY_USER_DOES_NOT_HAVE_PERMISSION = "userDoesNotHavePermission";
+  public static final String SERIALIZED_NAME_USER_DOES_NOT_HAVE_PERMISSION = "userDoesNotHavePermission";
+  @SerializedName(SERIALIZED_NAME_USER_DOES_NOT_HAVE_PERMISSION)
   @javax.annotation.Nullable
   private Error userDoesNotHavePermission;
 
-  public Errors() { 
+  public Errors() {
   }
 
   public Errors issueIsSubtask(@javax.annotation.Nullable Error issueIsSubtask) {
@@ -76,15 +91,10 @@ public class Errors {
    * @return issueIsSubtask
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IS_SUBTASK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Error getIssueIsSubtask() {
     return issueIsSubtask;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IS_SUBTASK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueIsSubtask(@javax.annotation.Nullable Error issueIsSubtask) {
     this.issueIsSubtask = issueIsSubtask;
   }
@@ -100,15 +110,10 @@ public class Errors {
    * @return issuesInArchivedProjects
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_IN_ARCHIVED_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Error getIssuesInArchivedProjects() {
     return issuesInArchivedProjects;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_IN_ARCHIVED_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssuesInArchivedProjects(@javax.annotation.Nullable Error issuesInArchivedProjects) {
     this.issuesInArchivedProjects = issuesInArchivedProjects;
   }
@@ -124,15 +129,10 @@ public class Errors {
    * @return issuesInUnlicensedProjects
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_IN_UNLICENSED_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Error getIssuesInUnlicensedProjects() {
     return issuesInUnlicensedProjects;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_IN_UNLICENSED_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssuesInUnlicensedProjects(@javax.annotation.Nullable Error issuesInUnlicensedProjects) {
     this.issuesInUnlicensedProjects = issuesInUnlicensedProjects;
   }
@@ -148,15 +148,10 @@ public class Errors {
    * @return issuesNotFound
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_NOT_FOUND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Error getIssuesNotFound() {
     return issuesNotFound;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_NOT_FOUND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssuesNotFound(@javax.annotation.Nullable Error issuesNotFound) {
     this.issuesNotFound = issuesNotFound;
   }
@@ -172,23 +167,16 @@ public class Errors {
    * @return userDoesNotHavePermission
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USER_DOES_NOT_HAVE_PERMISSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Error getUserDoesNotHavePermission() {
     return userDoesNotHavePermission;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_USER_DOES_NOT_HAVE_PERMISSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserDoesNotHavePermission(@javax.annotation.Nullable Error userDoesNotHavePermission) {
     this.userDoesNotHavePermission = userDoesNotHavePermission;
   }
 
 
-  /**
-   * Return true if this Errors object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -234,64 +222,108 @@ public class Errors {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueIsSubtask", "issuesInArchivedProjects", "issuesInUnlicensedProjects", "issuesNotFound", "userDoesNotHavePermission"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Errors
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Errors.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Errors is not found in the empty JSON string", Errors.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Errors.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Errors` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `issueIsSubtask`
+      if (jsonObj.get("issueIsSubtask") != null && !jsonObj.get("issueIsSubtask").isJsonNull()) {
+        Error.validateJsonElement(jsonObj.get("issueIsSubtask"));
+      }
+      // validate the optional field `issuesInArchivedProjects`
+      if (jsonObj.get("issuesInArchivedProjects") != null && !jsonObj.get("issuesInArchivedProjects").isJsonNull()) {
+        Error.validateJsonElement(jsonObj.get("issuesInArchivedProjects"));
+      }
+      // validate the optional field `issuesInUnlicensedProjects`
+      if (jsonObj.get("issuesInUnlicensedProjects") != null && !jsonObj.get("issuesInUnlicensedProjects").isJsonNull()) {
+        Error.validateJsonElement(jsonObj.get("issuesInUnlicensedProjects"));
+      }
+      // validate the optional field `issuesNotFound`
+      if (jsonObj.get("issuesNotFound") != null && !jsonObj.get("issuesNotFound").isJsonNull()) {
+        Error.validateJsonElement(jsonObj.get("issuesNotFound"));
+      }
+      // validate the optional field `userDoesNotHavePermission`
+      if (jsonObj.get("userDoesNotHavePermission") != null && !jsonObj.get("userDoesNotHavePermission").isJsonNull()) {
+        Error.validateJsonElement(jsonObj.get("userDoesNotHavePermission"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Errors.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Errors' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Errors> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Errors.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Errors>() {
+           @Override
+           public void write(JsonWriter out, Errors value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Errors read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of Errors given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Errors
+   * @throws IOException if the JSON string is invalid with respect to Errors
+   */
+  public static Errors fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Errors.class);
+  }
 
-    // add `issueIsSubtask` to the URL query string
-    if (getIssueIsSubtask() != null) {
-      joiner.add(getIssueIsSubtask().toUrlQueryString(prefix + "issueIsSubtask" + suffix));
-    }
-
-    // add `issuesInArchivedProjects` to the URL query string
-    if (getIssuesInArchivedProjects() != null) {
-      joiner.add(getIssuesInArchivedProjects().toUrlQueryString(prefix + "issuesInArchivedProjects" + suffix));
-    }
-
-    // add `issuesInUnlicensedProjects` to the URL query string
-    if (getIssuesInUnlicensedProjects() != null) {
-      joiner.add(getIssuesInUnlicensedProjects().toUrlQueryString(prefix + "issuesInUnlicensedProjects" + suffix));
-    }
-
-    // add `issuesNotFound` to the URL query string
-    if (getIssuesNotFound() != null) {
-      joiner.add(getIssuesNotFound().toUrlQueryString(prefix + "issuesNotFound" + suffix));
-    }
-
-    // add `userDoesNotHavePermission` to the URL query string
-    if (getUserDoesNotHavePermission() != null) {
-      joiner.add(getUserDoesNotHavePermission().toUrlQueryString(prefix + "userDoesNotHavePermission" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of Errors to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

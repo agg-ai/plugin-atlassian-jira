@@ -13,148 +13,162 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SimpleLink;
 import io.kestra.plugin.jira.client.model.VersionApprover;
 import io.kestra.plugin.jira.client.model.VersionIssuesStatus;
+import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a project version.
  */
-@JsonPropertyOrder({
-  Version.JSON_PROPERTY_APPROVERS,
-  Version.JSON_PROPERTY_ARCHIVED,
-  Version.JSON_PROPERTY_DESCRIPTION,
-  Version.JSON_PROPERTY_DRIVER,
-  Version.JSON_PROPERTY_EXPAND,
-  Version.JSON_PROPERTY_ID,
-  Version.JSON_PROPERTY_ISSUES_STATUS_FOR_FIX_VERSION,
-  Version.JSON_PROPERTY_MOVE_UNFIXED_ISSUES_TO,
-  Version.JSON_PROPERTY_NAME,
-  Version.JSON_PROPERTY_OPERATIONS,
-  Version.JSON_PROPERTY_OVERDUE,
-  Version.JSON_PROPERTY_PROJECT,
-  Version.JSON_PROPERTY_PROJECT_ID,
-  Version.JSON_PROPERTY_RELEASE_DATE,
-  Version.JSON_PROPERTY_RELEASED,
-  Version.JSON_PROPERTY_SELF,
-  Version.JSON_PROPERTY_START_DATE,
-  Version.JSON_PROPERTY_USER_RELEASE_DATE,
-  Version.JSON_PROPERTY_USER_START_DATE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Version {
-  public static final String JSON_PROPERTY_APPROVERS = "approvers";
+  public static final String SERIALIZED_NAME_APPROVERS = "approvers";
+  @SerializedName(SERIALIZED_NAME_APPROVERS)
   @javax.annotation.Nullable
   private List<VersionApprover> approvers = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ARCHIVED = "archived";
+  public static final String SERIALIZED_NAME_ARCHIVED = "archived";
+  @SerializedName(SERIALIZED_NAME_ARCHIVED)
   @javax.annotation.Nullable
   private Boolean archived;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_DRIVER = "driver";
+  public static final String SERIALIZED_NAME_DRIVER = "driver";
+  @SerializedName(SERIALIZED_NAME_DRIVER)
   @javax.annotation.Nullable
   private String driver;
 
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_ISSUES_STATUS_FOR_FIX_VERSION = "issuesStatusForFixVersion";
+  public static final String SERIALIZED_NAME_ISSUES_STATUS_FOR_FIX_VERSION = "issuesStatusForFixVersion";
+  @SerializedName(SERIALIZED_NAME_ISSUES_STATUS_FOR_FIX_VERSION)
   @javax.annotation.Nullable
   private VersionIssuesStatus issuesStatusForFixVersion;
 
-  public static final String JSON_PROPERTY_MOVE_UNFIXED_ISSUES_TO = "moveUnfixedIssuesTo";
+  public static final String SERIALIZED_NAME_MOVE_UNFIXED_ISSUES_TO = "moveUnfixedIssuesTo";
+  @SerializedName(SERIALIZED_NAME_MOVE_UNFIXED_ISSUES_TO)
   @javax.annotation.Nullable
   private URI moveUnfixedIssuesTo;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_OPERATIONS = "operations";
+  public static final String SERIALIZED_NAME_OPERATIONS = "operations";
+  @SerializedName(SERIALIZED_NAME_OPERATIONS)
   @javax.annotation.Nullable
   private List<SimpleLink> operations = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_OVERDUE = "overdue";
+  public static final String SERIALIZED_NAME_OVERDUE = "overdue";
+  @SerializedName(SERIALIZED_NAME_OVERDUE)
   @javax.annotation.Nullable
   private Boolean overdue;
 
-  public static final String JSON_PROPERTY_PROJECT = "project";
+  public static final String SERIALIZED_NAME_PROJECT = "project";
+  @SerializedName(SERIALIZED_NAME_PROJECT)
   @javax.annotation.Nullable
   private String project;
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nullable
   private Long projectId;
 
-  public static final String JSON_PROPERTY_RELEASE_DATE = "releaseDate";
+  public static final String SERIALIZED_NAME_RELEASE_DATE = "releaseDate";
+  @SerializedName(SERIALIZED_NAME_RELEASE_DATE)
   @javax.annotation.Nullable
   private LocalDate releaseDate;
 
-  public static final String JSON_PROPERTY_RELEASED = "released";
+  public static final String SERIALIZED_NAME_RELEASED = "released";
+  @SerializedName(SERIALIZED_NAME_RELEASED)
   @javax.annotation.Nullable
   private Boolean released;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_START_DATE = "startDate";
+  public static final String SERIALIZED_NAME_START_DATE = "startDate";
+  @SerializedName(SERIALIZED_NAME_START_DATE)
   @javax.annotation.Nullable
   private LocalDate startDate;
 
-  public static final String JSON_PROPERTY_USER_RELEASE_DATE = "userReleaseDate";
+  public static final String SERIALIZED_NAME_USER_RELEASE_DATE = "userReleaseDate";
+  @SerializedName(SERIALIZED_NAME_USER_RELEASE_DATE)
   @javax.annotation.Nullable
   private String userReleaseDate;
 
-  public static final String JSON_PROPERTY_USER_START_DATE = "userStartDate";
+  public static final String SERIALIZED_NAME_USER_START_DATE = "userStartDate";
+  @SerializedName(SERIALIZED_NAME_USER_START_DATE)
   @javax.annotation.Nullable
   private String userStartDate;
 
-  public Version() { 
+  public Version() {
   }
 
-  @JsonCreator
   public Version(
-    @JsonProperty(JSON_PROPERTY_APPROVERS) List<VersionApprover> approvers, 
-    @JsonProperty(JSON_PROPERTY_DRIVER) String driver, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_ISSUES_STATUS_FOR_FIX_VERSION) VersionIssuesStatus issuesStatusForFixVersion, 
-    @JsonProperty(JSON_PROPERTY_OPERATIONS) List<SimpleLink> operations, 
-    @JsonProperty(JSON_PROPERTY_OVERDUE) Boolean overdue, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self, 
-    @JsonProperty(JSON_PROPERTY_USER_RELEASE_DATE) String userReleaseDate, 
-    @JsonProperty(JSON_PROPERTY_USER_START_DATE) String userStartDate
+     List<VersionApprover> approvers, 
+     String driver, 
+     String id, 
+     VersionIssuesStatus issuesStatusForFixVersion, 
+     List<SimpleLink> operations, 
+     Boolean overdue, 
+     URI self, 
+     String userReleaseDate, 
+     String userStartDate
   ) {
-  this();
+    this();
     this.approvers = approvers;
     this.driver = driver;
     this.id = id;
@@ -171,12 +185,9 @@ public class Version {
    * @return approvers
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_APPROVERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<VersionApprover> getApprovers() {
     return approvers;
   }
-
 
 
 
@@ -190,15 +201,10 @@ public class Version {
    * @return archived
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ARCHIVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getArchived() {
     return archived;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ARCHIVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setArchived(@javax.annotation.Nullable Boolean archived) {
     this.archived = archived;
   }
@@ -214,15 +220,10 @@ public class Version {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -233,12 +234,9 @@ public class Version {
    * @return driver
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DRIVER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDriver() {
     return driver;
   }
-
 
 
 
@@ -252,15 +250,10 @@ public class Version {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExpand(@javax.annotation.Nullable String expand) {
     this.expand = expand;
   }
@@ -271,12 +264,9 @@ public class Version {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -285,12 +275,9 @@ public class Version {
    * @return issuesStatusForFixVersion
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES_STATUS_FOR_FIX_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public VersionIssuesStatus getIssuesStatusForFixVersion() {
     return issuesStatusForFixVersion;
   }
-
 
 
 
@@ -304,15 +291,10 @@ public class Version {
    * @return moveUnfixedIssuesTo
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MOVE_UNFIXED_ISSUES_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getMoveUnfixedIssuesTo() {
     return moveUnfixedIssuesTo;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MOVE_UNFIXED_ISSUES_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMoveUnfixedIssuesTo(@javax.annotation.Nullable URI moveUnfixedIssuesTo) {
     this.moveUnfixedIssuesTo = moveUnfixedIssuesTo;
   }
@@ -328,15 +310,10 @@ public class Version {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -347,12 +324,9 @@ public class Version {
    * @return operations
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SimpleLink> getOperations() {
     return operations;
   }
-
 
 
 
@@ -361,12 +335,9 @@ public class Version {
    * @return overdue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OVERDUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getOverdue() {
     return overdue;
   }
-
 
 
 
@@ -380,15 +351,10 @@ public class Version {
    * @return project
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProject() {
     return project;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProject(@javax.annotation.Nullable String project) {
     this.project = project;
   }
@@ -404,15 +370,10 @@ public class Version {
    * @return projectId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getProjectId() {
     return projectId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectId(@javax.annotation.Nullable Long projectId) {
     this.projectId = projectId;
   }
@@ -428,15 +389,10 @@ public class Version {
    * @return releaseDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LocalDate getReleaseDate() {
     return releaseDate;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReleaseDate(@javax.annotation.Nullable LocalDate releaseDate) {
     this.releaseDate = releaseDate;
   }
@@ -452,15 +408,10 @@ public class Version {
    * @return released
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RELEASED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getReleased() {
     return released;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RELEASED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReleased(@javax.annotation.Nullable Boolean released) {
     this.released = released;
   }
@@ -471,12 +422,9 @@ public class Version {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -490,15 +438,10 @@ public class Version {
    * @return startDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LocalDate getStartDate() {
     return startDate;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartDate(@javax.annotation.Nullable LocalDate startDate) {
     this.startDate = startDate;
   }
@@ -509,12 +452,9 @@ public class Version {
    * @return userReleaseDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USER_RELEASE_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUserReleaseDate() {
     return userReleaseDate;
   }
-
 
 
 
@@ -523,8 +463,6 @@ public class Version {
    * @return userStartDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USER_START_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUserStartDate() {
     return userStartDate;
   }
@@ -532,9 +470,6 @@ public class Version {
 
 
 
-  /**
-   * Return true if this Version object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -608,145 +543,136 @@ public class Version {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("approvers", "archived", "description", "driver", "expand", "id", "issuesStatusForFixVersion", "moveUnfixedIssuesTo", "name", "operations", "overdue", "project", "projectId", "releaseDate", "released", "self", "startDate", "userReleaseDate", "userStartDate"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Version
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `approvers` to the URL query string
-    if (getApprovers() != null) {
-      for (int i = 0; i < getApprovers().size(); i++) {
-        if (getApprovers().get(i) != null) {
-          joiner.add(String.format(Locale.ROOT, "%sapprovers%s%s=%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-              ApiClient.urlEncode(ApiClient.valueToString(getApprovers().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Version.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Version is not found in the empty JSON string", Version.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `archived` to the URL query string
-    if (getArchived() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sarchived%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getArchived()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `driver` to the URL query string
-    if (getDriver() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdriver%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDriver()))));
-    }
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `issuesStatusForFixVersion` to the URL query string
-    if (getIssuesStatusForFixVersion() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissuesStatusForFixVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssuesStatusForFixVersion()))));
-    }
-
-    // add `moveUnfixedIssuesTo` to the URL query string
-    if (getMoveUnfixedIssuesTo() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smoveUnfixedIssuesTo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMoveUnfixedIssuesTo()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `operations` to the URL query string
-    if (getOperations() != null) {
-      for (int i = 0; i < getOperations().size(); i++) {
-        if (getOperations().get(i) != null) {
-          joiner.add(getOperations().get(i).toUrlQueryString(String.format(Locale.ROOT, "%soperations%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Version.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Version` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("approvers") != null && !jsonObj.get("approvers").isJsonNull() && !jsonObj.get("approvers").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `approvers` to be an array in the JSON string but got `%s`", jsonObj.get("approvers").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("driver") != null && !jsonObj.get("driver").isJsonNull()) && !jsonObj.get("driver").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `driver` to be a primitive type in the JSON string but got `%s`", jsonObj.get("driver").toString()));
+      }
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("moveUnfixedIssuesTo") != null && !jsonObj.get("moveUnfixedIssuesTo").isJsonNull()) && !jsonObj.get("moveUnfixedIssuesTo").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `moveUnfixedIssuesTo` to be a primitive type in the JSON string but got `%s`", jsonObj.get("moveUnfixedIssuesTo").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (jsonObj.get("operations") != null && !jsonObj.get("operations").isJsonNull()) {
+        JsonArray jsonArrayoperations = jsonObj.getAsJsonArray("operations");
+        if (jsonArrayoperations != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("operations").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `operations` to be an array in the JSON string but got `%s`", jsonObj.get("operations").toString()));
+          }
 
-    // add `overdue` to the URL query string
-    if (getOverdue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soverdue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOverdue()))));
-    }
+          // validate the optional field `operations` (array)
+          for (int i = 0; i < jsonArrayoperations.size(); i++) {
+            SimpleLink.validateJsonElement(jsonArrayoperations.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("project") != null && !jsonObj.get("project").isJsonNull()) && !jsonObj.get("project").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `project` to be a primitive type in the JSON string but got `%s`", jsonObj.get("project").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("userReleaseDate") != null && !jsonObj.get("userReleaseDate").isJsonNull()) && !jsonObj.get("userReleaseDate").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `userReleaseDate` to be a primitive type in the JSON string but got `%s`", jsonObj.get("userReleaseDate").toString()));
+      }
+      if ((jsonObj.get("userStartDate") != null && !jsonObj.get("userStartDate").isJsonNull()) && !jsonObj.get("userStartDate").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `userStartDate` to be a primitive type in the JSON string but got `%s`", jsonObj.get("userStartDate").toString()));
+      }
+  }
 
-    // add `project` to the URL query string
-    if (getProject() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sproject%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProject()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Version.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Version' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Version> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Version.class));
 
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<Version>() {
+           @Override
+           public void write(JsonWriter out, Version value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `releaseDate` to the URL query string
-    if (getReleaseDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sreleaseDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getReleaseDate()))));
-    }
+           @Override
+           public Version read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `released` to the URL query string
-    if (getReleased() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sreleased%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getReleased()))));
+       }.nullSafe();
     }
+  }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+  /**
+   * Create an instance of Version given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Version
+   * @throws IOException if the JSON string is invalid with respect to Version
+   */
+  public static Version fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Version.class);
+  }
 
-    // add `startDate` to the URL query string
-    if (getStartDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
-    }
-
-    // add `userReleaseDate` to the URL query string
-    if (getUserReleaseDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suserReleaseDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserReleaseDate()))));
-    }
-
-    // add `userStartDate` to the URL query string
-    if (getUserStartDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suserStartDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserStartDate()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of Version to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

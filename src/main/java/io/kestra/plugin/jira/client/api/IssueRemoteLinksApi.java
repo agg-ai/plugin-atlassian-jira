@@ -10,903 +10,995 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.RemoteIssueLink;
 import io.kestra.plugin.jira.client.model.RemoteIssueLinkIdentifies;
 import io.kestra.plugin.jira.client.model.RemoteIssueLinkRequest;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueRemoteLinksApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueRemoteLinksApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueRemoteLinksApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createOrUpdateRemoteIssueLink
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param remoteIssueLinkRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the remote issue link is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned if the remote issue link is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createOrUpdateRemoteIssueLinkCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueRemoteLinksApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueRemoteLinksApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create or update remote issue link
-   * Creates or updates a remote issue link for an issue.  If a &#x60;globalId&#x60; is provided and a remote issue link with that global ID is found it is updated. Any fields without values in the request are set to null. Otherwise, the remote issue link is created.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param remoteIssueLinkRequest  (required)
-   * @return RemoteIssueLinkIdentifies
-   * @throws ApiException if fails to make API call
-   */
-  public RemoteIssueLinkIdentifies createOrUpdateRemoteIssueLink(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest) throws ApiException {
-    return createOrUpdateRemoteIssueLink(issueIdOrKey, remoteIssueLinkRequest, null);
-  }
-
-  /**
-   * Create or update remote issue link
-   * Creates or updates a remote issue link for an issue.  If a &#x60;globalId&#x60; is provided and a remote issue link with that global ID is found it is updated. Any fields without values in the request are set to null. Otherwise, the remote issue link is created.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param remoteIssueLinkRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return RemoteIssueLinkIdentifies
-   * @throws ApiException if fails to make API call
-   */
-  public RemoteIssueLinkIdentifies createOrUpdateRemoteIssueLink(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<RemoteIssueLinkIdentifies> localVarResponse = createOrUpdateRemoteIssueLinkWithHttpInfo(issueIdOrKey, remoteIssueLinkRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create or update remote issue link
-   * Creates or updates a remote issue link for an issue.  If a &#x60;globalId&#x60; is provided and a remote issue link with that global ID is found it is updated. Any fields without values in the request are set to null. Otherwise, the remote issue link is created.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param remoteIssueLinkRequest  (required)
-   * @return ApiResponse&lt;RemoteIssueLinkIdentifies&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<RemoteIssueLinkIdentifies> createOrUpdateRemoteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest) throws ApiException {
-    return createOrUpdateRemoteIssueLinkWithHttpInfo(issueIdOrKey, remoteIssueLinkRequest, null);
-  }
-
-  /**
-   * Create or update remote issue link
-   * Creates or updates a remote issue link for an issue.  If a &#x60;globalId&#x60; is provided and a remote issue link with that global ID is found it is updated. Any fields without values in the request are set to null. Otherwise, the remote issue link is created.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param remoteIssueLinkRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;RemoteIssueLinkIdentifies&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<RemoteIssueLinkIdentifies> createOrUpdateRemoteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createOrUpdateRemoteIssueLinkRequestBuilder(issueIdOrKey, remoteIssueLinkRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createOrUpdateRemoteIssueLink", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<RemoteIssueLinkIdentifies>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        RemoteIssueLinkIdentifies responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<RemoteIssueLinkIdentifies>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = remoteIssueLinkRequest;
 
-        return new ApiResponse<RemoteIssueLinkIdentifies>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
 
-  private HttpRequest.Builder createOrUpdateRemoteIssueLinkRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling createOrUpdateRemoteIssueLink");
-    }
-    // verify the required parameter 'remoteIssueLinkRequest' is set
-    if (remoteIssueLinkRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'remoteIssueLinkRequest' when calling createOrUpdateRemoteIssueLink");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(remoteIssueLinkRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete remote issue link by global ID
-   * Deletes the remote issue link from the issue using the link&#39;s global ID. Where the global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is implemented, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param globalId The global ID of a remote issue link. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteRemoteIssueLinkByGlobalId(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId) throws ApiException {
-    deleteRemoteIssueLinkByGlobalId(issueIdOrKey, globalId, null);
-  }
-
-  /**
-   * Delete remote issue link by global ID
-   * Deletes the remote issue link from the issue using the link&#39;s global ID. Where the global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is implemented, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param globalId The global ID of a remote issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteRemoteIssueLinkByGlobalId(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId, Map<String, String> headers) throws ApiException {
-    deleteRemoteIssueLinkByGlobalIdWithHttpInfo(issueIdOrKey, globalId, headers);
-  }
-
-  /**
-   * Delete remote issue link by global ID
-   * Deletes the remote issue link from the issue using the link&#39;s global ID. Where the global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is implemented, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param globalId The global ID of a remote issue link. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteRemoteIssueLinkByGlobalIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId) throws ApiException {
-    return deleteRemoteIssueLinkByGlobalIdWithHttpInfo(issueIdOrKey, globalId, null);
-  }
-
-  /**
-   * Delete remote issue link by global ID
-   * Deletes the remote issue link from the issue using the link&#39;s global ID. Where the global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is implemented, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param globalId The global ID of a remote issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteRemoteIssueLinkByGlobalIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteRemoteIssueLinkByGlobalIdRequestBuilder(issueIdOrKey, globalId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteRemoteIssueLinkByGlobalId", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteRemoteIssueLinkByGlobalIdRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling deleteRemoteIssueLinkByGlobalId");
-    }
-    // verify the required parameter 'globalId' is set
-    if (globalId == null) {
-      throw new ApiException(400, "Missing the required parameter 'globalId' when calling deleteRemoteIssueLinkByGlobalId");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "globalId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("globalId", globalId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete remote issue link by ID
-   * Deletes a remote issue link from an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects*, *Edit issues*, and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of a remote issue link. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteRemoteIssueLinkById(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId) throws ApiException {
-    deleteRemoteIssueLinkById(issueIdOrKey, linkId, null);
-  }
-
-  /**
-   * Delete remote issue link by ID
-   * Deletes a remote issue link from an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects*, *Edit issues*, and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of a remote issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteRemoteIssueLinkById(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    deleteRemoteIssueLinkByIdWithHttpInfo(issueIdOrKey, linkId, headers);
-  }
-
-  /**
-   * Delete remote issue link by ID
-   * Deletes a remote issue link from an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects*, *Edit issues*, and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of a remote issue link. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteRemoteIssueLinkByIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId) throws ApiException {
-    return deleteRemoteIssueLinkByIdWithHttpInfo(issueIdOrKey, linkId, null);
-  }
-
-  /**
-   * Delete remote issue link by ID
-   * Deletes a remote issue link from an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects*, *Edit issues*, and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of a remote issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteRemoteIssueLinkByIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteRemoteIssueLinkByIdRequestBuilder(issueIdOrKey, linkId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteRemoteIssueLinkById", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteRemoteIssueLinkByIdRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling deleteRemoteIssueLinkById");
-    }
-    // verify the required parameter 'linkId' is set
-    if (linkId == null) {
-      throw new ApiException(400, "Missing the required parameter 'linkId' when calling deleteRemoteIssueLinkById");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{linkId}", ApiClient.urlEncode(linkId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get remote issue link by ID
-   * Returns a remote issue link for an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of the remote issue link. (required)
-   * @return RemoteIssueLink
-   * @throws ApiException if fails to make API call
-   */
-  public RemoteIssueLink getRemoteIssueLinkById(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId) throws ApiException {
-    return getRemoteIssueLinkById(issueIdOrKey, linkId, null);
-  }
-
-  /**
-   * Get remote issue link by ID
-   * Returns a remote issue link for an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of the remote issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @return RemoteIssueLink
-   * @throws ApiException if fails to make API call
-   */
-  public RemoteIssueLink getRemoteIssueLinkById(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    ApiResponse<RemoteIssueLink> localVarResponse = getRemoteIssueLinkByIdWithHttpInfo(issueIdOrKey, linkId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get remote issue link by ID
-   * Returns a remote issue link for an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of the remote issue link. (required)
-   * @return ApiResponse&lt;RemoteIssueLink&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<RemoteIssueLink> getRemoteIssueLinkByIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId) throws ApiException {
-    return getRemoteIssueLinkByIdWithHttpInfo(issueIdOrKey, linkId, null);
-  }
-
-  /**
-   * Get remote issue link by ID
-   * Returns a remote issue link for an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of the remote issue link. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;RemoteIssueLink&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<RemoteIssueLink> getRemoteIssueLinkByIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getRemoteIssueLinkByIdRequestBuilder(issueIdOrKey, linkId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getRemoteIssueLinkById", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<RemoteIssueLink>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        RemoteIssueLink responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<RemoteIssueLink>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<RemoteIssueLink>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getRemoteIssueLinkByIdRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling getRemoteIssueLinkById");
-    }
-    // verify the required parameter 'linkId' is set
-    if (linkId == null) {
-      throw new ApiException(400, "Missing the required parameter 'linkId' when calling getRemoteIssueLinkById");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{linkId}", ApiClient.urlEncode(linkId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get remote issue links
-   * Returns the remote issue links for an issue. When a remote issue link global ID is provided the record with that global ID is returned, otherwise all remote issue links are returned. Where a global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param globalId The global ID of the remote issue link. (optional)
-   * @return RemoteIssueLink
-   * @throws ApiException if fails to make API call
-   */
-  public RemoteIssueLink getRemoteIssueLinks(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId) throws ApiException {
-    return getRemoteIssueLinks(issueIdOrKey, globalId, null);
-  }
-
-  /**
-   * Get remote issue links
-   * Returns the remote issue links for an issue. When a remote issue link global ID is provided the record with that global ID is returned, otherwise all remote issue links are returned. Where a global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param globalId The global ID of the remote issue link. (optional)
-   * @param headers Optional headers to include in the request
-   * @return RemoteIssueLink
-   * @throws ApiException if fails to make API call
-   */
-  public RemoteIssueLink getRemoteIssueLinks(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId, Map<String, String> headers) throws ApiException {
-    ApiResponse<RemoteIssueLink> localVarResponse = getRemoteIssueLinksWithHttpInfo(issueIdOrKey, globalId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get remote issue links
-   * Returns the remote issue links for an issue. When a remote issue link global ID is provided the record with that global ID is returned, otherwise all remote issue links are returned. Where a global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param globalId The global ID of the remote issue link. (optional)
-   * @return ApiResponse&lt;RemoteIssueLink&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<RemoteIssueLink> getRemoteIssueLinksWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId) throws ApiException {
-    return getRemoteIssueLinksWithHttpInfo(issueIdOrKey, globalId, null);
-  }
-
-  /**
-   * Get remote issue links
-   * Returns the remote issue links for an issue. When a remote issue link global ID is provided the record with that global ID is returned, otherwise all remote issue links are returned. Where a global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param globalId The global ID of the remote issue link. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;RemoteIssueLink&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<RemoteIssueLink> getRemoteIssueLinksWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getRemoteIssueLinksRequestBuilder(issueIdOrKey, globalId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getRemoteIssueLinks", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<RemoteIssueLink>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        RemoteIssueLink responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<RemoteIssueLink>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<RemoteIssueLink>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getRemoteIssueLinksRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling getRemoteIssueLinks");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "globalId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("globalId", globalId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update remote issue link by ID
-   * Updates a remote issue link for an issue.  Note: Fields without values in the request are set to null.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of the remote issue link. (required)
-   * @param remoteIssueLinkRequest  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateRemoteIssueLink(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest) throws ApiException {
-    return updateRemoteIssueLink(issueIdOrKey, linkId, remoteIssueLinkRequest, null);
-  }
-
-  /**
-   * Update remote issue link by ID
-   * Updates a remote issue link for an issue.  Note: Fields without values in the request are set to null.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of the remote issue link. (required)
-   * @param remoteIssueLinkRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateRemoteIssueLink(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateRemoteIssueLinkWithHttpInfo(issueIdOrKey, linkId, remoteIssueLinkRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update remote issue link by ID
-   * Updates a remote issue link for an issue.  Note: Fields without values in the request are set to null.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of the remote issue link. (required)
-   * @param remoteIssueLinkRequest  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateRemoteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest) throws ApiException {
-    return updateRemoteIssueLinkWithHttpInfo(issueIdOrKey, linkId, remoteIssueLinkRequest, null);
-  }
-
-  /**
-   * Update remote issue link by ID
-   * Updates a remote issue link for an issue.  Note: Fields without values in the request are set to null.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param linkId The ID of the remote issue link. (required)
-   * @param remoteIssueLinkRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateRemoteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateRemoteIssueLinkRequestBuilder(issueIdOrKey, linkId, remoteIssueLinkRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateRemoteIssueLink", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createOrUpdateRemoteIssueLinkValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling createOrUpdateRemoteIssueLink(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        // verify the required parameter 'remoteIssueLinkRequest' is set
+        if (remoteIssueLinkRequest == null) {
+            throw new ApiException("Missing the required parameter 'remoteIssueLinkRequest' when calling createOrUpdateRemoteIssueLink(Async)");
+        }
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        return createOrUpdateRemoteIssueLinkCall(issueIdOrKey, remoteIssueLinkRequest, _callback);
 
-  private HttpRequest.Builder updateRemoteIssueLinkRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling updateRemoteIssueLink");
-    }
-    // verify the required parameter 'linkId' is set
-    if (linkId == null) {
-      throw new ApiException(400, "Missing the required parameter 'linkId' when calling updateRemoteIssueLink");
-    }
-    // verify the required parameter 'remoteIssueLinkRequest' is set
-    if (remoteIssueLinkRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'remoteIssueLinkRequest' when calling updateRemoteIssueLink");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{linkId}", ApiClient.urlEncode(linkId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(remoteIssueLinkRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create or update remote issue link
+     * Creates or updates a remote issue link for an issue.  If a &#x60;globalId&#x60; is provided and a remote issue link with that global ID is found it is updated. Any fields without values in the request are set to null. Otherwise, the remote issue link is created.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param remoteIssueLinkRequest  (required)
+     * @return RemoteIssueLinkIdentifies
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the remote issue link is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned if the remote issue link is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public RemoteIssueLinkIdentifies createOrUpdateRemoteIssueLink(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest) throws ApiException {
+        ApiResponse<RemoteIssueLinkIdentifies> localVarResp = createOrUpdateRemoteIssueLinkWithHttpInfo(issueIdOrKey, remoteIssueLinkRequest);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create or update remote issue link
+     * Creates or updates a remote issue link for an issue.  If a &#x60;globalId&#x60; is provided and a remote issue link with that global ID is found it is updated. Any fields without values in the request are set to null. Otherwise, the remote issue link is created.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param remoteIssueLinkRequest  (required)
+     * @return ApiResponse&lt;RemoteIssueLinkIdentifies&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the remote issue link is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned if the remote issue link is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<RemoteIssueLinkIdentifies> createOrUpdateRemoteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest) throws ApiException {
+        okhttp3.Call localVarCall = createOrUpdateRemoteIssueLinkValidateBeforeCall(issueIdOrKey, remoteIssueLinkRequest, null);
+        Type localVarReturnType = new TypeToken<RemoteIssueLinkIdentifies>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create or update remote issue link (asynchronously)
+     * Creates or updates a remote issue link for an issue.  If a &#x60;globalId&#x60; is provided and a remote issue link with that global ID is found it is updated. Any fields without values in the request are set to null. Otherwise, the remote issue link is created.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param remoteIssueLinkRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the remote issue link is updated. </td><td>  -  </td></tr>
+        <tr><td> 201 </td><td> Returned if the remote issue link is created. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createOrUpdateRemoteIssueLinkAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, final ApiCallback<RemoteIssueLinkIdentifies> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createOrUpdateRemoteIssueLinkValidateBeforeCall(issueIdOrKey, remoteIssueLinkRequest, _callback);
+        Type localVarReturnType = new TypeToken<RemoteIssueLinkIdentifies>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteRemoteIssueLinkByGlobalId
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param globalId The global ID of a remote issue link. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a global ID isn&#39;t provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteRemoteIssueLinkByGlobalIdCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (globalId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("globalId", globalId));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteRemoteIssueLinkByGlobalIdValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling deleteRemoteIssueLinkByGlobalId(Async)");
+        }
+
+        // verify the required parameter 'globalId' is set
+        if (globalId == null) {
+            throw new ApiException("Missing the required parameter 'globalId' when calling deleteRemoteIssueLinkByGlobalId(Async)");
+        }
+
+        return deleteRemoteIssueLinkByGlobalIdCall(issueIdOrKey, globalId, _callback);
+
+    }
+
+    /**
+     * Delete remote issue link by global ID
+     * Deletes the remote issue link from the issue using the link&#39;s global ID. Where the global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is implemented, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param globalId The global ID of a remote issue link. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a global ID isn&#39;t provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteRemoteIssueLinkByGlobalId(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId) throws ApiException {
+        deleteRemoteIssueLinkByGlobalIdWithHttpInfo(issueIdOrKey, globalId);
+    }
+
+    /**
+     * Delete remote issue link by global ID
+     * Deletes the remote issue link from the issue using the link&#39;s global ID. Where the global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is implemented, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param globalId The global ID of a remote issue link. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a global ID isn&#39;t provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteRemoteIssueLinkByGlobalIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId) throws ApiException {
+        okhttp3.Call localVarCall = deleteRemoteIssueLinkByGlobalIdValidateBeforeCall(issueIdOrKey, globalId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete remote issue link by global ID (asynchronously)
+     * Deletes the remote issue link from the issue using the link&#39;s global ID. Where the global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is implemented, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param globalId The global ID of a remote issue link. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a global ID isn&#39;t provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteRemoteIssueLinkByGlobalIdAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String globalId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteRemoteIssueLinkByGlobalIdValidateBeforeCall(issueIdOrKey, globalId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteRemoteIssueLinkById
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of a remote issue link. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the link ID is invalid or the remote issue link does not belong to the issue. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteRemoteIssueLinkByIdCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "linkId" + "}", localVarApiClient.escapeString(linkId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteRemoteIssueLinkByIdValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling deleteRemoteIssueLinkById(Async)");
+        }
+
+        // verify the required parameter 'linkId' is set
+        if (linkId == null) {
+            throw new ApiException("Missing the required parameter 'linkId' when calling deleteRemoteIssueLinkById(Async)");
+        }
+
+        return deleteRemoteIssueLinkByIdCall(issueIdOrKey, linkId, _callback);
+
+    }
+
+    /**
+     * Delete remote issue link by ID
+     * Deletes a remote issue link from an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects*, *Edit issues*, and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of a remote issue link. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the link ID is invalid or the remote issue link does not belong to the issue. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteRemoteIssueLinkById(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId) throws ApiException {
+        deleteRemoteIssueLinkByIdWithHttpInfo(issueIdOrKey, linkId);
+    }
+
+    /**
+     * Delete remote issue link by ID
+     * Deletes a remote issue link from an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects*, *Edit issues*, and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of a remote issue link. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the link ID is invalid or the remote issue link does not belong to the issue. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteRemoteIssueLinkByIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId) throws ApiException {
+        okhttp3.Call localVarCall = deleteRemoteIssueLinkByIdValidateBeforeCall(issueIdOrKey, linkId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete remote issue link by ID (asynchronously)
+     * Deletes a remote issue link from an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects*, *Edit issues*, and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of a remote issue link. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the link ID is invalid or the remote issue link does not belong to the issue. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteRemoteIssueLinkByIdAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteRemoteIssueLinkByIdValidateBeforeCall(issueIdOrKey, linkId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getRemoteIssueLinkById
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of the remote issue link. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the link ID is invalid or the remote issue link does not belong to the issue. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if issue linking is disabled. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRemoteIssueLinkByIdCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "linkId" + "}", localVarApiClient.escapeString(linkId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getRemoteIssueLinkByIdValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling getRemoteIssueLinkById(Async)");
+        }
+
+        // verify the required parameter 'linkId' is set
+        if (linkId == null) {
+            throw new ApiException("Missing the required parameter 'linkId' when calling getRemoteIssueLinkById(Async)");
+        }
+
+        return getRemoteIssueLinkByIdCall(issueIdOrKey, linkId, _callback);
+
+    }
+
+    /**
+     * Get remote issue link by ID
+     * Returns a remote issue link for an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of the remote issue link. (required)
+     * @return RemoteIssueLink
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the link ID is invalid or the remote issue link does not belong to the issue. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if issue linking is disabled. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public RemoteIssueLink getRemoteIssueLinkById(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId) throws ApiException {
+        ApiResponse<RemoteIssueLink> localVarResp = getRemoteIssueLinkByIdWithHttpInfo(issueIdOrKey, linkId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get remote issue link by ID
+     * Returns a remote issue link for an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of the remote issue link. (required)
+     * @return ApiResponse&lt;RemoteIssueLink&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the link ID is invalid or the remote issue link does not belong to the issue. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if issue linking is disabled. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<RemoteIssueLink> getRemoteIssueLinkByIdWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId) throws ApiException {
+        okhttp3.Call localVarCall = getRemoteIssueLinkByIdValidateBeforeCall(issueIdOrKey, linkId, null);
+        Type localVarReturnType = new TypeToken<RemoteIssueLink>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get remote issue link by ID (asynchronously)
+     * Returns a remote issue link for an issue.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of the remote issue link. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the link ID is invalid or the remote issue link does not belong to the issue. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if issue linking is disabled. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRemoteIssueLinkByIdAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, final ApiCallback<RemoteIssueLink> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getRemoteIssueLinkByIdValidateBeforeCall(issueIdOrKey, linkId, _callback);
+        Type localVarReturnType = new TypeToken<RemoteIssueLink>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getRemoteIssueLinks
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param globalId The global ID of the remote issue link. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if issue linking is disabled. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit for remote links has been breached. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRemoteIssueLinksCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (globalId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("globalId", globalId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getRemoteIssueLinksValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling getRemoteIssueLinks(Async)");
+        }
+
+        return getRemoteIssueLinksCall(issueIdOrKey, globalId, _callback);
+
+    }
+
+    /**
+     * Get remote issue links
+     * Returns the remote issue links for an issue. When a remote issue link global ID is provided the record with that global ID is returned, otherwise all remote issue links are returned. Where a global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param globalId The global ID of the remote issue link. (optional)
+     * @return RemoteIssueLink
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if issue linking is disabled. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit for remote links has been breached. </td><td>  -  </td></tr>
+     </table>
+     */
+    public RemoteIssueLink getRemoteIssueLinks(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId) throws ApiException {
+        ApiResponse<RemoteIssueLink> localVarResp = getRemoteIssueLinksWithHttpInfo(issueIdOrKey, globalId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get remote issue links
+     * Returns the remote issue links for an issue. When a remote issue link global ID is provided the record with that global ID is returned, otherwise all remote issue links are returned. Where a global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param globalId The global ID of the remote issue link. (optional)
+     * @return ApiResponse&lt;RemoteIssueLink&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if issue linking is disabled. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit for remote links has been breached. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<RemoteIssueLink> getRemoteIssueLinksWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId) throws ApiException {
+        okhttp3.Call localVarCall = getRemoteIssueLinksValidateBeforeCall(issueIdOrKey, globalId, null);
+        Type localVarReturnType = new TypeToken<RemoteIssueLink>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get remote issue links (asynchronously)
+     * Returns the remote issue links for an issue. When a remote issue link global ID is provided the record with that global ID is returned, otherwise all remote issue links are returned. Where a global ID includes reserved URL characters these must be escaped in the request. For example, pass &#x60;system&#x3D;http://www.mycompany.com/support&amp;id&#x3D;1&#x60; as &#x60;system%3Dhttp%3A%2F%2Fwww.mycompany.com%2Fsupport%26id%3D1&#x60;.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param globalId The global ID of the remote issue link. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if issue linking is disabled. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit for remote links has been breached. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRemoteIssueLinksAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable String globalId, final ApiCallback<RemoteIssueLink> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getRemoteIssueLinksValidateBeforeCall(issueIdOrKey, globalId, _callback);
+        Type localVarReturnType = new TypeToken<RemoteIssueLink>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateRemoteIssueLink
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of the remote issue link. (required)
+     * @param remoteIssueLinkRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the link ID is invalid.  *  the remote issue link does not belong to the issue.  *  the request body is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateRemoteIssueLinkCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = remoteIssueLinkRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "linkId" + "}", localVarApiClient.escapeString(linkId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateRemoteIssueLinkValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling updateRemoteIssueLink(Async)");
+        }
+
+        // verify the required parameter 'linkId' is set
+        if (linkId == null) {
+            throw new ApiException("Missing the required parameter 'linkId' when calling updateRemoteIssueLink(Async)");
+        }
+
+        // verify the required parameter 'remoteIssueLinkRequest' is set
+        if (remoteIssueLinkRequest == null) {
+            throw new ApiException("Missing the required parameter 'remoteIssueLinkRequest' when calling updateRemoteIssueLink(Async)");
+        }
+
+        return updateRemoteIssueLinkCall(issueIdOrKey, linkId, remoteIssueLinkRequest, _callback);
+
+    }
+
+    /**
+     * Update remote issue link by ID
+     * Updates a remote issue link for an issue.  Note: Fields without values in the request are set to null.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of the remote issue link. (required)
+     * @param remoteIssueLinkRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the link ID is invalid.  *  the remote issue link does not belong to the issue.  *  the request body is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateRemoteIssueLink(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = updateRemoteIssueLinkWithHttpInfo(issueIdOrKey, linkId, remoteIssueLinkRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update remote issue link by ID
+     * Updates a remote issue link for an issue.  Note: Fields without values in the request are set to null.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of the remote issue link. (required)
+     * @param remoteIssueLinkRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the link ID is invalid.  *  the remote issue link does not belong to the issue.  *  the request body is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateRemoteIssueLinkWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest) throws ApiException {
+        okhttp3.Call localVarCall = updateRemoteIssueLinkValidateBeforeCall(issueIdOrKey, linkId, remoteIssueLinkRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update remote issue link by ID (asynchronously)
+     * Updates a remote issue link for an issue.  Note: Fields without values in the request are set to null.  This operation requires [issue linking to be active](https://confluence.atlassian.com/x/yoXKM).  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Link issues* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param linkId The ID of the remote issue link. (required)
+     * @param remoteIssueLinkRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  the link ID is invalid.  *  the remote issue link does not belong to the issue.  *  the request body is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to link issues. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or remote issue link is not found or the user does not have permission to view the issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateRemoteIssueLinkAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String linkId, @javax.annotation.Nonnull RemoteIssueLinkRequest remoteIssueLinkRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateRemoteIssueLinkValidateBeforeCall(issueIdOrKey, linkId, remoteIssueLinkRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

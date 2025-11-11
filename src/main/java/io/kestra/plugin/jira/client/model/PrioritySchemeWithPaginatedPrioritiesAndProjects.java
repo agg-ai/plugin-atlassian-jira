@@ -13,82 +13,93 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.PageBeanPriorityWithSequence;
 import io.kestra.plugin.jira.client.model.PageBeanProjectDetails;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A priority scheme with paginated priorities and projects.
  */
-@JsonPropertyOrder({
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_DEFAULT,
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_DEFAULT_PRIORITY_ID,
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_DESCRIPTION,
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_ID,
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_IS_DEFAULT,
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_NAME,
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_PRIORITIES,
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_PROJECTS,
-  PrioritySchemeWithPaginatedPrioritiesAndProjects.JSON_PROPERTY_SELF
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
-  public static final String JSON_PROPERTY_DEFAULT = "default";
+  public static final String SERIALIZED_NAME_DEFAULT = "default";
+  @SerializedName(SERIALIZED_NAME_DEFAULT)
   @javax.annotation.Nullable
   private Boolean _default;
 
-  public static final String JSON_PROPERTY_DEFAULT_PRIORITY_ID = "defaultPriorityId";
+  public static final String SERIALIZED_NAME_DEFAULT_PRIORITY_ID = "defaultPriorityId";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_PRIORITY_ID)
   @javax.annotation.Nullable
   private String defaultPriorityId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private String id;
 
-  public static final String JSON_PROPERTY_IS_DEFAULT = "isDefault";
+  public static final String SERIALIZED_NAME_IS_DEFAULT = "isDefault";
+  @SerializedName(SERIALIZED_NAME_IS_DEFAULT)
   @javax.annotation.Nullable
   private Boolean isDefault;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
-  public static final String JSON_PROPERTY_PRIORITIES = "priorities";
+  public static final String SERIALIZED_NAME_PRIORITIES = "priorities";
+  @SerializedName(SERIALIZED_NAME_PRIORITIES)
   @javax.annotation.Nullable
   private PageBeanPriorityWithSequence priorities;
 
-  public static final String JSON_PROPERTY_PROJECTS = "projects";
+  public static final String SERIALIZED_NAME_PROJECTS = "projects";
+  @SerializedName(SERIALIZED_NAME_PROJECTS)
   @javax.annotation.Nullable
   private PageBeanProjectDetails projects;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public PrioritySchemeWithPaginatedPrioritiesAndProjects() { 
+  public PrioritySchemeWithPaginatedPrioritiesAndProjects() {
   }
 
   public PrioritySchemeWithPaginatedPrioritiesAndProjects _default(@javax.annotation.Nullable Boolean _default) {
@@ -101,15 +112,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return _default
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDefault() {
     return _default;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefault(@javax.annotation.Nullable Boolean _default) {
     this._default = _default;
   }
@@ -125,15 +131,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return defaultPriorityId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_PRIORITY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDefaultPriorityId() {
     return defaultPriorityId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_PRIORITY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultPriorityId(@javax.annotation.Nullable String defaultPriorityId) {
     this.defaultPriorityId = defaultPriorityId;
   }
@@ -149,15 +150,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -173,15 +169,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@javax.annotation.Nonnull String id) {
     this.id = id;
   }
@@ -197,15 +188,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return isDefault
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsDefault() {
     return isDefault;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsDefault(@javax.annotation.Nullable Boolean isDefault) {
     this.isDefault = isDefault;
   }
@@ -221,15 +207,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -245,15 +226,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return priorities
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PRIORITIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PageBeanPriorityWithSequence getPriorities() {
     return priorities;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PRIORITIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPriorities(@javax.annotation.Nullable PageBeanPriorityWithSequence priorities) {
     this.priorities = priorities;
   }
@@ -269,15 +245,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return projects
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PageBeanProjectDetails getProjects() {
     return projects;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjects(@javax.annotation.Nullable PageBeanProjectDetails projects) {
     this.projects = projects;
   }
@@ -293,15 +264,10 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSelf(@javax.annotation.Nullable String self) {
     this.self = self;
   }
@@ -316,11 +282,11 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the PrioritySchemeWithPaginatedPrioritiesAndProjects instance itself
    */
-  @JsonAnySetter
   public PrioritySchemeWithPaginatedPrioritiesAndProjects putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -330,18 +296,19 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -350,9 +317,7 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this PrioritySchemeWithPaginatedPrioritiesAndProjects object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -408,84 +373,153 @@ public class PrioritySchemeWithPaginatedPrioritiesAndProjects {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("default", "defaultPriorityId", "description", "id", "isDefault", "name", "priorities", "projects", "self"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("id", "name"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to PrioritySchemeWithPaginatedPrioritiesAndProjects
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!PrioritySchemeWithPaginatedPrioritiesAndProjects.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in PrioritySchemeWithPaginatedPrioritiesAndProjects is not found in the empty JSON string", PrioritySchemeWithPaginatedPrioritiesAndProjects.openapiRequiredFields.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : PrioritySchemeWithPaginatedPrioritiesAndProjects.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("defaultPriorityId") != null && !jsonObj.get("defaultPriorityId").isJsonNull()) && !jsonObj.get("defaultPriorityId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `defaultPriorityId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("defaultPriorityId").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (!jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `priorities`
+      if (jsonObj.get("priorities") != null && !jsonObj.get("priorities").isJsonNull()) {
+        PageBeanPriorityWithSequence.validateJsonElement(jsonObj.get("priorities"));
+      }
+      // validate the optional field `projects`
+      if (jsonObj.get("projects") != null && !jsonObj.get("projects").isJsonNull()) {
+        PageBeanProjectDetails.validateJsonElement(jsonObj.get("projects"));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!PrioritySchemeWithPaginatedPrioritiesAndProjects.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'PrioritySchemeWithPaginatedPrioritiesAndProjects' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<PrioritySchemeWithPaginatedPrioritiesAndProjects> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(PrioritySchemeWithPaginatedPrioritiesAndProjects.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<PrioritySchemeWithPaginatedPrioritiesAndProjects>() {
+           @Override
+           public void write(JsonWriter out, PrioritySchemeWithPaginatedPrioritiesAndProjects value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public PrioritySchemeWithPaginatedPrioritiesAndProjects read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             PrioritySchemeWithPaginatedPrioritiesAndProjects instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of PrioritySchemeWithPaginatedPrioritiesAndProjects given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of PrioritySchemeWithPaginatedPrioritiesAndProjects
+   * @throws IOException if the JSON string is invalid with respect to PrioritySchemeWithPaginatedPrioritiesAndProjects
+   */
+  public static PrioritySchemeWithPaginatedPrioritiesAndProjects fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, PrioritySchemeWithPaginatedPrioritiesAndProjects.class);
+  }
 
-    // add `default` to the URL query string
-    if (getDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefault()))));
-    }
-
-    // add `defaultPriorityId` to the URL query string
-    if (getDefaultPriorityId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefaultPriorityId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultPriorityId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `isDefault` to the URL query string
-    if (getIsDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisDefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsDefault()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `priorities` to the URL query string
-    if (getPriorities() != null) {
-      joiner.add(getPriorities().toUrlQueryString(prefix + "priorities" + suffix));
-    }
-
-    // add `projects` to the URL query string
-    if (getProjects() != null) {
-      joiner.add(getProjects().toUrlQueryString(prefix + "projects" + suffix));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of PrioritySchemeWithPaginatedPrioritiesAndProjects to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

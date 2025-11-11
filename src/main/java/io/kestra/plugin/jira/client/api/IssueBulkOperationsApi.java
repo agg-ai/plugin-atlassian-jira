@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.BulkEditGetFields;
 import io.kestra.plugin.jira.client.model.BulkOperationErrorResponse;
@@ -29,1250 +38,1336 @@ import io.kestra.plugin.jira.client.model.IssueBulkTransitionPayload;
 import io.kestra.plugin.jira.client.model.IssueBulkWatchOrUnwatchPayload;
 import io.kestra.plugin.jira.client.model.SubmittedBulkOperation;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueBulkOperationsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueBulkOperationsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueBulkOperationsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for getAvailableTransitions
+     * @param issueIdsOrKeys Comma (,) separated Ids or keys of the issues to get transitions available for them. (required)
+     * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
+     * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. For example, if a provided issue ID or key is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call getAvailableTransitionsCall(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueBulkOperationsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueBulkOperationsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Get available transitions
-   * Use this API to retrieve a list of transitions available for the specified issues that can be used or bulk transition operations. You can submit either single or multiple issues in the query to obtain the available transitions.  The response will provide the available transitions for issues, organized by their respective workflows. **Only the transitions that are common among the issues within that workflow and do not involve any additional field updates will be included.** For bulk transitions that require additional field updates, please utilise the Jira Cloud UI.  You can request available transitions for up to 1,000 issues in a single operation. This API uses pagination to return responses, delivering 50 workflows at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdsOrKeys Comma (,) separated Ids or keys of the issues to get transitions available for them. (required)
-   * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
-   * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
-   * @return BulkTransitionGetAvailableTransitions
-   * @throws ApiException if fails to make API call
-   */
-  public BulkTransitionGetAvailableTransitions getAvailableTransitions(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter) throws ApiException {
-    return getAvailableTransitions(issueIdsOrKeys, endingBefore, startingAfter, null);
-  }
-
-  /**
-   * Get available transitions
-   * Use this API to retrieve a list of transitions available for the specified issues that can be used or bulk transition operations. You can submit either single or multiple issues in the query to obtain the available transitions.  The response will provide the available transitions for issues, organized by their respective workflows. **Only the transitions that are common among the issues within that workflow and do not involve any additional field updates will be included.** For bulk transitions that require additional field updates, please utilise the Jira Cloud UI.  You can request available transitions for up to 1,000 issues in a single operation. This API uses pagination to return responses, delivering 50 workflows at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdsOrKeys Comma (,) separated Ids or keys of the issues to get transitions available for them. (required)
-   * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
-   * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
-   * @param headers Optional headers to include in the request
-   * @return BulkTransitionGetAvailableTransitions
-   * @throws ApiException if fails to make API call
-   */
-  public BulkTransitionGetAvailableTransitions getAvailableTransitions(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, Map<String, String> headers) throws ApiException {
-    ApiResponse<BulkTransitionGetAvailableTransitions> localVarResponse = getAvailableTransitionsWithHttpInfo(issueIdsOrKeys, endingBefore, startingAfter, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get available transitions
-   * Use this API to retrieve a list of transitions available for the specified issues that can be used or bulk transition operations. You can submit either single or multiple issues in the query to obtain the available transitions.  The response will provide the available transitions for issues, organized by their respective workflows. **Only the transitions that are common among the issues within that workflow and do not involve any additional field updates will be included.** For bulk transitions that require additional field updates, please utilise the Jira Cloud UI.  You can request available transitions for up to 1,000 issues in a single operation. This API uses pagination to return responses, delivering 50 workflows at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdsOrKeys Comma (,) separated Ids or keys of the issues to get transitions available for them. (required)
-   * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
-   * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
-   * @return ApiResponse&lt;BulkTransitionGetAvailableTransitions&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<BulkTransitionGetAvailableTransitions> getAvailableTransitionsWithHttpInfo(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter) throws ApiException {
-    return getAvailableTransitionsWithHttpInfo(issueIdsOrKeys, endingBefore, startingAfter, null);
-  }
-
-  /**
-   * Get available transitions
-   * Use this API to retrieve a list of transitions available for the specified issues that can be used or bulk transition operations. You can submit either single or multiple issues in the query to obtain the available transitions.  The response will provide the available transitions for issues, organized by their respective workflows. **Only the transitions that are common among the issues within that workflow and do not involve any additional field updates will be included.** For bulk transitions that require additional field updates, please utilise the Jira Cloud UI.  You can request available transitions for up to 1,000 issues in a single operation. This API uses pagination to return responses, delivering 50 workflows at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdsOrKeys Comma (,) separated Ids or keys of the issues to get transitions available for them. (required)
-   * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
-   * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;BulkTransitionGetAvailableTransitions&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<BulkTransitionGetAvailableTransitions> getAvailableTransitionsWithHttpInfo(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAvailableTransitionsRequestBuilder(issueIdsOrKeys, endingBefore, startingAfter, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAvailableTransitions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<BulkTransitionGetAvailableTransitions>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        BulkTransitionGetAvailableTransitions responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BulkTransitionGetAvailableTransitions>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<BulkTransitionGetAvailableTransitions>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/issues/transition";
 
-  private HttpRequest.Builder getAvailableTransitionsRequestBuilder(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdsOrKeys' is set
-    if (issueIdsOrKeys == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdsOrKeys' when calling getAvailableTransitions");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/issues/transition";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "issueIdsOrKeys";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("issueIdsOrKeys", issueIdsOrKeys));
-    localVarQueryParameterBaseName = "endingBefore";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("endingBefore", endingBefore));
-    localVarQueryParameterBaseName = "startingAfter";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startingAfter", startingAfter));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get bulk editable fields
-   * Use this API to get a list of fields visible to the user to perform bulk edit operations. You can pass single or multiple issues in the query to get eligible editable fields. This API uses pagination to return responses, delivering 50 fields at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  Depending on the field, any field-specific permissions required to edit it.
-   * @param issueIdsOrKeys The IDs or keys of the issues to get editable fields from. (required)
-   * @param searchText (Optional)The text to search for in the editable fields. (optional)
-   * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
-   * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
-   * @return BulkEditGetFields
-   * @throws ApiException if fails to make API call
-   */
-  public BulkEditGetFields getBulkEditableFields(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter) throws ApiException {
-    return getBulkEditableFields(issueIdsOrKeys, searchText, endingBefore, startingAfter, null);
-  }
-
-  /**
-   * Get bulk editable fields
-   * Use this API to get a list of fields visible to the user to perform bulk edit operations. You can pass single or multiple issues in the query to get eligible editable fields. This API uses pagination to return responses, delivering 50 fields at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  Depending on the field, any field-specific permissions required to edit it.
-   * @param issueIdsOrKeys The IDs or keys of the issues to get editable fields from. (required)
-   * @param searchText (Optional)The text to search for in the editable fields. (optional)
-   * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
-   * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
-   * @param headers Optional headers to include in the request
-   * @return BulkEditGetFields
-   * @throws ApiException if fails to make API call
-   */
-  public BulkEditGetFields getBulkEditableFields(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, Map<String, String> headers) throws ApiException {
-    ApiResponse<BulkEditGetFields> localVarResponse = getBulkEditableFieldsWithHttpInfo(issueIdsOrKeys, searchText, endingBefore, startingAfter, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get bulk editable fields
-   * Use this API to get a list of fields visible to the user to perform bulk edit operations. You can pass single or multiple issues in the query to get eligible editable fields. This API uses pagination to return responses, delivering 50 fields at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  Depending on the field, any field-specific permissions required to edit it.
-   * @param issueIdsOrKeys The IDs or keys of the issues to get editable fields from. (required)
-   * @param searchText (Optional)The text to search for in the editable fields. (optional)
-   * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
-   * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
-   * @return ApiResponse&lt;BulkEditGetFields&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<BulkEditGetFields> getBulkEditableFieldsWithHttpInfo(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter) throws ApiException {
-    return getBulkEditableFieldsWithHttpInfo(issueIdsOrKeys, searchText, endingBefore, startingAfter, null);
-  }
-
-  /**
-   * Get bulk editable fields
-   * Use this API to get a list of fields visible to the user to perform bulk edit operations. You can pass single or multiple issues in the query to get eligible editable fields. This API uses pagination to return responses, delivering 50 fields at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  Depending on the field, any field-specific permissions required to edit it.
-   * @param issueIdsOrKeys The IDs or keys of the issues to get editable fields from. (required)
-   * @param searchText (Optional)The text to search for in the editable fields. (optional)
-   * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
-   * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;BulkEditGetFields&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<BulkEditGetFields> getBulkEditableFieldsWithHttpInfo(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getBulkEditableFieldsRequestBuilder(issueIdsOrKeys, searchText, endingBefore, startingAfter, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getBulkEditableFields", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<BulkEditGetFields>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (issueIdsOrKeys != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("issueIdsOrKeys", issueIdsOrKeys));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        BulkEditGetFields responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BulkEditGetFields>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<BulkEditGetFields>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getBulkEditableFieldsRequestBuilder(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdsOrKeys' is set
-    if (issueIdsOrKeys == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdsOrKeys' when calling getBulkEditableFields");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/issues/fields";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "issueIdsOrKeys";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("issueIdsOrKeys", issueIdsOrKeys));
-    localVarQueryParameterBaseName = "searchText";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("searchText", searchText));
-    localVarQueryParameterBaseName = "endingBefore";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("endingBefore", endingBefore));
-    localVarQueryParameterBaseName = "startingAfter";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startingAfter", startingAfter));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get bulk issue operation progress
-   * Use this to get the progress state for the specified bulk operation &#x60;taskId&#x60;.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  If the task is running, this resource will return:      {\&quot;taskId\&quot;:\&quot;10779\&quot;,\&quot;status\&quot;:\&quot;RUNNING\&quot;,\&quot;progressPercent\&quot;:65,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;created\&quot;:1690180055963,\&quot;started\&quot;:1690180056206,\&quot;updated\&quot;:169018005829}  If the task has completed, then this resource will return:      {\&quot;processedAccessibleIssues\&quot;:[10001,10002],\&quot;created\&quot;:1709189449954,\&quot;progressPercent\&quot;:100,\&quot;started\&quot;:1709189450154,\&quot;status\&quot;:\&quot;COMPLETE\&quot;,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;invalidOrInaccessibleIssueCount\&quot;:0,\&quot;taskId\&quot;:\&quot;10000\&quot;,\&quot;totalIssueCount\&quot;:2,\&quot;updated\&quot;:1709189450354}  **Note:** You can view task progress for up to 14 days from creation.
-   * @param taskId The ID of the task. (required)
-   * @return BulkOperationProgress
-   * @throws ApiException if fails to make API call
-   */
-  public BulkOperationProgress getBulkOperationProgress(@javax.annotation.Nonnull String taskId) throws ApiException {
-    return getBulkOperationProgress(taskId, null);
-  }
-
-  /**
-   * Get bulk issue operation progress
-   * Use this to get the progress state for the specified bulk operation &#x60;taskId&#x60;.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  If the task is running, this resource will return:      {\&quot;taskId\&quot;:\&quot;10779\&quot;,\&quot;status\&quot;:\&quot;RUNNING\&quot;,\&quot;progressPercent\&quot;:65,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;created\&quot;:1690180055963,\&quot;started\&quot;:1690180056206,\&quot;updated\&quot;:169018005829}  If the task has completed, then this resource will return:      {\&quot;processedAccessibleIssues\&quot;:[10001,10002],\&quot;created\&quot;:1709189449954,\&quot;progressPercent\&quot;:100,\&quot;started\&quot;:1709189450154,\&quot;status\&quot;:\&quot;COMPLETE\&quot;,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;invalidOrInaccessibleIssueCount\&quot;:0,\&quot;taskId\&quot;:\&quot;10000\&quot;,\&quot;totalIssueCount\&quot;:2,\&quot;updated\&quot;:1709189450354}  **Note:** You can view task progress for up to 14 days from creation.
-   * @param taskId The ID of the task. (required)
-   * @param headers Optional headers to include in the request
-   * @return BulkOperationProgress
-   * @throws ApiException if fails to make API call
-   */
-  public BulkOperationProgress getBulkOperationProgress(@javax.annotation.Nonnull String taskId, Map<String, String> headers) throws ApiException {
-    ApiResponse<BulkOperationProgress> localVarResponse = getBulkOperationProgressWithHttpInfo(taskId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get bulk issue operation progress
-   * Use this to get the progress state for the specified bulk operation &#x60;taskId&#x60;.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  If the task is running, this resource will return:      {\&quot;taskId\&quot;:\&quot;10779\&quot;,\&quot;status\&quot;:\&quot;RUNNING\&quot;,\&quot;progressPercent\&quot;:65,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;created\&quot;:1690180055963,\&quot;started\&quot;:1690180056206,\&quot;updated\&quot;:169018005829}  If the task has completed, then this resource will return:      {\&quot;processedAccessibleIssues\&quot;:[10001,10002],\&quot;created\&quot;:1709189449954,\&quot;progressPercent\&quot;:100,\&quot;started\&quot;:1709189450154,\&quot;status\&quot;:\&quot;COMPLETE\&quot;,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;invalidOrInaccessibleIssueCount\&quot;:0,\&quot;taskId\&quot;:\&quot;10000\&quot;,\&quot;totalIssueCount\&quot;:2,\&quot;updated\&quot;:1709189450354}  **Note:** You can view task progress for up to 14 days from creation.
-   * @param taskId The ID of the task. (required)
-   * @return ApiResponse&lt;BulkOperationProgress&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<BulkOperationProgress> getBulkOperationProgressWithHttpInfo(@javax.annotation.Nonnull String taskId) throws ApiException {
-    return getBulkOperationProgressWithHttpInfo(taskId, null);
-  }
-
-  /**
-   * Get bulk issue operation progress
-   * Use this to get the progress state for the specified bulk operation &#x60;taskId&#x60;.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  If the task is running, this resource will return:      {\&quot;taskId\&quot;:\&quot;10779\&quot;,\&quot;status\&quot;:\&quot;RUNNING\&quot;,\&quot;progressPercent\&quot;:65,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;created\&quot;:1690180055963,\&quot;started\&quot;:1690180056206,\&quot;updated\&quot;:169018005829}  If the task has completed, then this resource will return:      {\&quot;processedAccessibleIssues\&quot;:[10001,10002],\&quot;created\&quot;:1709189449954,\&quot;progressPercent\&quot;:100,\&quot;started\&quot;:1709189450154,\&quot;status\&quot;:\&quot;COMPLETE\&quot;,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;invalidOrInaccessibleIssueCount\&quot;:0,\&quot;taskId\&quot;:\&quot;10000\&quot;,\&quot;totalIssueCount\&quot;:2,\&quot;updated\&quot;:1709189450354}  **Note:** You can view task progress for up to 14 days from creation.
-   * @param taskId The ID of the task. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;BulkOperationProgress&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<BulkOperationProgress> getBulkOperationProgressWithHttpInfo(@javax.annotation.Nonnull String taskId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getBulkOperationProgressRequestBuilder(taskId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getBulkOperationProgress", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<BulkOperationProgress>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (endingBefore != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("endingBefore", endingBefore));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        BulkOperationProgress responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BulkOperationProgress>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<BulkOperationProgress>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getBulkOperationProgressRequestBuilder(@javax.annotation.Nonnull String taskId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'taskId' is set
-    if (taskId == null) {
-      throw new ApiException(400, "Missing the required parameter 'taskId' when calling getBulkOperationProgress");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/queue/{taskId}"
-        .replace("{taskId}", ApiClient.urlEncode(taskId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk delete issues
-   * Use this API to submit a bulk delete request. You can delete up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Delete [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Delete-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkDeletePayload The request body containing the issues to be deleted. (required)
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkDelete(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload) throws ApiException {
-    return submitBulkDelete(issueBulkDeletePayload, null);
-  }
-
-  /**
-   * Bulk delete issues
-   * Use this API to submit a bulk delete request. You can delete up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Delete [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Delete-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkDeletePayload The request body containing the issues to be deleted. (required)
-   * @param headers Optional headers to include in the request
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkDelete(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload, Map<String, String> headers) throws ApiException {
-    ApiResponse<SubmittedBulkOperation> localVarResponse = submitBulkDeleteWithHttpInfo(issueBulkDeletePayload, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk delete issues
-   * Use this API to submit a bulk delete request. You can delete up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Delete [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Delete-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkDeletePayload The request body containing the issues to be deleted. (required)
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkDeleteWithHttpInfo(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload) throws ApiException {
-    return submitBulkDeleteWithHttpInfo(issueBulkDeletePayload, null);
-  }
-
-  /**
-   * Bulk delete issues
-   * Use this API to submit a bulk delete request. You can delete up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Delete [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Delete-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkDeletePayload The request body containing the issues to be deleted. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkDeleteWithHttpInfo(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = submitBulkDeleteRequestBuilder(issueBulkDeletePayload, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("submitBulkDelete", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SubmittedBulkOperation>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (startingAfter != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startingAfter", startingAfter));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SubmittedBulkOperation responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SubmittedBulkOperation>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<SubmittedBulkOperation>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder submitBulkDeleteRequestBuilder(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueBulkDeletePayload' is set
-    if (issueBulkDeletePayload == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueBulkDeletePayload' when calling submitBulkDelete");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/issues/delete";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueBulkDeletePayload);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk edit issues
-   * Use this API to submit a bulk edit request and simultaneously edit multiple issues. There are limits applied to the number of issues and fields that can be edited. A single request can accommodate a maximum of 1000 issues (including subtasks) and 200 fields.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  Edit [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkEditPayload The request body containing the issues to be edited and the new field values. (required)
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkEdit(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload) throws ApiException {
-    return submitBulkEdit(issueBulkEditPayload, null);
-  }
-
-  /**
-   * Bulk edit issues
-   * Use this API to submit a bulk edit request and simultaneously edit multiple issues. There are limits applied to the number of issues and fields that can be edited. A single request can accommodate a maximum of 1000 issues (including subtasks) and 200 fields.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  Edit [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkEditPayload The request body containing the issues to be edited and the new field values. (required)
-   * @param headers Optional headers to include in the request
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkEdit(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload, Map<String, String> headers) throws ApiException {
-    ApiResponse<SubmittedBulkOperation> localVarResponse = submitBulkEditWithHttpInfo(issueBulkEditPayload, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk edit issues
-   * Use this API to submit a bulk edit request and simultaneously edit multiple issues. There are limits applied to the number of issues and fields that can be edited. A single request can accommodate a maximum of 1000 issues (including subtasks) and 200 fields.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  Edit [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkEditPayload The request body containing the issues to be edited and the new field values. (required)
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkEditWithHttpInfo(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload) throws ApiException {
-    return submitBulkEditWithHttpInfo(issueBulkEditPayload, null);
-  }
-
-  /**
-   * Bulk edit issues
-   * Use this API to submit a bulk edit request and simultaneously edit multiple issues. There are limits applied to the number of issues and fields that can be edited. A single request can accommodate a maximum of 1000 issues (including subtasks) and 200 fields.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  Edit [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkEditPayload The request body containing the issues to be edited and the new field values. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkEditWithHttpInfo(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = submitBulkEditRequestBuilder(issueBulkEditPayload, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("submitBulkEdit", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SubmittedBulkOperation>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SubmittedBulkOperation responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SubmittedBulkOperation>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<SubmittedBulkOperation>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder submitBulkEditRequestBuilder(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueBulkEditPayload' is set
-    if (issueBulkEditPayload == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueBulkEditPayload' when calling submitBulkEdit");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/issues/fields";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueBulkEditPayload);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk move issues
-   * Use this API to submit a bulk issue move request. You can move multiple issues from multiple projects in a single request, but they must all be moved to a single project, issue type, and parent. You can&#39;t move more than 1000 issues (including subtasks) at once.  #### Scenarios: ####  This is an early version of the API and it doesn&#39;t have full feature parity with the Bulk Move UI experience.   *  Moving issue of type A to issue of type B in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving multiple issues of type A in one or more projects to multiple issues of type B in one of the source projects or a different project: &#x60;SUPPORTED&#x60;  *  Moving issues of multiple issue types in one or more projects to issues of a single issue type in one of the source project or a different project: **&#x60;SUPPORTED&#x60;**       E.g. Moving issues of story and task issue types in project 1 and project 2 to issues of task issue type in project 3  *  Moving a standard parent issue of type A with its multiple subtask issue types in one project to standard issue of type B and multiple subtask issue types in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving standard issues with their subtasks to a parent issue in the same project or a different project without losing their relation: &#x60;SUPPORTED&#x60;  *  Moving an epic issue with its child issues to a different project without losing their relation: &#x60;SUPPORTED&#x60;       This usecase is **supported using multiple requests**. Move the epic in one request and then move the children in a separate request with target parent set to the epic issue id              (Alternatively, move them individually and stitch the relationship back with the Bulk Edit API)  #### Limits applied to bulk issue moves: ####  When using the bulk move, keep in mind that there are limits on the number of issues and fields you can include.   *  You can move up to 1,000 issues in a single operation, including any subtasks.  *  The total combined number of fields across all issues must not exceed 1,500,000. For example, if each issue includes 15,000 fields, then the maximum number of issues that can be moved is 100.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Move [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in source projects.  *  Create [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects, if moving subtasks only.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkMovePayload  (required)
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkMove(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload) throws ApiException {
-    return submitBulkMove(issueBulkMovePayload, null);
-  }
-
-  /**
-   * Bulk move issues
-   * Use this API to submit a bulk issue move request. You can move multiple issues from multiple projects in a single request, but they must all be moved to a single project, issue type, and parent. You can&#39;t move more than 1000 issues (including subtasks) at once.  #### Scenarios: ####  This is an early version of the API and it doesn&#39;t have full feature parity with the Bulk Move UI experience.   *  Moving issue of type A to issue of type B in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving multiple issues of type A in one or more projects to multiple issues of type B in one of the source projects or a different project: &#x60;SUPPORTED&#x60;  *  Moving issues of multiple issue types in one or more projects to issues of a single issue type in one of the source project or a different project: **&#x60;SUPPORTED&#x60;**       E.g. Moving issues of story and task issue types in project 1 and project 2 to issues of task issue type in project 3  *  Moving a standard parent issue of type A with its multiple subtask issue types in one project to standard issue of type B and multiple subtask issue types in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving standard issues with their subtasks to a parent issue in the same project or a different project without losing their relation: &#x60;SUPPORTED&#x60;  *  Moving an epic issue with its child issues to a different project without losing their relation: &#x60;SUPPORTED&#x60;       This usecase is **supported using multiple requests**. Move the epic in one request and then move the children in a separate request with target parent set to the epic issue id              (Alternatively, move them individually and stitch the relationship back with the Bulk Edit API)  #### Limits applied to bulk issue moves: ####  When using the bulk move, keep in mind that there are limits on the number of issues and fields you can include.   *  You can move up to 1,000 issues in a single operation, including any subtasks.  *  The total combined number of fields across all issues must not exceed 1,500,000. For example, if each issue includes 15,000 fields, then the maximum number of issues that can be moved is 100.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Move [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in source projects.  *  Create [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects, if moving subtasks only.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkMovePayload  (required)
-   * @param headers Optional headers to include in the request
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkMove(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload, Map<String, String> headers) throws ApiException {
-    ApiResponse<SubmittedBulkOperation> localVarResponse = submitBulkMoveWithHttpInfo(issueBulkMovePayload, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk move issues
-   * Use this API to submit a bulk issue move request. You can move multiple issues from multiple projects in a single request, but they must all be moved to a single project, issue type, and parent. You can&#39;t move more than 1000 issues (including subtasks) at once.  #### Scenarios: ####  This is an early version of the API and it doesn&#39;t have full feature parity with the Bulk Move UI experience.   *  Moving issue of type A to issue of type B in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving multiple issues of type A in one or more projects to multiple issues of type B in one of the source projects or a different project: &#x60;SUPPORTED&#x60;  *  Moving issues of multiple issue types in one or more projects to issues of a single issue type in one of the source project or a different project: **&#x60;SUPPORTED&#x60;**       E.g. Moving issues of story and task issue types in project 1 and project 2 to issues of task issue type in project 3  *  Moving a standard parent issue of type A with its multiple subtask issue types in one project to standard issue of type B and multiple subtask issue types in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving standard issues with their subtasks to a parent issue in the same project or a different project without losing their relation: &#x60;SUPPORTED&#x60;  *  Moving an epic issue with its child issues to a different project without losing their relation: &#x60;SUPPORTED&#x60;       This usecase is **supported using multiple requests**. Move the epic in one request and then move the children in a separate request with target parent set to the epic issue id              (Alternatively, move them individually and stitch the relationship back with the Bulk Edit API)  #### Limits applied to bulk issue moves: ####  When using the bulk move, keep in mind that there are limits on the number of issues and fields you can include.   *  You can move up to 1,000 issues in a single operation, including any subtasks.  *  The total combined number of fields across all issues must not exceed 1,500,000. For example, if each issue includes 15,000 fields, then the maximum number of issues that can be moved is 100.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Move [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in source projects.  *  Create [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects, if moving subtasks only.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkMovePayload  (required)
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkMoveWithHttpInfo(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload) throws ApiException {
-    return submitBulkMoveWithHttpInfo(issueBulkMovePayload, null);
-  }
-
-  /**
-   * Bulk move issues
-   * Use this API to submit a bulk issue move request. You can move multiple issues from multiple projects in a single request, but they must all be moved to a single project, issue type, and parent. You can&#39;t move more than 1000 issues (including subtasks) at once.  #### Scenarios: ####  This is an early version of the API and it doesn&#39;t have full feature parity with the Bulk Move UI experience.   *  Moving issue of type A to issue of type B in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving multiple issues of type A in one or more projects to multiple issues of type B in one of the source projects or a different project: &#x60;SUPPORTED&#x60;  *  Moving issues of multiple issue types in one or more projects to issues of a single issue type in one of the source project or a different project: **&#x60;SUPPORTED&#x60;**       E.g. Moving issues of story and task issue types in project 1 and project 2 to issues of task issue type in project 3  *  Moving a standard parent issue of type A with its multiple subtask issue types in one project to standard issue of type B and multiple subtask issue types in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving standard issues with their subtasks to a parent issue in the same project or a different project without losing their relation: &#x60;SUPPORTED&#x60;  *  Moving an epic issue with its child issues to a different project without losing their relation: &#x60;SUPPORTED&#x60;       This usecase is **supported using multiple requests**. Move the epic in one request and then move the children in a separate request with target parent set to the epic issue id              (Alternatively, move them individually and stitch the relationship back with the Bulk Edit API)  #### Limits applied to bulk issue moves: ####  When using the bulk move, keep in mind that there are limits on the number of issues and fields you can include.   *  You can move up to 1,000 issues in a single operation, including any subtasks.  *  The total combined number of fields across all issues must not exceed 1,500,000. For example, if each issue includes 15,000 fields, then the maximum number of issues that can be moved is 100.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Move [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in source projects.  *  Create [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects, if moving subtasks only.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkMovePayload  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkMoveWithHttpInfo(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = submitBulkMoveRequestBuilder(issueBulkMovePayload, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("submitBulkMove", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SubmittedBulkOperation>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SubmittedBulkOperation responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SubmittedBulkOperation>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<SubmittedBulkOperation>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder submitBulkMoveRequestBuilder(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueBulkMovePayload' is set
-    if (issueBulkMovePayload == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueBulkMovePayload' when calling submitBulkMove");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/issues/move";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueBulkMovePayload);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk transition issue statuses
-   * Use this API to submit a bulk issue status transition request. You can transition multiple issues, alongside with their valid transition Ids. You can transition up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkTransitionPayload The request body containing the issues to be transitioned. (required)
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkTransition(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload) throws ApiException {
-    return submitBulkTransition(issueBulkTransitionPayload, null);
-  }
-
-  /**
-   * Bulk transition issue statuses
-   * Use this API to submit a bulk issue status transition request. You can transition multiple issues, alongside with their valid transition Ids. You can transition up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkTransitionPayload The request body containing the issues to be transitioned. (required)
-   * @param headers Optional headers to include in the request
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkTransition(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload, Map<String, String> headers) throws ApiException {
-    ApiResponse<SubmittedBulkOperation> localVarResponse = submitBulkTransitionWithHttpInfo(issueBulkTransitionPayload, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk transition issue statuses
-   * Use this API to submit a bulk issue status transition request. You can transition multiple issues, alongside with their valid transition Ids. You can transition up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkTransitionPayload The request body containing the issues to be transitioned. (required)
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkTransitionWithHttpInfo(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload) throws ApiException {
-    return submitBulkTransitionWithHttpInfo(issueBulkTransitionPayload, null);
-  }
-
-  /**
-   * Bulk transition issue statuses
-   * Use this API to submit a bulk issue status transition request. You can transition multiple issues, alongside with their valid transition Ids. You can transition up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkTransitionPayload The request body containing the issues to be transitioned. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkTransitionWithHttpInfo(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = submitBulkTransitionRequestBuilder(issueBulkTransitionPayload, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("submitBulkTransition", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SubmittedBulkOperation>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAvailableTransitionsValidateBeforeCall(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdsOrKeys' is set
+        if (issueIdsOrKeys == null) {
+            throw new ApiException("Missing the required parameter 'issueIdsOrKeys' when calling getAvailableTransitions(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SubmittedBulkOperation responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SubmittedBulkOperation>() {});
-        
-        localVarResponse.body().close();
+        return getAvailableTransitionsCall(issueIdsOrKeys, endingBefore, startingAfter, _callback);
 
-        return new ApiResponse<SubmittedBulkOperation>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder submitBulkTransitionRequestBuilder(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueBulkTransitionPayload' is set
-    if (issueBulkTransitionPayload == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueBulkTransitionPayload' when calling submitBulkTransition");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/issues/transition";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueBulkTransitionPayload);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Get available transitions
+     * Use this API to retrieve a list of transitions available for the specified issues that can be used or bulk transition operations. You can submit either single or multiple issues in the query to obtain the available transitions.  The response will provide the available transitions for issues, organized by their respective workflows. **Only the transitions that are common among the issues within that workflow and do not involve any additional field updates will be included.** For bulk transitions that require additional field updates, please utilise the Jira Cloud UI.  You can request available transitions for up to 1,000 issues in a single operation. This API uses pagination to return responses, delivering 50 workflows at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdsOrKeys Comma (,) separated Ids or keys of the issues to get transitions available for them. (required)
+     * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
+     * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
+     * @return BulkTransitionGetAvailableTransitions
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. For example, if a provided issue ID or key is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public BulkTransitionGetAvailableTransitions getAvailableTransitions(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter) throws ApiException {
+        ApiResponse<BulkTransitionGetAvailableTransitions> localVarResp = getAvailableTransitionsWithHttpInfo(issueIdsOrKeys, endingBefore, startingAfter);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+
+    /**
+     * Get available transitions
+     * Use this API to retrieve a list of transitions available for the specified issues that can be used or bulk transition operations. You can submit either single or multiple issues in the query to obtain the available transitions.  The response will provide the available transitions for issues, organized by their respective workflows. **Only the transitions that are common among the issues within that workflow and do not involve any additional field updates will be included.** For bulk transitions that require additional field updates, please utilise the Jira Cloud UI.  You can request available transitions for up to 1,000 issues in a single operation. This API uses pagination to return responses, delivering 50 workflows at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdsOrKeys Comma (,) separated Ids or keys of the issues to get transitions available for them. (required)
+     * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
+     * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
+     * @return ApiResponse&lt;BulkTransitionGetAvailableTransitions&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. For example, if a provided issue ID or key is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<BulkTransitionGetAvailableTransitions> getAvailableTransitionsWithHttpInfo(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter) throws ApiException {
+        okhttp3.Call localVarCall = getAvailableTransitionsValidateBeforeCall(issueIdsOrKeys, endingBefore, startingAfter, null);
+        Type localVarReturnType = new TypeToken<BulkTransitionGetAvailableTransitions>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Get available transitions (asynchronously)
+     * Use this API to retrieve a list of transitions available for the specified issues that can be used or bulk transition operations. You can submit either single or multiple issues in the query to obtain the available transitions.  The response will provide the available transitions for issues, organized by their respective workflows. **Only the transitions that are common among the issues within that workflow and do not involve any additional field updates will be included.** For bulk transitions that require additional field updates, please utilise the Jira Cloud UI.  You can request available transitions for up to 1,000 issues in a single operation. This API uses pagination to return responses, delivering 50 workflows at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdsOrKeys Comma (,) separated Ids or keys of the issues to get transitions available for them. (required)
+     * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
+     * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. For example, if a provided issue ID or key is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAvailableTransitionsAsync(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, final ApiCallback<BulkTransitionGetAvailableTransitions> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAvailableTransitionsValidateBeforeCall(issueIdsOrKeys, endingBefore, startingAfter, _callback);
+        Type localVarReturnType = new TypeToken<BulkTransitionGetAvailableTransitions>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for getBulkEditableFields
+     * @param issueIdsOrKeys The IDs or keys of the issues to get editable fields from. (required)
+     * @param searchText (Optional)The text to search for in the editable fields. (optional)
+     * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
+     * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if no editable fields are found for the provided issue IDs. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getBulkEditableFieldsCall(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Bulk unwatch issues
-   * Use this API to submit a bulk unwatch request. You can unwatch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be unwatched. (required)
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkUnwatch(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload) throws ApiException {
-    return submitBulkUnwatch(issueBulkWatchOrUnwatchPayload, null);
-  }
-
-  /**
-   * Bulk unwatch issues
-   * Use this API to submit a bulk unwatch request. You can unwatch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be unwatched. (required)
-   * @param headers Optional headers to include in the request
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkUnwatch(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, Map<String, String> headers) throws ApiException {
-    ApiResponse<SubmittedBulkOperation> localVarResponse = submitBulkUnwatchWithHttpInfo(issueBulkWatchOrUnwatchPayload, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk unwatch issues
-   * Use this API to submit a bulk unwatch request. You can unwatch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be unwatched. (required)
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkUnwatchWithHttpInfo(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload) throws ApiException {
-    return submitBulkUnwatchWithHttpInfo(issueBulkWatchOrUnwatchPayload, null);
-  }
-
-  /**
-   * Bulk unwatch issues
-   * Use this API to submit a bulk unwatch request. You can unwatch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be unwatched. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkUnwatchWithHttpInfo(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = submitBulkUnwatchRequestBuilder(issueBulkWatchOrUnwatchPayload, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("submitBulkUnwatch", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SubmittedBulkOperation>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SubmittedBulkOperation responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SubmittedBulkOperation>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<SubmittedBulkOperation>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/issues/fields";
 
-  private HttpRequest.Builder submitBulkUnwatchRequestBuilder(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueBulkWatchOrUnwatchPayload' is set
-    if (issueBulkWatchOrUnwatchPayload == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueBulkWatchOrUnwatchPayload' when calling submitBulkUnwatch");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/issues/unwatch";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueBulkWatchOrUnwatchPayload);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk watch issues
-   * Use this API to submit a bulk watch request. You can watch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be watched. (required)
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkWatch(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload) throws ApiException {
-    return submitBulkWatch(issueBulkWatchOrUnwatchPayload, null);
-  }
-
-  /**
-   * Bulk watch issues
-   * Use this API to submit a bulk watch request. You can watch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be watched. (required)
-   * @param headers Optional headers to include in the request
-   * @return SubmittedBulkOperation
-   * @throws ApiException if fails to make API call
-   */
-  public SubmittedBulkOperation submitBulkWatch(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, Map<String, String> headers) throws ApiException {
-    ApiResponse<SubmittedBulkOperation> localVarResponse = submitBulkWatchWithHttpInfo(issueBulkWatchOrUnwatchPayload, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk watch issues
-   * Use this API to submit a bulk watch request. You can watch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be watched. (required)
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkWatchWithHttpInfo(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload) throws ApiException {
-    return submitBulkWatchWithHttpInfo(issueBulkWatchOrUnwatchPayload, null);
-  }
-
-  /**
-   * Bulk watch issues
-   * Use this API to submit a bulk watch request. You can watch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be watched. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SubmittedBulkOperation&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SubmittedBulkOperation> submitBulkWatchWithHttpInfo(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = submitBulkWatchRequestBuilder(issueBulkWatchOrUnwatchPayload, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("submitBulkWatch", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SubmittedBulkOperation>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (issueIdsOrKeys != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("issueIdsOrKeys", issueIdsOrKeys));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SubmittedBulkOperation responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SubmittedBulkOperation>() {});
-        
-        localVarResponse.body().close();
+        if (searchText != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("searchText", searchText));
+        }
 
-        return new ApiResponse<SubmittedBulkOperation>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
+        if (endingBefore != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("endingBefore", endingBefore));
+        }
+
+        if (startingAfter != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startingAfter", startingAfter));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getBulkEditableFieldsValidateBeforeCall(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdsOrKeys' is set
+        if (issueIdsOrKeys == null) {
+            throw new ApiException("Missing the required parameter 'issueIdsOrKeys' when calling getBulkEditableFields(Async)");
+        }
+
+        return getBulkEditableFieldsCall(issueIdsOrKeys, searchText, endingBefore, startingAfter, _callback);
+
     }
-  }
 
-  private HttpRequest.Builder submitBulkWatchRequestBuilder(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueBulkWatchOrUnwatchPayload' is set
-    if (issueBulkWatchOrUnwatchPayload == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueBulkWatchOrUnwatchPayload' when calling submitBulkWatch");
+    /**
+     * Get bulk editable fields
+     * Use this API to get a list of fields visible to the user to perform bulk edit operations. You can pass single or multiple issues in the query to get eligible editable fields. This API uses pagination to return responses, delivering 50 fields at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  Depending on the field, any field-specific permissions required to edit it.
+     * @param issueIdsOrKeys The IDs or keys of the issues to get editable fields from. (required)
+     * @param searchText (Optional)The text to search for in the editable fields. (optional)
+     * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
+     * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
+     * @return BulkEditGetFields
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if no editable fields are found for the provided issue IDs. </td><td>  -  </td></tr>
+     </table>
+     */
+    public BulkEditGetFields getBulkEditableFields(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter) throws ApiException {
+        ApiResponse<BulkEditGetFields> localVarResp = getBulkEditableFieldsWithHttpInfo(issueIdsOrKeys, searchText, endingBefore, startingAfter);
+        return localVarResp.getData();
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/bulk/issues/watch";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueBulkWatchOrUnwatchPayload);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Get bulk editable fields
+     * Use this API to get a list of fields visible to the user to perform bulk edit operations. You can pass single or multiple issues in the query to get eligible editable fields. This API uses pagination to return responses, delivering 50 fields at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  Depending on the field, any field-specific permissions required to edit it.
+     * @param issueIdsOrKeys The IDs or keys of the issues to get editable fields from. (required)
+     * @param searchText (Optional)The text to search for in the editable fields. (optional)
+     * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
+     * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
+     * @return ApiResponse&lt;BulkEditGetFields&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if no editable fields are found for the provided issue IDs. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<BulkEditGetFields> getBulkEditableFieldsWithHttpInfo(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter) throws ApiException {
+        okhttp3.Call localVarCall = getBulkEditableFieldsValidateBeforeCall(issueIdsOrKeys, searchText, endingBefore, startingAfter, null);
+        Type localVarReturnType = new TypeToken<BulkEditGetFields>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Get bulk editable fields (asynchronously)
+     * Use this API to get a list of fields visible to the user to perform bulk edit operations. You can pass single or multiple issues in the query to get eligible editable fields. This API uses pagination to return responses, delivering 50 fields at a time.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  Depending on the field, any field-specific permissions required to edit it.
+     * @param issueIdsOrKeys The IDs or keys of the issues to get editable fields from. (required)
+     * @param searchText (Optional)The text to search for in the editable fields. (optional)
+     * @param endingBefore (Optional)The end cursor for use in pagination. (optional)
+     * @param startingAfter (Optional)The start cursor for use in pagination. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if no editable fields are found for the provided issue IDs. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getBulkEditableFieldsAsync(@javax.annotation.Nonnull String issueIdsOrKeys, @javax.annotation.Nullable String searchText, @javax.annotation.Nullable String endingBefore, @javax.annotation.Nullable String startingAfter, final ApiCallback<BulkEditGetFields> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getBulkEditableFieldsValidateBeforeCall(issueIdsOrKeys, searchText, endingBefore, startingAfter, _callback);
+        Type localVarReturnType = new TypeToken<BulkEditGetFields>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getBulkOperationProgress
+     * @param taskId The ID of the task. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getBulkOperationProgressCall(@javax.annotation.Nonnull String taskId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/queue/{taskId}"
+            .replace("{" + "taskId" + "}", localVarApiClient.escapeString(taskId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getBulkOperationProgressValidateBeforeCall(@javax.annotation.Nonnull String taskId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'taskId' is set
+        if (taskId == null) {
+            throw new ApiException("Missing the required parameter 'taskId' when calling getBulkOperationProgress(Async)");
+        }
+
+        return getBulkOperationProgressCall(taskId, _callback);
+
+    }
+
+    /**
+     * Get bulk issue operation progress
+     * Use this to get the progress state for the specified bulk operation &#x60;taskId&#x60;.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  If the task is running, this resource will return:      {\&quot;taskId\&quot;:\&quot;10779\&quot;,\&quot;status\&quot;:\&quot;RUNNING\&quot;,\&quot;progressPercent\&quot;:65,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;created\&quot;:1690180055963,\&quot;started\&quot;:1690180056206,\&quot;updated\&quot;:169018005829}  If the task has completed, then this resource will return:      {\&quot;processedAccessibleIssues\&quot;:[10001,10002],\&quot;created\&quot;:1709189449954,\&quot;progressPercent\&quot;:100,\&quot;started\&quot;:1709189450154,\&quot;status\&quot;:\&quot;COMPLETE\&quot;,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;invalidOrInaccessibleIssueCount\&quot;:0,\&quot;taskId\&quot;:\&quot;10000\&quot;,\&quot;totalIssueCount\&quot;:2,\&quot;updated\&quot;:1709189450354}  **Note:** You can view task progress for up to 14 days from creation.
+     * @param taskId The ID of the task. (required)
+     * @return BulkOperationProgress
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public BulkOperationProgress getBulkOperationProgress(@javax.annotation.Nonnull String taskId) throws ApiException {
+        ApiResponse<BulkOperationProgress> localVarResp = getBulkOperationProgressWithHttpInfo(taskId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get bulk issue operation progress
+     * Use this to get the progress state for the specified bulk operation &#x60;taskId&#x60;.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  If the task is running, this resource will return:      {\&quot;taskId\&quot;:\&quot;10779\&quot;,\&quot;status\&quot;:\&quot;RUNNING\&quot;,\&quot;progressPercent\&quot;:65,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;created\&quot;:1690180055963,\&quot;started\&quot;:1690180056206,\&quot;updated\&quot;:169018005829}  If the task has completed, then this resource will return:      {\&quot;processedAccessibleIssues\&quot;:[10001,10002],\&quot;created\&quot;:1709189449954,\&quot;progressPercent\&quot;:100,\&quot;started\&quot;:1709189450154,\&quot;status\&quot;:\&quot;COMPLETE\&quot;,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;invalidOrInaccessibleIssueCount\&quot;:0,\&quot;taskId\&quot;:\&quot;10000\&quot;,\&quot;totalIssueCount\&quot;:2,\&quot;updated\&quot;:1709189450354}  **Note:** You can view task progress for up to 14 days from creation.
+     * @param taskId The ID of the task. (required)
+     * @return ApiResponse&lt;BulkOperationProgress&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<BulkOperationProgress> getBulkOperationProgressWithHttpInfo(@javax.annotation.Nonnull String taskId) throws ApiException {
+        okhttp3.Call localVarCall = getBulkOperationProgressValidateBeforeCall(taskId, null);
+        Type localVarReturnType = new TypeToken<BulkOperationProgress>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get bulk issue operation progress (asynchronously)
+     * Use this to get the progress state for the specified bulk operation &#x60;taskId&#x60;.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  If the task is running, this resource will return:      {\&quot;taskId\&quot;:\&quot;10779\&quot;,\&quot;status\&quot;:\&quot;RUNNING\&quot;,\&quot;progressPercent\&quot;:65,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;created\&quot;:1690180055963,\&quot;started\&quot;:1690180056206,\&quot;updated\&quot;:169018005829}  If the task has completed, then this resource will return:      {\&quot;processedAccessibleIssues\&quot;:[10001,10002],\&quot;created\&quot;:1709189449954,\&quot;progressPercent\&quot;:100,\&quot;started\&quot;:1709189450154,\&quot;status\&quot;:\&quot;COMPLETE\&quot;,\&quot;submittedBy\&quot;:{\&quot;accountId\&quot;:\&quot;5b10a2844c20165700ede21g\&quot;},\&quot;invalidOrInaccessibleIssueCount\&quot;:0,\&quot;taskId\&quot;:\&quot;10000\&quot;,\&quot;totalIssueCount\&quot;:2,\&quot;updated\&quot;:1709189450354}  **Note:** You can view task progress for up to 14 days from creation.
+     * @param taskId The ID of the task. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getBulkOperationProgressAsync(@javax.annotation.Nonnull String taskId, final ApiCallback<BulkOperationProgress> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getBulkOperationProgressValidateBeforeCall(taskId, _callback);
+        Type localVarReturnType = new TypeToken<BulkOperationProgress>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for submitBulkDelete
+     * @param issueBulkDeletePayload The request body containing the issues to be deleted. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkDeleteCall(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueBulkDeletePayload;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/issues/delete";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call submitBulkDeleteValidateBeforeCall(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueBulkDeletePayload' is set
+        if (issueBulkDeletePayload == null) {
+            throw new ApiException("Missing the required parameter 'issueBulkDeletePayload' when calling submitBulkDelete(Async)");
+        }
+
+        return submitBulkDeleteCall(issueBulkDeletePayload, _callback);
+
+    }
+
+    /**
+     * Bulk delete issues
+     * Use this API to submit a bulk delete request. You can delete up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Delete [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Delete-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkDeletePayload The request body containing the issues to be deleted. (required)
+     * @return SubmittedBulkOperation
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SubmittedBulkOperation submitBulkDelete(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload) throws ApiException {
+        ApiResponse<SubmittedBulkOperation> localVarResp = submitBulkDeleteWithHttpInfo(issueBulkDeletePayload);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk delete issues
+     * Use this API to submit a bulk delete request. You can delete up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Delete [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Delete-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkDeletePayload The request body containing the issues to be deleted. (required)
+     * @return ApiResponse&lt;SubmittedBulkOperation&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SubmittedBulkOperation> submitBulkDeleteWithHttpInfo(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload) throws ApiException {
+        okhttp3.Call localVarCall = submitBulkDeleteValidateBeforeCall(issueBulkDeletePayload, null);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk delete issues (asynchronously)
+     * Use this API to submit a bulk delete request. You can delete up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Delete [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Delete-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkDeletePayload The request body containing the issues to be deleted. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkDeleteAsync(@javax.annotation.Nonnull IssueBulkDeletePayload issueBulkDeletePayload, final ApiCallback<SubmittedBulkOperation> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = submitBulkDeleteValidateBeforeCall(issueBulkDeletePayload, _callback);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for submitBulkEdit
+     * @param issueBulkEditPayload The request body containing the issues to be edited and the new field values. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkEditCall(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueBulkEditPayload;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/issues/fields";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call submitBulkEditValidateBeforeCall(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueBulkEditPayload' is set
+        if (issueBulkEditPayload == null) {
+            throw new ApiException("Missing the required parameter 'issueBulkEditPayload' when calling submitBulkEdit(Async)");
+        }
+
+        return submitBulkEditCall(issueBulkEditPayload, _callback);
+
+    }
+
+    /**
+     * Bulk edit issues
+     * Use this API to submit a bulk edit request and simultaneously edit multiple issues. There are limits applied to the number of issues and fields that can be edited. A single request can accommodate a maximum of 1000 issues (including subtasks) and 200 fields.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  Edit [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkEditPayload The request body containing the issues to be edited and the new field values. (required)
+     * @return SubmittedBulkOperation
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SubmittedBulkOperation submitBulkEdit(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload) throws ApiException {
+        ApiResponse<SubmittedBulkOperation> localVarResp = submitBulkEditWithHttpInfo(issueBulkEditPayload);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk edit issues
+     * Use this API to submit a bulk edit request and simultaneously edit multiple issues. There are limits applied to the number of issues and fields that can be edited. A single request can accommodate a maximum of 1000 issues (including subtasks) and 200 fields.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  Edit [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkEditPayload The request body containing the issues to be edited and the new field values. (required)
+     * @return ApiResponse&lt;SubmittedBulkOperation&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SubmittedBulkOperation> submitBulkEditWithHttpInfo(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload) throws ApiException {
+        okhttp3.Call localVarCall = submitBulkEditValidateBeforeCall(issueBulkEditPayload, null);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk edit issues (asynchronously)
+     * Use this API to submit a bulk edit request and simultaneously edit multiple issues. There are limits applied to the number of issues and fields that can be edited. A single request can accommodate a maximum of 1000 issues (including subtasks) and 200 fields.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  Edit [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkEditPayload The request body containing the issues to be edited and the new field values. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkEditAsync(@javax.annotation.Nonnull IssueBulkEditPayload issueBulkEditPayload, final ApiCallback<SubmittedBulkOperation> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = submitBulkEditValidateBeforeCall(issueBulkEditPayload, _callback);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for submitBulkMove
+     * @param issueBulkMovePayload  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkMoveCall(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueBulkMovePayload;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/issues/move";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call submitBulkMoveValidateBeforeCall(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueBulkMovePayload' is set
+        if (issueBulkMovePayload == null) {
+            throw new ApiException("Missing the required parameter 'issueBulkMovePayload' when calling submitBulkMove(Async)");
+        }
+
+        return submitBulkMoveCall(issueBulkMovePayload, _callback);
+
+    }
+
+    /**
+     * Bulk move issues
+     * Use this API to submit a bulk issue move request. You can move multiple issues from multiple projects in a single request, but they must all be moved to a single project, issue type, and parent. You can&#39;t move more than 1000 issues (including subtasks) at once.  #### Scenarios: ####  This is an early version of the API and it doesn&#39;t have full feature parity with the Bulk Move UI experience.   *  Moving issue of type A to issue of type B in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving multiple issues of type A in one or more projects to multiple issues of type B in one of the source projects or a different project: &#x60;SUPPORTED&#x60;  *  Moving issues of multiple issue types in one or more projects to issues of a single issue type in one of the source project or a different project: **&#x60;SUPPORTED&#x60;**       E.g. Moving issues of story and task issue types in project 1 and project 2 to issues of task issue type in project 3  *  Moving a standard parent issue of type A with its multiple subtask issue types in one project to standard issue of type B and multiple subtask issue types in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving standard issues with their subtasks to a parent issue in the same project or a different project without losing their relation: &#x60;SUPPORTED&#x60;  *  Moving an epic issue with its child issues to a different project without losing their relation: &#x60;SUPPORTED&#x60;       This usecase is **supported using multiple requests**. Move the epic in one request and then move the children in a separate request with target parent set to the epic issue id              (Alternatively, move them individually and stitch the relationship back with the Bulk Edit API)  #### Limits applied to bulk issue moves: ####  When using the bulk move, keep in mind that there are limits on the number of issues and fields you can include.   *  You can move up to 1,000 issues in a single operation, including any subtasks.  *  The total combined number of fields across all issues must not exceed 1,500,000. For example, if each issue includes 15,000 fields, then the maximum number of issues that can be moved is 100.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Move [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in source projects.  *  Create [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects, if moving subtasks only.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkMovePayload  (required)
+     * @return SubmittedBulkOperation
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SubmittedBulkOperation submitBulkMove(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload) throws ApiException {
+        ApiResponse<SubmittedBulkOperation> localVarResp = submitBulkMoveWithHttpInfo(issueBulkMovePayload);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk move issues
+     * Use this API to submit a bulk issue move request. You can move multiple issues from multiple projects in a single request, but they must all be moved to a single project, issue type, and parent. You can&#39;t move more than 1000 issues (including subtasks) at once.  #### Scenarios: ####  This is an early version of the API and it doesn&#39;t have full feature parity with the Bulk Move UI experience.   *  Moving issue of type A to issue of type B in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving multiple issues of type A in one or more projects to multiple issues of type B in one of the source projects or a different project: &#x60;SUPPORTED&#x60;  *  Moving issues of multiple issue types in one or more projects to issues of a single issue type in one of the source project or a different project: **&#x60;SUPPORTED&#x60;**       E.g. Moving issues of story and task issue types in project 1 and project 2 to issues of task issue type in project 3  *  Moving a standard parent issue of type A with its multiple subtask issue types in one project to standard issue of type B and multiple subtask issue types in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving standard issues with their subtasks to a parent issue in the same project or a different project without losing their relation: &#x60;SUPPORTED&#x60;  *  Moving an epic issue with its child issues to a different project without losing their relation: &#x60;SUPPORTED&#x60;       This usecase is **supported using multiple requests**. Move the epic in one request and then move the children in a separate request with target parent set to the epic issue id              (Alternatively, move them individually and stitch the relationship back with the Bulk Edit API)  #### Limits applied to bulk issue moves: ####  When using the bulk move, keep in mind that there are limits on the number of issues and fields you can include.   *  You can move up to 1,000 issues in a single operation, including any subtasks.  *  The total combined number of fields across all issues must not exceed 1,500,000. For example, if each issue includes 15,000 fields, then the maximum number of issues that can be moved is 100.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Move [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in source projects.  *  Create [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects, if moving subtasks only.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkMovePayload  (required)
+     * @return ApiResponse&lt;SubmittedBulkOperation&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SubmittedBulkOperation> submitBulkMoveWithHttpInfo(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload) throws ApiException {
+        okhttp3.Call localVarCall = submitBulkMoveValidateBeforeCall(issueBulkMovePayload, null);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk move issues (asynchronously)
+     * Use this API to submit a bulk issue move request. You can move multiple issues from multiple projects in a single request, but they must all be moved to a single project, issue type, and parent. You can&#39;t move more than 1000 issues (including subtasks) at once.  #### Scenarios: ####  This is an early version of the API and it doesn&#39;t have full feature parity with the Bulk Move UI experience.   *  Moving issue of type A to issue of type B in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving multiple issues of type A in one or more projects to multiple issues of type B in one of the source projects or a different project: &#x60;SUPPORTED&#x60;  *  Moving issues of multiple issue types in one or more projects to issues of a single issue type in one of the source project or a different project: **&#x60;SUPPORTED&#x60;**       E.g. Moving issues of story and task issue types in project 1 and project 2 to issues of task issue type in project 3  *  Moving a standard parent issue of type A with its multiple subtask issue types in one project to standard issue of type B and multiple subtask issue types in the same project or a different project: &#x60;SUPPORTED&#x60;  *  Moving standard issues with their subtasks to a parent issue in the same project or a different project without losing their relation: &#x60;SUPPORTED&#x60;  *  Moving an epic issue with its child issues to a different project without losing their relation: &#x60;SUPPORTED&#x60;       This usecase is **supported using multiple requests**. Move the epic in one request and then move the children in a separate request with target parent set to the epic issue id              (Alternatively, move them individually and stitch the relationship back with the Bulk Edit API)  #### Limits applied to bulk issue moves: ####  When using the bulk move, keep in mind that there are limits on the number of issues and fields you can include.   *  You can move up to 1,000 issues in a single operation, including any subtasks.  *  The total combined number of fields across all issues must not exceed 1,500,000. For example, if each issue includes 15,000 fields, then the maximum number of issues that can be moved is 100.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Move [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in source projects.  *  Create [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in destination projects, if moving subtasks only.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkMovePayload  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkMoveAsync(@javax.annotation.Nonnull IssueBulkMovePayload issueBulkMovePayload, final ApiCallback<SubmittedBulkOperation> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = submitBulkMoveValidateBeforeCall(issueBulkMovePayload, _callback);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for submitBulkTransition
+     * @param issueBulkTransitionPayload The request body containing the issues to be transitioned. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkTransitionCall(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueBulkTransitionPayload;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/issues/transition";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call submitBulkTransitionValidateBeforeCall(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueBulkTransitionPayload' is set
+        if (issueBulkTransitionPayload == null) {
+            throw new ApiException("Missing the required parameter 'issueBulkTransitionPayload' when calling submitBulkTransition(Async)");
+        }
+
+        return submitBulkTransitionCall(issueBulkTransitionPayload, _callback);
+
+    }
+
+    /**
+     * Bulk transition issue statuses
+     * Use this API to submit a bulk issue status transition request. You can transition multiple issues, alongside with their valid transition Ids. You can transition up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkTransitionPayload The request body containing the issues to be transitioned. (required)
+     * @return SubmittedBulkOperation
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SubmittedBulkOperation submitBulkTransition(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload) throws ApiException {
+        ApiResponse<SubmittedBulkOperation> localVarResp = submitBulkTransitionWithHttpInfo(issueBulkTransitionPayload);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk transition issue statuses
+     * Use this API to submit a bulk issue status transition request. You can transition multiple issues, alongside with their valid transition Ids. You can transition up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkTransitionPayload The request body containing the issues to be transitioned. (required)
+     * @return ApiResponse&lt;SubmittedBulkOperation&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SubmittedBulkOperation> submitBulkTransitionWithHttpInfo(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload) throws ApiException {
+        okhttp3.Call localVarCall = submitBulkTransitionValidateBeforeCall(issueBulkTransitionPayload, null);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk transition issue statuses (asynchronously)
+     * Use this API to submit a bulk issue status transition request. You can transition multiple issues, alongside with their valid transition Ids. You can transition up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Transition [issues permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Transition-issues/) in all projects that contain the selected issues.  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkTransitionPayload The request body containing the issues to be transitioned. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkTransitionAsync(@javax.annotation.Nonnull IssueBulkTransitionPayload issueBulkTransitionPayload, final ApiCallback<SubmittedBulkOperation> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = submitBulkTransitionValidateBeforeCall(issueBulkTransitionPayload, _callback);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for submitBulkUnwatch
+     * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be unwatched. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkUnwatchCall(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueBulkWatchOrUnwatchPayload;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/issues/unwatch";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call submitBulkUnwatchValidateBeforeCall(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueBulkWatchOrUnwatchPayload' is set
+        if (issueBulkWatchOrUnwatchPayload == null) {
+            throw new ApiException("Missing the required parameter 'issueBulkWatchOrUnwatchPayload' when calling submitBulkUnwatch(Async)");
+        }
+
+        return submitBulkUnwatchCall(issueBulkWatchOrUnwatchPayload, _callback);
+
+    }
+
+    /**
+     * Bulk unwatch issues
+     * Use this API to submit a bulk unwatch request. You can unwatch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be unwatched. (required)
+     * @return SubmittedBulkOperation
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SubmittedBulkOperation submitBulkUnwatch(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload) throws ApiException {
+        ApiResponse<SubmittedBulkOperation> localVarResp = submitBulkUnwatchWithHttpInfo(issueBulkWatchOrUnwatchPayload);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk unwatch issues
+     * Use this API to submit a bulk unwatch request. You can unwatch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be unwatched. (required)
+     * @return ApiResponse&lt;SubmittedBulkOperation&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SubmittedBulkOperation> submitBulkUnwatchWithHttpInfo(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload) throws ApiException {
+        okhttp3.Call localVarCall = submitBulkUnwatchValidateBeforeCall(issueBulkWatchOrUnwatchPayload, null);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk unwatch issues (asynchronously)
+     * Use this API to submit a bulk unwatch request. You can unwatch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be unwatched. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkUnwatchAsync(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, final ApiCallback<SubmittedBulkOperation> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = submitBulkUnwatchValidateBeforeCall(issueBulkWatchOrUnwatchPayload, _callback);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for submitBulkWatch
+     * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be watched. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkWatchCall(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueBulkWatchOrUnwatchPayload;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/bulk/issues/watch";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call submitBulkWatchValidateBeforeCall(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueBulkWatchOrUnwatchPayload' is set
+        if (issueBulkWatchOrUnwatchPayload == null) {
+            throw new ApiException("Missing the required parameter 'issueBulkWatchOrUnwatchPayload' when calling submitBulkWatch(Async)");
+        }
+
+        return submitBulkWatchCall(issueBulkWatchOrUnwatchPayload, _callback);
+
+    }
+
+    /**
+     * Bulk watch issues
+     * Use this API to submit a bulk watch request. You can watch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be watched. (required)
+     * @return SubmittedBulkOperation
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SubmittedBulkOperation submitBulkWatch(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload) throws ApiException {
+        ApiResponse<SubmittedBulkOperation> localVarResp = submitBulkWatchWithHttpInfo(issueBulkWatchOrUnwatchPayload);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk watch issues
+     * Use this API to submit a bulk watch request. You can watch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be watched. (required)
+     * @return ApiResponse&lt;SubmittedBulkOperation&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SubmittedBulkOperation> submitBulkWatchWithHttpInfo(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload) throws ApiException {
+        okhttp3.Call localVarCall = submitBulkWatchValidateBeforeCall(issueBulkWatchOrUnwatchPayload, null);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk watch issues (asynchronously)
+     * Use this API to submit a bulk watch request. You can watch up to 1,000 issues in a single operation.  **[Permissions](#permissions) required:**   *  Global bulk change [permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-global-permissions/).  *  Browse [project permission](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-permissions/) in all projects that contain the selected issues.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueBulkWatchOrUnwatchPayload The request body containing the issues to be watched. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call submitBulkWatchAsync(@javax.annotation.Nonnull IssueBulkWatchOrUnwatchPayload issueBulkWatchOrUnwatchPayload, final ApiCallback<SubmittedBulkOperation> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = submitBulkWatchValidateBeforeCall(issueBulkWatchOrUnwatchPayload, _callback);
+        Type localVarReturnType = new TypeToken<SubmittedBulkOperation>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

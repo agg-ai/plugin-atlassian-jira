@@ -13,91 +13,102 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.FieldDetails;
 import io.kestra.plugin.jira.client.model.GroupName;
 import io.kestra.plugin.jira.client.model.ProjectRole;
 import io.kestra.plugin.jira.client.model.UserDetails;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a notification associated with an event.
  */
-@JsonPropertyOrder({
-  EventNotification.JSON_PROPERTY_EMAIL_ADDRESS,
-  EventNotification.JSON_PROPERTY_EXPAND,
-  EventNotification.JSON_PROPERTY_FIELD,
-  EventNotification.JSON_PROPERTY_GROUP,
-  EventNotification.JSON_PROPERTY_ID,
-  EventNotification.JSON_PROPERTY_NOTIFICATION_TYPE,
-  EventNotification.JSON_PROPERTY_PARAMETER,
-  EventNotification.JSON_PROPERTY_PROJECT_ROLE,
-  EventNotification.JSON_PROPERTY_RECIPIENT,
-  EventNotification.JSON_PROPERTY_USER
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class EventNotification {
-  public static final String JSON_PROPERTY_EMAIL_ADDRESS = "emailAddress";
+  public static final String SERIALIZED_NAME_EMAIL_ADDRESS = "emailAddress";
+  @SerializedName(SERIALIZED_NAME_EMAIL_ADDRESS)
   @javax.annotation.Nullable
   private String emailAddress;
 
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_FIELD = "field";
+  public static final String SERIALIZED_NAME_FIELD = "field";
+  @SerializedName(SERIALIZED_NAME_FIELD)
   @javax.annotation.Nullable
   private FieldDetails field;
 
-  public static final String JSON_PROPERTY_GROUP = "group";
+  public static final String SERIALIZED_NAME_GROUP = "group";
+  @SerializedName(SERIALIZED_NAME_GROUP)
   @javax.annotation.Nullable
   private GroupName group;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
   /**
    * Identifies the recipients of the notification.
    */
+  @JsonAdapter(NotificationTypeEnum.Adapter.class)
   public enum NotificationTypeEnum {
-    CURRENT_ASSIGNEE(String.valueOf("CurrentAssignee")),
+    CURRENT_ASSIGNEE("CurrentAssignee"),
     
-    REPORTER(String.valueOf("Reporter")),
+    REPORTER("Reporter"),
     
-    CURRENT_USER(String.valueOf("CurrentUser")),
+    CURRENT_USER("CurrentUser"),
     
-    PROJECT_LEAD(String.valueOf("ProjectLead")),
+    PROJECT_LEAD("ProjectLead"),
     
-    COMPONENT_LEAD(String.valueOf("ComponentLead")),
+    COMPONENT_LEAD("ComponentLead"),
     
-    USER(String.valueOf("User")),
+    USER("User"),
     
-    GROUP(String.valueOf("Group")),
+    GROUP("Group"),
     
-    PROJECT_ROLE(String.valueOf("ProjectRole")),
+    PROJECT_ROLE("ProjectRole"),
     
-    EMAIL_ADDRESS(String.valueOf("EmailAddress")),
+    EMAIL_ADDRESS("EmailAddress"),
     
-    ALL_WATCHERS(String.valueOf("AllWatchers")),
+    ALL_WATCHERS("AllWatchers"),
     
-    USER_CUSTOM_FIELD(String.valueOf("UserCustomField")),
+    USER_CUSTOM_FIELD("UserCustomField"),
     
-    GROUP_CUSTOM_FIELD(String.valueOf("GroupCustomField"));
+    GROUP_CUSTOM_FIELD("GroupCustomField");
 
     private String value;
 
@@ -105,7 +116,6 @@ public class EventNotification {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -115,7 +125,6 @@ public class EventNotification {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static NotificationTypeEnum fromValue(String value) {
       for (NotificationTypeEnum b : NotificationTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -124,29 +133,52 @@ public class EventNotification {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<NotificationTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final NotificationTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public NotificationTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return NotificationTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      NotificationTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_NOTIFICATION_TYPE = "notificationType";
+  public static final String SERIALIZED_NAME_NOTIFICATION_TYPE = "notificationType";
+  @SerializedName(SERIALIZED_NAME_NOTIFICATION_TYPE)
   @javax.annotation.Nullable
   private NotificationTypeEnum notificationType;
 
-  public static final String JSON_PROPERTY_PARAMETER = "parameter";
+  public static final String SERIALIZED_NAME_PARAMETER = "parameter";
+  @SerializedName(SERIALIZED_NAME_PARAMETER)
   @javax.annotation.Nullable
   private String parameter;
 
-  public static final String JSON_PROPERTY_PROJECT_ROLE = "projectRole";
+  public static final String SERIALIZED_NAME_PROJECT_ROLE = "projectRole";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ROLE)
   @javax.annotation.Nullable
   private ProjectRole projectRole;
 
-  public static final String JSON_PROPERTY_RECIPIENT = "recipient";
+  public static final String SERIALIZED_NAME_RECIPIENT = "recipient";
+  @SerializedName(SERIALIZED_NAME_RECIPIENT)
   @javax.annotation.Nullable
   private String recipient;
 
-  public static final String JSON_PROPERTY_USER = "user";
+  public static final String SERIALIZED_NAME_USER = "user";
+  @SerializedName(SERIALIZED_NAME_USER)
   @javax.annotation.Nullable
   private UserDetails user;
 
-  public EventNotification() { 
+  public EventNotification() {
   }
 
   public EventNotification emailAddress(@javax.annotation.Nullable String emailAddress) {
@@ -159,15 +191,10 @@ public class EventNotification {
    * @return emailAddress
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEmailAddress() {
     return emailAddress;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEmailAddress(@javax.annotation.Nullable String emailAddress) {
     this.emailAddress = emailAddress;
   }
@@ -183,15 +210,10 @@ public class EventNotification {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExpand(@javax.annotation.Nullable String expand) {
     this.expand = expand;
   }
@@ -207,15 +229,10 @@ public class EventNotification {
    * @return field
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FieldDetails getField() {
     return field;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setField(@javax.annotation.Nullable FieldDetails field) {
     this.field = field;
   }
@@ -231,15 +248,10 @@ public class EventNotification {
    * @return group
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GroupName getGroup() {
     return group;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroup(@javax.annotation.Nullable GroupName group) {
     this.group = group;
   }
@@ -255,15 +267,10 @@ public class EventNotification {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable Long id) {
     this.id = id;
   }
@@ -279,15 +286,10 @@ public class EventNotification {
    * @return notificationType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public NotificationTypeEnum getNotificationType() {
     return notificationType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNotificationType(@javax.annotation.Nullable NotificationTypeEnum notificationType) {
     this.notificationType = notificationType;
   }
@@ -303,15 +305,10 @@ public class EventNotification {
    * @return parameter
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PARAMETER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getParameter() {
     return parameter;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PARAMETER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setParameter(@javax.annotation.Nullable String parameter) {
     this.parameter = parameter;
   }
@@ -327,15 +324,10 @@ public class EventNotification {
    * @return projectRole
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ROLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectRole getProjectRole() {
     return projectRole;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ROLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectRole(@javax.annotation.Nullable ProjectRole projectRole) {
     this.projectRole = projectRole;
   }
@@ -351,15 +343,10 @@ public class EventNotification {
    * @return recipient
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RECIPIENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRecipient() {
     return recipient;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RECIPIENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRecipient(@javax.annotation.Nullable String recipient) {
     this.recipient = recipient;
   }
@@ -375,23 +362,16 @@ public class EventNotification {
    * @return user
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserDetails getUser() {
     return user;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUser(@javax.annotation.Nullable UserDetails user) {
     this.user = user;
   }
 
 
-  /**
-   * Return true if this EventNotification object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -447,89 +427,123 @@ public class EventNotification {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("emailAddress", "expand", "field", "group", "id", "notificationType", "parameter", "projectRole", "recipient", "user"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to EventNotification
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!EventNotification.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in EventNotification is not found in the empty JSON string", EventNotification.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!EventNotification.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `EventNotification` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("emailAddress") != null && !jsonObj.get("emailAddress").isJsonNull()) && !jsonObj.get("emailAddress").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `emailAddress` to be a primitive type in the JSON string but got `%s`", jsonObj.get("emailAddress").toString()));
+      }
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
+      }
+      // validate the optional field `field`
+      if (jsonObj.get("field") != null && !jsonObj.get("field").isJsonNull()) {
+        FieldDetails.validateJsonElement(jsonObj.get("field"));
+      }
+      // validate the optional field `group`
+      if (jsonObj.get("group") != null && !jsonObj.get("group").isJsonNull()) {
+        GroupName.validateJsonElement(jsonObj.get("group"));
+      }
+      if ((jsonObj.get("notificationType") != null && !jsonObj.get("notificationType").isJsonNull()) && !jsonObj.get("notificationType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `notificationType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("notificationType").toString()));
+      }
+      // validate the optional field `notificationType`
+      if (jsonObj.get("notificationType") != null && !jsonObj.get("notificationType").isJsonNull()) {
+        NotificationTypeEnum.validateJsonElement(jsonObj.get("notificationType"));
+      }
+      if ((jsonObj.get("parameter") != null && !jsonObj.get("parameter").isJsonNull()) && !jsonObj.get("parameter").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `parameter` to be a primitive type in the JSON string but got `%s`", jsonObj.get("parameter").toString()));
+      }
+      // validate the optional field `projectRole`
+      if (jsonObj.get("projectRole") != null && !jsonObj.get("projectRole").isJsonNull()) {
+        ProjectRole.validateJsonElement(jsonObj.get("projectRole"));
+      }
+      if ((jsonObj.get("recipient") != null && !jsonObj.get("recipient").isJsonNull()) && !jsonObj.get("recipient").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `recipient` to be a primitive type in the JSON string but got `%s`", jsonObj.get("recipient").toString()));
+      }
+      // validate the optional field `user`
+      if (jsonObj.get("user") != null && !jsonObj.get("user").isJsonNull()) {
+        UserDetails.validateJsonElement(jsonObj.get("user"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!EventNotification.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'EventNotification' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<EventNotification> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(EventNotification.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<EventNotification>() {
+           @Override
+           public void write(JsonWriter out, EventNotification value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public EventNotification read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of EventNotification given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of EventNotification
+   * @throws IOException if the JSON string is invalid with respect to EventNotification
+   */
+  public static EventNotification fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, EventNotification.class);
+  }
 
-    // add `emailAddress` to the URL query string
-    if (getEmailAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%semailAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmailAddress()))));
-    }
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `field` to the URL query string
-    if (getField() != null) {
-      joiner.add(getField().toUrlQueryString(prefix + "field" + suffix));
-    }
-
-    // add `group` to the URL query string
-    if (getGroup() != null) {
-      joiner.add(getGroup().toUrlQueryString(prefix + "group" + suffix));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `notificationType` to the URL query string
-    if (getNotificationType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snotificationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNotificationType()))));
-    }
-
-    // add `parameter` to the URL query string
-    if (getParameter() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sparameter%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getParameter()))));
-    }
-
-    // add `projectRole` to the URL query string
-    if (getProjectRole() != null) {
-      joiner.add(getProjectRole().toUrlQueryString(prefix + "projectRole" + suffix));
-    }
-
-    // add `recipient` to the URL query string
-    if (getRecipient() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srecipient%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRecipient()))));
-    }
-
-    // add `user` to the URL query string
-    if (getUser() != null) {
-      joiner.add(getUser().toUrlQueryString(prefix + "user" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of EventNotification to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

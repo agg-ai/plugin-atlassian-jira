@@ -13,58 +13,73 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SuggestedMappingsForPrioritiesRequestBean;
 import io.kestra.plugin.jira.client.model.SuggestedMappingsForProjectsRequestBean;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of changes to a priority scheme that require suggested priority mappings.
  */
-@JsonPropertyOrder({
-  SuggestedMappingsRequestBean.JSON_PROPERTY_MAX_RESULTS,
-  SuggestedMappingsRequestBean.JSON_PROPERTY_PRIORITIES,
-  SuggestedMappingsRequestBean.JSON_PROPERTY_PROJECTS,
-  SuggestedMappingsRequestBean.JSON_PROPERTY_SCHEME_ID,
-  SuggestedMappingsRequestBean.JSON_PROPERTY_START_AT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SuggestedMappingsRequestBean {
-  public static final String JSON_PROPERTY_MAX_RESULTS = "maxResults";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "maxResults";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nullable
   private Integer maxResults;
 
-  public static final String JSON_PROPERTY_PRIORITIES = "priorities";
+  public static final String SERIALIZED_NAME_PRIORITIES = "priorities";
+  @SerializedName(SERIALIZED_NAME_PRIORITIES)
   @javax.annotation.Nullable
   private SuggestedMappingsForPrioritiesRequestBean priorities;
 
-  public static final String JSON_PROPERTY_PROJECTS = "projects";
+  public static final String SERIALIZED_NAME_PROJECTS = "projects";
+  @SerializedName(SERIALIZED_NAME_PROJECTS)
   @javax.annotation.Nullable
   private SuggestedMappingsForProjectsRequestBean projects;
 
-  public static final String JSON_PROPERTY_SCHEME_ID = "schemeId";
+  public static final String SERIALIZED_NAME_SCHEME_ID = "schemeId";
+  @SerializedName(SERIALIZED_NAME_SCHEME_ID)
   @javax.annotation.Nullable
   private Long schemeId;
 
-  public static final String JSON_PROPERTY_START_AT = "startAt";
+  public static final String SERIALIZED_NAME_START_AT = "startAt";
+  @SerializedName(SERIALIZED_NAME_START_AT)
   @javax.annotation.Nullable
   private Long startAt;
 
-  public SuggestedMappingsRequestBean() { 
+  public SuggestedMappingsRequestBean() {
   }
 
   public SuggestedMappingsRequestBean maxResults(@javax.annotation.Nullable Integer maxResults) {
@@ -77,15 +92,10 @@ public class SuggestedMappingsRequestBean {
    * @return maxResults
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResults() {
     return maxResults;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxResults(@javax.annotation.Nullable Integer maxResults) {
     this.maxResults = maxResults;
   }
@@ -101,15 +111,10 @@ public class SuggestedMappingsRequestBean {
    * @return priorities
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PRIORITIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SuggestedMappingsForPrioritiesRequestBean getPriorities() {
     return priorities;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PRIORITIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPriorities(@javax.annotation.Nullable SuggestedMappingsForPrioritiesRequestBean priorities) {
     this.priorities = priorities;
   }
@@ -125,15 +130,10 @@ public class SuggestedMappingsRequestBean {
    * @return projects
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SuggestedMappingsForProjectsRequestBean getProjects() {
     return projects;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjects(@javax.annotation.Nullable SuggestedMappingsForProjectsRequestBean projects) {
     this.projects = projects;
   }
@@ -149,15 +149,10 @@ public class SuggestedMappingsRequestBean {
    * @return schemeId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSchemeId() {
     return schemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCHEME_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSchemeId(@javax.annotation.Nullable Long schemeId) {
     this.schemeId = schemeId;
   }
@@ -173,23 +168,16 @@ public class SuggestedMappingsRequestBean {
    * @return startAt
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartAt() {
     return startAt;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartAt(@javax.annotation.Nullable Long startAt) {
     this.startAt = startAt;
   }
 
 
-  /**
-   * Return true if this SuggestedMappingsRequestBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -235,64 +223,96 @@ public class SuggestedMappingsRequestBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("maxResults", "priorities", "projects", "schemeId", "startAt"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SuggestedMappingsRequestBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SuggestedMappingsRequestBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SuggestedMappingsRequestBean is not found in the empty JSON string", SuggestedMappingsRequestBean.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SuggestedMappingsRequestBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SuggestedMappingsRequestBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `priorities`
+      if (jsonObj.get("priorities") != null && !jsonObj.get("priorities").isJsonNull()) {
+        SuggestedMappingsForPrioritiesRequestBean.validateJsonElement(jsonObj.get("priorities"));
+      }
+      // validate the optional field `projects`
+      if (jsonObj.get("projects") != null && !jsonObj.get("projects").isJsonNull()) {
+        SuggestedMappingsForProjectsRequestBean.validateJsonElement(jsonObj.get("projects"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SuggestedMappingsRequestBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SuggestedMappingsRequestBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SuggestedMappingsRequestBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SuggestedMappingsRequestBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SuggestedMappingsRequestBean>() {
+           @Override
+           public void write(JsonWriter out, SuggestedMappingsRequestBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SuggestedMappingsRequestBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of SuggestedMappingsRequestBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SuggestedMappingsRequestBean
+   * @throws IOException if the JSON string is invalid with respect to SuggestedMappingsRequestBean
+   */
+  public static SuggestedMappingsRequestBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SuggestedMappingsRequestBean.class);
+  }
 
-    // add `maxResults` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smaxResults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
-
-    // add `priorities` to the URL query string
-    if (getPriorities() != null) {
-      joiner.add(getPriorities().toUrlQueryString(prefix + "priorities" + suffix));
-    }
-
-    // add `projects` to the URL query string
-    if (getProjects() != null) {
-      joiner.add(getProjects().toUrlQueryString(prefix + "projects" + suffix));
-    }
-
-    // add `schemeId` to the URL query string
-    if (getSchemeId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sschemeId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSchemeId()))));
-    }
-
-    // add `startAt` to the URL query string
-    if (getStartAt() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartAt%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartAt()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of SuggestedMappingsRequestBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

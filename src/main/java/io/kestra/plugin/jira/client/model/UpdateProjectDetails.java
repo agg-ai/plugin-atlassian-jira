@@ -13,53 +13,55 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the project.
  */
-@JsonPropertyOrder({
-  UpdateProjectDetails.JSON_PROPERTY_ASSIGNEE_TYPE,
-  UpdateProjectDetails.JSON_PROPERTY_AVATAR_ID,
-  UpdateProjectDetails.JSON_PROPERTY_CATEGORY_ID,
-  UpdateProjectDetails.JSON_PROPERTY_DESCRIPTION,
-  UpdateProjectDetails.JSON_PROPERTY_ISSUE_SECURITY_SCHEME,
-  UpdateProjectDetails.JSON_PROPERTY_KEY,
-  UpdateProjectDetails.JSON_PROPERTY_LEAD,
-  UpdateProjectDetails.JSON_PROPERTY_LEAD_ACCOUNT_ID,
-  UpdateProjectDetails.JSON_PROPERTY_NAME,
-  UpdateProjectDetails.JSON_PROPERTY_NOTIFICATION_SCHEME,
-  UpdateProjectDetails.JSON_PROPERTY_PERMISSION_SCHEME,
-  UpdateProjectDetails.JSON_PROPERTY_RELEASED_PROJECT_KEYS,
-  UpdateProjectDetails.JSON_PROPERTY_URL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class UpdateProjectDetails {
   /**
    * The default assignee when creating issues for this project.
    */
+  @JsonAdapter(AssigneeTypeEnum.Adapter.class)
   public enum AssigneeTypeEnum {
-    PROJECT_LEAD(String.valueOf("PROJECT_LEAD")),
+    PROJECT_LEAD("PROJECT_LEAD"),
     
-    UNASSIGNED(String.valueOf("UNASSIGNED"));
+    UNASSIGNED("UNASSIGNED");
 
     private String value;
 
@@ -67,7 +69,6 @@ public class UpdateProjectDetails {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -77,7 +78,6 @@ public class UpdateProjectDetails {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static AssigneeTypeEnum fromValue(String value) {
       for (AssigneeTypeEnum b : AssigneeTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -86,61 +86,92 @@ public class UpdateProjectDetails {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<AssigneeTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final AssigneeTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public AssigneeTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return AssigneeTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      AssigneeTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ASSIGNEE_TYPE = "assigneeType";
+  public static final String SERIALIZED_NAME_ASSIGNEE_TYPE = "assigneeType";
+  @SerializedName(SERIALIZED_NAME_ASSIGNEE_TYPE)
   @javax.annotation.Nullable
   private AssigneeTypeEnum assigneeType;
 
-  public static final String JSON_PROPERTY_AVATAR_ID = "avatarId";
+  public static final String SERIALIZED_NAME_AVATAR_ID = "avatarId";
+  @SerializedName(SERIALIZED_NAME_AVATAR_ID)
   @javax.annotation.Nullable
   private Long avatarId;
 
-  public static final String JSON_PROPERTY_CATEGORY_ID = "categoryId";
+  public static final String SERIALIZED_NAME_CATEGORY_ID = "categoryId";
+  @SerializedName(SERIALIZED_NAME_CATEGORY_ID)
   @javax.annotation.Nullable
   private Long categoryId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ISSUE_SECURITY_SCHEME = "issueSecurityScheme";
+  public static final String SERIALIZED_NAME_ISSUE_SECURITY_SCHEME = "issueSecurityScheme";
+  @SerializedName(SERIALIZED_NAME_ISSUE_SECURITY_SCHEME)
   @javax.annotation.Nullable
   private Long issueSecurityScheme;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_LEAD = "lead";
+  public static final String SERIALIZED_NAME_LEAD = "lead";
+  @SerializedName(SERIALIZED_NAME_LEAD)
   @javax.annotation.Nullable
   private String lead;
 
-  public static final String JSON_PROPERTY_LEAD_ACCOUNT_ID = "leadAccountId";
+  public static final String SERIALIZED_NAME_LEAD_ACCOUNT_ID = "leadAccountId";
+  @SerializedName(SERIALIZED_NAME_LEAD_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String leadAccountId;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_NOTIFICATION_SCHEME = "notificationScheme";
+  public static final String SERIALIZED_NAME_NOTIFICATION_SCHEME = "notificationScheme";
+  @SerializedName(SERIALIZED_NAME_NOTIFICATION_SCHEME)
   @javax.annotation.Nullable
   private Long notificationScheme;
 
-  public static final String JSON_PROPERTY_PERMISSION_SCHEME = "permissionScheme";
+  public static final String SERIALIZED_NAME_PERMISSION_SCHEME = "permissionScheme";
+  @SerializedName(SERIALIZED_NAME_PERMISSION_SCHEME)
   @javax.annotation.Nullable
   private Long permissionScheme;
 
-  public static final String JSON_PROPERTY_RELEASED_PROJECT_KEYS = "releasedProjectKeys";
+  public static final String SERIALIZED_NAME_RELEASED_PROJECT_KEYS = "releasedProjectKeys";
+  @SerializedName(SERIALIZED_NAME_RELEASED_PROJECT_KEYS)
   @javax.annotation.Nullable
   private Set<String> releasedProjectKeys = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_URL = "url";
+  public static final String SERIALIZED_NAME_URL = "url";
+  @SerializedName(SERIALIZED_NAME_URL)
   @javax.annotation.Nullable
   private String url;
 
-  public UpdateProjectDetails() { 
+  public UpdateProjectDetails() {
   }
 
   public UpdateProjectDetails assigneeType(@javax.annotation.Nullable AssigneeTypeEnum assigneeType) {
@@ -153,15 +184,10 @@ public class UpdateProjectDetails {
    * @return assigneeType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ASSIGNEE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AssigneeTypeEnum getAssigneeType() {
     return assigneeType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ASSIGNEE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAssigneeType(@javax.annotation.Nullable AssigneeTypeEnum assigneeType) {
     this.assigneeType = assigneeType;
   }
@@ -177,15 +203,10 @@ public class UpdateProjectDetails {
    * @return avatarId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getAvatarId() {
     return avatarId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAvatarId(@javax.annotation.Nullable Long avatarId) {
     this.avatarId = avatarId;
   }
@@ -201,15 +222,10 @@ public class UpdateProjectDetails {
    * @return categoryId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getCategoryId() {
     return categoryId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCategoryId(@javax.annotation.Nullable Long categoryId) {
     this.categoryId = categoryId;
   }
@@ -225,15 +241,10 @@ public class UpdateProjectDetails {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -249,15 +260,10 @@ public class UpdateProjectDetails {
    * @return issueSecurityScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SECURITY_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssueSecurityScheme() {
     return issueSecurityScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SECURITY_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueSecurityScheme(@javax.annotation.Nullable Long issueSecurityScheme) {
     this.issueSecurityScheme = issueSecurityScheme;
   }
@@ -273,15 +279,10 @@ public class UpdateProjectDetails {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
@@ -297,15 +298,10 @@ public class UpdateProjectDetails {
    * @return lead
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLead() {
     return lead;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEAD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLead(@javax.annotation.Nullable String lead) {
     this.lead = lead;
   }
@@ -321,15 +317,10 @@ public class UpdateProjectDetails {
    * @return leadAccountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLeadAccountId() {
     return leadAccountId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLeadAccountId(@javax.annotation.Nullable String leadAccountId) {
     this.leadAccountId = leadAccountId;
   }
@@ -345,15 +336,10 @@ public class UpdateProjectDetails {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -369,15 +355,10 @@ public class UpdateProjectDetails {
    * @return notificationScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getNotificationScheme() {
     return notificationScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNotificationScheme(@javax.annotation.Nullable Long notificationScheme) {
     this.notificationScheme = notificationScheme;
   }
@@ -393,15 +374,10 @@ public class UpdateProjectDetails {
    * @return permissionScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPermissionScheme() {
     return permissionScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPermissionScheme(@javax.annotation.Nullable Long permissionScheme) {
     this.permissionScheme = permissionScheme;
   }
@@ -425,16 +401,10 @@ public class UpdateProjectDetails {
    * @return releasedProjectKeys
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RELEASED_PROJECT_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getReleasedProjectKeys() {
     return releasedProjectKeys;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_RELEASED_PROJECT_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReleasedProjectKeys(@javax.annotation.Nullable Set<String> releasedProjectKeys) {
     this.releasedProjectKeys = releasedProjectKeys;
   }
@@ -450,23 +420,16 @@ public class UpdateProjectDetails {
    * @return url
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUrl() {
     return url;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUrl(@javax.annotation.Nullable String url) {
     this.url = url;
   }
 
 
-  /**
-   * Return true if this UpdateProjectDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -528,110 +491,117 @@ public class UpdateProjectDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("assigneeType", "avatarId", "categoryId", "description", "issueSecurityScheme", "key", "lead", "leadAccountId", "name", "notificationScheme", "permissionScheme", "releasedProjectKeys", "url"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to UpdateProjectDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `assigneeType` to the URL query string
-    if (getAssigneeType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sassigneeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssigneeType()))));
-    }
-
-    // add `avatarId` to the URL query string
-    if (getAvatarId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%savatarId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvatarId()))));
-    }
-
-    // add `categoryId` to the URL query string
-    if (getCategoryId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scategoryId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCategoryId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `issueSecurityScheme` to the URL query string
-    if (getIssueSecurityScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueSecurityScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueSecurityScheme()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `lead` to the URL query string
-    if (getLead() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slead%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLead()))));
-    }
-
-    // add `leadAccountId` to the URL query string
-    if (getLeadAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sleadAccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLeadAccountId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `notificationScheme` to the URL query string
-    if (getNotificationScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snotificationScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNotificationScheme()))));
-    }
-
-    // add `permissionScheme` to the URL query string
-    if (getPermissionScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spermissionScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPermissionScheme()))));
-    }
-
-    // add `releasedProjectKeys` to the URL query string
-    if (getReleasedProjectKeys() != null) {
-      int i = 0;
-      for (String _item : getReleasedProjectKeys()) {
-        joiner.add(String.format(Locale.ROOT, "%sreleasedProjectKeys%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!UpdateProjectDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in UpdateProjectDetails is not found in the empty JSON string", UpdateProjectDetails.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `url` to the URL query string
-    if (getUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%surl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!UpdateProjectDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `UpdateProjectDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("assigneeType") != null && !jsonObj.get("assigneeType").isJsonNull()) && !jsonObj.get("assigneeType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `assigneeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("assigneeType").toString()));
+      }
+      // validate the optional field `assigneeType`
+      if (jsonObj.get("assigneeType") != null && !jsonObj.get("assigneeType").isJsonNull()) {
+        AssigneeTypeEnum.validateJsonElement(jsonObj.get("assigneeType"));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("lead") != null && !jsonObj.get("lead").isJsonNull()) && !jsonObj.get("lead").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `lead` to be a primitive type in the JSON string but got `%s`", jsonObj.get("lead").toString()));
+      }
+      if ((jsonObj.get("leadAccountId") != null && !jsonObj.get("leadAccountId").isJsonNull()) && !jsonObj.get("leadAccountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `leadAccountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("leadAccountId").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("releasedProjectKeys") != null && !jsonObj.get("releasedProjectKeys").isJsonNull() && !jsonObj.get("releasedProjectKeys").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `releasedProjectKeys` to be an array in the JSON string but got `%s`", jsonObj.get("releasedProjectKeys").toString()));
+      }
+      if ((jsonObj.get("url") != null && !jsonObj.get("url").isJsonNull()) && !jsonObj.get("url").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("url").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!UpdateProjectDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'UpdateProjectDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<UpdateProjectDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(UpdateProjectDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<UpdateProjectDetails>() {
+           @Override
+           public void write(JsonWriter out, UpdateProjectDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public UpdateProjectDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of UpdateProjectDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of UpdateProjectDetails
+   * @throws IOException if the JSON string is invalid with respect to UpdateProjectDetails
+   */
+  public static UpdateProjectDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, UpdateProjectDetails.class);
+  }
+
+  /**
+   * Convert an instance of UpdateProjectDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

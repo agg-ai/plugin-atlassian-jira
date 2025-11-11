@@ -13,67 +13,80 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.GroupLabel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A group found in a search.
  */
-@JsonPropertyOrder({
-  FoundGroup.JSON_PROPERTY_AVATAR_URL,
-  FoundGroup.JSON_PROPERTY_GROUP_ID,
-  FoundGroup.JSON_PROPERTY_HTML,
-  FoundGroup.JSON_PROPERTY_LABELS,
-  FoundGroup.JSON_PROPERTY_MANAGED_BY,
-  FoundGroup.JSON_PROPERTY_NAME,
-  FoundGroup.JSON_PROPERTY_USAGE_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FoundGroup {
-  public static final String JSON_PROPERTY_AVATAR_URL = "avatarUrl";
+  public static final String SERIALIZED_NAME_AVATAR_URL = "avatarUrl";
+  @SerializedName(SERIALIZED_NAME_AVATAR_URL)
   @javax.annotation.Nullable
   private String avatarUrl;
 
-  public static final String JSON_PROPERTY_GROUP_ID = "groupId";
+  public static final String SERIALIZED_NAME_GROUP_ID = "groupId";
+  @SerializedName(SERIALIZED_NAME_GROUP_ID)
   @javax.annotation.Nullable
   private String groupId;
 
-  public static final String JSON_PROPERTY_HTML = "html";
+  public static final String SERIALIZED_NAME_HTML = "html";
+  @SerializedName(SERIALIZED_NAME_HTML)
   @javax.annotation.Nullable
   private String html;
 
-  public static final String JSON_PROPERTY_LABELS = "labels";
+  public static final String SERIALIZED_NAME_LABELS = "labels";
+  @SerializedName(SERIALIZED_NAME_LABELS)
   @javax.annotation.Nullable
   private List<GroupLabel> labels = new ArrayList<>();
 
   /**
    * Describes who/how the team is managed. The possible values are   \\* external - when team is synced from an external directory like SCIM or HRIS, and team members cannot be modified.   \\* admins - when a team is managed by an admin (team members can only be modified by admins).   \\* team-members - managed by existing team members, new members need to be invited to join.   \\* open - anyone can join or modify this team.
    */
+  @JsonAdapter(ManagedByEnum.Adapter.class)
   public enum ManagedByEnum {
-    EXTERNAL(String.valueOf("EXTERNAL")),
+    EXTERNAL("EXTERNAL"),
     
-    ADMINS(String.valueOf("ADMINS")),
+    ADMINS("ADMINS"),
     
-    TEAM_MEMBERS(String.valueOf("TEAM_MEMBERS")),
+    TEAM_MEMBERS("TEAM_MEMBERS"),
     
-    OPEN(String.valueOf("OPEN"));
+    OPEN("OPEN");
 
     private String value;
 
@@ -81,7 +94,6 @@ public class FoundGroup {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -91,7 +103,6 @@ public class FoundGroup {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ManagedByEnum fromValue(String value) {
       for (ManagedByEnum b : ManagedByEnum.values()) {
         if (b.value.equals(value)) {
@@ -100,25 +111,46 @@ public class FoundGroup {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ManagedByEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ManagedByEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ManagedByEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ManagedByEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ManagedByEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_MANAGED_BY = "managedBy";
+  public static final String SERIALIZED_NAME_MANAGED_BY = "managedBy";
+  @SerializedName(SERIALIZED_NAME_MANAGED_BY)
   @javax.annotation.Nullable
   private ManagedByEnum managedBy;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
   /**
    * Describes the type of group. The possible values are   \\* team-collaboration - A platform team managed in people directory.   \\* userbase-group - a group of users created in adminhub.   \\* admin-oversight - currently unused.
    */
+  @JsonAdapter(UsageTypeEnum.Adapter.class)
   public enum UsageTypeEnum {
-    USERBASE_GROUP(String.valueOf("USERBASE_GROUP")),
+    USERBASE_GROUP("USERBASE_GROUP"),
     
-    TEAM_COLLABORATION(String.valueOf("TEAM_COLLABORATION")),
+    TEAM_COLLABORATION("TEAM_COLLABORATION"),
     
-    ADMIN_OVERSIGHT(String.valueOf("ADMIN_OVERSIGHT"));
+    ADMIN_OVERSIGHT("ADMIN_OVERSIGHT");
 
     private String value;
 
@@ -126,7 +158,6 @@ public class FoundGroup {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -136,7 +167,6 @@ public class FoundGroup {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static UsageTypeEnum fromValue(String value) {
       for (UsageTypeEnum b : UsageTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -145,13 +175,32 @@ public class FoundGroup {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<UsageTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final UsageTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public UsageTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return UsageTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      UsageTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_USAGE_TYPE = "usageType";
+  public static final String SERIALIZED_NAME_USAGE_TYPE = "usageType";
+  @SerializedName(SERIALIZED_NAME_USAGE_TYPE)
   @javax.annotation.Nullable
   private UsageTypeEnum usageType;
 
-  public FoundGroup() { 
+  public FoundGroup() {
   }
 
   public FoundGroup avatarUrl(@javax.annotation.Nullable String avatarUrl) {
@@ -164,15 +213,10 @@ public class FoundGroup {
    * @return avatarUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAvatarUrl() {
     return avatarUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAvatarUrl(@javax.annotation.Nullable String avatarUrl) {
     this.avatarUrl = avatarUrl;
   }
@@ -188,15 +232,10 @@ public class FoundGroup {
    * @return groupId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getGroupId() {
     return groupId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupId(@javax.annotation.Nullable String groupId) {
     this.groupId = groupId;
   }
@@ -212,15 +251,10 @@ public class FoundGroup {
    * @return html
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HTML, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getHtml() {
     return html;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_HTML, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHtml(@javax.annotation.Nullable String html) {
     this.html = html;
   }
@@ -244,15 +278,10 @@ public class FoundGroup {
    * @return labels
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LABELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<GroupLabel> getLabels() {
     return labels;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LABELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLabels(@javax.annotation.Nullable List<GroupLabel> labels) {
     this.labels = labels;
   }
@@ -268,15 +297,10 @@ public class FoundGroup {
    * @return managedBy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MANAGED_BY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ManagedByEnum getManagedBy() {
     return managedBy;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MANAGED_BY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setManagedBy(@javax.annotation.Nullable ManagedByEnum managedBy) {
     this.managedBy = managedBy;
   }
@@ -292,15 +316,10 @@ public class FoundGroup {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -316,23 +335,16 @@ public class FoundGroup {
    * @return usageType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USAGE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UsageTypeEnum getUsageType() {
     return usageType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_USAGE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUsageType(@javax.annotation.Nullable UsageTypeEnum usageType) {
     this.usageType = usageType;
   }
 
 
-  /**
-   * Return true if this FoundGroup object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -382,79 +394,128 @@ public class FoundGroup {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("avatarUrl", "groupId", "html", "labels", "managedBy", "name", "usageType"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FoundGroup
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `avatarUrl` to the URL query string
-    if (getAvatarUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%savatarUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvatarUrl()))));
-    }
-
-    // add `groupId` to the URL query string
-    if (getGroupId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sgroupId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
-    }
-
-    // add `html` to the URL query string
-    if (getHtml() != null) {
-      joiner.add(String.format(Locale.ROOT, "%shtml%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHtml()))));
-    }
-
-    // add `labels` to the URL query string
-    if (getLabels() != null) {
-      for (int i = 0; i < getLabels().size(); i++) {
-        if (getLabels().get(i) != null) {
-          joiner.add(getLabels().get(i).toUrlQueryString(String.format(Locale.ROOT, "%slabels%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FoundGroup.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FoundGroup is not found in the empty JSON string", FoundGroup.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `managedBy` to the URL query string
-    if (getManagedBy() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smanagedBy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getManagedBy()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FoundGroup.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FoundGroup` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("avatarUrl") != null && !jsonObj.get("avatarUrl").isJsonNull()) && !jsonObj.get("avatarUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `avatarUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("avatarUrl").toString()));
+      }
+      if ((jsonObj.get("groupId") != null && !jsonObj.get("groupId").isJsonNull()) && !jsonObj.get("groupId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groupId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("groupId").toString()));
+      }
+      if ((jsonObj.get("html") != null && !jsonObj.get("html").isJsonNull()) && !jsonObj.get("html").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `html` to be a primitive type in the JSON string but got `%s`", jsonObj.get("html").toString()));
+      }
+      if (jsonObj.get("labels") != null && !jsonObj.get("labels").isJsonNull()) {
+        JsonArray jsonArraylabels = jsonObj.getAsJsonArray("labels");
+        if (jsonArraylabels != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("labels").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `labels` to be an array in the JSON string but got `%s`", jsonObj.get("labels").toString()));
+          }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+          // validate the optional field `labels` (array)
+          for (int i = 0; i < jsonArraylabels.size(); i++) {
+            GroupLabel.validateJsonElement(jsonArraylabels.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("managedBy") != null && !jsonObj.get("managedBy").isJsonNull()) && !jsonObj.get("managedBy").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `managedBy` to be a primitive type in the JSON string but got `%s`", jsonObj.get("managedBy").toString()));
+      }
+      // validate the optional field `managedBy`
+      if (jsonObj.get("managedBy") != null && !jsonObj.get("managedBy").isJsonNull()) {
+        ManagedByEnum.validateJsonElement(jsonObj.get("managedBy"));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("usageType") != null && !jsonObj.get("usageType").isJsonNull()) && !jsonObj.get("usageType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `usageType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("usageType").toString()));
+      }
+      // validate the optional field `usageType`
+      if (jsonObj.get("usageType") != null && !jsonObj.get("usageType").isJsonNull()) {
+        UsageTypeEnum.validateJsonElement(jsonObj.get("usageType"));
+      }
+  }
 
-    // add `usageType` to the URL query string
-    if (getUsageType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%susageType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUsageType()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FoundGroup.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FoundGroup' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FoundGroup> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FoundGroup.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<FoundGroup>() {
+           @Override
+           public void write(JsonWriter out, FoundGroup value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FoundGroup read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FoundGroup given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FoundGroup
+   * @throws IOException if the JSON string is invalid with respect to FoundGroup
+   */
+  public static FoundGroup fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FoundGroup.class);
+  }
+
+  /**
+   * Convert an instance of FoundGroup to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

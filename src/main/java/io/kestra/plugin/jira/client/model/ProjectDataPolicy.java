@@ -13,43 +13,57 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about data policy.
  */
-@JsonPropertyOrder({
-  ProjectDataPolicy.JSON_PROPERTY_ANY_CONTENT_BLOCKED
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectDataPolicy {
-  public static final String JSON_PROPERTY_ANY_CONTENT_BLOCKED = "anyContentBlocked";
+  public static final String SERIALIZED_NAME_ANY_CONTENT_BLOCKED = "anyContentBlocked";
+  @SerializedName(SERIALIZED_NAME_ANY_CONTENT_BLOCKED)
   @javax.annotation.Nullable
   private Boolean anyContentBlocked;
 
-  public ProjectDataPolicy() { 
+  public ProjectDataPolicy() {
   }
 
-  @JsonCreator
   public ProjectDataPolicy(
-    @JsonProperty(JSON_PROPERTY_ANY_CONTENT_BLOCKED) Boolean anyContentBlocked
+     Boolean anyContentBlocked
   ) {
-  this();
+    this();
     this.anyContentBlocked = anyContentBlocked;
   }
 
@@ -58,8 +72,6 @@ public class ProjectDataPolicy {
    * @return anyContentBlocked
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ANY_CONTENT_BLOCKED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAnyContentBlocked() {
     return anyContentBlocked;
   }
@@ -67,9 +79,6 @@ public class ProjectDataPolicy {
 
 
 
-  /**
-   * Return true if this ProjectDataPolicy object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -107,44 +116,88 @@ public class ProjectDataPolicy {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("anyContentBlocked"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectDataPolicy
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectDataPolicy.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectDataPolicy is not found in the empty JSON string", ProjectDataPolicy.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectDataPolicy.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectDataPolicy` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectDataPolicy.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectDataPolicy' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectDataPolicy> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectDataPolicy.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ProjectDataPolicy>() {
+           @Override
+           public void write(JsonWriter out, ProjectDataPolicy value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectDataPolicy read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ProjectDataPolicy given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectDataPolicy
+   * @throws IOException if the JSON string is invalid with respect to ProjectDataPolicy
+   */
+  public static ProjectDataPolicy fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectDataPolicy.class);
+  }
 
-    // add `anyContentBlocked` to the URL query string
-    if (getAnyContentBlocked() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sanyContentBlocked%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAnyContentBlocked()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectDataPolicy to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,85 +13,99 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.Scope;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a workflow.
  */
-@JsonPropertyOrder({
-  DeprecatedWorkflow.JSON_PROPERTY_DEFAULT,
-  DeprecatedWorkflow.JSON_PROPERTY_DESCRIPTION,
-  DeprecatedWorkflow.JSON_PROPERTY_LAST_MODIFIED_DATE,
-  DeprecatedWorkflow.JSON_PROPERTY_LAST_MODIFIED_USER,
-  DeprecatedWorkflow.JSON_PROPERTY_LAST_MODIFIED_USER_ACCOUNT_ID,
-  DeprecatedWorkflow.JSON_PROPERTY_NAME,
-  DeprecatedWorkflow.JSON_PROPERTY_SCOPE,
-  DeprecatedWorkflow.JSON_PROPERTY_STEPS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class DeprecatedWorkflow {
-  public static final String JSON_PROPERTY_DEFAULT = "default";
+  public static final String SERIALIZED_NAME_DEFAULT = "default";
+  @SerializedName(SERIALIZED_NAME_DEFAULT)
   @javax.annotation.Nullable
   private Boolean _default;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_LAST_MODIFIED_DATE = "lastModifiedDate";
+  public static final String SERIALIZED_NAME_LAST_MODIFIED_DATE = "lastModifiedDate";
+  @SerializedName(SERIALIZED_NAME_LAST_MODIFIED_DATE)
   @javax.annotation.Nullable
   private String lastModifiedDate;
 
-  public static final String JSON_PROPERTY_LAST_MODIFIED_USER = "lastModifiedUser";
+  public static final String SERIALIZED_NAME_LAST_MODIFIED_USER = "lastModifiedUser";
+  @SerializedName(SERIALIZED_NAME_LAST_MODIFIED_USER)
   @javax.annotation.Nullable
   private String lastModifiedUser;
 
-  public static final String JSON_PROPERTY_LAST_MODIFIED_USER_ACCOUNT_ID = "lastModifiedUserAccountId";
+  public static final String SERIALIZED_NAME_LAST_MODIFIED_USER_ACCOUNT_ID = "lastModifiedUserAccountId";
+  @SerializedName(SERIALIZED_NAME_LAST_MODIFIED_USER_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String lastModifiedUserAccountId;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_SCOPE = "scope";
+  public static final String SERIALIZED_NAME_SCOPE = "scope";
+  @SerializedName(SERIALIZED_NAME_SCOPE)
   @javax.annotation.Nullable
   private Scope scope;
 
-  public static final String JSON_PROPERTY_STEPS = "steps";
+  public static final String SERIALIZED_NAME_STEPS = "steps";
+  @SerializedName(SERIALIZED_NAME_STEPS)
   @javax.annotation.Nullable
   private Integer steps;
 
-  public DeprecatedWorkflow() { 
+  public DeprecatedWorkflow() {
   }
 
-  @JsonCreator
   public DeprecatedWorkflow(
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION) String description, 
-    @JsonProperty(JSON_PROPERTY_LAST_MODIFIED_DATE) String lastModifiedDate, 
-    @JsonProperty(JSON_PROPERTY_LAST_MODIFIED_USER) String lastModifiedUser, 
-    @JsonProperty(JSON_PROPERTY_LAST_MODIFIED_USER_ACCOUNT_ID) String lastModifiedUserAccountId, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_SCOPE) Scope scope, 
-    @JsonProperty(JSON_PROPERTY_STEPS) Integer steps
+     String description, 
+     String lastModifiedDate, 
+     String lastModifiedUser, 
+     String lastModifiedUserAccountId, 
+     String name, 
+     Scope scope, 
+     Integer steps
   ) {
-  this();
+    this();
     this.description = description;
     this.lastModifiedDate = lastModifiedDate;
     this.lastModifiedUser = lastModifiedUser;
@@ -111,15 +125,10 @@ public class DeprecatedWorkflow {
    * @return _default
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDefault() {
     return _default;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefault(@javax.annotation.Nullable Boolean _default) {
     this._default = _default;
   }
@@ -130,12 +139,9 @@ public class DeprecatedWorkflow {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
-
 
 
 
@@ -144,12 +150,9 @@ public class DeprecatedWorkflow {
    * @return lastModifiedDate
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAST_MODIFIED_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLastModifiedDate() {
     return lastModifiedDate;
   }
-
 
 
 
@@ -158,12 +161,9 @@ public class DeprecatedWorkflow {
    * @return lastModifiedUser
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAST_MODIFIED_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLastModifiedUser() {
     return lastModifiedUser;
   }
-
 
 
 
@@ -172,12 +172,9 @@ public class DeprecatedWorkflow {
    * @return lastModifiedUserAccountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LAST_MODIFIED_USER_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLastModifiedUserAccountId() {
     return lastModifiedUserAccountId;
   }
-
 
 
 
@@ -186,12 +183,9 @@ public class DeprecatedWorkflow {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -200,12 +194,9 @@ public class DeprecatedWorkflow {
    * @return scope
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Scope getScope() {
     return scope;
   }
-
 
 
 
@@ -214,8 +205,6 @@ public class DeprecatedWorkflow {
    * @return steps
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STEPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSteps() {
     return steps;
   }
@@ -223,9 +212,6 @@ public class DeprecatedWorkflow {
 
 
 
-  /**
-   * Return true if this DeprecatedWorkflow object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -277,79 +263,103 @@ public class DeprecatedWorkflow {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("default", "description", "lastModifiedDate", "lastModifiedUser", "lastModifiedUserAccountId", "name", "scope", "steps"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to DeprecatedWorkflow
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!DeprecatedWorkflow.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in DeprecatedWorkflow is not found in the empty JSON string", DeprecatedWorkflow.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!DeprecatedWorkflow.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `DeprecatedWorkflow` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("lastModifiedDate") != null && !jsonObj.get("lastModifiedDate").isJsonNull()) && !jsonObj.get("lastModifiedDate").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `lastModifiedDate` to be a primitive type in the JSON string but got `%s`", jsonObj.get("lastModifiedDate").toString()));
+      }
+      if ((jsonObj.get("lastModifiedUser") != null && !jsonObj.get("lastModifiedUser").isJsonNull()) && !jsonObj.get("lastModifiedUser").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `lastModifiedUser` to be a primitive type in the JSON string but got `%s`", jsonObj.get("lastModifiedUser").toString()));
+      }
+      if ((jsonObj.get("lastModifiedUserAccountId") != null && !jsonObj.get("lastModifiedUserAccountId").isJsonNull()) && !jsonObj.get("lastModifiedUserAccountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `lastModifiedUserAccountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("lastModifiedUserAccountId").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!DeprecatedWorkflow.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'DeprecatedWorkflow' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<DeprecatedWorkflow> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(DeprecatedWorkflow.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<DeprecatedWorkflow>() {
+           @Override
+           public void write(JsonWriter out, DeprecatedWorkflow value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public DeprecatedWorkflow read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of DeprecatedWorkflow given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of DeprecatedWorkflow
+   * @throws IOException if the JSON string is invalid with respect to DeprecatedWorkflow
+   */
+  public static DeprecatedWorkflow fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, DeprecatedWorkflow.class);
+  }
 
-    // add `default` to the URL query string
-    if (getDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefault()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `lastModifiedDate` to the URL query string
-    if (getLastModifiedDate() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slastModifiedDate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastModifiedDate()))));
-    }
-
-    // add `lastModifiedUser` to the URL query string
-    if (getLastModifiedUser() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slastModifiedUser%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastModifiedUser()))));
-    }
-
-    // add `lastModifiedUserAccountId` to the URL query string
-    if (getLastModifiedUserAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slastModifiedUserAccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLastModifiedUserAccountId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `scope` to the URL query string
-    if (getScope() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sscope%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScope()))));
-    }
-
-    // add `steps` to the URL query string
-    if (getSteps() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssteps%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSteps()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of DeprecatedWorkflow to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

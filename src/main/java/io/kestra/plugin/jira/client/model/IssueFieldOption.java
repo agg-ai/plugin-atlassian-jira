@@ -13,54 +13,69 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueFieldOptionConfiguration;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of the options for a select list issue field.
  */
-@JsonPropertyOrder({
-  IssueFieldOption.JSON_PROPERTY_CONFIG,
-  IssueFieldOption.JSON_PROPERTY_ID,
-  IssueFieldOption.JSON_PROPERTY_PROPERTIES,
-  IssueFieldOption.JSON_PROPERTY_VALUE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueFieldOption {
-  public static final String JSON_PROPERTY_CONFIG = "config";
+  public static final String SERIALIZED_NAME_CONFIG = "config";
+  @SerializedName(SERIALIZED_NAME_CONFIG)
   @javax.annotation.Nullable
   private IssueFieldOptionConfiguration config;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private Long id;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private Map<String, Object> properties = new HashMap<>();
 
-  public static final String JSON_PROPERTY_VALUE = "value";
+  public static final String SERIALIZED_NAME_VALUE = "value";
+  @SerializedName(SERIALIZED_NAME_VALUE)
   @javax.annotation.Nonnull
   private String value;
 
-  public IssueFieldOption() { 
+  public IssueFieldOption() {
   }
 
   public IssueFieldOption config(@javax.annotation.Nullable IssueFieldOptionConfiguration config) {
@@ -73,15 +88,10 @@ public class IssueFieldOption {
    * @return config
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONFIG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IssueFieldOptionConfiguration getConfig() {
     return config;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONFIG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConfig(@javax.annotation.Nullable IssueFieldOptionConfiguration config) {
     this.config = config;
   }
@@ -97,15 +107,10 @@ public class IssueFieldOption {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@javax.annotation.Nonnull Long id) {
     this.id = id;
   }
@@ -129,15 +134,10 @@ public class IssueFieldOption {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable Map<String, Object> properties) {
     this.properties = properties;
   }
@@ -153,23 +153,16 @@ public class IssueFieldOption {
    * @return value
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getValue() {
     return value;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setValue(@javax.annotation.Nonnull String value) {
     this.value = value;
   }
 
 
-  /**
-   * Return true if this IssueFieldOption object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -213,63 +206,102 @@ public class IssueFieldOption {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("config", "id", "properties", "value"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("id", "value"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueFieldOption
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `config` to the URL query string
-    if (getConfig() != null) {
-      joiner.add(getConfig().toUrlQueryString(prefix + "config" + suffix));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueFieldOption.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueFieldOption is not found in the empty JSON string", IssueFieldOption.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `value` to the URL query string
-    if (getValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueFieldOption.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueFieldOption` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : IssueFieldOption.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `config`
+      if (jsonObj.get("config") != null && !jsonObj.get("config").isJsonNull()) {
+        IssueFieldOptionConfiguration.validateJsonElement(jsonObj.get("config"));
+      }
+      if (!jsonObj.get("value").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `value` to be a primitive type in the JSON string but got `%s`", jsonObj.get("value").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueFieldOption.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueFieldOption' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueFieldOption> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueFieldOption.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueFieldOption>() {
+           @Override
+           public void write(JsonWriter out, IssueFieldOption value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueFieldOption read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssueFieldOption given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueFieldOption
+   * @throws IOException if the JSON string is invalid with respect to IssueFieldOption
+   */
+  public static IssueFieldOption fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueFieldOption.class);
+  }
+
+  /**
+   * Convert an instance of IssueFieldOption to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

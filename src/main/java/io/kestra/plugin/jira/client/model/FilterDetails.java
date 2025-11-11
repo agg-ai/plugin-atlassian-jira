@@ -13,130 +13,144 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.FilterSubscription;
 import io.kestra.plugin.jira.client.model.SharePermission;
 import io.kestra.plugin.jira.client.model.User;
+import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a filter.
  */
-@JsonPropertyOrder({
-  FilterDetails.JSON_PROPERTY_APPROXIMATE_LAST_USED,
-  FilterDetails.JSON_PROPERTY_DESCRIPTION,
-  FilterDetails.JSON_PROPERTY_EDIT_PERMISSIONS,
-  FilterDetails.JSON_PROPERTY_EXPAND,
-  FilterDetails.JSON_PROPERTY_FAVOURITE,
-  FilterDetails.JSON_PROPERTY_FAVOURITED_COUNT,
-  FilterDetails.JSON_PROPERTY_ID,
-  FilterDetails.JSON_PROPERTY_JQL,
-  FilterDetails.JSON_PROPERTY_NAME,
-  FilterDetails.JSON_PROPERTY_OWNER,
-  FilterDetails.JSON_PROPERTY_SEARCH_URL,
-  FilterDetails.JSON_PROPERTY_SELF,
-  FilterDetails.JSON_PROPERTY_SHARE_PERMISSIONS,
-  FilterDetails.JSON_PROPERTY_SUBSCRIPTIONS,
-  FilterDetails.JSON_PROPERTY_VIEW_URL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FilterDetails {
-  public static final String JSON_PROPERTY_APPROXIMATE_LAST_USED = "approximateLastUsed";
+  public static final String SERIALIZED_NAME_APPROXIMATE_LAST_USED = "approximateLastUsed";
+  @SerializedName(SERIALIZED_NAME_APPROXIMATE_LAST_USED)
   @javax.annotation.Nullable
   private OffsetDateTime approximateLastUsed;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_EDIT_PERMISSIONS = "editPermissions";
+  public static final String SERIALIZED_NAME_EDIT_PERMISSIONS = "editPermissions";
+  @SerializedName(SERIALIZED_NAME_EDIT_PERMISSIONS)
   @javax.annotation.Nullable
   private List<SharePermission> editPermissions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_FAVOURITE = "favourite";
+  public static final String SERIALIZED_NAME_FAVOURITE = "favourite";
+  @SerializedName(SERIALIZED_NAME_FAVOURITE)
   @javax.annotation.Nullable
   private Boolean favourite;
 
-  public static final String JSON_PROPERTY_FAVOURITED_COUNT = "favouritedCount";
+  public static final String SERIALIZED_NAME_FAVOURITED_COUNT = "favouritedCount";
+  @SerializedName(SERIALIZED_NAME_FAVOURITED_COUNT)
   @javax.annotation.Nullable
   private Long favouritedCount;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_JQL = "jql";
+  public static final String SERIALIZED_NAME_JQL = "jql";
+  @SerializedName(SERIALIZED_NAME_JQL)
   @javax.annotation.Nullable
   private String jql;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
-  public static final String JSON_PROPERTY_OWNER = "owner";
+  public static final String SERIALIZED_NAME_OWNER = "owner";
+  @SerializedName(SERIALIZED_NAME_OWNER)
   @javax.annotation.Nullable
   private User owner;
 
-  public static final String JSON_PROPERTY_SEARCH_URL = "searchUrl";
+  public static final String SERIALIZED_NAME_SEARCH_URL = "searchUrl";
+  @SerializedName(SERIALIZED_NAME_SEARCH_URL)
   @javax.annotation.Nullable
   private URI searchUrl;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_SHARE_PERMISSIONS = "sharePermissions";
+  public static final String SERIALIZED_NAME_SHARE_PERMISSIONS = "sharePermissions";
+  @SerializedName(SERIALIZED_NAME_SHARE_PERMISSIONS)
   @javax.annotation.Nullable
   private List<SharePermission> sharePermissions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SUBSCRIPTIONS = "subscriptions";
+  public static final String SERIALIZED_NAME_SUBSCRIPTIONS = "subscriptions";
+  @SerializedName(SERIALIZED_NAME_SUBSCRIPTIONS)
   @javax.annotation.Nullable
   private List<FilterSubscription> subscriptions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_VIEW_URL = "viewUrl";
+  public static final String SERIALIZED_NAME_VIEW_URL = "viewUrl";
+  @SerializedName(SERIALIZED_NAME_VIEW_URL)
   @javax.annotation.Nullable
   private URI viewUrl;
 
-  public FilterDetails() { 
+  public FilterDetails() {
   }
 
-  @JsonCreator
   public FilterDetails(
-    @JsonProperty(JSON_PROPERTY_APPROXIMATE_LAST_USED) OffsetDateTime approximateLastUsed, 
-    @JsonProperty(JSON_PROPERTY_EXPAND) String expand, 
-    @JsonProperty(JSON_PROPERTY_FAVOURITE) Boolean favourite, 
-    @JsonProperty(JSON_PROPERTY_FAVOURITED_COUNT) Long favouritedCount, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_JQL) String jql, 
-    @JsonProperty(JSON_PROPERTY_OWNER) User owner, 
-    @JsonProperty(JSON_PROPERTY_SEARCH_URL) URI searchUrl, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self, 
-    @JsonProperty(JSON_PROPERTY_SUBSCRIPTIONS) List<FilterSubscription> subscriptions, 
-    @JsonProperty(JSON_PROPERTY_VIEW_URL) URI viewUrl
+     OffsetDateTime approximateLastUsed, 
+     String expand, 
+     Boolean favourite, 
+     Long favouritedCount, 
+     String id, 
+     String jql, 
+     User owner, 
+     URI searchUrl, 
+     URI self, 
+     List<FilterSubscription> subscriptions, 
+     URI viewUrl
   ) {
-  this();
+    this();
     this.approximateLastUsed = approximateLastUsed;
     this.expand = expand;
     this.favourite = favourite;
@@ -155,12 +169,9 @@ public class FilterDetails {
    * @return approximateLastUsed
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_APPROXIMATE_LAST_USED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getApproximateLastUsed() {
     return approximateLastUsed;
   }
-
 
 
 
@@ -174,15 +185,10 @@ public class FilterDetails {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -206,15 +212,10 @@ public class FilterDetails {
    * @return editPermissions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EDIT_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SharePermission> getEditPermissions() {
     return editPermissions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EDIT_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEditPermissions(@javax.annotation.Nullable List<SharePermission> editPermissions) {
     this.editPermissions = editPermissions;
   }
@@ -225,12 +226,9 @@ public class FilterDetails {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
-
 
 
 
@@ -239,12 +237,9 @@ public class FilterDetails {
    * @return favourite
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FAVOURITE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getFavourite() {
     return favourite;
   }
-
 
 
 
@@ -253,12 +248,9 @@ public class FilterDetails {
    * @return favouritedCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FAVOURITED_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getFavouritedCount() {
     return favouritedCount;
   }
-
 
 
 
@@ -267,12 +259,9 @@ public class FilterDetails {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -281,12 +270,9 @@ public class FilterDetails {
    * @return jql
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_JQL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getJql() {
     return jql;
   }
-
 
 
 
@@ -300,15 +286,10 @@ public class FilterDetails {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -319,12 +300,9 @@ public class FilterDetails {
    * @return owner
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getOwner() {
     return owner;
   }
-
 
 
 
@@ -333,12 +311,9 @@ public class FilterDetails {
    * @return searchUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSearchUrl() {
     return searchUrl;
   }
-
 
 
 
@@ -347,12 +322,9 @@ public class FilterDetails {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -374,15 +346,10 @@ public class FilterDetails {
    * @return sharePermissions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SHARE_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SharePermission> getSharePermissions() {
     return sharePermissions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SHARE_PERMISSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSharePermissions(@javax.annotation.Nullable List<SharePermission> sharePermissions) {
     this.sharePermissions = sharePermissions;
   }
@@ -393,12 +360,9 @@ public class FilterDetails {
    * @return subscriptions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUBSCRIPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<FilterSubscription> getSubscriptions() {
     return subscriptions;
   }
-
 
 
 
@@ -407,8 +371,6 @@ public class FilterDetails {
    * @return viewUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VIEW_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getViewUrl() {
     return viewUrl;
   }
@@ -416,9 +378,6 @@ public class FilterDetails {
 
 
 
-  /**
-   * Return true if this FilterDetails object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -484,129 +443,165 @@ public class FilterDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("approximateLastUsed", "description", "editPermissions", "expand", "favourite", "favouritedCount", "id", "jql", "name", "owner", "searchUrl", "self", "sharePermissions", "subscriptions", "viewUrl"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("name"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FilterDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `approximateLastUsed` to the URL query string
-    if (getApproximateLastUsed() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sapproximateLastUsed%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getApproximateLastUsed()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `editPermissions` to the URL query string
-    if (getEditPermissions() != null) {
-      for (int i = 0; i < getEditPermissions().size(); i++) {
-        if (getEditPermissions().get(i) != null) {
-          joiner.add(getEditPermissions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%seditPermissions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FilterDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FilterDetails is not found in the empty JSON string", FilterDetails.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `favourite` to the URL query string
-    if (getFavourite() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfavourite%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFavourite()))));
-    }
-
-    // add `favouritedCount` to the URL query string
-    if (getFavouritedCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfavouritedCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFavouritedCount()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `jql` to the URL query string
-    if (getJql() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sjql%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getJql()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `owner` to the URL query string
-    if (getOwner() != null) {
-      joiner.add(getOwner().toUrlQueryString(prefix + "owner" + suffix));
-    }
-
-    // add `searchUrl` to the URL query string
-    if (getSearchUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssearchUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearchUrl()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `sharePermissions` to the URL query string
-    if (getSharePermissions() != null) {
-      for (int i = 0; i < getSharePermissions().size(); i++) {
-        if (getSharePermissions().get(i) != null) {
-          joiner.add(getSharePermissions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssharePermissions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FilterDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FilterDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
 
-    // add `subscriptions` to the URL query string
-    if (getSubscriptions() != null) {
-      for (int i = 0; i < getSubscriptions().size(); i++) {
-        if (getSubscriptions().get(i) != null) {
-          joiner.add(getSubscriptions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssubscriptions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : FilterDetails.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (jsonObj.get("editPermissions") != null && !jsonObj.get("editPermissions").isJsonNull()) {
+        JsonArray jsonArrayeditPermissions = jsonObj.getAsJsonArray("editPermissions");
+        if (jsonArrayeditPermissions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("editPermissions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `editPermissions` to be an array in the JSON string but got `%s`", jsonObj.get("editPermissions").toString()));
+          }
 
-    // add `viewUrl` to the URL query string
-    if (getViewUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sviewUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getViewUrl()))));
-    }
+          // validate the optional field `editPermissions` (array)
+          for (int i = 0; i < jsonArrayeditPermissions.size(); i++) {
+            SharePermission.validateJsonElement(jsonArrayeditPermissions.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("jql") != null && !jsonObj.get("jql").isJsonNull()) && !jsonObj.get("jql").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `jql` to be a primitive type in the JSON string but got `%s`", jsonObj.get("jql").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      // validate the optional field `owner`
+      if (jsonObj.get("owner") != null && !jsonObj.get("owner").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("owner"));
+      }
+      if ((jsonObj.get("searchUrl") != null && !jsonObj.get("searchUrl").isJsonNull()) && !jsonObj.get("searchUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `searchUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("searchUrl").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if (jsonObj.get("sharePermissions") != null && !jsonObj.get("sharePermissions").isJsonNull()) {
+        JsonArray jsonArraysharePermissions = jsonObj.getAsJsonArray("sharePermissions");
+        if (jsonArraysharePermissions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("sharePermissions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `sharePermissions` to be an array in the JSON string but got `%s`", jsonObj.get("sharePermissions").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `sharePermissions` (array)
+          for (int i = 0; i < jsonArraysharePermissions.size(); i++) {
+            SharePermission.validateJsonElement(jsonArraysharePermissions.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("subscriptions") != null && !jsonObj.get("subscriptions").isJsonNull()) {
+        JsonArray jsonArraysubscriptions = jsonObj.getAsJsonArray("subscriptions");
+        if (jsonArraysubscriptions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("subscriptions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `subscriptions` to be an array in the JSON string but got `%s`", jsonObj.get("subscriptions").toString()));
+          }
+
+          // validate the optional field `subscriptions` (array)
+          for (int i = 0; i < jsonArraysubscriptions.size(); i++) {
+            FilterSubscription.validateJsonElement(jsonArraysubscriptions.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("viewUrl") != null && !jsonObj.get("viewUrl").isJsonNull()) && !jsonObj.get("viewUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `viewUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("viewUrl").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FilterDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FilterDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FilterDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FilterDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<FilterDetails>() {
+           @Override
+           public void write(JsonWriter out, FilterDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FilterDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FilterDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FilterDetails
+   * @throws IOException if the JSON string is invalid with respect to FilterDetails
+   */
+  public static FilterDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FilterDetails.class);
+  }
+
+  /**
+   * Convert an instance of FilterDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

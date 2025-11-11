@@ -13,63 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.AvatarUrlsBean;
 import io.kestra.plugin.jira.client.model.SimpleListWrapperApplicationRole;
 import io.kestra.plugin.jira.client.model.SimpleListWrapperGroupName;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A user with details as permitted by the user&#39;s Atlassian Account privacy settings. However, be aware of these exceptions:   *  User record deleted from Atlassian: This occurs as the result of a right to be forgotten request. In this case, &#x60;displayName&#x60; provides an indication and other parameters have default values or are blank (for example, email is blank).  *  User record corrupted: This occurs as a results of events such as a server import and can only happen to deleted users. In this case, &#x60;accountId&#x60; returns *unknown* and all other parameters have fallback values.  *  User record unavailable: This usually occurs due to an internal service outage. In this case, all parameters have fallback values.
  */
-@JsonPropertyOrder({
-  User.JSON_PROPERTY_ACCOUNT_ID,
-  User.JSON_PROPERTY_ACCOUNT_TYPE,
-  User.JSON_PROPERTY_ACTIVE,
-  User.JSON_PROPERTY_APPLICATION_ROLES,
-  User.JSON_PROPERTY_AVATAR_URLS,
-  User.JSON_PROPERTY_DISPLAY_NAME,
-  User.JSON_PROPERTY_EMAIL_ADDRESS,
-  User.JSON_PROPERTY_EXPAND,
-  User.JSON_PROPERTY_GROUPS,
-  User.JSON_PROPERTY_KEY,
-  User.JSON_PROPERTY_LOCALE,
-  User.JSON_PROPERTY_NAME,
-  User.JSON_PROPERTY_SELF,
-  User.JSON_PROPERTY_TIME_ZONE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class User {
-  public static final String JSON_PROPERTY_ACCOUNT_ID = "accountId";
+  public static final String SERIALIZED_NAME_ACCOUNT_ID = "accountId";
+  @SerializedName(SERIALIZED_NAME_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String accountId;
 
   /**
    * The user account type. Can take the following values:   *  &#x60;atlassian&#x60; regular Atlassian user account  *  &#x60;app&#x60; system account used for Connect applications and OAuth to represent external systems  *  &#x60;customer&#x60; Jira Service Desk account representing an external service desk
    */
+  @JsonAdapter(AccountTypeEnum.Adapter.class)
   public enum AccountTypeEnum {
-    ATLASSIAN(String.valueOf("atlassian")),
+    ATLASSIAN("atlassian"),
     
-    APP(String.valueOf("app")),
+    APP("app"),
     
-    CUSTOMER(String.valueOf("customer")),
+    CUSTOMER("customer"),
     
-    UNKNOWN(String.valueOf("unknown"));
+    UNKNOWN("unknown");
 
     private String value;
 
@@ -77,7 +80,6 @@ public class User {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -87,7 +89,6 @@ public class User {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static AccountTypeEnum fromValue(String value) {
       for (AccountTypeEnum b : AccountTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -96,78 +97,108 @@ public class User {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<AccountTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final AccountTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public AccountTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return AccountTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      AccountTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ACCOUNT_TYPE = "accountType";
+  public static final String SERIALIZED_NAME_ACCOUNT_TYPE = "accountType";
+  @SerializedName(SERIALIZED_NAME_ACCOUNT_TYPE)
   @javax.annotation.Nullable
   private AccountTypeEnum accountType;
 
-  public static final String JSON_PROPERTY_ACTIVE = "active";
+  public static final String SERIALIZED_NAME_ACTIVE = "active";
+  @SerializedName(SERIALIZED_NAME_ACTIVE)
   @javax.annotation.Nullable
   private Boolean active;
 
-  public static final String JSON_PROPERTY_APPLICATION_ROLES = "applicationRoles";
+  public static final String SERIALIZED_NAME_APPLICATION_ROLES = "applicationRoles";
+  @SerializedName(SERIALIZED_NAME_APPLICATION_ROLES)
   @javax.annotation.Nullable
   private SimpleListWrapperApplicationRole applicationRoles;
 
-  public static final String JSON_PROPERTY_AVATAR_URLS = "avatarUrls";
+  public static final String SERIALIZED_NAME_AVATAR_URLS = "avatarUrls";
+  @SerializedName(SERIALIZED_NAME_AVATAR_URLS)
   @javax.annotation.Nullable
   private AvatarUrlsBean avatarUrls;
 
-  public static final String JSON_PROPERTY_DISPLAY_NAME = "displayName";
+  public static final String SERIALIZED_NAME_DISPLAY_NAME = "displayName";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_NAME)
   @javax.annotation.Nullable
   private String displayName;
 
-  public static final String JSON_PROPERTY_EMAIL_ADDRESS = "emailAddress";
+  public static final String SERIALIZED_NAME_EMAIL_ADDRESS = "emailAddress";
+  @SerializedName(SERIALIZED_NAME_EMAIL_ADDRESS)
   @javax.annotation.Nullable
   private String emailAddress;
 
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_GROUPS = "groups";
+  public static final String SERIALIZED_NAME_GROUPS = "groups";
+  @SerializedName(SERIALIZED_NAME_GROUPS)
   @javax.annotation.Nullable
   private SimpleListWrapperGroupName groups;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_LOCALE = "locale";
+  public static final String SERIALIZED_NAME_LOCALE = "locale";
+  @SerializedName(SERIALIZED_NAME_LOCALE)
   @javax.annotation.Nullable
   private String locale;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_TIME_ZONE = "timeZone";
+  public static final String SERIALIZED_NAME_TIME_ZONE = "timeZone";
+  @SerializedName(SERIALIZED_NAME_TIME_ZONE)
   @javax.annotation.Nullable
   private String timeZone;
 
-  public User() { 
+  public User() {
   }
 
-  @JsonCreator
   public User(
-    @JsonProperty(JSON_PROPERTY_ACCOUNT_TYPE) AccountTypeEnum accountType, 
-    @JsonProperty(JSON_PROPERTY_ACTIVE) Boolean active, 
-    @JsonProperty(JSON_PROPERTY_APPLICATION_ROLES) SimpleListWrapperApplicationRole applicationRoles, 
-    @JsonProperty(JSON_PROPERTY_AVATAR_URLS) AvatarUrlsBean avatarUrls, 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME) String displayName, 
-    @JsonProperty(JSON_PROPERTY_EMAIL_ADDRESS) String emailAddress, 
-    @JsonProperty(JSON_PROPERTY_EXPAND) String expand, 
-    @JsonProperty(JSON_PROPERTY_GROUPS) SimpleListWrapperGroupName groups, 
-    @JsonProperty(JSON_PROPERTY_LOCALE) String locale, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self, 
-    @JsonProperty(JSON_PROPERTY_TIME_ZONE) String timeZone
+     AccountTypeEnum accountType, 
+     Boolean active, 
+     SimpleListWrapperApplicationRole applicationRoles, 
+     AvatarUrlsBean avatarUrls, 
+     String displayName, 
+     String emailAddress, 
+     String expand, 
+     SimpleListWrapperGroupName groups, 
+     String locale, 
+     URI self, 
+     String timeZone
   ) {
-  this();
+    this();
     this.accountType = accountType;
     this.active = active;
     this.applicationRoles = applicationRoles;
@@ -191,15 +222,10 @@ public class User {
    * @return accountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAccountId() {
     return accountId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAccountId(@javax.annotation.Nullable String accountId) {
     this.accountId = accountId;
   }
@@ -210,12 +236,9 @@ public class User {
    * @return accountType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AccountTypeEnum getAccountType() {
     return accountType;
   }
-
 
 
 
@@ -224,12 +247,9 @@ public class User {
    * @return active
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTIVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getActive() {
     return active;
   }
-
 
 
 
@@ -238,12 +258,9 @@ public class User {
    * @return applicationRoles
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION_ROLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SimpleListWrapperApplicationRole getApplicationRoles() {
     return applicationRoles;
   }
-
 
 
 
@@ -252,12 +269,9 @@ public class User {
    * @return avatarUrls
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_URLS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AvatarUrlsBean getAvatarUrls() {
     return avatarUrls;
   }
-
 
 
 
@@ -266,12 +280,9 @@ public class User {
    * @return displayName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayName() {
     return displayName;
   }
-
 
 
 
@@ -280,12 +291,9 @@ public class User {
    * @return emailAddress
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEmailAddress() {
     return emailAddress;
   }
-
 
 
 
@@ -294,12 +302,9 @@ public class User {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
-
 
 
 
@@ -308,12 +313,9 @@ public class User {
    * @return groups
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SimpleListWrapperGroupName getGroups() {
     return groups;
   }
-
 
 
 
@@ -327,15 +329,10 @@ public class User {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
@@ -346,12 +343,9 @@ public class User {
    * @return locale
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LOCALE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLocale() {
     return locale;
   }
-
 
 
 
@@ -365,15 +359,10 @@ public class User {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -384,12 +373,9 @@ public class User {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -398,8 +384,6 @@ public class User {
    * @return timeZone
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_ZONE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTimeZone() {
     return timeZone;
   }
@@ -407,9 +391,6 @@ public class User {
 
 
 
-  /**
-   * Return true if this User object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -473,109 +454,134 @@ public class User {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("accountId", "accountType", "active", "applicationRoles", "avatarUrls", "displayName", "emailAddress", "expand", "groups", "key", "locale", "name", "self", "timeZone"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to User
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!User.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in User is not found in the empty JSON string", User.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!User.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `User` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("accountId") != null && !jsonObj.get("accountId").isJsonNull()) && !jsonObj.get("accountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `accountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accountId").toString()));
+      }
+      if ((jsonObj.get("accountType") != null && !jsonObj.get("accountType").isJsonNull()) && !jsonObj.get("accountType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `accountType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("accountType").toString()));
+      }
+      // validate the optional field `accountType`
+      if (jsonObj.get("accountType") != null && !jsonObj.get("accountType").isJsonNull()) {
+        AccountTypeEnum.validateJsonElement(jsonObj.get("accountType"));
+      }
+      // validate the optional field `applicationRoles`
+      if (jsonObj.get("applicationRoles") != null && !jsonObj.get("applicationRoles").isJsonNull()) {
+        SimpleListWrapperApplicationRole.validateJsonElement(jsonObj.get("applicationRoles"));
+      }
+      // validate the optional field `avatarUrls`
+      if (jsonObj.get("avatarUrls") != null && !jsonObj.get("avatarUrls").isJsonNull()) {
+        AvatarUrlsBean.validateJsonElement(jsonObj.get("avatarUrls"));
+      }
+      if ((jsonObj.get("displayName") != null && !jsonObj.get("displayName").isJsonNull()) && !jsonObj.get("displayName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayName").toString()));
+      }
+      if ((jsonObj.get("emailAddress") != null && !jsonObj.get("emailAddress").isJsonNull()) && !jsonObj.get("emailAddress").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `emailAddress` to be a primitive type in the JSON string but got `%s`", jsonObj.get("emailAddress").toString()));
+      }
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
+      }
+      // validate the optional field `groups`
+      if (jsonObj.get("groups") != null && !jsonObj.get("groups").isJsonNull()) {
+        SimpleListWrapperGroupName.validateJsonElement(jsonObj.get("groups"));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("locale") != null && !jsonObj.get("locale").isJsonNull()) && !jsonObj.get("locale").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `locale` to be a primitive type in the JSON string but got `%s`", jsonObj.get("locale").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("timeZone") != null && !jsonObj.get("timeZone").isJsonNull()) && !jsonObj.get("timeZone").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `timeZone` to be a primitive type in the JSON string but got `%s`", jsonObj.get("timeZone").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!User.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'User' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<User> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(User.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<User>() {
+           @Override
+           public void write(JsonWriter out, User value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public User read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of User given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of User
+   * @throws IOException if the JSON string is invalid with respect to User
+   */
+  public static User fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, User.class);
+  }
 
-    // add `accountId` to the URL query string
-    if (getAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountId()))));
-    }
-
-    // add `accountType` to the URL query string
-    if (getAccountType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saccountType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountType()))));
-    }
-
-    // add `active` to the URL query string
-    if (getActive() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sactive%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getActive()))));
-    }
-
-    // add `applicationRoles` to the URL query string
-    if (getApplicationRoles() != null) {
-      joiner.add(getApplicationRoles().toUrlQueryString(prefix + "applicationRoles" + suffix));
-    }
-
-    // add `avatarUrls` to the URL query string
-    if (getAvatarUrls() != null) {
-      joiner.add(getAvatarUrls().toUrlQueryString(prefix + "avatarUrls" + suffix));
-    }
-
-    // add `displayName` to the URL query string
-    if (getDisplayName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-    }
-
-    // add `emailAddress` to the URL query string
-    if (getEmailAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%semailAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmailAddress()))));
-    }
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `groups` to the URL query string
-    if (getGroups() != null) {
-      joiner.add(getGroups().toUrlQueryString(prefix + "groups" + suffix));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `locale` to the URL query string
-    if (getLocale() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slocale%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocale()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `timeZone` to the URL query string
-    if (getTimeZone() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeZone%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeZone()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of User to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

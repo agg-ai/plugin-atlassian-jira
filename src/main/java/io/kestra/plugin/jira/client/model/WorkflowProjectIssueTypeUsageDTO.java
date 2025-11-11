@@ -13,47 +13,62 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.WorkflowProjectIssueTypeUsagePage;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Issue types associated with the workflow for a project.
  */
-@JsonPropertyOrder({
-  WorkflowProjectIssueTypeUsageDTO.JSON_PROPERTY_ISSUE_TYPES,
-  WorkflowProjectIssueTypeUsageDTO.JSON_PROPERTY_PROJECT_ID,
-  WorkflowProjectIssueTypeUsageDTO.JSON_PROPERTY_WORKFLOW_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowProjectIssueTypeUsageDTO {
-  public static final String JSON_PROPERTY_ISSUE_TYPES = "issueTypes";
+  public static final String SERIALIZED_NAME_ISSUE_TYPES = "issueTypes";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPES)
   @javax.annotation.Nullable
   private WorkflowProjectIssueTypeUsagePage issueTypes;
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nullable
   private String projectId;
 
-  public static final String JSON_PROPERTY_WORKFLOW_ID = "workflowId";
+  public static final String SERIALIZED_NAME_WORKFLOW_ID = "workflowId";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW_ID)
   @javax.annotation.Nullable
   private String workflowId;
 
-  public WorkflowProjectIssueTypeUsageDTO() { 
+  public WorkflowProjectIssueTypeUsageDTO() {
   }
 
   public WorkflowProjectIssueTypeUsageDTO issueTypes(@javax.annotation.Nullable WorkflowProjectIssueTypeUsagePage issueTypes) {
@@ -66,15 +81,10 @@ public class WorkflowProjectIssueTypeUsageDTO {
    * @return issueTypes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkflowProjectIssueTypeUsagePage getIssueTypes() {
     return issueTypes;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypes(@javax.annotation.Nullable WorkflowProjectIssueTypeUsagePage issueTypes) {
     this.issueTypes = issueTypes;
   }
@@ -90,15 +100,10 @@ public class WorkflowProjectIssueTypeUsageDTO {
    * @return projectId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProjectId() {
     return projectId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectId(@javax.annotation.Nullable String projectId) {
     this.projectId = projectId;
   }
@@ -114,23 +119,16 @@ public class WorkflowProjectIssueTypeUsageDTO {
    * @return workflowId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getWorkflowId() {
     return workflowId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkflowId(@javax.annotation.Nullable String workflowId) {
     this.workflowId = workflowId;
   }
 
 
-  /**
-   * Return true if this WorkflowProjectIssueTypeUsageDTO object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -172,54 +170,98 @@ public class WorkflowProjectIssueTypeUsageDTO {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueTypes", "projectId", "workflowId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowProjectIssueTypeUsageDTO
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowProjectIssueTypeUsageDTO.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowProjectIssueTypeUsageDTO is not found in the empty JSON string", WorkflowProjectIssueTypeUsageDTO.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowProjectIssueTypeUsageDTO.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowProjectIssueTypeUsageDTO` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `issueTypes`
+      if (jsonObj.get("issueTypes") != null && !jsonObj.get("issueTypes").isJsonNull()) {
+        WorkflowProjectIssueTypeUsagePage.validateJsonElement(jsonObj.get("issueTypes"));
+      }
+      if ((jsonObj.get("projectId") != null && !jsonObj.get("projectId").isJsonNull()) && !jsonObj.get("projectId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectId").toString()));
+      }
+      if ((jsonObj.get("workflowId") != null && !jsonObj.get("workflowId").isJsonNull()) && !jsonObj.get("workflowId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `workflowId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("workflowId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowProjectIssueTypeUsageDTO.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowProjectIssueTypeUsageDTO' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowProjectIssueTypeUsageDTO> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowProjectIssueTypeUsageDTO.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowProjectIssueTypeUsageDTO>() {
+           @Override
+           public void write(JsonWriter out, WorkflowProjectIssueTypeUsageDTO value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowProjectIssueTypeUsageDTO read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of WorkflowProjectIssueTypeUsageDTO given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowProjectIssueTypeUsageDTO
+   * @throws IOException if the JSON string is invalid with respect to WorkflowProjectIssueTypeUsageDTO
+   */
+  public static WorkflowProjectIssueTypeUsageDTO fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowProjectIssueTypeUsageDTO.class);
+  }
 
-    // add `issueTypes` to the URL query string
-    if (getIssueTypes() != null) {
-      joiner.add(getIssueTypes().toUrlQueryString(prefix + "issueTypes" + suffix));
-    }
-
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
-
-    // add `workflowId` to the URL query string
-    if (getWorkflowId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sworkflowId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWorkflowId()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of WorkflowProjectIssueTypeUsageDTO to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

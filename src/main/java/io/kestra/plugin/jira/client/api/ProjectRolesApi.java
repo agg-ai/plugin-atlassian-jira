@@ -10,1258 +10,1375 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.CreateUpdateRoleRequestBean;
 import io.kestra.plugin.jira.client.model.ProjectRole;
 import io.kestra.plugin.jira.client.model.ProjectRoleDetails;
 import java.net.URI;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectRolesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ProjectRolesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ProjectRolesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createProjectRole
+     * @param createUpdateRoleRequestBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. The &#x60;name&#x60; cannot be empty or start or end with whitespace. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a project role with the provided name already exists. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createProjectRoleCall(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ProjectRolesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ProjectRolesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create project role
-   * Creates a new project role with no [default actors](#api-rest-api-3-resolution-get). You can use the [Add default actors to project role](#api-rest-api-3-role-id-actors-post) operation to add default actors to the project role after creating it.  *Note that although a new project role is available to all projects upon creation, any default actors that are associated with the project role are not added to projects that existed prior to the role being created.*&lt;  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createUpdateRoleRequestBean  (required)
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole createProjectRole(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
-    return createProjectRole(createUpdateRoleRequestBean, null);
-  }
-
-  /**
-   * Create project role
-   * Creates a new project role with no [default actors](#api-rest-api-3-resolution-get). You can use the [Add default actors to project role](#api-rest-api-3-role-id-actors-post) operation to add default actors to the project role after creating it.  *Note that although a new project role is available to all projects upon creation, any default actors that are associated with the project role are not added to projects that existed prior to the role being created.*&lt;  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createUpdateRoleRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole createProjectRole(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectRole> localVarResponse = createProjectRoleWithHttpInfo(createUpdateRoleRequestBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create project role
-   * Creates a new project role with no [default actors](#api-rest-api-3-resolution-get). You can use the [Add default actors to project role](#api-rest-api-3-role-id-actors-post) operation to add default actors to the project role after creating it.  *Note that although a new project role is available to all projects upon creation, any default actors that are associated with the project role are not added to projects that existed prior to the role being created.*&lt;  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createUpdateRoleRequestBean  (required)
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> createProjectRoleWithHttpInfo(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
-    return createProjectRoleWithHttpInfo(createUpdateRoleRequestBean, null);
-  }
-
-  /**
-   * Create project role
-   * Creates a new project role with no [default actors](#api-rest-api-3-resolution-get). You can use the [Add default actors to project role](#api-rest-api-3-role-id-actors-post) operation to add default actors to the project role after creating it.  *Note that although a new project role is available to all projects upon creation, any default actors that are associated with the project role are not added to projects that existed prior to the role being created.*&lt;  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param createUpdateRoleRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> createProjectRoleWithHttpInfo(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createProjectRoleRequestBuilder(createUpdateRoleRequestBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createProjectRole", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectRole>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectRole responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectRole>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = createUpdateRoleRequestBean;
 
-        return new ApiResponse<ProjectRole>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/role";
 
-  private HttpRequest.Builder createProjectRoleRequestBuilder(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'createUpdateRoleRequestBean' is set
-    if (createUpdateRoleRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'createUpdateRoleRequestBean' when calling createProjectRole");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/role";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createUpdateRoleRequestBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete project role
-   * Deletes a project role. You must specify a replacement project role if you wish to delete a project role that is in use.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role to delete. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param swap The ID of the project role that will replace the one being deleted. The swap will attempt to swap the role in schemes (notifications, permissions, issue security), workflows, worklogs and comments. (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap) throws ApiException {
-    deleteProjectRole(id, swap, null);
-  }
-
-  /**
-   * Delete project role
-   * Deletes a project role. You must specify a replacement project role if you wish to delete a project role that is in use.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role to delete. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param swap The ID of the project role that will replace the one being deleted. The swap will attempt to swap the role in schemes (notifications, permissions, issue security), workflows, worklogs and comments. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap, Map<String, String> headers) throws ApiException {
-    deleteProjectRoleWithHttpInfo(id, swap, headers);
-  }
-
-  /**
-   * Delete project role
-   * Deletes a project role. You must specify a replacement project role if you wish to delete a project role that is in use.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role to delete. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param swap The ID of the project role that will replace the one being deleted. The swap will attempt to swap the role in schemes (notifications, permissions, issue security), workflows, worklogs and comments. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap) throws ApiException {
-    return deleteProjectRoleWithHttpInfo(id, swap, null);
-  }
-
-  /**
-   * Delete project role
-   * Deletes a project role. You must specify a replacement project role if you wish to delete a project role that is in use.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role to delete. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param swap The ID of the project role that will replace the one being deleted. The swap will attempt to swap the role in schemes (notifications, permissions, issue security), workflows, worklogs and comments. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteProjectRoleRequestBuilder(id, swap, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteProjectRole", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteProjectRoleRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteProjectRole");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/role/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "swap";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("swap", swap));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Fully update project role
-   * Updates the project role&#39;s name and description. You must include both a name and a description in the request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param createUpdateRoleRequestBean  (required)
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole fullyUpdateProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
-    return fullyUpdateProjectRole(id, createUpdateRoleRequestBean, null);
-  }
-
-  /**
-   * Fully update project role
-   * Updates the project role&#39;s name and description. You must include both a name and a description in the request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param createUpdateRoleRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole fullyUpdateProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectRole> localVarResponse = fullyUpdateProjectRoleWithHttpInfo(id, createUpdateRoleRequestBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Fully update project role
-   * Updates the project role&#39;s name and description. You must include both a name and a description in the request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param createUpdateRoleRequestBean  (required)
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> fullyUpdateProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
-    return fullyUpdateProjectRoleWithHttpInfo(id, createUpdateRoleRequestBean, null);
-  }
-
-  /**
-   * Fully update project role
-   * Updates the project role&#39;s name and description. You must include both a name and a description in the request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param createUpdateRoleRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> fullyUpdateProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = fullyUpdateProjectRoleRequestBuilder(id, createUpdateRoleRequestBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("fullyUpdateProjectRole", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectRole>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectRole responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectRole>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ProjectRole>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder fullyUpdateProjectRoleRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling fullyUpdateProjectRole");
-    }
-    // verify the required parameter 'createUpdateRoleRequestBean' is set
-    if (createUpdateRoleRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'createUpdateRoleRequestBean' when calling fullyUpdateProjectRole");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/role/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createUpdateRoleRequestBean);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get all project roles
-   * Gets a list of all project roles, complete with project role details and default actors.  ### About project roles ###  [Project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) are a flexible way to to associate users and groups with projects. In Jira Cloud, the list of project roles is shared globally with all projects, but each project can have a different set of actors associated with it (unlike groups, which have the same membership throughout all Jira applications).  Project roles are used in [permission schemes](#api-rest-api-3-permissionscheme-get), [email notification schemes](#api-rest-api-3-notificationscheme-get), [issue security levels](#api-rest-api-3-issuesecurityschemes-get), [comment visibility](#api-rest-api-3-comment-list-post), and workflow conditions.  #### Members and actors ####  In the Jira REST API, a member of a project role is called an *actor*. An *actor* is a group or user associated with a project role.  Actors may be set as [default members](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/#Specifying-&#39;default-members&#39;-for-a-project-role) of the project role or set at the project level:   *  Default actors: Users and groups that are assigned to the project role for all newly created projects. The default actors can be removed at the project level later if desired.  *  Actors: Users and groups that are associated with a project role for a project, which may differ from the default actors. This enables you to assign a user to different roles in different projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @return List&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ProjectRole> getAllProjectRoles() throws ApiException {
-    return getAllProjectRoles(null);
-  }
-
-  /**
-   * Get all project roles
-   * Gets a list of all project roles, complete with project role details and default actors.  ### About project roles ###  [Project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) are a flexible way to to associate users and groups with projects. In Jira Cloud, the list of project roles is shared globally with all projects, but each project can have a different set of actors associated with it (unlike groups, which have the same membership throughout all Jira applications).  Project roles are used in [permission schemes](#api-rest-api-3-permissionscheme-get), [email notification schemes](#api-rest-api-3-notificationscheme-get), [issue security levels](#api-rest-api-3-issuesecurityschemes-get), [comment visibility](#api-rest-api-3-comment-list-post), and workflow conditions.  #### Members and actors ####  In the Jira REST API, a member of a project role is called an *actor*. An *actor* is a group or user associated with a project role.  Actors may be set as [default members](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/#Specifying-&#39;default-members&#39;-for-a-project-role) of the project role or set at the project level:   *  Default actors: Users and groups that are assigned to the project role for all newly created projects. The default actors can be removed at the project level later if desired.  *  Actors: Users and groups that are associated with a project role for a project, which may differ from the default actors. This enables you to assign a user to different roles in different projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param headers Optional headers to include in the request
-   * @return List&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ProjectRole> getAllProjectRoles(Map<String, String> headers) throws ApiException {
-    ApiResponse<List<ProjectRole>> localVarResponse = getAllProjectRolesWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all project roles
-   * Gets a list of all project roles, complete with project role details and default actors.  ### About project roles ###  [Project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) are a flexible way to to associate users and groups with projects. In Jira Cloud, the list of project roles is shared globally with all projects, but each project can have a different set of actors associated with it (unlike groups, which have the same membership throughout all Jira applications).  Project roles are used in [permission schemes](#api-rest-api-3-permissionscheme-get), [email notification schemes](#api-rest-api-3-notificationscheme-get), [issue security levels](#api-rest-api-3-issuesecurityschemes-get), [comment visibility](#api-rest-api-3-comment-list-post), and workflow conditions.  #### Members and actors ####  In the Jira REST API, a member of a project role is called an *actor*. An *actor* is a group or user associated with a project role.  Actors may be set as [default members](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/#Specifying-&#39;default-members&#39;-for-a-project-role) of the project role or set at the project level:   *  Default actors: Users and groups that are assigned to the project role for all newly created projects. The default actors can be removed at the project level later if desired.  *  Actors: Users and groups that are associated with a project role for a project, which may differ from the default actors. This enables you to assign a user to different roles in different projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @return ApiResponse&lt;List&lt;ProjectRole&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ProjectRole>> getAllProjectRolesWithHttpInfo() throws ApiException {
-    return getAllProjectRolesWithHttpInfo(null);
-  }
-
-  /**
-   * Get all project roles
-   * Gets a list of all project roles, complete with project role details and default actors.  ### About project roles ###  [Project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) are a flexible way to to associate users and groups with projects. In Jira Cloud, the list of project roles is shared globally with all projects, but each project can have a different set of actors associated with it (unlike groups, which have the same membership throughout all Jira applications).  Project roles are used in [permission schemes](#api-rest-api-3-permissionscheme-get), [email notification schemes](#api-rest-api-3-notificationscheme-get), [issue security levels](#api-rest-api-3-issuesecurityschemes-get), [comment visibility](#api-rest-api-3-comment-list-post), and workflow conditions.  #### Members and actors ####  In the Jira REST API, a member of a project role is called an *actor*. An *actor* is a group or user associated with a project role.  Actors may be set as [default members](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/#Specifying-&#39;default-members&#39;-for-a-project-role) of the project role or set at the project level:   *  Default actors: Users and groups that are assigned to the project role for all newly created projects. The default actors can be removed at the project level later if desired.  *  Actors: Users and groups that are associated with a project role for a project, which may differ from the default actors. This enables you to assign a user to different roles in different projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;ProjectRole&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ProjectRole>> getAllProjectRolesWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllProjectRolesRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllProjectRoles", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<ProjectRole>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<ProjectRole> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ProjectRole>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<ProjectRole>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
 
-  private HttpRequest.Builder getAllProjectRolesRequestBuilder(Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/role";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project role for project
-   * Returns a project role&#39;s details and actors associated with the project. The list of actors is sorted by display name.  To check whether a user belongs to a role based on their group memberships, use [Get user](#api-rest-api-3-user-get) with the &#x60;groups&#x60; expand parameter selected. Then check whether the user keys and groups match with the actors returned for the project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param excludeInactiveUsers Exclude inactive users. (optional, default to false)
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole getProjectRole(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers) throws ApiException {
-    return getProjectRole(projectIdOrKey, id, excludeInactiveUsers, null);
-  }
-
-  /**
-   * Get project role for project
-   * Returns a project role&#39;s details and actors associated with the project. The list of actors is sorted by display name.  To check whether a user belongs to a role based on their group memberships, use [Get user](#api-rest-api-3-user-get) with the &#x60;groups&#x60; expand parameter selected. Then check whether the user keys and groups match with the actors returned for the project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param excludeInactiveUsers Exclude inactive users. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole getProjectRole(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectRole> localVarResponse = getProjectRoleWithHttpInfo(projectIdOrKey, id, excludeInactiveUsers, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project role for project
-   * Returns a project role&#39;s details and actors associated with the project. The list of actors is sorted by display name.  To check whether a user belongs to a role based on their group memberships, use [Get user](#api-rest-api-3-user-get) with the &#x60;groups&#x60; expand parameter selected. Then check whether the user keys and groups match with the actors returned for the project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param excludeInactiveUsers Exclude inactive users. (optional, default to false)
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> getProjectRoleWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers) throws ApiException {
-    return getProjectRoleWithHttpInfo(projectIdOrKey, id, excludeInactiveUsers, null);
-  }
-
-  /**
-   * Get project role for project
-   * Returns a project role&#39;s details and actors associated with the project. The list of actors is sorted by display name.  To check whether a user belongs to a role based on their group memberships, use [Get user](#api-rest-api-3-user-get) with the &#x60;groups&#x60; expand parameter selected. Then check whether the user keys and groups match with the actors returned for the project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param excludeInactiveUsers Exclude inactive users. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> getProjectRoleWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectRoleRequestBuilder(projectIdOrKey, id, excludeInactiveUsers, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectRole", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectRole>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createProjectRoleValidateBeforeCall(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'createUpdateRoleRequestBean' is set
+        if (createUpdateRoleRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'createUpdateRoleRequestBean' when calling createProjectRole(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectRole responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectRole>() {});
-        
-        localVarResponse.body().close();
+        return createProjectRoleCall(createUpdateRoleRequestBean, _callback);
 
-        return new ApiResponse<ProjectRole>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectRoleRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getProjectRole");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getProjectRole");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/role/{id}"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "excludeInactiveUsers";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("excludeInactiveUsers", excludeInactiveUsers));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Create project role
+     * Creates a new project role with no [default actors](#api-rest-api-3-resolution-get). You can use the [Add default actors to project role](#api-rest-api-3-role-id-actors-post) operation to add default actors to the project role after creating it.  *Note that although a new project role is available to all projects upon creation, any default actors that are associated with the project role are not added to projects that existed prior to the role being created.*&lt;  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createUpdateRoleRequestBean  (required)
+     * @return ProjectRole
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. The &#x60;name&#x60; cannot be empty or start or end with whitespace. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a project role with the provided name already exists. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectRole createProjectRole(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
+        ApiResponse<ProjectRole> localVarResp = createProjectRoleWithHttpInfo(createUpdateRoleRequestBean);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Create project role
+     * Creates a new project role with no [default actors](#api-rest-api-3-resolution-get). You can use the [Add default actors to project role](#api-rest-api-3-role-id-actors-post) operation to add default actors to the project role after creating it.  *Note that although a new project role is available to all projects upon creation, any default actors that are associated with the project role are not added to projects that existed prior to the role being created.*&lt;  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createUpdateRoleRequestBean  (required)
+     * @return ApiResponse&lt;ProjectRole&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. The &#x60;name&#x60; cannot be empty or start or end with whitespace. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a project role with the provided name already exists. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectRole> createProjectRoleWithHttpInfo(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
+        okhttp3.Call localVarCall = createProjectRoleValidateBeforeCall(createUpdateRoleRequestBean, null);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create project role (asynchronously)
+     * Creates a new project role with no [default actors](#api-rest-api-3-resolution-get). You can use the [Add default actors to project role](#api-rest-api-3-role-id-actors-post) operation to add default actors to the project role after creating it.  *Note that although a new project role is available to all projects upon creation, any default actors that are associated with the project role are not added to projects that existed prior to the role being created.*&lt;  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param createUpdateRoleRequestBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. The &#x60;name&#x60; cannot be empty or start or end with whitespace. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if a project role with the provided name already exists. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createProjectRoleAsync(@javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback<ProjectRole> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createProjectRoleValidateBeforeCall(createUpdateRoleRequestBean, _callback);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for deleteProjectRole
+     * @param id The ID of the project role to delete. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param swap The ID of the project role that will replace the one being deleted. The swap will attempt to swap the role in schemes (notifications, permissions, issue security), workflows, worklogs and comments. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid or if the replacement project role is not found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role being deleted is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the project role being deleted is in use and a replacement project role is not specified in the request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteProjectRoleCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get project role by ID
-   * Gets the project role details and the default actors associated with the role. The list of default actors is sorted by display name.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole getProjectRoleById(@javax.annotation.Nonnull Long id) throws ApiException {
-    return getProjectRoleById(id, null);
-  }
-
-  /**
-   * Get project role by ID
-   * Gets the project role details and the default actors associated with the role. The list of default actors is sorted by display name.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole getProjectRoleById(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectRole> localVarResponse = getProjectRoleByIdWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project role by ID
-   * Gets the project role details and the default actors associated with the role. The list of default actors is sorted by display name.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> getProjectRoleByIdWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
-    return getProjectRoleByIdWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get project role by ID
-   * Gets the project role details and the default actors associated with the role. The list of default actors is sorted by display name.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> getProjectRoleByIdWithHttpInfo(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectRoleByIdRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectRoleById", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectRole>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectRole responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectRole>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<ProjectRole>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/role/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder getProjectRoleByIdRequestBuilder(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getProjectRoleById");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/role/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project role details
-   * Returns all [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) and the details for each role. Note that the list of project roles is common to all projects.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param currentMember Whether the roles should be filtered to include only those the user is assigned to. (optional, default to false)
-   * @param excludeConnectAddons  (optional, default to false)
-   * @return List&lt;ProjectRoleDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ProjectRoleDetails> getProjectRoleDetails(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons) throws ApiException {
-    return getProjectRoleDetails(projectIdOrKey, currentMember, excludeConnectAddons, null);
-  }
-
-  /**
-   * Get project role details
-   * Returns all [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) and the details for each role. Note that the list of project roles is common to all projects.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param currentMember Whether the roles should be filtered to include only those the user is assigned to. (optional, default to false)
-   * @param excludeConnectAddons  (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;ProjectRoleDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<ProjectRoleDetails> getProjectRoleDetails(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<ProjectRoleDetails>> localVarResponse = getProjectRoleDetailsWithHttpInfo(projectIdOrKey, currentMember, excludeConnectAddons, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project role details
-   * Returns all [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) and the details for each role. Note that the list of project roles is common to all projects.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param currentMember Whether the roles should be filtered to include only those the user is assigned to. (optional, default to false)
-   * @param excludeConnectAddons  (optional, default to false)
-   * @return ApiResponse&lt;List&lt;ProjectRoleDetails&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ProjectRoleDetails>> getProjectRoleDetailsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons) throws ApiException {
-    return getProjectRoleDetailsWithHttpInfo(projectIdOrKey, currentMember, excludeConnectAddons, null);
-  }
-
-  /**
-   * Get project role details
-   * Returns all [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) and the details for each role. Note that the list of project roles is common to all projects.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param currentMember Whether the roles should be filtered to include only those the user is assigned to. (optional, default to false)
-   * @param excludeConnectAddons  (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;ProjectRoleDetails&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<ProjectRoleDetails>> getProjectRoleDetailsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectRoleDetailsRequestBuilder(projectIdOrKey, currentMember, excludeConnectAddons, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectRoleDetails", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<ProjectRoleDetails>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (swap != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("swap", swap));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<ProjectRoleDetails> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ProjectRoleDetails>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<ProjectRoleDetails>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectRoleDetailsRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getProjectRoleDetails");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/roledetails"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "currentMember";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("currentMember", currentMember));
-    localVarQueryParameterBaseName = "excludeConnectAddons";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("excludeConnectAddons", excludeConnectAddons));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project roles for project
-   * Returns a list of [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) for the project returning the name and self URL for each role.  Note that all project roles are shared with all projects in Jira Cloud. See [Get all project roles](#api-rest-api-3-role-get) for more information.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for any project on the site or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @return Map&lt;String, URI&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public Map<String, URI> getProjectRoles(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
-    return getProjectRoles(projectIdOrKey, null);
-  }
-
-  /**
-   * Get project roles for project
-   * Returns a list of [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) for the project returning the name and self URL for each role.  Note that all project roles are shared with all projects in Jira Cloud. See [Get all project roles](#api-rest-api-3-role-get) for more information.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for any project on the site or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param headers Optional headers to include in the request
-   * @return Map&lt;String, URI&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public Map<String, URI> getProjectRoles(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<Map<String, URI>> localVarResponse = getProjectRolesWithHttpInfo(projectIdOrKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project roles for project
-   * Returns a list of [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) for the project returning the name and self URL for each role.  Note that all project roles are shared with all projects in Jira Cloud. See [Get all project roles](#api-rest-api-3-role-get) for more information.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for any project on the site or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @return ApiResponse&lt;Map&lt;String, URI&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Map<String, URI>> getProjectRolesWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
-    return getProjectRolesWithHttpInfo(projectIdOrKey, null);
-  }
-
-  /**
-   * Get project roles for project
-   * Returns a list of [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) for the project returning the name and self URL for each role.  Note that all project roles are shared with all projects in Jira Cloud. See [Get all project roles](#api-rest-api-3-role-get) for more information.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for any project on the site or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectIdOrKey The project ID or project key (case sensitive). (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Map&lt;String, URI&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Map<String, URI>> getProjectRolesWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectRolesRequestBuilder(projectIdOrKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectRoles", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Map<String, URI>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Map<String, URI> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Map<String, URI>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Map<String, URI>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectRolesRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getProjectRoles");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/role"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Partial update project role
-   * Updates either the project role&#39;s name or its description.  You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param createUpdateRoleRequestBean  (required)
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole partialUpdateProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
-    return partialUpdateProjectRole(id, createUpdateRoleRequestBean, null);
-  }
-
-  /**
-   * Partial update project role
-   * Updates either the project role&#39;s name or its description.  You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param createUpdateRoleRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectRole
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectRole partialUpdateProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectRole> localVarResponse = partialUpdateProjectRoleWithHttpInfo(id, createUpdateRoleRequestBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Partial update project role
-   * Updates either the project role&#39;s name or its description.  You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param createUpdateRoleRequestBean  (required)
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> partialUpdateProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
-    return partialUpdateProjectRoleWithHttpInfo(id, createUpdateRoleRequestBean, null);
-  }
-
-  /**
-   * Partial update project role
-   * Updates either the project role&#39;s name or its description.  You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
-   * @param createUpdateRoleRequestBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectRole&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectRole> partialUpdateProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = partialUpdateProjectRoleRequestBuilder(id, createUpdateRoleRequestBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("partialUpdateProjectRole", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectRole>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectRole responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectRole>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ProjectRole>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder partialUpdateProjectRoleRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling partialUpdateProjectRole");
-    }
-    // verify the required parameter 'createUpdateRoleRequestBean' is set
-    if (createUpdateRoleRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'createUpdateRoleRequestBean' when calling partialUpdateProjectRole");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteProjectRoleValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteProjectRole(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/role/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
+        return deleteProjectRoleCall(id, swap, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createUpdateRoleRequestBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete project role
+     * Deletes a project role. You must specify a replacement project role if you wish to delete a project role that is in use.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role to delete. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param swap The ID of the project role that will replace the one being deleted. The swap will attempt to swap the role in schemes (notifications, permissions, issue security), workflows, worklogs and comments. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid or if the replacement project role is not found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role being deleted is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the project role being deleted is in use and a replacement project role is not specified in the request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap) throws ApiException {
+        deleteProjectRoleWithHttpInfo(id, swap);
+    }
+
+    /**
+     * Delete project role
+     * Deletes a project role. You must specify a replacement project role if you wish to delete a project role that is in use.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role to delete. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param swap The ID of the project role that will replace the one being deleted. The swap will attempt to swap the role in schemes (notifications, permissions, issue security), workflows, worklogs and comments. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid or if the replacement project role is not found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role being deleted is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the project role being deleted is in use and a replacement project role is not specified in the request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap) throws ApiException {
+        okhttp3.Call localVarCall = deleteProjectRoleValidateBeforeCall(id, swap, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete project role (asynchronously)
+     * Deletes a project role. You must specify a replacement project role if you wish to delete a project role that is in use.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role to delete. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param swap The ID of the project role that will replace the one being deleted. The swap will attempt to swap the role in schemes (notifications, permissions, issue security), workflows, worklogs and comments. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid or if the replacement project role is not found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role being deleted is not found. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the project role being deleted is in use and a replacement project role is not specified in the request. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteProjectRoleAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Long swap, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteProjectRoleValidateBeforeCall(id, swap, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for fullyUpdateProjectRole
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param createUpdateRoleRequestBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. The &#x60;name&#x60; cannot be empty or start or end with whitespace. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call fullyUpdateProjectRoleCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = createUpdateRoleRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/role/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call fullyUpdateProjectRoleValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling fullyUpdateProjectRole(Async)");
+        }
+
+        // verify the required parameter 'createUpdateRoleRequestBean' is set
+        if (createUpdateRoleRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'createUpdateRoleRequestBean' when calling fullyUpdateProjectRole(Async)");
+        }
+
+        return fullyUpdateProjectRoleCall(id, createUpdateRoleRequestBean, _callback);
+
+    }
+
+    /**
+     * Fully update project role
+     * Updates the project role&#39;s name and description. You must include both a name and a description in the request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param createUpdateRoleRequestBean  (required)
+     * @return ProjectRole
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. The &#x60;name&#x60; cannot be empty or start or end with whitespace. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectRole fullyUpdateProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
+        ApiResponse<ProjectRole> localVarResp = fullyUpdateProjectRoleWithHttpInfo(id, createUpdateRoleRequestBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Fully update project role
+     * Updates the project role&#39;s name and description. You must include both a name and a description in the request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param createUpdateRoleRequestBean  (required)
+     * @return ApiResponse&lt;ProjectRole&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. The &#x60;name&#x60; cannot be empty or start or end with whitespace. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectRole> fullyUpdateProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
+        okhttp3.Call localVarCall = fullyUpdateProjectRoleValidateBeforeCall(id, createUpdateRoleRequestBean, null);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Fully update project role (asynchronously)
+     * Updates the project role&#39;s name and description. You must include both a name and a description in the request.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param createUpdateRoleRequestBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. The &#x60;name&#x60; cannot be empty or start or end with whitespace. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call fullyUpdateProjectRoleAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback<ProjectRole> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = fullyUpdateProjectRoleValidateBeforeCall(id, createUpdateRoleRequestBean, _callback);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAllProjectRoles
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllProjectRolesCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/role";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllProjectRolesValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getAllProjectRolesCall(_callback);
+
+    }
+
+    /**
+     * Get all project roles
+     * Gets a list of all project roles, complete with project role details and default actors.  ### About project roles ###  [Project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) are a flexible way to to associate users and groups with projects. In Jira Cloud, the list of project roles is shared globally with all projects, but each project can have a different set of actors associated with it (unlike groups, which have the same membership throughout all Jira applications).  Project roles are used in [permission schemes](#api-rest-api-3-permissionscheme-get), [email notification schemes](#api-rest-api-3-notificationscheme-get), [issue security levels](#api-rest-api-3-issuesecurityschemes-get), [comment visibility](#api-rest-api-3-comment-list-post), and workflow conditions.  #### Members and actors ####  In the Jira REST API, a member of a project role is called an *actor*. An *actor* is a group or user associated with a project role.  Actors may be set as [default members](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/#Specifying-&#39;default-members&#39;-for-a-project-role) of the project role or set at the project level:   *  Default actors: Users and groups that are assigned to the project role for all newly created projects. The default actors can be removed at the project level later if desired.  *  Actors: Users and groups that are associated with a project role for a project, which may differ from the default actors. This enables you to assign a user to different roles in different projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @return List&lt;ProjectRole&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<ProjectRole> getAllProjectRoles() throws ApiException {
+        ApiResponse<List<ProjectRole>> localVarResp = getAllProjectRolesWithHttpInfo();
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all project roles
+     * Gets a list of all project roles, complete with project role details and default actors.  ### About project roles ###  [Project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) are a flexible way to to associate users and groups with projects. In Jira Cloud, the list of project roles is shared globally with all projects, but each project can have a different set of actors associated with it (unlike groups, which have the same membership throughout all Jira applications).  Project roles are used in [permission schemes](#api-rest-api-3-permissionscheme-get), [email notification schemes](#api-rest-api-3-notificationscheme-get), [issue security levels](#api-rest-api-3-issuesecurityschemes-get), [comment visibility](#api-rest-api-3-comment-list-post), and workflow conditions.  #### Members and actors ####  In the Jira REST API, a member of a project role is called an *actor*. An *actor* is a group or user associated with a project role.  Actors may be set as [default members](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/#Specifying-&#39;default-members&#39;-for-a-project-role) of the project role or set at the project level:   *  Default actors: Users and groups that are assigned to the project role for all newly created projects. The default actors can be removed at the project level later if desired.  *  Actors: Users and groups that are associated with a project role for a project, which may differ from the default actors. This enables you to assign a user to different roles in different projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @return ApiResponse&lt;List&lt;ProjectRole&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<ProjectRole>> getAllProjectRolesWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getAllProjectRolesValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<List<ProjectRole>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all project roles (asynchronously)
+     * Gets a list of all project roles, complete with project role details and default actors.  ### About project roles ###  [Project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) are a flexible way to to associate users and groups with projects. In Jira Cloud, the list of project roles is shared globally with all projects, but each project can have a different set of actors associated with it (unlike groups, which have the same membership throughout all Jira applications).  Project roles are used in [permission schemes](#api-rest-api-3-permissionscheme-get), [email notification schemes](#api-rest-api-3-notificationscheme-get), [issue security levels](#api-rest-api-3-issuesecurityschemes-get), [comment visibility](#api-rest-api-3-comment-list-post), and workflow conditions.  #### Members and actors ####  In the Jira REST API, a member of a project role is called an *actor*. An *actor* is a group or user associated with a project role.  Actors may be set as [default members](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/#Specifying-&#39;default-members&#39;-for-a-project-role) of the project role or set at the project level:   *  Default actors: Users and groups that are assigned to the project role for all newly created projects. The default actors can be removed at the project level later if desired.  *  Actors: Users and groups that are associated with a project role for a project, which may differ from the default actors. This enables you to assign a user to different roles in different projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllProjectRolesAsync(final ApiCallback<List<ProjectRole>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAllProjectRolesValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<List<ProjectRole>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectRole
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param excludeInactiveUsers Exclude inactive users. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project or project role is not found.  *  the user does not have administrative permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectRoleCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/role/{id}"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (excludeInactiveUsers != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("excludeInactiveUsers", excludeInactiveUsers));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectRoleValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getProjectRole(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getProjectRole(Async)");
+        }
+
+        return getProjectRoleCall(projectIdOrKey, id, excludeInactiveUsers, _callback);
+
+    }
+
+    /**
+     * Get project role for project
+     * Returns a project role&#39;s details and actors associated with the project. The list of actors is sorted by display name.  To check whether a user belongs to a role based on their group memberships, use [Get user](#api-rest-api-3-user-get) with the &#x60;groups&#x60; expand parameter selected. Then check whether the user keys and groups match with the actors returned for the project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param excludeInactiveUsers Exclude inactive users. (optional, default to false)
+     * @return ProjectRole
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project or project role is not found.  *  the user does not have administrative permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectRole getProjectRole(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers) throws ApiException {
+        ApiResponse<ProjectRole> localVarResp = getProjectRoleWithHttpInfo(projectIdOrKey, id, excludeInactiveUsers);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project role for project
+     * Returns a project role&#39;s details and actors associated with the project. The list of actors is sorted by display name.  To check whether a user belongs to a role based on their group memberships, use [Get user](#api-rest-api-3-user-get) with the &#x60;groups&#x60; expand parameter selected. Then check whether the user keys and groups match with the actors returned for the project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param excludeInactiveUsers Exclude inactive users. (optional, default to false)
+     * @return ApiResponse&lt;ProjectRole&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project or project role is not found.  *  the user does not have administrative permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectRole> getProjectRoleWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers) throws ApiException {
+        okhttp3.Call localVarCall = getProjectRoleValidateBeforeCall(projectIdOrKey, id, excludeInactiveUsers, null);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project role for project (asynchronously)
+     * Returns a project role&#39;s details and actors associated with the project. The list of actors is sorted by display name.  To check whether a user belongs to a role based on their group memberships, use [Get user](#api-rest-api-3-user-get) with the &#x60;groups&#x60; expand parameter selected. Then check whether the user keys and groups match with the actors returned for the project.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param excludeInactiveUsers Exclude inactive users. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the project or project role is not found.  *  the user does not have administrative permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectRoleAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean excludeInactiveUsers, final ApiCallback<ProjectRole> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectRoleValidateBeforeCall(projectIdOrKey, id, excludeInactiveUsers, _callback);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectRoleById
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectRoleByIdCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/role/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectRoleByIdValidateBeforeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getProjectRoleById(Async)");
+        }
+
+        return getProjectRoleByIdCall(id, _callback);
+
+    }
+
+    /**
+     * Get project role by ID
+     * Gets the project role details and the default actors associated with the role. The list of default actors is sorted by display name.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @return ProjectRole
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectRole getProjectRoleById(@javax.annotation.Nonnull Long id) throws ApiException {
+        ApiResponse<ProjectRole> localVarResp = getProjectRoleByIdWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project role by ID
+     * Gets the project role details and the default actors associated with the role. The list of default actors is sorted by display name.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @return ApiResponse&lt;ProjectRole&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectRole> getProjectRoleByIdWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = getProjectRoleByIdValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project role by ID (asynchronously)
+     * Gets the project role details and the default actors associated with the role. The list of default actors is sorted by display name.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectRoleByIdAsync(@javax.annotation.Nonnull Long id, final ApiCallback<ProjectRole> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectRoleByIdValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectRoleDetails
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param currentMember Whether the roles should be filtered to include only those the user is assigned to. (optional, default to false)
+     * @param excludeConnectAddons  (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or if the user does not have the necessary permissions for the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectRoleDetailsCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/roledetails"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (currentMember != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("currentMember", currentMember));
+        }
+
+        if (excludeConnectAddons != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("excludeConnectAddons", excludeConnectAddons));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectRoleDetailsValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getProjectRoleDetails(Async)");
+        }
+
+        return getProjectRoleDetailsCall(projectIdOrKey, currentMember, excludeConnectAddons, _callback);
+
+    }
+
+    /**
+     * Get project role details
+     * Returns all [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) and the details for each role. Note that the list of project roles is common to all projects.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param currentMember Whether the roles should be filtered to include only those the user is assigned to. (optional, default to false)
+     * @param excludeConnectAddons  (optional, default to false)
+     * @return List&lt;ProjectRoleDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or if the user does not have the necessary permissions for the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<ProjectRoleDetails> getProjectRoleDetails(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons) throws ApiException {
+        ApiResponse<List<ProjectRoleDetails>> localVarResp = getProjectRoleDetailsWithHttpInfo(projectIdOrKey, currentMember, excludeConnectAddons);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project role details
+     * Returns all [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) and the details for each role. Note that the list of project roles is common to all projects.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param currentMember Whether the roles should be filtered to include only those the user is assigned to. (optional, default to false)
+     * @param excludeConnectAddons  (optional, default to false)
+     * @return ApiResponse&lt;List&lt;ProjectRoleDetails&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or if the user does not have the necessary permissions for the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<ProjectRoleDetails>> getProjectRoleDetailsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons) throws ApiException {
+        okhttp3.Call localVarCall = getProjectRoleDetailsValidateBeforeCall(projectIdOrKey, currentMember, excludeConnectAddons, null);
+        Type localVarReturnType = new TypeToken<List<ProjectRoleDetails>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project role details (asynchronously)
+     * Returns all [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) and the details for each role. Note that the list of project roles is common to all projects.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) or *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param currentMember Whether the roles should be filtered to include only those the user is assigned to. (optional, default to false)
+     * @param excludeConnectAddons  (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or if the user does not have the necessary permissions for the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectRoleDetailsAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Boolean currentMember, @javax.annotation.Nullable Boolean excludeConnectAddons, final ApiCallback<List<ProjectRoleDetails>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectRoleDetailsValidateBeforeCall(projectIdOrKey, currentMember, excludeConnectAddons, _callback);
+        Type localVarReturnType = new TypeToken<List<ProjectRoleDetails>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectRoles
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing or if the user lacks administrative permissions for the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or or if the user does not have administrative permissions for the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectRolesCall(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/role"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectRolesValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getProjectRoles(Async)");
+        }
+
+        return getProjectRolesCall(projectIdOrKey, _callback);
+
+    }
+
+    /**
+     * Get project roles for project
+     * Returns a list of [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) for the project returning the name and self URL for each role.  Note that all project roles are shared with all projects in Jira Cloud. See [Get all project roles](#api-rest-api-3-role-get) for more information.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for any project on the site or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @return Map&lt;String, URI&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing or if the user lacks administrative permissions for the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or or if the user does not have administrative permissions for the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Map<String, URI> getProjectRoles(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
+        ApiResponse<Map<String, URI>> localVarResp = getProjectRolesWithHttpInfo(projectIdOrKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project roles for project
+     * Returns a list of [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) for the project returning the name and self URL for each role.  Note that all project roles are shared with all projects in Jira Cloud. See [Get all project roles](#api-rest-api-3-role-get) for more information.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for any project on the site or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @return ApiResponse&lt;Map&lt;String, URI&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing or if the user lacks administrative permissions for the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or or if the user does not have administrative permissions for the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Map<String, URI>> getProjectRolesWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
+        okhttp3.Call localVarCall = getProjectRolesValidateBeforeCall(projectIdOrKey, null);
+        Type localVarReturnType = new TypeToken<Map<String, URI>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project roles for project (asynchronously)
+     * Returns a list of [project roles](https://support.atlassian.com/jira-cloud-administration/docs/manage-project-roles/) for the project returning the name and self URL for each role.  Note that all project roles are shared with all projects in Jira Cloud. See [Get all project roles](#api-rest-api-3-role-get) for more information.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for any project on the site or *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectIdOrKey The project ID or project key (case sensitive). (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing or if the user lacks administrative permissions for the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or or if the user does not have administrative permissions for the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectRolesAsync(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback<Map<String, URI>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectRolesValidateBeforeCall(projectIdOrKey, _callback);
+        Type localVarReturnType = new TypeToken<Map<String, URI>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for partialUpdateProjectRole
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param createUpdateRoleRequestBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call partialUpdateProjectRoleCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = createUpdateRoleRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/role/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call partialUpdateProjectRoleValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling partialUpdateProjectRole(Async)");
+        }
+
+        // verify the required parameter 'createUpdateRoleRequestBean' is set
+        if (createUpdateRoleRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'createUpdateRoleRequestBean' when calling partialUpdateProjectRole(Async)");
+        }
+
+        return partialUpdateProjectRoleCall(id, createUpdateRoleRequestBean, _callback);
+
+    }
+
+    /**
+     * Partial update project role
+     * Updates either the project role&#39;s name or its description.  You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param createUpdateRoleRequestBean  (required)
+     * @return ProjectRole
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectRole partialUpdateProjectRole(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
+        ApiResponse<ProjectRole> localVarResp = partialUpdateProjectRoleWithHttpInfo(id, createUpdateRoleRequestBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Partial update project role
+     * Updates either the project role&#39;s name or its description.  You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param createUpdateRoleRequestBean  (required)
+     * @return ApiResponse&lt;ProjectRole&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectRole> partialUpdateProjectRoleWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean) throws ApiException {
+        okhttp3.Call localVarCall = partialUpdateProjectRoleValidateBeforeCall(id, createUpdateRoleRequestBean, null);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Partial update project role (asynchronously)
+     * Updates either the project role&#39;s name or its description.  You cannot update both the name and description at the same time using this operation. If you send a request with a name and a description only the name is updated.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the project role. Use [Get all project roles](#api-rest-api-3-role-get) to get a list of project role IDs. (required)
+     * @param createUpdateRoleRequestBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have administrative permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project role is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call partialUpdateProjectRoleAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull CreateUpdateRoleRequestBean createUpdateRoleRequestBean, final ApiCallback<ProjectRole> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = partialUpdateProjectRoleValidateBeforeCall(id, createUpdateRoleRequestBean, _callback);
+        Type localVarReturnType = new TypeToken<ProjectRole>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

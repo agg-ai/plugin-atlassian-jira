@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.BulkPermissionGrants;
 import io.kestra.plugin.jira.client.model.BulkPermissionsRequestBean;
@@ -25,645 +34,635 @@ import io.kestra.plugin.jira.client.model.Permissions;
 import io.kestra.plugin.jira.client.model.PermissionsKeysBean;
 import io.kestra.plugin.jira.client.model.PermittedProjects;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PermissionsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public PermissionsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public PermissionsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for getAllPermissions
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call getAllPermissionsCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public PermissionsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public PermissionsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Get all permissions
-   * Returns all permissions, including:   *  global permissions.  *  project permissions.  *  global permissions added by plugins.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @return Permissions
-   * @throws ApiException if fails to make API call
-   */
-  public Permissions getAllPermissions() throws ApiException {
-    return getAllPermissions(null);
-  }
-
-  /**
-   * Get all permissions
-   * Returns all permissions, including:   *  global permissions.  *  project permissions.  *  global permissions added by plugins.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param headers Optional headers to include in the request
-   * @return Permissions
-   * @throws ApiException if fails to make API call
-   */
-  public Permissions getAllPermissions(Map<String, String> headers) throws ApiException {
-    ApiResponse<Permissions> localVarResponse = getAllPermissionsWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all permissions
-   * Returns all permissions, including:   *  global permissions.  *  project permissions.  *  global permissions added by plugins.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @return ApiResponse&lt;Permissions&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Permissions> getAllPermissionsWithHttpInfo() throws ApiException {
-    return getAllPermissionsWithHttpInfo(null);
-  }
-
-  /**
-   * Get all permissions
-   * Returns all permissions, including:   *  global permissions.  *  project permissions.  *  global permissions added by plugins.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Permissions&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Permissions> getAllPermissionsWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllPermissionsRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllPermissions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Permissions>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Permissions responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Permissions>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<Permissions>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/permissions";
 
-  private HttpRequest.Builder getAllPermissionsRequestBuilder(Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/permissions";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get bulk permissions
-   * Returns:   *  for a list of global permissions, the global permissions granted to a user.  *  for a list of project permissions and lists of projects and issues, for each project permission a list of the projects and issues a user can access or manipulate.  If no account ID is provided, the operation returns details for the logged in user.  Note that:   *  Invalid project and issue IDs are ignored.  *  A maximum of 1000 projects and 1000 issues can be checked.  *  Null values in &#x60;globalPermissions&#x60;, &#x60;projectPermissions&#x60;, &#x60;projectPermissions.projects&#x60;, and &#x60;projectPermissions.issues&#x60; are ignored.  *  Empty strings in &#x60;projectPermissions.permissions&#x60; are ignored.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:permission:jira&#x60;  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) to check the permissions for other users, otherwise none. However, Connect apps can make a call from the app server to the product to obtain permission details for any user, without admin permission. This Connect app ability doesn&#39;t apply to calls made using AP.request() in a browser.
-   * @param bulkPermissionsRequestBean Details of the permissions to check. (required)
-   * @return BulkPermissionGrants
-   * @throws ApiException if fails to make API call
-   */
-  public BulkPermissionGrants getBulkPermissions(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean) throws ApiException {
-    return getBulkPermissions(bulkPermissionsRequestBean, null);
-  }
-
-  /**
-   * Get bulk permissions
-   * Returns:   *  for a list of global permissions, the global permissions granted to a user.  *  for a list of project permissions and lists of projects and issues, for each project permission a list of the projects and issues a user can access or manipulate.  If no account ID is provided, the operation returns details for the logged in user.  Note that:   *  Invalid project and issue IDs are ignored.  *  A maximum of 1000 projects and 1000 issues can be checked.  *  Null values in &#x60;globalPermissions&#x60;, &#x60;projectPermissions&#x60;, &#x60;projectPermissions.projects&#x60;, and &#x60;projectPermissions.issues&#x60; are ignored.  *  Empty strings in &#x60;projectPermissions.permissions&#x60; are ignored.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:permission:jira&#x60;  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) to check the permissions for other users, otherwise none. However, Connect apps can make a call from the app server to the product to obtain permission details for any user, without admin permission. This Connect app ability doesn&#39;t apply to calls made using AP.request() in a browser.
-   * @param bulkPermissionsRequestBean Details of the permissions to check. (required)
-   * @param headers Optional headers to include in the request
-   * @return BulkPermissionGrants
-   * @throws ApiException if fails to make API call
-   */
-  public BulkPermissionGrants getBulkPermissions(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<BulkPermissionGrants> localVarResponse = getBulkPermissionsWithHttpInfo(bulkPermissionsRequestBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get bulk permissions
-   * Returns:   *  for a list of global permissions, the global permissions granted to a user.  *  for a list of project permissions and lists of projects and issues, for each project permission a list of the projects and issues a user can access or manipulate.  If no account ID is provided, the operation returns details for the logged in user.  Note that:   *  Invalid project and issue IDs are ignored.  *  A maximum of 1000 projects and 1000 issues can be checked.  *  Null values in &#x60;globalPermissions&#x60;, &#x60;projectPermissions&#x60;, &#x60;projectPermissions.projects&#x60;, and &#x60;projectPermissions.issues&#x60; are ignored.  *  Empty strings in &#x60;projectPermissions.permissions&#x60; are ignored.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:permission:jira&#x60;  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) to check the permissions for other users, otherwise none. However, Connect apps can make a call from the app server to the product to obtain permission details for any user, without admin permission. This Connect app ability doesn&#39;t apply to calls made using AP.request() in a browser.
-   * @param bulkPermissionsRequestBean Details of the permissions to check. (required)
-   * @return ApiResponse&lt;BulkPermissionGrants&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<BulkPermissionGrants> getBulkPermissionsWithHttpInfo(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean) throws ApiException {
-    return getBulkPermissionsWithHttpInfo(bulkPermissionsRequestBean, null);
-  }
-
-  /**
-   * Get bulk permissions
-   * Returns:   *  for a list of global permissions, the global permissions granted to a user.  *  for a list of project permissions and lists of projects and issues, for each project permission a list of the projects and issues a user can access or manipulate.  If no account ID is provided, the operation returns details for the logged in user.  Note that:   *  Invalid project and issue IDs are ignored.  *  A maximum of 1000 projects and 1000 issues can be checked.  *  Null values in &#x60;globalPermissions&#x60;, &#x60;projectPermissions&#x60;, &#x60;projectPermissions.projects&#x60;, and &#x60;projectPermissions.issues&#x60; are ignored.  *  Empty strings in &#x60;projectPermissions.permissions&#x60; are ignored.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:permission:jira&#x60;  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) to check the permissions for other users, otherwise none. However, Connect apps can make a call from the app server to the product to obtain permission details for any user, without admin permission. This Connect app ability doesn&#39;t apply to calls made using AP.request() in a browser.
-   * @param bulkPermissionsRequestBean Details of the permissions to check. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;BulkPermissionGrants&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<BulkPermissionGrants> getBulkPermissionsWithHttpInfo(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getBulkPermissionsRequestBuilder(bulkPermissionsRequestBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getBulkPermissions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<BulkPermissionGrants>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        BulkPermissionGrants responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<BulkPermissionGrants>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<BulkPermissionGrants>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getBulkPermissionsRequestBuilder(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'bulkPermissionsRequestBean' is set
-    if (bulkPermissionsRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'bulkPermissionsRequestBean' when calling getBulkPermissions");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/permissions/check";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(bulkPermissionsRequestBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get my permissions
-   * Returns a list of permissions indicating which permissions the user has. Details of the user&#39;s permissions can be obtained in a global, project, issue or comment context.  The user is reported as having a project permission:   *  in the global context, if the user has the project permission in any project.  *  for a project, where the project permission is determined using issue data, if the user meets the permission&#39;s criteria for any issue in the project. Otherwise, if the user has the project permission in the project.  *  for an issue, where a project permission is determined using issue data, if the user has the permission in the issue. Otherwise, if the user has the project permission in the project containing the issue.  *  for a comment, where the user has both the permission to browse the comment and the project permission for the comment&#39;s parent issue. Only the BROWSE\\_PROJECTS permission is supported. If a &#x60;commentId&#x60; is provided whose &#x60;permissions&#x60; does not equal BROWSE\\_PROJECTS, a 400 error will be returned.  This means that users may be shown as having an issue permission (such as EDIT\\_ISSUES) in the global context or a project context but may not have the permission for any or all issues. For example, if Reporters have the EDIT\\_ISSUES permission a user would be shown as having this permission in the global context or the context of a project, because any user can be a reporter. However, if they are not the user who reported the issue queried they would not have EDIT\\_ISSUES permission for that issue.  For [Jira Service Management project permissions](https://support.atlassian.com/jira-cloud-administration/docs/customize-jira-service-management-permissions/), this will be evaluated similarly to a user in the customer portal. For example, if the BROWSE\\_PROJECTS permission is granted to Service Project Customer - Portal Access, any users with access to the customer portal will have the BROWSE\\_PROJECTS permission.  Global permissions are unaffected by context.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param projectKey The key of project. Ignored if &#x60;projectId&#x60; is provided. (optional)
-   * @param projectId The ID of project. (optional)
-   * @param issueKey The key of the issue. Ignored if &#x60;issueId&#x60; is provided. (optional)
-   * @param issueId The ID of the issue. (optional)
-   * @param permissions A list of permission keys. (Required) This parameter accepts a comma-separated list. To get the list of available permissions, use [Get all permissions](#api-rest-api-3-permissions-get). (optional)
-   * @param projectUuid  (optional)
-   * @param projectConfigurationUuid  (optional)
-   * @param commentId The ID of the comment. (optional)
-   * @return Permissions
-   * @throws ApiException if fails to make API call
-   */
-  public Permissions getMyPermissions(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId) throws ApiException {
-    return getMyPermissions(projectKey, projectId, issueKey, issueId, permissions, projectUuid, projectConfigurationUuid, commentId, null);
-  }
-
-  /**
-   * Get my permissions
-   * Returns a list of permissions indicating which permissions the user has. Details of the user&#39;s permissions can be obtained in a global, project, issue or comment context.  The user is reported as having a project permission:   *  in the global context, if the user has the project permission in any project.  *  for a project, where the project permission is determined using issue data, if the user meets the permission&#39;s criteria for any issue in the project. Otherwise, if the user has the project permission in the project.  *  for an issue, where a project permission is determined using issue data, if the user has the permission in the issue. Otherwise, if the user has the project permission in the project containing the issue.  *  for a comment, where the user has both the permission to browse the comment and the project permission for the comment&#39;s parent issue. Only the BROWSE\\_PROJECTS permission is supported. If a &#x60;commentId&#x60; is provided whose &#x60;permissions&#x60; does not equal BROWSE\\_PROJECTS, a 400 error will be returned.  This means that users may be shown as having an issue permission (such as EDIT\\_ISSUES) in the global context or a project context but may not have the permission for any or all issues. For example, if Reporters have the EDIT\\_ISSUES permission a user would be shown as having this permission in the global context or the context of a project, because any user can be a reporter. However, if they are not the user who reported the issue queried they would not have EDIT\\_ISSUES permission for that issue.  For [Jira Service Management project permissions](https://support.atlassian.com/jira-cloud-administration/docs/customize-jira-service-management-permissions/), this will be evaluated similarly to a user in the customer portal. For example, if the BROWSE\\_PROJECTS permission is granted to Service Project Customer - Portal Access, any users with access to the customer portal will have the BROWSE\\_PROJECTS permission.  Global permissions are unaffected by context.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param projectKey The key of project. Ignored if &#x60;projectId&#x60; is provided. (optional)
-   * @param projectId The ID of project. (optional)
-   * @param issueKey The key of the issue. Ignored if &#x60;issueId&#x60; is provided. (optional)
-   * @param issueId The ID of the issue. (optional)
-   * @param permissions A list of permission keys. (Required) This parameter accepts a comma-separated list. To get the list of available permissions, use [Get all permissions](#api-rest-api-3-permissions-get). (optional)
-   * @param projectUuid  (optional)
-   * @param projectConfigurationUuid  (optional)
-   * @param commentId The ID of the comment. (optional)
-   * @param headers Optional headers to include in the request
-   * @return Permissions
-   * @throws ApiException if fails to make API call
-   */
-  public Permissions getMyPermissions(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Permissions> localVarResponse = getMyPermissionsWithHttpInfo(projectKey, projectId, issueKey, issueId, permissions, projectUuid, projectConfigurationUuid, commentId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get my permissions
-   * Returns a list of permissions indicating which permissions the user has. Details of the user&#39;s permissions can be obtained in a global, project, issue or comment context.  The user is reported as having a project permission:   *  in the global context, if the user has the project permission in any project.  *  for a project, where the project permission is determined using issue data, if the user meets the permission&#39;s criteria for any issue in the project. Otherwise, if the user has the project permission in the project.  *  for an issue, where a project permission is determined using issue data, if the user has the permission in the issue. Otherwise, if the user has the project permission in the project containing the issue.  *  for a comment, where the user has both the permission to browse the comment and the project permission for the comment&#39;s parent issue. Only the BROWSE\\_PROJECTS permission is supported. If a &#x60;commentId&#x60; is provided whose &#x60;permissions&#x60; does not equal BROWSE\\_PROJECTS, a 400 error will be returned.  This means that users may be shown as having an issue permission (such as EDIT\\_ISSUES) in the global context or a project context but may not have the permission for any or all issues. For example, if Reporters have the EDIT\\_ISSUES permission a user would be shown as having this permission in the global context or the context of a project, because any user can be a reporter. However, if they are not the user who reported the issue queried they would not have EDIT\\_ISSUES permission for that issue.  For [Jira Service Management project permissions](https://support.atlassian.com/jira-cloud-administration/docs/customize-jira-service-management-permissions/), this will be evaluated similarly to a user in the customer portal. For example, if the BROWSE\\_PROJECTS permission is granted to Service Project Customer - Portal Access, any users with access to the customer portal will have the BROWSE\\_PROJECTS permission.  Global permissions are unaffected by context.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param projectKey The key of project. Ignored if &#x60;projectId&#x60; is provided. (optional)
-   * @param projectId The ID of project. (optional)
-   * @param issueKey The key of the issue. Ignored if &#x60;issueId&#x60; is provided. (optional)
-   * @param issueId The ID of the issue. (optional)
-   * @param permissions A list of permission keys. (Required) This parameter accepts a comma-separated list. To get the list of available permissions, use [Get all permissions](#api-rest-api-3-permissions-get). (optional)
-   * @param projectUuid  (optional)
-   * @param projectConfigurationUuid  (optional)
-   * @param commentId The ID of the comment. (optional)
-   * @return ApiResponse&lt;Permissions&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Permissions> getMyPermissionsWithHttpInfo(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId) throws ApiException {
-    return getMyPermissionsWithHttpInfo(projectKey, projectId, issueKey, issueId, permissions, projectUuid, projectConfigurationUuid, commentId, null);
-  }
-
-  /**
-   * Get my permissions
-   * Returns a list of permissions indicating which permissions the user has. Details of the user&#39;s permissions can be obtained in a global, project, issue or comment context.  The user is reported as having a project permission:   *  in the global context, if the user has the project permission in any project.  *  for a project, where the project permission is determined using issue data, if the user meets the permission&#39;s criteria for any issue in the project. Otherwise, if the user has the project permission in the project.  *  for an issue, where a project permission is determined using issue data, if the user has the permission in the issue. Otherwise, if the user has the project permission in the project containing the issue.  *  for a comment, where the user has both the permission to browse the comment and the project permission for the comment&#39;s parent issue. Only the BROWSE\\_PROJECTS permission is supported. If a &#x60;commentId&#x60; is provided whose &#x60;permissions&#x60; does not equal BROWSE\\_PROJECTS, a 400 error will be returned.  This means that users may be shown as having an issue permission (such as EDIT\\_ISSUES) in the global context or a project context but may not have the permission for any or all issues. For example, if Reporters have the EDIT\\_ISSUES permission a user would be shown as having this permission in the global context or the context of a project, because any user can be a reporter. However, if they are not the user who reported the issue queried they would not have EDIT\\_ISSUES permission for that issue.  For [Jira Service Management project permissions](https://support.atlassian.com/jira-cloud-administration/docs/customize-jira-service-management-permissions/), this will be evaluated similarly to a user in the customer portal. For example, if the BROWSE\\_PROJECTS permission is granted to Service Project Customer - Portal Access, any users with access to the customer portal will have the BROWSE\\_PROJECTS permission.  Global permissions are unaffected by context.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param projectKey The key of project. Ignored if &#x60;projectId&#x60; is provided. (optional)
-   * @param projectId The ID of project. (optional)
-   * @param issueKey The key of the issue. Ignored if &#x60;issueId&#x60; is provided. (optional)
-   * @param issueId The ID of the issue. (optional)
-   * @param permissions A list of permission keys. (Required) This parameter accepts a comma-separated list. To get the list of available permissions, use [Get all permissions](#api-rest-api-3-permissions-get). (optional)
-   * @param projectUuid  (optional)
-   * @param projectConfigurationUuid  (optional)
-   * @param commentId The ID of the comment. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Permissions&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Permissions> getMyPermissionsWithHttpInfo(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getMyPermissionsRequestBuilder(projectKey, projectId, issueKey, issueId, permissions, projectUuid, projectConfigurationUuid, commentId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getMyPermissions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Permissions>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Permissions responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Permissions>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Permissions>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getMyPermissionsRequestBuilder(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/mypermissions";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "projectKey";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectKey", projectKey));
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectId", projectId));
-    localVarQueryParameterBaseName = "issueKey";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("issueKey", issueKey));
-    localVarQueryParameterBaseName = "issueId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("issueId", issueId));
-    localVarQueryParameterBaseName = "permissions";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("permissions", permissions));
-    localVarQueryParameterBaseName = "projectUuid";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectUuid", projectUuid));
-    localVarQueryParameterBaseName = "projectConfigurationUuid";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectConfigurationUuid", projectConfigurationUuid));
-    localVarQueryParameterBaseName = "commentId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("commentId", commentId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllPermissionsValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getAllPermissionsCall(_callback);
 
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Get all permissions
+     * Returns all permissions, including:   *  global permissions.  *  project permissions.  *  global permissions added by plugins.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @return Permissions
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Permissions getAllPermissions() throws ApiException {
+        ApiResponse<Permissions> localVarResp = getAllPermissionsWithHttpInfo();
+        return localVarResp.getData();
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Get permitted projects
-   * Returns all the projects where the user is granted a list of project permissions.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param permissionsKeysBean  (required)
-   * @return PermittedProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PermittedProjects getPermittedProjects(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean) throws ApiException {
-    return getPermittedProjects(permissionsKeysBean, null);
-  }
+    /**
+     * Get all permissions
+     * Returns all permissions, including:   *  global permissions.  *  project permissions.  *  global permissions added by plugins.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @return ApiResponse&lt;Permissions&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Permissions> getAllPermissionsWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getAllPermissionsValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<Permissions>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
 
-  /**
-   * Get permitted projects
-   * Returns all the projects where the user is granted a list of project permissions.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param permissionsKeysBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return PermittedProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PermittedProjects getPermittedProjects(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<PermittedProjects> localVarResponse = getPermittedProjectsWithHttpInfo(permissionsKeysBean, headers);
-    return localVarResponse.getData();
-  }
+    /**
+     * Get all permissions (asynchronously)
+     * Returns all permissions, including:   *  global permissions.  *  project permissions.  *  global permissions added by plugins.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllPermissionsAsync(final ApiCallback<Permissions> _callback) throws ApiException {
 
-  /**
-   * Get permitted projects
-   * Returns all the projects where the user is granted a list of project permissions.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param permissionsKeysBean  (required)
-   * @return ApiResponse&lt;PermittedProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PermittedProjects> getPermittedProjectsWithHttpInfo(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean) throws ApiException {
-    return getPermittedProjectsWithHttpInfo(permissionsKeysBean, null);
-  }
+        okhttp3.Call localVarCall = getAllPermissionsValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<Permissions>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getBulkPermissions
+     * @param bulkPermissionsRequestBean Details of the permissions to check. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;projectPermissions&#x60; is provided without at least one project permission being provided.  *  an invalid global permission is provided in the global permissions list.  *  an invalid project permission is provided in the project permissions list.  *  more than 1000 valid project IDs or more than 1000 valid issue IDs are provided.  *  an invalid account ID is provided. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getBulkPermissionsCall(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get permitted projects
-   * Returns all the projects where the user is granted a list of project permissions.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param permissionsKeysBean  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PermittedProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PermittedProjects> getPermittedProjectsWithHttpInfo(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getPermittedProjectsRequestBuilder(permissionsKeysBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getPermittedProjects", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PermittedProjects>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PermittedProjects responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PermittedProjects>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = bulkPermissionsRequestBean;
 
-        return new ApiResponse<PermittedProjects>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
+        // create path and map variables
+        String localVarPath = "/rest/api/3/permissions/check";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getBulkPermissionsValidateBeforeCall(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'bulkPermissionsRequestBean' is set
+        if (bulkPermissionsRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'bulkPermissionsRequestBean' when calling getBulkPermissions(Async)");
+        }
+
+        return getBulkPermissionsCall(bulkPermissionsRequestBean, _callback);
+
     }
-  }
 
-  private HttpRequest.Builder getPermittedProjectsRequestBuilder(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'permissionsKeysBean' is set
-    if (permissionsKeysBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'permissionsKeysBean' when calling getPermittedProjects");
+    /**
+     * Get bulk permissions
+     * Returns:   *  for a list of global permissions, the global permissions granted to a user.  *  for a list of project permissions and lists of projects and issues, for each project permission a list of the projects and issues a user can access or manipulate.  If no account ID is provided, the operation returns details for the logged in user.  Note that:   *  Invalid project and issue IDs are ignored.  *  A maximum of 1000 projects and 1000 issues can be checked.  *  Null values in &#x60;globalPermissions&#x60;, &#x60;projectPermissions&#x60;, &#x60;projectPermissions.projects&#x60;, and &#x60;projectPermissions.issues&#x60; are ignored.  *  Empty strings in &#x60;projectPermissions.permissions&#x60; are ignored.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:permission:jira&#x60;  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) to check the permissions for other users, otherwise none. However, Connect apps can make a call from the app server to the product to obtain permission details for any user, without admin permission. This Connect app ability doesn&#39;t apply to calls made using AP.request() in a browser.
+     * @param bulkPermissionsRequestBean Details of the permissions to check. (required)
+     * @return BulkPermissionGrants
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;projectPermissions&#x60; is provided without at least one project permission being provided.  *  an invalid global permission is provided in the global permissions list.  *  an invalid project permission is provided in the project permissions list.  *  more than 1000 valid project IDs or more than 1000 valid issue IDs are provided.  *  an invalid account ID is provided. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public BulkPermissionGrants getBulkPermissions(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean) throws ApiException {
+        ApiResponse<BulkPermissionGrants> localVarResp = getBulkPermissionsWithHttpInfo(bulkPermissionsRequestBean);
+        return localVarResp.getData();
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/permissions/project";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(permissionsKeysBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Get bulk permissions
+     * Returns:   *  for a list of global permissions, the global permissions granted to a user.  *  for a list of project permissions and lists of projects and issues, for each project permission a list of the projects and issues a user can access or manipulate.  If no account ID is provided, the operation returns details for the logged in user.  Note that:   *  Invalid project and issue IDs are ignored.  *  A maximum of 1000 projects and 1000 issues can be checked.  *  Null values in &#x60;globalPermissions&#x60;, &#x60;projectPermissions&#x60;, &#x60;projectPermissions.projects&#x60;, and &#x60;projectPermissions.issues&#x60; are ignored.  *  Empty strings in &#x60;projectPermissions.permissions&#x60; are ignored.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:permission:jira&#x60;  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) to check the permissions for other users, otherwise none. However, Connect apps can make a call from the app server to the product to obtain permission details for any user, without admin permission. This Connect app ability doesn&#39;t apply to calls made using AP.request() in a browser.
+     * @param bulkPermissionsRequestBean Details of the permissions to check. (required)
+     * @return ApiResponse&lt;BulkPermissionGrants&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;projectPermissions&#x60; is provided without at least one project permission being provided.  *  an invalid global permission is provided in the global permissions list.  *  an invalid project permission is provided in the project permissions list.  *  more than 1000 valid project IDs or more than 1000 valid issue IDs are provided.  *  an invalid account ID is provided. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<BulkPermissionGrants> getBulkPermissionsWithHttpInfo(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean) throws ApiException {
+        okhttp3.Call localVarCall = getBulkPermissionsValidateBeforeCall(bulkPermissionsRequestBean, null);
+        Type localVarReturnType = new TypeToken<BulkPermissionGrants>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Get bulk permissions (asynchronously)
+     * Returns:   *  for a list of global permissions, the global permissions granted to a user.  *  for a list of project permissions and lists of projects and issues, for each project permission a list of the projects and issues a user can access or manipulate.  If no account ID is provided, the operation returns details for the logged in user.  Note that:   *  Invalid project and issue IDs are ignored.  *  A maximum of 1000 projects and 1000 issues can be checked.  *  Null values in &#x60;globalPermissions&#x60;, &#x60;projectPermissions&#x60;, &#x60;projectPermissions.projects&#x60;, and &#x60;projectPermissions.issues&#x60; are ignored.  *  Empty strings in &#x60;projectPermissions.permissions&#x60; are ignored.  **Deprecation notice:** The required OAuth 2.0 scopes will be updated on June 15, 2024.   *  **Classic**: &#x60;read:jira-work&#x60;  *  **Granular**: &#x60;read:permission:jira&#x60;  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) to check the permissions for other users, otherwise none. However, Connect apps can make a call from the app server to the product to obtain permission details for any user, without admin permission. This Connect app ability doesn&#39;t apply to calls made using AP.request() in a browser.
+     * @param bulkPermissionsRequestBean Details of the permissions to check. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;projectPermissions&#x60; is provided without at least one project permission being provided.  *  an invalid global permission is provided in the global permissions list.  *  an invalid project permission is provided in the project permissions list.  *  more than 1000 valid project IDs or more than 1000 valid issue IDs are provided.  *  an invalid account ID is provided. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getBulkPermissionsAsync(@javax.annotation.Nonnull BulkPermissionsRequestBean bulkPermissionsRequestBean, final ApiCallback<BulkPermissionGrants> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getBulkPermissionsValidateBeforeCall(bulkPermissionsRequestBean, _callback);
+        Type localVarReturnType = new TypeToken<BulkPermissionGrants>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getMyPermissions
+     * @param projectKey The key of project. Ignored if &#x60;projectId&#x60; is provided. (optional)
+     * @param projectId The ID of project. (optional)
+     * @param issueKey The key of the issue. Ignored if &#x60;issueId&#x60; is provided. (optional)
+     * @param issueId The ID of the issue. (optional)
+     * @param permissions A list of permission keys. (Required) This parameter accepts a comma-separated list. To get the list of available permissions, use [Get all permissions](#api-rest-api-3-permissions-get). (optional)
+     * @param projectUuid  (optional)
+     * @param projectConfigurationUuid  (optional)
+     * @param commentId The ID of the comment. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if &#x60;permissions&#x60; is empty, contains an invalid key, or does not equal BROWSE\\_PROJECTS when commentId is provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or issue is not found or the user does not have permission to view the project or issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getMyPermissionsCall(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/mypermissions";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (projectKey != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectKey", projectKey));
+        }
+
+        if (projectId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectId", projectId));
+        }
+
+        if (issueKey != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("issueKey", issueKey));
+        }
+
+        if (issueId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("issueId", issueId));
+        }
+
+        if (permissions != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("permissions", permissions));
+        }
+
+        if (projectUuid != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectUuid", projectUuid));
+        }
+
+        if (projectConfigurationUuid != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectConfigurationUuid", projectConfigurationUuid));
+        }
+
+        if (commentId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("commentId", commentId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getMyPermissionsValidateBeforeCall(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId, final ApiCallback _callback) throws ApiException {
+        return getMyPermissionsCall(projectKey, projectId, issueKey, issueId, permissions, projectUuid, projectConfigurationUuid, commentId, _callback);
+
+    }
+
+    /**
+     * Get my permissions
+     * Returns a list of permissions indicating which permissions the user has. Details of the user&#39;s permissions can be obtained in a global, project, issue or comment context.  The user is reported as having a project permission:   *  in the global context, if the user has the project permission in any project.  *  for a project, where the project permission is determined using issue data, if the user meets the permission&#39;s criteria for any issue in the project. Otherwise, if the user has the project permission in the project.  *  for an issue, where a project permission is determined using issue data, if the user has the permission in the issue. Otherwise, if the user has the project permission in the project containing the issue.  *  for a comment, where the user has both the permission to browse the comment and the project permission for the comment&#39;s parent issue. Only the BROWSE\\_PROJECTS permission is supported. If a &#x60;commentId&#x60; is provided whose &#x60;permissions&#x60; does not equal BROWSE\\_PROJECTS, a 400 error will be returned.  This means that users may be shown as having an issue permission (such as EDIT\\_ISSUES) in the global context or a project context but may not have the permission for any or all issues. For example, if Reporters have the EDIT\\_ISSUES permission a user would be shown as having this permission in the global context or the context of a project, because any user can be a reporter. However, if they are not the user who reported the issue queried they would not have EDIT\\_ISSUES permission for that issue.  For [Jira Service Management project permissions](https://support.atlassian.com/jira-cloud-administration/docs/customize-jira-service-management-permissions/), this will be evaluated similarly to a user in the customer portal. For example, if the BROWSE\\_PROJECTS permission is granted to Service Project Customer - Portal Access, any users with access to the customer portal will have the BROWSE\\_PROJECTS permission.  Global permissions are unaffected by context.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param projectKey The key of project. Ignored if &#x60;projectId&#x60; is provided. (optional)
+     * @param projectId The ID of project. (optional)
+     * @param issueKey The key of the issue. Ignored if &#x60;issueId&#x60; is provided. (optional)
+     * @param issueId The ID of the issue. (optional)
+     * @param permissions A list of permission keys. (Required) This parameter accepts a comma-separated list. To get the list of available permissions, use [Get all permissions](#api-rest-api-3-permissions-get). (optional)
+     * @param projectUuid  (optional)
+     * @param projectConfigurationUuid  (optional)
+     * @param commentId The ID of the comment. (optional)
+     * @return Permissions
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if &#x60;permissions&#x60; is empty, contains an invalid key, or does not equal BROWSE\\_PROJECTS when commentId is provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or issue is not found or the user does not have permission to view the project or issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Permissions getMyPermissions(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId) throws ApiException {
+        ApiResponse<Permissions> localVarResp = getMyPermissionsWithHttpInfo(projectKey, projectId, issueKey, issueId, permissions, projectUuid, projectConfigurationUuid, commentId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get my permissions
+     * Returns a list of permissions indicating which permissions the user has. Details of the user&#39;s permissions can be obtained in a global, project, issue or comment context.  The user is reported as having a project permission:   *  in the global context, if the user has the project permission in any project.  *  for a project, where the project permission is determined using issue data, if the user meets the permission&#39;s criteria for any issue in the project. Otherwise, if the user has the project permission in the project.  *  for an issue, where a project permission is determined using issue data, if the user has the permission in the issue. Otherwise, if the user has the project permission in the project containing the issue.  *  for a comment, where the user has both the permission to browse the comment and the project permission for the comment&#39;s parent issue. Only the BROWSE\\_PROJECTS permission is supported. If a &#x60;commentId&#x60; is provided whose &#x60;permissions&#x60; does not equal BROWSE\\_PROJECTS, a 400 error will be returned.  This means that users may be shown as having an issue permission (such as EDIT\\_ISSUES) in the global context or a project context but may not have the permission for any or all issues. For example, if Reporters have the EDIT\\_ISSUES permission a user would be shown as having this permission in the global context or the context of a project, because any user can be a reporter. However, if they are not the user who reported the issue queried they would not have EDIT\\_ISSUES permission for that issue.  For [Jira Service Management project permissions](https://support.atlassian.com/jira-cloud-administration/docs/customize-jira-service-management-permissions/), this will be evaluated similarly to a user in the customer portal. For example, if the BROWSE\\_PROJECTS permission is granted to Service Project Customer - Portal Access, any users with access to the customer portal will have the BROWSE\\_PROJECTS permission.  Global permissions are unaffected by context.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param projectKey The key of project. Ignored if &#x60;projectId&#x60; is provided. (optional)
+     * @param projectId The ID of project. (optional)
+     * @param issueKey The key of the issue. Ignored if &#x60;issueId&#x60; is provided. (optional)
+     * @param issueId The ID of the issue. (optional)
+     * @param permissions A list of permission keys. (Required) This parameter accepts a comma-separated list. To get the list of available permissions, use [Get all permissions](#api-rest-api-3-permissions-get). (optional)
+     * @param projectUuid  (optional)
+     * @param projectConfigurationUuid  (optional)
+     * @param commentId The ID of the comment. (optional)
+     * @return ApiResponse&lt;Permissions&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if &#x60;permissions&#x60; is empty, contains an invalid key, or does not equal BROWSE\\_PROJECTS when commentId is provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or issue is not found or the user does not have permission to view the project or issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Permissions> getMyPermissionsWithHttpInfo(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId) throws ApiException {
+        okhttp3.Call localVarCall = getMyPermissionsValidateBeforeCall(projectKey, projectId, issueKey, issueId, permissions, projectUuid, projectConfigurationUuid, commentId, null);
+        Type localVarReturnType = new TypeToken<Permissions>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get my permissions (asynchronously)
+     * Returns a list of permissions indicating which permissions the user has. Details of the user&#39;s permissions can be obtained in a global, project, issue or comment context.  The user is reported as having a project permission:   *  in the global context, if the user has the project permission in any project.  *  for a project, where the project permission is determined using issue data, if the user meets the permission&#39;s criteria for any issue in the project. Otherwise, if the user has the project permission in the project.  *  for an issue, where a project permission is determined using issue data, if the user has the permission in the issue. Otherwise, if the user has the project permission in the project containing the issue.  *  for a comment, where the user has both the permission to browse the comment and the project permission for the comment&#39;s parent issue. Only the BROWSE\\_PROJECTS permission is supported. If a &#x60;commentId&#x60; is provided whose &#x60;permissions&#x60; does not equal BROWSE\\_PROJECTS, a 400 error will be returned.  This means that users may be shown as having an issue permission (such as EDIT\\_ISSUES) in the global context or a project context but may not have the permission for any or all issues. For example, if Reporters have the EDIT\\_ISSUES permission a user would be shown as having this permission in the global context or the context of a project, because any user can be a reporter. However, if they are not the user who reported the issue queried they would not have EDIT\\_ISSUES permission for that issue.  For [Jira Service Management project permissions](https://support.atlassian.com/jira-cloud-administration/docs/customize-jira-service-management-permissions/), this will be evaluated similarly to a user in the customer portal. For example, if the BROWSE\\_PROJECTS permission is granted to Service Project Customer - Portal Access, any users with access to the customer portal will have the BROWSE\\_PROJECTS permission.  Global permissions are unaffected by context.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param projectKey The key of project. Ignored if &#x60;projectId&#x60; is provided. (optional)
+     * @param projectId The ID of project. (optional)
+     * @param issueKey The key of the issue. Ignored if &#x60;issueId&#x60; is provided. (optional)
+     * @param issueId The ID of the issue. (optional)
+     * @param permissions A list of permission keys. (Required) This parameter accepts a comma-separated list. To get the list of available permissions, use [Get all permissions](#api-rest-api-3-permissions-get). (optional)
+     * @param projectUuid  (optional)
+     * @param projectConfigurationUuid  (optional)
+     * @param commentId The ID of the comment. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if &#x60;permissions&#x60; is empty, contains an invalid key, or does not equal BROWSE\\_PROJECTS when commentId is provided. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or issue is not found or the user does not have permission to view the project or issue. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getMyPermissionsAsync(@javax.annotation.Nullable String projectKey, @javax.annotation.Nullable String projectId, @javax.annotation.Nullable String issueKey, @javax.annotation.Nullable String issueId, @javax.annotation.Nullable String permissions, @javax.annotation.Nullable String projectUuid, @javax.annotation.Nullable String projectConfigurationUuid, @javax.annotation.Nullable String commentId, final ApiCallback<Permissions> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getMyPermissionsValidateBeforeCall(projectKey, projectId, issueKey, issueId, permissions, projectUuid, projectConfigurationUuid, commentId, _callback);
+        Type localVarReturnType = new TypeToken<Permissions>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getPermittedProjects
+     * @param permissionsKeysBean  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a project permission is not found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPermittedProjectsCall(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = permissionsKeysBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/permissions/project";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getPermittedProjectsValidateBeforeCall(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'permissionsKeysBean' is set
+        if (permissionsKeysBean == null) {
+            throw new ApiException("Missing the required parameter 'permissionsKeysBean' when calling getPermittedProjects(Async)");
+        }
+
+        return getPermittedProjectsCall(permissionsKeysBean, _callback);
+
+    }
+
+    /**
+     * Get permitted projects
+     * Returns all the projects where the user is granted a list of project permissions.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param permissionsKeysBean  (required)
+     * @return PermittedProjects
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a project permission is not found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PermittedProjects getPermittedProjects(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean) throws ApiException {
+        ApiResponse<PermittedProjects> localVarResp = getPermittedProjectsWithHttpInfo(permissionsKeysBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get permitted projects
+     * Returns all the projects where the user is granted a list of project permissions.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param permissionsKeysBean  (required)
+     * @return ApiResponse&lt;PermittedProjects&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a project permission is not found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PermittedProjects> getPermittedProjectsWithHttpInfo(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean) throws ApiException {
+        okhttp3.Call localVarCall = getPermittedProjectsValidateBeforeCall(permissionsKeysBean, null);
+        Type localVarReturnType = new TypeToken<PermittedProjects>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get permitted projects (asynchronously)
+     * Returns all the projects where the user is granted a list of project permissions.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param permissionsKeysBean  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if a project permission is not found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getPermittedProjectsAsync(@javax.annotation.Nonnull PermissionsKeysBean permissionsKeysBean, final ApiCallback<PermittedProjects> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getPermittedProjectsValidateBeforeCall(permissionsKeysBean, _callback);
+        Type localVarReturnType = new TypeToken<PermittedProjects>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

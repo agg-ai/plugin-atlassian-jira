@@ -13,105 +13,119 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.RoleActor;
 import io.kestra.plugin.jira.client.model.Scope;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the roles in a project.
  */
-@JsonPropertyOrder({
-  ProjectRole.JSON_PROPERTY_ACTORS,
-  ProjectRole.JSON_PROPERTY_ADMIN,
-  ProjectRole.JSON_PROPERTY_CURRENT_USER_ROLE,
-  ProjectRole.JSON_PROPERTY_DEFAULT,
-  ProjectRole.JSON_PROPERTY_DESCRIPTION,
-  ProjectRole.JSON_PROPERTY_ID,
-  ProjectRole.JSON_PROPERTY_NAME,
-  ProjectRole.JSON_PROPERTY_ROLE_CONFIGURABLE,
-  ProjectRole.JSON_PROPERTY_SCOPE,
-  ProjectRole.JSON_PROPERTY_SELF,
-  ProjectRole.JSON_PROPERTY_TRANSLATED_NAME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectRole {
-  public static final String JSON_PROPERTY_ACTORS = "actors";
+  public static final String SERIALIZED_NAME_ACTORS = "actors";
+  @SerializedName(SERIALIZED_NAME_ACTORS)
   @javax.annotation.Nullable
   private List<RoleActor> actors = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ADMIN = "admin";
+  public static final String SERIALIZED_NAME_ADMIN = "admin";
+  @SerializedName(SERIALIZED_NAME_ADMIN)
   @javax.annotation.Nullable
   private Boolean admin;
 
-  public static final String JSON_PROPERTY_CURRENT_USER_ROLE = "currentUserRole";
+  public static final String SERIALIZED_NAME_CURRENT_USER_ROLE = "currentUserRole";
+  @SerializedName(SERIALIZED_NAME_CURRENT_USER_ROLE)
   @javax.annotation.Nullable
   private Boolean currentUserRole;
 
-  public static final String JSON_PROPERTY_DEFAULT = "default";
+  public static final String SERIALIZED_NAME_DEFAULT = "default";
+  @SerializedName(SERIALIZED_NAME_DEFAULT)
   @javax.annotation.Nullable
   private Boolean _default;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_ROLE_CONFIGURABLE = "roleConfigurable";
+  public static final String SERIALIZED_NAME_ROLE_CONFIGURABLE = "roleConfigurable";
+  @SerializedName(SERIALIZED_NAME_ROLE_CONFIGURABLE)
   @javax.annotation.Nullable
   private Boolean roleConfigurable;
 
-  public static final String JSON_PROPERTY_SCOPE = "scope";
+  public static final String SERIALIZED_NAME_SCOPE = "scope";
+  @SerializedName(SERIALIZED_NAME_SCOPE)
   @javax.annotation.Nullable
   private Scope scope;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_TRANSLATED_NAME = "translatedName";
+  public static final String SERIALIZED_NAME_TRANSLATED_NAME = "translatedName";
+  @SerializedName(SERIALIZED_NAME_TRANSLATED_NAME)
   @javax.annotation.Nullable
   private String translatedName;
 
-  public ProjectRole() { 
+  public ProjectRole() {
   }
 
-  @JsonCreator
   public ProjectRole(
-    @JsonProperty(JSON_PROPERTY_ACTORS) List<RoleActor> actors, 
-    @JsonProperty(JSON_PROPERTY_ADMIN) Boolean admin, 
-    @JsonProperty(JSON_PROPERTY_DEFAULT) Boolean _default, 
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION) String description, 
-    @JsonProperty(JSON_PROPERTY_ID) Long id, 
-    @JsonProperty(JSON_PROPERTY_ROLE_CONFIGURABLE) Boolean roleConfigurable, 
-    @JsonProperty(JSON_PROPERTY_SCOPE) Scope scope, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self
+     List<RoleActor> actors, 
+     Boolean admin, 
+     Boolean _default, 
+     String description, 
+     Long id, 
+     Boolean roleConfigurable, 
+     Scope scope, 
+     URI self
   ) {
-  this();
+    this();
     this.actors = actors;
     this.admin = admin;
     this._default = _default;
@@ -127,12 +141,9 @@ public class ProjectRole {
    * @return actors
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<RoleActor> getActors() {
     return actors;
   }
-
 
 
 
@@ -141,12 +152,9 @@ public class ProjectRole {
    * @return admin
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ADMIN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAdmin() {
     return admin;
   }
-
 
 
 
@@ -160,15 +168,10 @@ public class ProjectRole {
    * @return currentUserRole
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CURRENT_USER_ROLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCurrentUserRole() {
     return currentUserRole;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CURRENT_USER_ROLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCurrentUserRole(@javax.annotation.Nullable Boolean currentUserRole) {
     this.currentUserRole = currentUserRole;
   }
@@ -179,12 +182,9 @@ public class ProjectRole {
    * @return _default
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDefault() {
     return _default;
   }
-
 
 
 
@@ -193,12 +193,9 @@ public class ProjectRole {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
-
 
 
 
@@ -207,12 +204,9 @@ public class ProjectRole {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
-
 
 
 
@@ -226,15 +220,10 @@ public class ProjectRole {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -245,12 +234,9 @@ public class ProjectRole {
    * @return roleConfigurable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ROLE_CONFIGURABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRoleConfigurable() {
     return roleConfigurable;
   }
-
 
 
 
@@ -259,12 +245,9 @@ public class ProjectRole {
    * @return scope
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Scope getScope() {
     return scope;
   }
-
 
 
 
@@ -273,12 +256,9 @@ public class ProjectRole {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -292,23 +272,16 @@ public class ProjectRole {
    * @return translatedName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSLATED_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTranslatedName() {
     return translatedName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSLATED_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTranslatedName(@javax.annotation.Nullable String translatedName) {
     this.translatedName = translatedName;
   }
 
 
-  /**
-   * Return true if this ProjectRole object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -366,99 +339,114 @@ public class ProjectRole {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("actors", "admin", "currentUserRole", "default", "description", "id", "name", "roleConfigurable", "scope", "self", "translatedName"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectRole
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `actors` to the URL query string
-    if (getActors() != null) {
-      for (int i = 0; i < getActors().size(); i++) {
-        if (getActors().get(i) != null) {
-          joiner.add(getActors().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sactors%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectRole.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectRole is not found in the empty JSON string", ProjectRole.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `admin` to the URL query string
-    if (getAdmin() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sadmin%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAdmin()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectRole.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectRole` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("actors") != null && !jsonObj.get("actors").isJsonNull()) {
+        JsonArray jsonArrayactors = jsonObj.getAsJsonArray("actors");
+        if (jsonArrayactors != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("actors").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `actors` to be an array in the JSON string but got `%s`", jsonObj.get("actors").toString()));
+          }
 
-    // add `currentUserRole` to the URL query string
-    if (getCurrentUserRole() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scurrentUserRole%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCurrentUserRole()))));
-    }
+          // validate the optional field `actors` (array)
+          for (int i = 0; i < jsonArrayactors.size(); i++) {
+            RoleActor.validateJsonElement(jsonArrayactors.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("translatedName") != null && !jsonObj.get("translatedName").isJsonNull()) && !jsonObj.get("translatedName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `translatedName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("translatedName").toString()));
+      }
+  }
 
-    // add `default` to the URL query string
-    if (getDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefault()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectRole.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectRole' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectRole> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectRole.class));
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<ProjectRole>() {
+           @Override
+           public void write(JsonWriter out, ProjectRole value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
+           @Override
+           public ProjectRole read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+       }.nullSafe();
     }
+  }
 
-    // add `roleConfigurable` to the URL query string
-    if (getRoleConfigurable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sroleConfigurable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRoleConfigurable()))));
-    }
+  /**
+   * Create an instance of ProjectRole given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectRole
+   * @throws IOException if the JSON string is invalid with respect to ProjectRole
+   */
+  public static ProjectRole fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectRole.class);
+  }
 
-    // add `scope` to the URL query string
-    if (getScope() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sscope%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScope()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `translatedName` to the URL query string
-    if (getTranslatedName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stranslatedName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTranslatedName()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectRole to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

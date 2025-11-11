@@ -13,73 +13,88 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Resource
  */
-@JsonPropertyOrder({
-  Resource.JSON_PROPERTY_DESCRIPTION,
-  Resource.JSON_PROPERTY_FILE,
-  Resource.JSON_PROPERTY_FILENAME,
-  Resource.JSON_PROPERTY_INPUT_STREAM,
-  Resource.JSON_PROPERTY_OPEN,
-  Resource.JSON_PROPERTY_READABLE,
-  Resource.JSON_PROPERTY_URI,
-  Resource.JSON_PROPERTY_URL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Resource {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_FILE = "file";
+  public static final String SERIALIZED_NAME_FILE = "file";
+  @SerializedName(SERIALIZED_NAME_FILE)
   @javax.annotation.Nullable
   private File _file;
 
-  public static final String JSON_PROPERTY_FILENAME = "filename";
+  public static final String SERIALIZED_NAME_FILENAME = "filename";
+  @SerializedName(SERIALIZED_NAME_FILENAME)
   @javax.annotation.Nullable
   private String filename;
 
-  public static final String JSON_PROPERTY_INPUT_STREAM = "inputStream";
+  public static final String SERIALIZED_NAME_INPUT_STREAM = "inputStream";
+  @SerializedName(SERIALIZED_NAME_INPUT_STREAM)
   @javax.annotation.Nullable
   private Object inputStream;
 
-  public static final String JSON_PROPERTY_OPEN = "open";
+  public static final String SERIALIZED_NAME_OPEN = "open";
+  @SerializedName(SERIALIZED_NAME_OPEN)
   @javax.annotation.Nullable
   private Boolean open;
 
-  public static final String JSON_PROPERTY_READABLE = "readable";
+  public static final String SERIALIZED_NAME_READABLE = "readable";
+  @SerializedName(SERIALIZED_NAME_READABLE)
   @javax.annotation.Nullable
   private Boolean readable;
 
-  public static final String JSON_PROPERTY_URI = "uri";
+  public static final String SERIALIZED_NAME_URI = "uri";
+  @SerializedName(SERIALIZED_NAME_URI)
   @javax.annotation.Nullable
   private URI uri;
 
-  public static final String JSON_PROPERTY_URL = "url";
+  public static final String SERIALIZED_NAME_URL = "url";
+  @SerializedName(SERIALIZED_NAME_URL)
   @javax.annotation.Nullable
   private String url;
 
-  public Resource() { 
+  public Resource() {
   }
 
   public Resource description(@javax.annotation.Nullable String description) {
@@ -92,15 +107,10 @@ public class Resource {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -116,15 +126,10 @@ public class Resource {
    * @return _file
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FILE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public File getFile() {
     return _file;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FILE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFile(@javax.annotation.Nullable File _file) {
     this._file = _file;
   }
@@ -140,15 +145,10 @@ public class Resource {
    * @return filename
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FILENAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFilename() {
     return filename;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FILENAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFilename(@javax.annotation.Nullable String filename) {
     this.filename = filename;
   }
@@ -164,15 +164,10 @@ public class Resource {
    * @return inputStream
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INPUT_STREAM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Object getInputStream() {
     return inputStream;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INPUT_STREAM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInputStream(@javax.annotation.Nullable Object inputStream) {
     this.inputStream = inputStream;
   }
@@ -188,15 +183,10 @@ public class Resource {
    * @return open
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getOpen() {
     return open;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOpen(@javax.annotation.Nullable Boolean open) {
     this.open = open;
   }
@@ -212,15 +202,10 @@ public class Resource {
    * @return readable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_READABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getReadable() {
     return readable;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_READABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReadable(@javax.annotation.Nullable Boolean readable) {
     this.readable = readable;
   }
@@ -236,15 +221,10 @@ public class Resource {
    * @return uri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getUri() {
     return uri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_URI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUri(@javax.annotation.Nullable URI uri) {
     this.uri = uri;
   }
@@ -260,23 +240,16 @@ public class Resource {
    * @return url
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUrl() {
     return url;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUrl(@javax.annotation.Nullable String url) {
     this.url = url;
   }
 
 
-  /**
-   * Return true if this Resource object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -328,79 +301,100 @@ public class Resource {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "file", "filename", "inputStream", "open", "readable", "uri", "url"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Resource
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Resource.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Resource is not found in the empty JSON string", Resource.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Resource.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Resource` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("filename") != null && !jsonObj.get("filename").isJsonNull()) && !jsonObj.get("filename").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `filename` to be a primitive type in the JSON string but got `%s`", jsonObj.get("filename").toString()));
+      }
+      if ((jsonObj.get("uri") != null && !jsonObj.get("uri").isJsonNull()) && !jsonObj.get("uri").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `uri` to be a primitive type in the JSON string but got `%s`", jsonObj.get("uri").toString()));
+      }
+      if ((jsonObj.get("url") != null && !jsonObj.get("url").isJsonNull()) && !jsonObj.get("url").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("url").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Resource.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Resource' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Resource> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Resource.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Resource>() {
+           @Override
+           public void write(JsonWriter out, Resource value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Resource read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of Resource given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Resource
+   * @throws IOException if the JSON string is invalid with respect to Resource
+   */
+  public static Resource fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Resource.class);
+  }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `file` to the URL query string
-    if (getFile() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfile%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFile()))));
-    }
-
-    // add `filename` to the URL query string
-    if (getFilename() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfilename%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFilename()))));
-    }
-
-    // add `inputStream` to the URL query string
-    if (getInputStream() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sinputStream%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInputStream()))));
-    }
-
-    // add `open` to the URL query string
-    if (getOpen() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sopen%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOpen()))));
-    }
-
-    // add `readable` to the URL query string
-    if (getReadable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sreadable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getReadable()))));
-    }
-
-    // add `uri` to the URL query string
-    if (getUri() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suri%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUri()))));
-    }
-
-    // add `url` to the URL query string
-    if (getUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%surl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of Resource to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

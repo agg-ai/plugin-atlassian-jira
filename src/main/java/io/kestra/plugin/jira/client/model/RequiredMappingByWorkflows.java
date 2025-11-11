@@ -13,49 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The list of required status mappings by workflow.
  */
-@JsonPropertyOrder({
-  RequiredMappingByWorkflows.JSON_PROPERTY_SOURCE_WORKFLOW_ID,
-  RequiredMappingByWorkflows.JSON_PROPERTY_STATUS_IDS,
-  RequiredMappingByWorkflows.JSON_PROPERTY_TARGET_WORKFLOW_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class RequiredMappingByWorkflows {
-  public static final String JSON_PROPERTY_SOURCE_WORKFLOW_ID = "sourceWorkflowId";
+  public static final String SERIALIZED_NAME_SOURCE_WORKFLOW_ID = "sourceWorkflowId";
+  @SerializedName(SERIALIZED_NAME_SOURCE_WORKFLOW_ID)
   @javax.annotation.Nullable
   private String sourceWorkflowId;
 
-  public static final String JSON_PROPERTY_STATUS_IDS = "statusIds";
+  public static final String SERIALIZED_NAME_STATUS_IDS = "statusIds";
+  @SerializedName(SERIALIZED_NAME_STATUS_IDS)
   @javax.annotation.Nullable
   private Set<String> statusIds = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_TARGET_WORKFLOW_ID = "targetWorkflowId";
+  public static final String SERIALIZED_NAME_TARGET_WORKFLOW_ID = "targetWorkflowId";
+  @SerializedName(SERIALIZED_NAME_TARGET_WORKFLOW_ID)
   @javax.annotation.Nullable
   private String targetWorkflowId;
 
-  public RequiredMappingByWorkflows() { 
+  public RequiredMappingByWorkflows() {
   }
 
   public RequiredMappingByWorkflows sourceWorkflowId(@javax.annotation.Nullable String sourceWorkflowId) {
@@ -68,15 +82,10 @@ public class RequiredMappingByWorkflows {
    * @return sourceWorkflowId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SOURCE_WORKFLOW_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSourceWorkflowId() {
     return sourceWorkflowId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SOURCE_WORKFLOW_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSourceWorkflowId(@javax.annotation.Nullable String sourceWorkflowId) {
     this.sourceWorkflowId = sourceWorkflowId;
   }
@@ -100,16 +109,10 @@ public class RequiredMappingByWorkflows {
    * @return statusIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getStatusIds() {
     return statusIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_STATUS_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusIds(@javax.annotation.Nullable Set<String> statusIds) {
     this.statusIds = statusIds;
   }
@@ -125,23 +128,16 @@ public class RequiredMappingByWorkflows {
    * @return targetWorkflowId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TARGET_WORKFLOW_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTargetWorkflowId() {
     return targetWorkflowId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TARGET_WORKFLOW_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTargetWorkflowId(@javax.annotation.Nullable String targetWorkflowId) {
     this.targetWorkflowId = targetWorkflowId;
   }
 
 
-  /**
-   * Return true if this RequiredMappingByWorkflows object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -183,60 +179,98 @@ public class RequiredMappingByWorkflows {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("sourceWorkflowId", "statusIds", "targetWorkflowId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to RequiredMappingByWorkflows
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `sourceWorkflowId` to the URL query string
-    if (getSourceWorkflowId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssourceWorkflowId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSourceWorkflowId()))));
-    }
-
-    // add `statusIds` to the URL query string
-    if (getStatusIds() != null) {
-      int i = 0;
-      for (String _item : getStatusIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sstatusIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!RequiredMappingByWorkflows.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in RequiredMappingByWorkflows is not found in the empty JSON string", RequiredMappingByWorkflows.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `targetWorkflowId` to the URL query string
-    if (getTargetWorkflowId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stargetWorkflowId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTargetWorkflowId()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!RequiredMappingByWorkflows.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `RequiredMappingByWorkflows` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("sourceWorkflowId") != null && !jsonObj.get("sourceWorkflowId").isJsonNull()) && !jsonObj.get("sourceWorkflowId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `sourceWorkflowId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("sourceWorkflowId").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("statusIds") != null && !jsonObj.get("statusIds").isJsonNull() && !jsonObj.get("statusIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusIds` to be an array in the JSON string but got `%s`", jsonObj.get("statusIds").toString()));
+      }
+      if ((jsonObj.get("targetWorkflowId") != null && !jsonObj.get("targetWorkflowId").isJsonNull()) && !jsonObj.get("targetWorkflowId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `targetWorkflowId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("targetWorkflowId").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!RequiredMappingByWorkflows.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'RequiredMappingByWorkflows' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<RequiredMappingByWorkflows> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(RequiredMappingByWorkflows.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<RequiredMappingByWorkflows>() {
+           @Override
+           public void write(JsonWriter out, RequiredMappingByWorkflows value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public RequiredMappingByWorkflows read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of RequiredMappingByWorkflows given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of RequiredMappingByWorkflows
+   * @throws IOException if the JSON string is invalid with respect to RequiredMappingByWorkflows
+   */
+  public static RequiredMappingByWorkflows fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, RequiredMappingByWorkflows.class);
+  }
+
+  /**
+   * Convert an instance of RequiredMappingByWorkflows to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

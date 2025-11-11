@@ -13,68 +13,82 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.NestedResponse;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a created issue or subtask.
  */
-@JsonPropertyOrder({
-  CreatedIssue.JSON_PROPERTY_ID,
-  CreatedIssue.JSON_PROPERTY_KEY,
-  CreatedIssue.JSON_PROPERTY_SELF,
-  CreatedIssue.JSON_PROPERTY_TRANSITION,
-  CreatedIssue.JSON_PROPERTY_WATCHERS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CreatedIssue {
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public static final String JSON_PROPERTY_TRANSITION = "transition";
+  public static final String SERIALIZED_NAME_TRANSITION = "transition";
+  @SerializedName(SERIALIZED_NAME_TRANSITION)
   @javax.annotation.Nullable
   private NestedResponse transition;
 
-  public static final String JSON_PROPERTY_WATCHERS = "watchers";
+  public static final String SERIALIZED_NAME_WATCHERS = "watchers";
+  @SerializedName(SERIALIZED_NAME_WATCHERS)
   @javax.annotation.Nullable
   private NestedResponse watchers;
 
-  public CreatedIssue() { 
+  public CreatedIssue() {
   }
 
-  @JsonCreator
   public CreatedIssue(
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_KEY) String key, 
-    @JsonProperty(JSON_PROPERTY_SELF) String self, 
-    @JsonProperty(JSON_PROPERTY_TRANSITION) NestedResponse transition, 
-    @JsonProperty(JSON_PROPERTY_WATCHERS) NestedResponse watchers
+     String id, 
+     String key, 
+     String self, 
+     NestedResponse transition, 
+     NestedResponse watchers
   ) {
-  this();
+    this();
     this.id = id;
     this.key = key;
     this.self = self;
@@ -87,12 +101,9 @@ public class CreatedIssue {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -101,12 +112,9 @@ public class CreatedIssue {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
-
 
 
 
@@ -115,12 +123,9 @@ public class CreatedIssue {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
-
 
 
 
@@ -129,12 +134,9 @@ public class CreatedIssue {
    * @return transition
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public NestedResponse getTransition() {
     return transition;
   }
-
 
 
 
@@ -143,8 +145,6 @@ public class CreatedIssue {
    * @return watchers
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WATCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public NestedResponse getWatchers() {
     return watchers;
   }
@@ -152,9 +152,6 @@ public class CreatedIssue {
 
 
 
-  /**
-   * Return true if this CreatedIssue object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -200,64 +197,105 @@ public class CreatedIssue {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("id", "key", "self", "transition", "watchers"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CreatedIssue
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CreatedIssue.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CreatedIssue is not found in the empty JSON string", CreatedIssue.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CreatedIssue.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CreatedIssue` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      // validate the optional field `transition`
+      if (jsonObj.get("transition") != null && !jsonObj.get("transition").isJsonNull()) {
+        NestedResponse.validateJsonElement(jsonObj.get("transition"));
+      }
+      // validate the optional field `watchers`
+      if (jsonObj.get("watchers") != null && !jsonObj.get("watchers").isJsonNull()) {
+        NestedResponse.validateJsonElement(jsonObj.get("watchers"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CreatedIssue.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CreatedIssue' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CreatedIssue> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CreatedIssue.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CreatedIssue>() {
+           @Override
+           public void write(JsonWriter out, CreatedIssue value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CreatedIssue read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CreatedIssue given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CreatedIssue
+   * @throws IOException if the JSON string is invalid with respect to CreatedIssue
+   */
+  public static CreatedIssue fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CreatedIssue.class);
+  }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `transition` to the URL query string
-    if (getTransition() != null) {
-      joiner.add(getTransition().toUrlQueryString(prefix + "transition" + suffix));
-    }
-
-    // add `watchers` to the URL query string
-    if (getWatchers() != null) {
-      joiner.add(getWatchers().toUrlQueryString(prefix + "watchers" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CreatedIssue to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

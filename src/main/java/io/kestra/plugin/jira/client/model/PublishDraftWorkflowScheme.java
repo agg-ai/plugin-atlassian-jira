@@ -13,40 +13,54 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.StatusMapping;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the status mappings for publishing a draft workflow scheme.
  */
-@JsonPropertyOrder({
-  PublishDraftWorkflowScheme.JSON_PROPERTY_STATUS_MAPPINGS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PublishDraftWorkflowScheme {
-  public static final String JSON_PROPERTY_STATUS_MAPPINGS = "statusMappings";
+  public static final String SERIALIZED_NAME_STATUS_MAPPINGS = "statusMappings";
+  @SerializedName(SERIALIZED_NAME_STATUS_MAPPINGS)
   @javax.annotation.Nullable
   private Set<StatusMapping> statusMappings = new LinkedHashSet<>();
 
-  public PublishDraftWorkflowScheme() { 
+  public PublishDraftWorkflowScheme() {
   }
 
   public PublishDraftWorkflowScheme statusMappings(@javax.annotation.Nullable Set<StatusMapping> statusMappings) {
@@ -67,24 +81,16 @@ public class PublishDraftWorkflowScheme {
    * @return statusMappings
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<StatusMapping> getStatusMappings() {
     return statusMappings;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_STATUS_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusMappings(@javax.annotation.Nullable Set<StatusMapping> statusMappings) {
     this.statusMappings = statusMappings;
   }
 
 
-  /**
-   * Return true if this PublishDraftWorkflowScheme object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -122,51 +128,102 @@ public class PublishDraftWorkflowScheme {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("statusMappings"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to PublishDraftWorkflowScheme
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `statusMappings` to the URL query string
-    if (getStatusMappings() != null) {
-      int i = 0;
-      for (StatusMapping _item : getStatusMappings()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%sstatusMappings%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!PublishDraftWorkflowScheme.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in PublishDraftWorkflowScheme is not found in the empty JSON string", PublishDraftWorkflowScheme.openapiRequiredFields.toString()));
         }
       }
-      i++;
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!PublishDraftWorkflowScheme.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `PublishDraftWorkflowScheme` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("statusMappings") != null && !jsonObj.get("statusMappings").isJsonNull()) {
+        JsonArray jsonArraystatusMappings = jsonObj.getAsJsonArray("statusMappings");
+        if (jsonArraystatusMappings != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("statusMappings").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusMappings` to be an array in the JSON string but got `%s`", jsonObj.get("statusMappings").toString()));
+          }
+
+          // validate the optional field `statusMappings` (array)
+          for (int i = 0; i < jsonArraystatusMappings.size(); i++) {
+            StatusMapping.validateJsonElement(jsonArraystatusMappings.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!PublishDraftWorkflowScheme.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'PublishDraftWorkflowScheme' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<PublishDraftWorkflowScheme> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(PublishDraftWorkflowScheme.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<PublishDraftWorkflowScheme>() {
+           @Override
+           public void write(JsonWriter out, PublishDraftWorkflowScheme value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public PublishDraftWorkflowScheme read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of PublishDraftWorkflowScheme given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of PublishDraftWorkflowScheme
+   * @throws IOException if the JSON string is invalid with respect to PublishDraftWorkflowScheme
+   */
+  public static PublishDraftWorkflowScheme fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, PublishDraftWorkflowScheme.class);
+  }
+
+  /**
+   * Convert an instance of PublishDraftWorkflowScheme to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

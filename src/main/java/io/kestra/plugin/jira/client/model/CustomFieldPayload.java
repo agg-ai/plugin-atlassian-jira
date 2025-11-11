@@ -13,59 +13,71 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectCreateResourceIdentifier;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Defines the payload for the custom field definitions. See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-fields/\\#api-rest-api-3-field-post
  */
-@JsonPropertyOrder({
-  CustomFieldPayload.JSON_PROPERTY_CF_TYPE,
-  CustomFieldPayload.JSON_PROPERTY_DESCRIPTION,
-  CustomFieldPayload.JSON_PROPERTY_NAME,
-  CustomFieldPayload.JSON_PROPERTY_ON_CONFLICT,
-  CustomFieldPayload.JSON_PROPERTY_PCRI,
-  CustomFieldPayload.JSON_PROPERTY_SCOPE,
-  CustomFieldPayload.JSON_PROPERTY_SEARCHER_KEY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CustomFieldPayload {
-  public static final String JSON_PROPERTY_CF_TYPE = "cfType";
+  public static final String SERIALIZED_NAME_CF_TYPE = "cfType";
+  @SerializedName(SERIALIZED_NAME_CF_TYPE)
   @javax.annotation.Nullable
   private String cfType;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
   /**
    * The strategy to use when there is a conflict with an existing custom field. FAIL - Fail execution, this always needs to be unique; USE - Use the existing entity and ignore new entity parameters
    */
+  @JsonAdapter(OnConflictEnum.Adapter.class)
   public enum OnConflictEnum {
-    FAIL(String.valueOf("FAIL")),
+    FAIL("FAIL"),
     
-    USE(String.valueOf("USE")),
+    USE("USE"),
     
-    NEW(String.valueOf("NEW"));
+    NEW("NEW");
 
     private String value;
 
@@ -73,7 +85,6 @@ public class CustomFieldPayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -83,7 +94,6 @@ public class CustomFieldPayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static OnConflictEnum fromValue(String value) {
       for (OnConflictEnum b : OnConflictEnum.values()) {
         if (b.value.equals(value)) {
@@ -92,25 +102,46 @@ public class CustomFieldPayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<OnConflictEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final OnConflictEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public OnConflictEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return OnConflictEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      OnConflictEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ON_CONFLICT = "onConflict";
+  public static final String SERIALIZED_NAME_ON_CONFLICT = "onConflict";
+  @SerializedName(SERIALIZED_NAME_ON_CONFLICT)
   @javax.annotation.Nullable
   private OnConflictEnum onConflict;
 
-  public static final String JSON_PROPERTY_PCRI = "pcri";
+  public static final String SERIALIZED_NAME_PCRI = "pcri";
+  @SerializedName(SERIALIZED_NAME_PCRI)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier pcri;
 
   /**
    * Allows an overwrite to declare the new Custom Field to be created as a GLOBAL-scoped field. Leave this as empty or null to use the project&#39;s default scope.
    */
+  @JsonAdapter(ScopeEnum.Adapter.class)
   public enum ScopeEnum {
-    GLOBAL(String.valueOf("GLOBAL")),
+    GLOBAL("GLOBAL"),
     
-    TEMPLATE(String.valueOf("TEMPLATE")),
+    TEMPLATE("TEMPLATE"),
     
-    PROJECT(String.valueOf("PROJECT"));
+    PROJECT("PROJECT");
 
     private String value;
 
@@ -118,7 +149,6 @@ public class CustomFieldPayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -128,7 +158,6 @@ public class CustomFieldPayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ScopeEnum fromValue(String value) {
       for (ScopeEnum b : ScopeEnum.values()) {
         if (b.value.equals(value)) {
@@ -137,17 +166,37 @@ public class CustomFieldPayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ScopeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ScopeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ScopeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ScopeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ScopeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_SCOPE = "scope";
+  public static final String SERIALIZED_NAME_SCOPE = "scope";
+  @SerializedName(SERIALIZED_NAME_SCOPE)
   @javax.annotation.Nullable
   private ScopeEnum scope;
 
-  public static final String JSON_PROPERTY_SEARCHER_KEY = "searcherKey";
+  public static final String SERIALIZED_NAME_SEARCHER_KEY = "searcherKey";
+  @SerializedName(SERIALIZED_NAME_SEARCHER_KEY)
   @javax.annotation.Nullable
   private String searcherKey;
 
-  public CustomFieldPayload() { 
+  public CustomFieldPayload() {
   }
 
   public CustomFieldPayload cfType(@javax.annotation.Nullable String cfType) {
@@ -160,15 +209,10 @@ public class CustomFieldPayload {
    * @return cfType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CF_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCfType() {
     return cfType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CF_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCfType(@javax.annotation.Nullable String cfType) {
     this.cfType = cfType;
   }
@@ -184,15 +228,10 @@ public class CustomFieldPayload {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -208,15 +247,10 @@ public class CustomFieldPayload {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -232,15 +266,10 @@ public class CustomFieldPayload {
    * @return onConflict
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ON_CONFLICT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OnConflictEnum getOnConflict() {
     return onConflict;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ON_CONFLICT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOnConflict(@javax.annotation.Nullable OnConflictEnum onConflict) {
     this.onConflict = onConflict;
   }
@@ -256,15 +285,10 @@ public class CustomFieldPayload {
    * @return pcri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getPcri() {
     return pcri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPcri(@javax.annotation.Nullable ProjectCreateResourceIdentifier pcri) {
     this.pcri = pcri;
   }
@@ -280,15 +304,10 @@ public class CustomFieldPayload {
    * @return scope
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ScopeEnum getScope() {
     return scope;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScope(@javax.annotation.Nullable ScopeEnum scope) {
     this.scope = scope;
   }
@@ -304,23 +323,16 @@ public class CustomFieldPayload {
    * @return searcherKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SEARCHER_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSearcherKey() {
     return searcherKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SEARCHER_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearcherKey(@javax.annotation.Nullable String searcherKey) {
     this.searcherKey = searcherKey;
   }
 
 
-  /**
-   * Return true if this CustomFieldPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -370,74 +382,118 @@ public class CustomFieldPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("cfType", "description", "name", "onConflict", "pcri", "scope", "searcherKey"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CustomFieldPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CustomFieldPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CustomFieldPayload is not found in the empty JSON string", CustomFieldPayload.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CustomFieldPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CustomFieldPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("cfType") != null && !jsonObj.get("cfType").isJsonNull()) && !jsonObj.get("cfType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `cfType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("cfType").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("onConflict") != null && !jsonObj.get("onConflict").isJsonNull()) && !jsonObj.get("onConflict").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `onConflict` to be a primitive type in the JSON string but got `%s`", jsonObj.get("onConflict").toString()));
+      }
+      // validate the optional field `onConflict`
+      if (jsonObj.get("onConflict") != null && !jsonObj.get("onConflict").isJsonNull()) {
+        OnConflictEnum.validateJsonElement(jsonObj.get("onConflict"));
+      }
+      // validate the optional field `pcri`
+      if (jsonObj.get("pcri") != null && !jsonObj.get("pcri").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("pcri"));
+      }
+      if ((jsonObj.get("scope") != null && !jsonObj.get("scope").isJsonNull()) && !jsonObj.get("scope").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `scope` to be a primitive type in the JSON string but got `%s`", jsonObj.get("scope").toString()));
+      }
+      // validate the optional field `scope`
+      if (jsonObj.get("scope") != null && !jsonObj.get("scope").isJsonNull()) {
+        ScopeEnum.validateJsonElement(jsonObj.get("scope"));
+      }
+      if ((jsonObj.get("searcherKey") != null && !jsonObj.get("searcherKey").isJsonNull()) && !jsonObj.get("searcherKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `searcherKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("searcherKey").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CustomFieldPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CustomFieldPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CustomFieldPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CustomFieldPayload>() {
+           @Override
+           public void write(JsonWriter out, CustomFieldPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CustomFieldPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CustomFieldPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CustomFieldPayload
+   * @throws IOException if the JSON string is invalid with respect to CustomFieldPayload
+   */
+  public static CustomFieldPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CustomFieldPayload.class);
+  }
 
-    // add `cfType` to the URL query string
-    if (getCfType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scfType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCfType()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `onConflict` to the URL query string
-    if (getOnConflict() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sonConflict%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOnConflict()))));
-    }
-
-    // add `pcri` to the URL query string
-    if (getPcri() != null) {
-      joiner.add(getPcri().toUrlQueryString(prefix + "pcri" + suffix));
-    }
-
-    // add `scope` to the URL query string
-    if (getScope() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sscope%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScope()))));
-    }
-
-    // add `searcherKey` to the URL query string
-    if (getSearcherKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssearcherKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearcherKey()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CustomFieldPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

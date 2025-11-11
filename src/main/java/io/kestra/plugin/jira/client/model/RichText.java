@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * RichText
  */
-@JsonPropertyOrder({
-  RichText.JSON_PROPERTY_EMPTY,
-  RichText.JSON_PROPERTY_EMPTY_ADF,
-  RichText.JSON_PROPERTY_FINALISED,
-  RichText.JSON_PROPERTY_VALUE_SET
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class RichText {
-  public static final String JSON_PROPERTY_EMPTY = "empty";
+  public static final String SERIALIZED_NAME_EMPTY = "empty";
+  @SerializedName(SERIALIZED_NAME_EMPTY)
   @javax.annotation.Nullable
   private Boolean empty;
 
-  public static final String JSON_PROPERTY_EMPTY_ADF = "emptyAdf";
+  public static final String SERIALIZED_NAME_EMPTY_ADF = "emptyAdf";
+  @SerializedName(SERIALIZED_NAME_EMPTY_ADF)
   @javax.annotation.Nullable
   private Boolean emptyAdf;
 
-  public static final String JSON_PROPERTY_FINALISED = "finalised";
+  public static final String SERIALIZED_NAME_FINALISED = "finalised";
+  @SerializedName(SERIALIZED_NAME_FINALISED)
   @javax.annotation.Nullable
   private Boolean finalised;
 
-  public static final String JSON_PROPERTY_VALUE_SET = "valueSet";
+  public static final String SERIALIZED_NAME_VALUE_SET = "valueSet";
+  @SerializedName(SERIALIZED_NAME_VALUE_SET)
   @javax.annotation.Nullable
   private Boolean valueSet;
 
-  public RichText() { 
+  public RichText() {
   }
 
   public RichText empty(@javax.annotation.Nullable Boolean empty) {
@@ -70,15 +85,10 @@ public class RichText {
    * @return empty
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EMPTY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEmpty() {
     return empty;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EMPTY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEmpty(@javax.annotation.Nullable Boolean empty) {
     this.empty = empty;
   }
@@ -94,15 +104,10 @@ public class RichText {
    * @return emptyAdf
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EMPTY_ADF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEmptyAdf() {
     return emptyAdf;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EMPTY_ADF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEmptyAdf(@javax.annotation.Nullable Boolean emptyAdf) {
     this.emptyAdf = emptyAdf;
   }
@@ -118,15 +123,10 @@ public class RichText {
    * @return finalised
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FINALISED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getFinalised() {
     return finalised;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FINALISED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFinalised(@javax.annotation.Nullable Boolean finalised) {
     this.finalised = finalised;
   }
@@ -142,23 +142,16 @@ public class RichText {
    * @return valueSet
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE_SET, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getValueSet() {
     return valueSet;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE_SET, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValueSet(@javax.annotation.Nullable Boolean valueSet) {
     this.valueSet = valueSet;
   }
 
 
-  /**
-   * Return true if this RichText object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,59 +195,88 @@ public class RichText {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("empty", "emptyAdf", "finalised", "valueSet"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to RichText
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!RichText.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in RichText is not found in the empty JSON string", RichText.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!RichText.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `RichText` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!RichText.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'RichText' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<RichText> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(RichText.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<RichText>() {
+           @Override
+           public void write(JsonWriter out, RichText value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public RichText read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of RichText given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of RichText
+   * @throws IOException if the JSON string is invalid with respect to RichText
+   */
+  public static RichText fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, RichText.class);
+  }
 
-    // add `empty` to the URL query string
-    if (getEmpty() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sempty%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmpty()))));
-    }
-
-    // add `emptyAdf` to the URL query string
-    if (getEmptyAdf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%semptyAdf%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmptyAdf()))));
-    }
-
-    // add `finalised` to the URL query string
-    if (getFinalised() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfinalised%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinalised()))));
-    }
-
-    // add `valueSet` to the URL query string
-    if (getValueSet() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalueSet%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValueSet()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of RichText to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

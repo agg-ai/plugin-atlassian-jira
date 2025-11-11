@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The statuses the transition can start from, and the mapping of ports between the statuses.
  */
-@JsonPropertyOrder({
-  WorkflowTransitionLinks.JSON_PROPERTY_FROM_PORT,
-  WorkflowTransitionLinks.JSON_PROPERTY_FROM_STATUS_REFERENCE,
-  WorkflowTransitionLinks.JSON_PROPERTY_TO_PORT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowTransitionLinks {
-  public static final String JSON_PROPERTY_FROM_PORT = "fromPort";
-  private JsonNullable<Integer> fromPort = JsonNullable.<Integer>undefined();
+  public static final String SERIALIZED_NAME_FROM_PORT = "fromPort";
+  @SerializedName(SERIALIZED_NAME_FROM_PORT)
+  @javax.annotation.Nullable
+  private Integer fromPort;
 
-  public static final String JSON_PROPERTY_FROM_STATUS_REFERENCE = "fromStatusReference";
-  private JsonNullable<String> fromStatusReference = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_FROM_STATUS_REFERENCE = "fromStatusReference";
+  @SerializedName(SERIALIZED_NAME_FROM_STATUS_REFERENCE)
+  @javax.annotation.Nullable
+  private String fromStatusReference;
 
-  public static final String JSON_PROPERTY_TO_PORT = "toPort";
-  private JsonNullable<Integer> toPort = JsonNullable.<Integer>undefined();
+  public static final String SERIALIZED_NAME_TO_PORT = "toPort";
+  @SerializedName(SERIALIZED_NAME_TO_PORT)
+  @javax.annotation.Nullable
+  private Integer toPort;
 
-  public WorkflowTransitionLinks() { 
+  public WorkflowTransitionLinks() {
   }
 
   public WorkflowTransitionLinks fromPort(@javax.annotation.Nullable Integer fromPort) {
-    this.fromPort = JsonNullable.<Integer>of(fromPort);
+    this.fromPort = fromPort;
     return this;
   }
 
@@ -66,30 +81,17 @@ public class WorkflowTransitionLinks {
    * @return fromPort
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Integer getFromPort() {
-        return fromPort.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_FROM_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getFromPort_JsonNullable() {
     return fromPort;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_FROM_PORT)
-  public void setFromPort_JsonNullable(JsonNullable<Integer> fromPort) {
-    this.fromPort = fromPort;
   }
 
   public void setFromPort(@javax.annotation.Nullable Integer fromPort) {
-    this.fromPort = JsonNullable.<Integer>of(fromPort);
+    this.fromPort = fromPort;
   }
 
 
   public WorkflowTransitionLinks fromStatusReference(@javax.annotation.Nullable String fromStatusReference) {
-    this.fromStatusReference = JsonNullable.<String>of(fromStatusReference);
+    this.fromStatusReference = fromStatusReference;
     return this;
   }
 
@@ -98,30 +100,17 @@ public class WorkflowTransitionLinks {
    * @return fromStatusReference
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getFromStatusReference() {
-        return fromStatusReference.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_FROM_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getFromStatusReference_JsonNullable() {
     return fromStatusReference;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_FROM_STATUS_REFERENCE)
-  public void setFromStatusReference_JsonNullable(JsonNullable<String> fromStatusReference) {
-    this.fromStatusReference = fromStatusReference;
   }
 
   public void setFromStatusReference(@javax.annotation.Nullable String fromStatusReference) {
-    this.fromStatusReference = JsonNullable.<String>of(fromStatusReference);
+    this.fromStatusReference = fromStatusReference;
   }
 
 
   public WorkflowTransitionLinks toPort(@javax.annotation.Nullable Integer toPort) {
-    this.toPort = JsonNullable.<Integer>of(toPort);
+    this.toPort = toPort;
     return this;
   }
 
@@ -130,31 +119,16 @@ public class WorkflowTransitionLinks {
    * @return toPort
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Integer getToPort() {
-        return toPort.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_TO_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Integer> getToPort_JsonNullable() {
     return toPort;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TO_PORT)
-  public void setToPort_JsonNullable(JsonNullable<Integer> toPort) {
-    this.toPort = toPort;
   }
 
   public void setToPort(@javax.annotation.Nullable Integer toPort) {
-    this.toPort = JsonNullable.<Integer>of(toPort);
+    this.toPort = toPort;
   }
 
 
-  /**
-   * Return true if this WorkflowTransitionLinks object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -164,9 +138,9 @@ public class WorkflowTransitionLinks {
       return false;
     }
     WorkflowTransitionLinks workflowTransitionLinks = (WorkflowTransitionLinks) o;
-    return equalsNullable(this.fromPort, workflowTransitionLinks.fromPort) &&
-        equalsNullable(this.fromStatusReference, workflowTransitionLinks.fromStatusReference) &&
-        equalsNullable(this.toPort, workflowTransitionLinks.toPort);
+    return Objects.equals(this.fromPort, workflowTransitionLinks.fromPort) &&
+        Objects.equals(this.fromStatusReference, workflowTransitionLinks.fromStatusReference) &&
+        Objects.equals(this.toPort, workflowTransitionLinks.toPort);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -175,7 +149,7 @@ public class WorkflowTransitionLinks {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(fromPort), hashCodeNullable(fromStatusReference), hashCodeNullable(toPort));
+    return Objects.hash(fromPort, fromStatusReference, toPort);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -207,54 +181,91 @@ public class WorkflowTransitionLinks {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("fromPort", "fromStatusReference", "toPort"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowTransitionLinks
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowTransitionLinks.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowTransitionLinks is not found in the empty JSON string", WorkflowTransitionLinks.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowTransitionLinks.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowTransitionLinks` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("fromStatusReference") != null && !jsonObj.get("fromStatusReference").isJsonNull()) && !jsonObj.get("fromStatusReference").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fromStatusReference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fromStatusReference").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowTransitionLinks.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowTransitionLinks' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowTransitionLinks> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowTransitionLinks.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowTransitionLinks>() {
+           @Override
+           public void write(JsonWriter out, WorkflowTransitionLinks value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowTransitionLinks read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of WorkflowTransitionLinks given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowTransitionLinks
+   * @throws IOException if the JSON string is invalid with respect to WorkflowTransitionLinks
+   */
+  public static WorkflowTransitionLinks fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowTransitionLinks.class);
+  }
 
-    // add `fromPort` to the URL query string
-    if (getFromPort() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfromPort%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFromPort()))));
-    }
-
-    // add `fromStatusReference` to the URL query string
-    if (getFromStatusReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfromStatusReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFromStatusReference()))));
-    }
-
-    // add `toPort` to the URL query string
-    if (getToPort() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stoPort%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getToPort()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of WorkflowTransitionLinks to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

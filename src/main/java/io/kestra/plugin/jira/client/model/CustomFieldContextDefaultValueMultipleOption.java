@@ -13,48 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The default value for a multi-select custom field.
  */
-@JsonPropertyOrder({
-  CustomFieldContextDefaultValueMultipleOption.JSON_PROPERTY_CONTEXT_ID,
-  CustomFieldContextDefaultValueMultipleOption.JSON_PROPERTY_OPTION_IDS,
-  CustomFieldContextDefaultValueMultipleOption.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CustomFieldContextDefaultValueMultipleOption {
-  public static final String JSON_PROPERTY_CONTEXT_ID = "contextId";
+  public static final String SERIALIZED_NAME_CONTEXT_ID = "contextId";
+  @SerializedName(SERIALIZED_NAME_CONTEXT_ID)
   @javax.annotation.Nonnull
   private String contextId;
 
-  public static final String JSON_PROPERTY_OPTION_IDS = "optionIds";
+  public static final String SERIALIZED_NAME_OPTION_IDS = "optionIds";
+  @SerializedName(SERIALIZED_NAME_OPTION_IDS)
   @javax.annotation.Nonnull
   private List<String> optionIds = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nonnull
   private String type;
 
-  public CustomFieldContextDefaultValueMultipleOption() { 
+  public CustomFieldContextDefaultValueMultipleOption() {
   }
 
   public CustomFieldContextDefaultValueMultipleOption contextId(@javax.annotation.Nonnull String contextId) {
@@ -67,15 +82,10 @@ public class CustomFieldContextDefaultValueMultipleOption {
    * @return contextId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getContextId() {
     return contextId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setContextId(@javax.annotation.Nonnull String contextId) {
     this.contextId = contextId;
   }
@@ -99,15 +109,10 @@ public class CustomFieldContextDefaultValueMultipleOption {
    * @return optionIds
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OPTION_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<String> getOptionIds() {
     return optionIds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPTION_IDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOptionIds(@javax.annotation.Nonnull List<String> optionIds) {
     this.optionIds = optionIds;
   }
@@ -123,23 +128,16 @@ public class CustomFieldContextDefaultValueMultipleOption {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(@javax.annotation.Nonnull String type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this CustomFieldContextDefaultValueMultipleOption object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -181,58 +179,107 @@ public class CustomFieldContextDefaultValueMultipleOption {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("contextId", "optionIds", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("contextId", "optionIds", "type"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CustomFieldContextDefaultValueMultipleOption
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `contextId` to the URL query string
-    if (getContextId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontextId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContextId()))));
-    }
-
-    // add `optionIds` to the URL query string
-    if (getOptionIds() != null) {
-      for (int i = 0; i < getOptionIds().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%soptionIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getOptionIds().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CustomFieldContextDefaultValueMultipleOption.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CustomFieldContextDefaultValueMultipleOption is not found in the empty JSON string", CustomFieldContextDefaultValueMultipleOption.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CustomFieldContextDefaultValueMultipleOption.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CustomFieldContextDefaultValueMultipleOption` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CustomFieldContextDefaultValueMultipleOption.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("contextId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `contextId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("contextId").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("optionIds") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("optionIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `optionIds` to be an array in the JSON string but got `%s`", jsonObj.get("optionIds").toString()));
+      }
+      if (!jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CustomFieldContextDefaultValueMultipleOption.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CustomFieldContextDefaultValueMultipleOption' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CustomFieldContextDefaultValueMultipleOption> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextDefaultValueMultipleOption.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CustomFieldContextDefaultValueMultipleOption>() {
+           @Override
+           public void write(JsonWriter out, CustomFieldContextDefaultValueMultipleOption value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CustomFieldContextDefaultValueMultipleOption read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of CustomFieldContextDefaultValueMultipleOption given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CustomFieldContextDefaultValueMultipleOption
+   * @throws IOException if the JSON string is invalid with respect to CustomFieldContextDefaultValueMultipleOption
+   */
+  public static CustomFieldContextDefaultValueMultipleOption fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CustomFieldContextDefaultValueMultipleOption.class);
+  }
+
+  /**
+   * Convert an instance of CustomFieldContextDefaultValueMultipleOption to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

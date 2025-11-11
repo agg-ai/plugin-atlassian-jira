@@ -13,41 +13,56 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Operations allowed on a workflow
  */
-@JsonPropertyOrder({
-  WorkflowOperations.JSON_PROPERTY_CAN_DELETE,
-  WorkflowOperations.JSON_PROPERTY_CAN_EDIT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowOperations {
-  public static final String JSON_PROPERTY_CAN_DELETE = "canDelete";
+  public static final String SERIALIZED_NAME_CAN_DELETE = "canDelete";
+  @SerializedName(SERIALIZED_NAME_CAN_DELETE)
   @javax.annotation.Nonnull
   private Boolean canDelete;
 
-  public static final String JSON_PROPERTY_CAN_EDIT = "canEdit";
+  public static final String SERIALIZED_NAME_CAN_EDIT = "canEdit";
+  @SerializedName(SERIALIZED_NAME_CAN_EDIT)
   @javax.annotation.Nonnull
   private Boolean canEdit;
 
-  public WorkflowOperations() { 
+  public WorkflowOperations() {
   }
 
   public WorkflowOperations canDelete(@javax.annotation.Nonnull Boolean canDelete) {
@@ -60,15 +75,10 @@ public class WorkflowOperations {
    * @return canDelete
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CAN_DELETE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getCanDelete() {
     return canDelete;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CAN_DELETE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCanDelete(@javax.annotation.Nonnull Boolean canDelete) {
     this.canDelete = canDelete;
   }
@@ -84,23 +94,16 @@ public class WorkflowOperations {
    * @return canEdit
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getCanEdit() {
     return canEdit;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setCanEdit(@javax.annotation.Nonnull Boolean canEdit) {
     this.canEdit = canEdit;
   }
 
 
-  /**
-   * Return true if this WorkflowOperations object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -140,49 +143,95 @@ public class WorkflowOperations {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("canDelete", "canEdit"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("canDelete", "canEdit"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowOperations
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowOperations.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowOperations is not found in the empty JSON string", WorkflowOperations.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowOperations.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowOperations` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : WorkflowOperations.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowOperations.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowOperations' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowOperations> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowOperations.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowOperations>() {
+           @Override
+           public void write(JsonWriter out, WorkflowOperations value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowOperations read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of WorkflowOperations given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowOperations
+   * @throws IOException if the JSON string is invalid with respect to WorkflowOperations
+   */
+  public static WorkflowOperations fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowOperations.class);
+  }
 
-    // add `canDelete` to the URL query string
-    if (getCanDelete() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scanDelete%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCanDelete()))));
-    }
-
-    // add `canEdit` to the URL query string
-    if (getCanEdit() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scanEdit%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCanEdit()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of WorkflowOperations to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

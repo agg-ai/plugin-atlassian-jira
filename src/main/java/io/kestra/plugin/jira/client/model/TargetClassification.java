@@ -13,49 +13,64 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Classification mapping for classifications in source issues to respective target classification.
  */
-@JsonPropertyOrder({
-  TargetClassification.JSON_PROPERTY_CLASSIFICATIONS,
-  TargetClassification.JSON_PROPERTY_ISSUE_TYPE,
-  TargetClassification.JSON_PROPERTY_PROJECT_KEY_OR_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TargetClassification {
-  public static final String JSON_PROPERTY_CLASSIFICATIONS = "classifications";
+  public static final String SERIALIZED_NAME_CLASSIFICATIONS = "classifications";
+  @SerializedName(SERIALIZED_NAME_CLASSIFICATIONS)
   @javax.annotation.Nonnull
   private Map<String, List<String>> classifications = new HashMap<>();
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE = "issueType";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE = "issueType";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE)
   @javax.annotation.Nullable
   private String issueType;
 
-  public static final String JSON_PROPERTY_PROJECT_KEY_OR_ID = "projectKeyOrId";
+  public static final String SERIALIZED_NAME_PROJECT_KEY_OR_ID = "projectKeyOrId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_KEY_OR_ID)
   @javax.annotation.Nullable
   private String projectKeyOrId;
 
-  public TargetClassification() { 
+  public TargetClassification() {
   }
 
   public TargetClassification classifications(@javax.annotation.Nonnull Map<String, List<String>> classifications) {
@@ -76,15 +91,10 @@ public class TargetClassification {
    * @return classifications
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CLASSIFICATIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Map<String, List<String>> getClassifications() {
     return classifications;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CLASSIFICATIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setClassifications(@javax.annotation.Nonnull Map<String, List<String>> classifications) {
     this.classifications = classifications;
   }
@@ -100,15 +110,10 @@ public class TargetClassification {
    * @return issueType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIssueType() {
     return issueType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueType(@javax.annotation.Nullable String issueType) {
     this.issueType = issueType;
   }
@@ -124,23 +129,16 @@ public class TargetClassification {
    * @return projectKeyOrId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_KEY_OR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProjectKeyOrId() {
     return projectKeyOrId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_KEY_OR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectKeyOrId(@javax.annotation.Nullable String projectKeyOrId) {
     this.projectKeyOrId = projectKeyOrId;
   }
 
 
-  /**
-   * Return true if this targetClassification object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -182,58 +180,101 @@ public class TargetClassification {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("classifications", "issueType", "projectKeyOrId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("classifications"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TargetClassification
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `classifications` to the URL query string
-    if (getClassifications() != null) {
-      for (String _key : getClassifications().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sclassifications%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getClassifications().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getClassifications().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TargetClassification.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TargetClassification is not found in the empty JSON string", TargetClassification.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `issueType` to the URL query string
-    if (getIssueType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueType()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!TargetClassification.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `TargetClassification` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    // add `projectKeyOrId` to the URL query string
-    if (getProjectKeyOrId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectKeyOrId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectKeyOrId()))));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : TargetClassification.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("issueType") != null && !jsonObj.get("issueType").isJsonNull()) && !jsonObj.get("issueType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("issueType").toString()));
+      }
+      if ((jsonObj.get("projectKeyOrId") != null && !jsonObj.get("projectKeyOrId").isJsonNull()) && !jsonObj.get("projectKeyOrId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectKeyOrId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectKeyOrId").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TargetClassification.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TargetClassification' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TargetClassification> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TargetClassification.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TargetClassification>() {
+           @Override
+           public void write(JsonWriter out, TargetClassification value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TargetClassification read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of TargetClassification given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TargetClassification
+   * @throws IOException if the JSON string is invalid with respect to TargetClassification
+   */
+  public static TargetClassification fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TargetClassification.class);
+  }
+
+  /**
+   * Convert an instance of TargetClassification to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

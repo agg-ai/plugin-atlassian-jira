@@ -13,46 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.BulkRedactionResponse;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * RedactionJobStatusResponse
  */
-@JsonPropertyOrder({
-  RedactionJobStatusResponse.JSON_PROPERTY_BULK_REDACTION_RESPONSE,
-  RedactionJobStatusResponse.JSON_PROPERTY_JOB_STATUS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class RedactionJobStatusResponse {
-  public static final String JSON_PROPERTY_BULK_REDACTION_RESPONSE = "bulkRedactionResponse";
+  public static final String SERIALIZED_NAME_BULK_REDACTION_RESPONSE = "bulkRedactionResponse";
+  @SerializedName(SERIALIZED_NAME_BULK_REDACTION_RESPONSE)
   @javax.annotation.Nullable
   private BulkRedactionResponse bulkRedactionResponse;
 
   /**
    * Gets or Sets jobStatus
    */
+  @JsonAdapter(JobStatusEnum.Adapter.class)
   public enum JobStatusEnum {
-    PENDING(String.valueOf("PENDING")),
+    PENDING("PENDING"),
     
-    IN_PROGRESS(String.valueOf("IN_PROGRESS")),
+    IN_PROGRESS("IN_PROGRESS"),
     
-    COMPLETED(String.valueOf("COMPLETED"));
+    COMPLETED("COMPLETED");
 
     private String value;
 
@@ -60,7 +75,6 @@ public class RedactionJobStatusResponse {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -70,7 +84,6 @@ public class RedactionJobStatusResponse {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static JobStatusEnum fromValue(String value) {
       for (JobStatusEnum b : JobStatusEnum.values()) {
         if (b.value.equals(value)) {
@@ -79,13 +92,32 @@ public class RedactionJobStatusResponse {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<JobStatusEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final JobStatusEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public JobStatusEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return JobStatusEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      JobStatusEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_JOB_STATUS = "jobStatus";
+  public static final String SERIALIZED_NAME_JOB_STATUS = "jobStatus";
+  @SerializedName(SERIALIZED_NAME_JOB_STATUS)
   @javax.annotation.Nullable
   private JobStatusEnum jobStatus;
 
-  public RedactionJobStatusResponse() { 
+  public RedactionJobStatusResponse() {
   }
 
   public RedactionJobStatusResponse bulkRedactionResponse(@javax.annotation.Nullable BulkRedactionResponse bulkRedactionResponse) {
@@ -98,15 +130,10 @@ public class RedactionJobStatusResponse {
    * @return bulkRedactionResponse
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BULK_REDACTION_RESPONSE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BulkRedactionResponse getBulkRedactionResponse() {
     return bulkRedactionResponse;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BULK_REDACTION_RESPONSE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBulkRedactionResponse(@javax.annotation.Nullable BulkRedactionResponse bulkRedactionResponse) {
     this.bulkRedactionResponse = bulkRedactionResponse;
   }
@@ -122,23 +149,16 @@ public class RedactionJobStatusResponse {
    * @return jobStatus
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_JOB_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JobStatusEnum getJobStatus() {
     return jobStatus;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_JOB_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setJobStatus(@javax.annotation.Nullable JobStatusEnum jobStatus) {
     this.jobStatus = jobStatus;
   }
 
 
-  /**
-   * Return true if this RedactionJobStatusResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -178,49 +198,99 @@ public class RedactionJobStatusResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("bulkRedactionResponse", "jobStatus"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to RedactionJobStatusResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!RedactionJobStatusResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in RedactionJobStatusResponse is not found in the empty JSON string", RedactionJobStatusResponse.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!RedactionJobStatusResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `RedactionJobStatusResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `bulkRedactionResponse`
+      if (jsonObj.get("bulkRedactionResponse") != null && !jsonObj.get("bulkRedactionResponse").isJsonNull()) {
+        BulkRedactionResponse.validateJsonElement(jsonObj.get("bulkRedactionResponse"));
+      }
+      if ((jsonObj.get("jobStatus") != null && !jsonObj.get("jobStatus").isJsonNull()) && !jsonObj.get("jobStatus").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `jobStatus` to be a primitive type in the JSON string but got `%s`", jsonObj.get("jobStatus").toString()));
+      }
+      // validate the optional field `jobStatus`
+      if (jsonObj.get("jobStatus") != null && !jsonObj.get("jobStatus").isJsonNull()) {
+        JobStatusEnum.validateJsonElement(jsonObj.get("jobStatus"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!RedactionJobStatusResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'RedactionJobStatusResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<RedactionJobStatusResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(RedactionJobStatusResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<RedactionJobStatusResponse>() {
+           @Override
+           public void write(JsonWriter out, RedactionJobStatusResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public RedactionJobStatusResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of RedactionJobStatusResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of RedactionJobStatusResponse
+   * @throws IOException if the JSON string is invalid with respect to RedactionJobStatusResponse
+   */
+  public static RedactionJobStatusResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, RedactionJobStatusResponse.class);
+  }
 
-    // add `bulkRedactionResponse` to the URL query string
-    if (getBulkRedactionResponse() != null) {
-      joiner.add(getBulkRedactionResponse().toUrlQueryString(prefix + "bulkRedactionResponse" + suffix));
-    }
-
-    // add `jobStatus` to the URL query string
-    if (getJobStatus() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sjobStatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getJobStatus()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of RedactionJobStatusResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

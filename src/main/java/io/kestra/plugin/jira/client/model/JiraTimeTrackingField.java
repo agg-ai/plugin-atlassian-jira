@@ -13,36 +13,51 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraTimeTrackingField
  */
-@JsonPropertyOrder({
-  JiraTimeTrackingField.JSON_PROPERTY_TIME_REMAINING
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraTimeTrackingField {
-  public static final String JSON_PROPERTY_TIME_REMAINING = "timeRemaining";
+  public static final String SERIALIZED_NAME_TIME_REMAINING = "timeRemaining";
+  @SerializedName(SERIALIZED_NAME_TIME_REMAINING)
   @javax.annotation.Nonnull
   private String timeRemaining;
 
-  public JiraTimeTrackingField() { 
+  public JiraTimeTrackingField() {
   }
 
   public JiraTimeTrackingField timeRemaining(@javax.annotation.Nonnull String timeRemaining) {
@@ -55,23 +70,16 @@ public class JiraTimeTrackingField {
    * @return timeRemaining
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TIME_REMAINING, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTimeRemaining() {
     return timeRemaining;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TIME_REMAINING, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setTimeRemaining(@javax.annotation.Nonnull String timeRemaining) {
     this.timeRemaining = timeRemaining;
   }
 
 
-  /**
-   * Return true if this JiraTimeTrackingField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -109,44 +117,98 @@ public class JiraTimeTrackingField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("timeRemaining"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("timeRemaining"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraTimeTrackingField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraTimeTrackingField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraTimeTrackingField is not found in the empty JSON string", JiraTimeTrackingField.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraTimeTrackingField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraTimeTrackingField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraTimeTrackingField.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("timeRemaining").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `timeRemaining` to be a primitive type in the JSON string but got `%s`", jsonObj.get("timeRemaining").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraTimeTrackingField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraTimeTrackingField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraTimeTrackingField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraTimeTrackingField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraTimeTrackingField>() {
+           @Override
+           public void write(JsonWriter out, JiraTimeTrackingField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraTimeTrackingField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of JiraTimeTrackingField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraTimeTrackingField
+   * @throws IOException if the JSON string is invalid with respect to JiraTimeTrackingField
+   */
+  public static JiraTimeTrackingField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraTimeTrackingField.class);
+  }
 
-    // add `timeRemaining` to the URL query string
-    if (getTimeRemaining() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeRemaining%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeRemaining()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JiraTimeTrackingField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

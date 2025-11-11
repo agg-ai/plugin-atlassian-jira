@@ -13,107 +13,121 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.GroupName;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of an application role.
  */
-@JsonPropertyOrder({
-  ApplicationRole.JSON_PROPERTY_DEFAULT_GROUPS,
-  ApplicationRole.JSON_PROPERTY_DEFAULT_GROUPS_DETAILS,
-  ApplicationRole.JSON_PROPERTY_DEFINED,
-  ApplicationRole.JSON_PROPERTY_GROUP_DETAILS,
-  ApplicationRole.JSON_PROPERTY_GROUPS,
-  ApplicationRole.JSON_PROPERTY_HAS_UNLIMITED_SEATS,
-  ApplicationRole.JSON_PROPERTY_KEY,
-  ApplicationRole.JSON_PROPERTY_NAME,
-  ApplicationRole.JSON_PROPERTY_NUMBER_OF_SEATS,
-  ApplicationRole.JSON_PROPERTY_PLATFORM,
-  ApplicationRole.JSON_PROPERTY_REMAINING_SEATS,
-  ApplicationRole.JSON_PROPERTY_SELECTED_BY_DEFAULT,
-  ApplicationRole.JSON_PROPERTY_USER_COUNT,
-  ApplicationRole.JSON_PROPERTY_USER_COUNT_DESCRIPTION
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ApplicationRole {
-  public static final String JSON_PROPERTY_DEFAULT_GROUPS = "defaultGroups";
+  public static final String SERIALIZED_NAME_DEFAULT_GROUPS = "defaultGroups";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_GROUPS)
   @javax.annotation.Nullable
   private Set<String> defaultGroups = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_DEFAULT_GROUPS_DETAILS = "defaultGroupsDetails";
+  public static final String SERIALIZED_NAME_DEFAULT_GROUPS_DETAILS = "defaultGroupsDetails";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_GROUPS_DETAILS)
   @javax.annotation.Nullable
   private List<GroupName> defaultGroupsDetails = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_DEFINED = "defined";
+  public static final String SERIALIZED_NAME_DEFINED = "defined";
+  @SerializedName(SERIALIZED_NAME_DEFINED)
   @javax.annotation.Nullable
   private Boolean defined;
 
-  public static final String JSON_PROPERTY_GROUP_DETAILS = "groupDetails";
+  public static final String SERIALIZED_NAME_GROUP_DETAILS = "groupDetails";
+  @SerializedName(SERIALIZED_NAME_GROUP_DETAILS)
   @javax.annotation.Nullable
   private List<GroupName> groupDetails = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_GROUPS = "groups";
+  public static final String SERIALIZED_NAME_GROUPS = "groups";
+  @SerializedName(SERIALIZED_NAME_GROUPS)
   @javax.annotation.Nullable
   private Set<String> groups = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_HAS_UNLIMITED_SEATS = "hasUnlimitedSeats";
+  public static final String SERIALIZED_NAME_HAS_UNLIMITED_SEATS = "hasUnlimitedSeats";
+  @SerializedName(SERIALIZED_NAME_HAS_UNLIMITED_SEATS)
   @javax.annotation.Nullable
   private Boolean hasUnlimitedSeats;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_NUMBER_OF_SEATS = "numberOfSeats";
+  public static final String SERIALIZED_NAME_NUMBER_OF_SEATS = "numberOfSeats";
+  @SerializedName(SERIALIZED_NAME_NUMBER_OF_SEATS)
   @javax.annotation.Nullable
   private Integer numberOfSeats;
 
-  public static final String JSON_PROPERTY_PLATFORM = "platform";
+  public static final String SERIALIZED_NAME_PLATFORM = "platform";
+  @SerializedName(SERIALIZED_NAME_PLATFORM)
   @javax.annotation.Nullable
   private Boolean platform;
 
-  public static final String JSON_PROPERTY_REMAINING_SEATS = "remainingSeats";
+  public static final String SERIALIZED_NAME_REMAINING_SEATS = "remainingSeats";
+  @SerializedName(SERIALIZED_NAME_REMAINING_SEATS)
   @javax.annotation.Nullable
   private Integer remainingSeats;
 
-  public static final String JSON_PROPERTY_SELECTED_BY_DEFAULT = "selectedByDefault";
+  public static final String SERIALIZED_NAME_SELECTED_BY_DEFAULT = "selectedByDefault";
+  @SerializedName(SERIALIZED_NAME_SELECTED_BY_DEFAULT)
   @javax.annotation.Nullable
   private Boolean selectedByDefault;
 
-  public static final String JSON_PROPERTY_USER_COUNT = "userCount";
+  public static final String SERIALIZED_NAME_USER_COUNT = "userCount";
+  @SerializedName(SERIALIZED_NAME_USER_COUNT)
   @javax.annotation.Nullable
   private Integer userCount;
 
-  public static final String JSON_PROPERTY_USER_COUNT_DESCRIPTION = "userCountDescription";
+  public static final String SERIALIZED_NAME_USER_COUNT_DESCRIPTION = "userCountDescription";
+  @SerializedName(SERIALIZED_NAME_USER_COUNT_DESCRIPTION)
   @javax.annotation.Nullable
   private String userCountDescription;
 
-  public ApplicationRole() { 
+  public ApplicationRole() {
   }
 
   public ApplicationRole defaultGroups(@javax.annotation.Nullable Set<String> defaultGroups) {
@@ -134,16 +148,10 @@ public class ApplicationRole {
    * @return defaultGroups
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getDefaultGroups() {
     return defaultGroups;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultGroups(@javax.annotation.Nullable Set<String> defaultGroups) {
     this.defaultGroups = defaultGroups;
   }
@@ -167,15 +175,10 @@ public class ApplicationRole {
    * @return defaultGroupsDetails
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_GROUPS_DETAILS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<GroupName> getDefaultGroupsDetails() {
     return defaultGroupsDetails;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_GROUPS_DETAILS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultGroupsDetails(@javax.annotation.Nullable List<GroupName> defaultGroupsDetails) {
     this.defaultGroupsDetails = defaultGroupsDetails;
   }
@@ -191,15 +194,10 @@ public class ApplicationRole {
    * @return defined
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFINED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDefined() {
     return defined;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFINED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefined(@javax.annotation.Nullable Boolean defined) {
     this.defined = defined;
   }
@@ -223,15 +221,10 @@ public class ApplicationRole {
    * @return groupDetails
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUP_DETAILS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<GroupName> getGroupDetails() {
     return groupDetails;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GROUP_DETAILS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupDetails(@javax.annotation.Nullable List<GroupName> groupDetails) {
     this.groupDetails = groupDetails;
   }
@@ -255,16 +248,10 @@ public class ApplicationRole {
    * @return groups
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getGroups() {
     return groups;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroups(@javax.annotation.Nullable Set<String> groups) {
     this.groups = groups;
   }
@@ -280,15 +267,10 @@ public class ApplicationRole {
    * @return hasUnlimitedSeats
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HAS_UNLIMITED_SEATS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasUnlimitedSeats() {
     return hasUnlimitedSeats;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_HAS_UNLIMITED_SEATS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHasUnlimitedSeats(@javax.annotation.Nullable Boolean hasUnlimitedSeats) {
     this.hasUnlimitedSeats = hasUnlimitedSeats;
   }
@@ -304,15 +286,10 @@ public class ApplicationRole {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
@@ -328,15 +305,10 @@ public class ApplicationRole {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -352,15 +324,10 @@ public class ApplicationRole {
    * @return numberOfSeats
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NUMBER_OF_SEATS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getNumberOfSeats() {
     return numberOfSeats;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NUMBER_OF_SEATS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNumberOfSeats(@javax.annotation.Nullable Integer numberOfSeats) {
     this.numberOfSeats = numberOfSeats;
   }
@@ -376,15 +343,10 @@ public class ApplicationRole {
    * @return platform
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PLATFORM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getPlatform() {
     return platform;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PLATFORM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlatform(@javax.annotation.Nullable Boolean platform) {
     this.platform = platform;
   }
@@ -400,15 +362,10 @@ public class ApplicationRole {
    * @return remainingSeats
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REMAINING_SEATS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getRemainingSeats() {
     return remainingSeats;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_REMAINING_SEATS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRemainingSeats(@javax.annotation.Nullable Integer remainingSeats) {
     this.remainingSeats = remainingSeats;
   }
@@ -424,15 +381,10 @@ public class ApplicationRole {
    * @return selectedByDefault
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELECTED_BY_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSelectedByDefault() {
     return selectedByDefault;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SELECTED_BY_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSelectedByDefault(@javax.annotation.Nullable Boolean selectedByDefault) {
     this.selectedByDefault = selectedByDefault;
   }
@@ -448,15 +400,10 @@ public class ApplicationRole {
    * @return userCount
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USER_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getUserCount() {
     return userCount;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_USER_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserCount(@javax.annotation.Nullable Integer userCount) {
     this.userCount = userCount;
   }
@@ -472,23 +419,16 @@ public class ApplicationRole {
    * @return userCountDescription
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USER_COUNT_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUserCountDescription() {
     return userCountDescription;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_USER_COUNT_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserCountDescription(@javax.annotation.Nullable String userCountDescription) {
     this.userCountDescription = userCountDescription;
   }
 
 
-  /**
-   * Return true if this ApplicationRole object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -552,131 +492,133 @@ public class ApplicationRole {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("defaultGroups", "defaultGroupsDetails", "defined", "groupDetails", "groups", "hasUnlimitedSeats", "key", "name", "numberOfSeats", "platform", "remainingSeats", "selectedByDefault", "userCount", "userCountDescription"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ApplicationRole
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `defaultGroups` to the URL query string
-    if (getDefaultGroups() != null) {
-      int i = 0;
-      for (String _item : getDefaultGroups()) {
-        joiner.add(String.format(Locale.ROOT, "%sdefaultGroups%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
-      }
-      i++;
-    }
-
-    // add `defaultGroupsDetails` to the URL query string
-    if (getDefaultGroupsDetails() != null) {
-      for (int i = 0; i < getDefaultGroupsDetails().size(); i++) {
-        if (getDefaultGroupsDetails().get(i) != null) {
-          joiner.add(getDefaultGroupsDetails().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sdefaultGroupsDetails%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ApplicationRole.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ApplicationRole is not found in the empty JSON string", ApplicationRole.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `defined` to the URL query string
-    if (getDefined() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefined%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefined()))));
-    }
-
-    // add `groupDetails` to the URL query string
-    if (getGroupDetails() != null) {
-      for (int i = 0; i < getGroupDetails().size(); i++) {
-        if (getGroupDetails().get(i) != null) {
-          joiner.add(getGroupDetails().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sgroupDetails%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ApplicationRole.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ApplicationRole` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
-
-    // add `groups` to the URL query string
-    if (getGroups() != null) {
-      int i = 0;
-      for (String _item : getGroups()) {
-        joiner.add(String.format(Locale.ROOT, "%sgroups%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("defaultGroups") != null && !jsonObj.get("defaultGroups").isJsonNull() && !jsonObj.get("defaultGroups").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `defaultGroups` to be an array in the JSON string but got `%s`", jsonObj.get("defaultGroups").toString()));
       }
-      i++;
-    }
+      if (jsonObj.get("defaultGroupsDetails") != null && !jsonObj.get("defaultGroupsDetails").isJsonNull()) {
+        JsonArray jsonArraydefaultGroupsDetails = jsonObj.getAsJsonArray("defaultGroupsDetails");
+        if (jsonArraydefaultGroupsDetails != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("defaultGroupsDetails").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `defaultGroupsDetails` to be an array in the JSON string but got `%s`", jsonObj.get("defaultGroupsDetails").toString()));
+          }
 
-    // add `hasUnlimitedSeats` to the URL query string
-    if (getHasUnlimitedSeats() != null) {
-      joiner.add(String.format(Locale.ROOT, "%shasUnlimitedSeats%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHasUnlimitedSeats()))));
-    }
+          // validate the optional field `defaultGroupsDetails` (array)
+          for (int i = 0; i < jsonArraydefaultGroupsDetails.size(); i++) {
+            GroupName.validateJsonElement(jsonArraydefaultGroupsDetails.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("groupDetails") != null && !jsonObj.get("groupDetails").isJsonNull()) {
+        JsonArray jsonArraygroupDetails = jsonObj.getAsJsonArray("groupDetails");
+        if (jsonArraygroupDetails != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("groupDetails").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groupDetails` to be an array in the JSON string but got `%s`", jsonObj.get("groupDetails").toString()));
+          }
 
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
+          // validate the optional field `groupDetails` (array)
+          for (int i = 0; i < jsonArraygroupDetails.size(); i++) {
+            GroupName.validateJsonElement(jsonArraygroupDetails.get(i));
+          };
+        }
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("groups") != null && !jsonObj.get("groups").isJsonNull() && !jsonObj.get("groups").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groups` to be an array in the JSON string but got `%s`", jsonObj.get("groups").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("userCountDescription") != null && !jsonObj.get("userCountDescription").isJsonNull()) && !jsonObj.get("userCountDescription").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `userCountDescription` to be a primitive type in the JSON string but got `%s`", jsonObj.get("userCountDescription").toString()));
+      }
+  }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ApplicationRole.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ApplicationRole' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ApplicationRole> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ApplicationRole.class));
 
-    // add `numberOfSeats` to the URL query string
-    if (getNumberOfSeats() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snumberOfSeats%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNumberOfSeats()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<ApplicationRole>() {
+           @Override
+           public void write(JsonWriter out, ApplicationRole value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `platform` to the URL query string
-    if (getPlatform() != null) {
-      joiner.add(String.format(Locale.ROOT, "%splatform%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlatform()))));
-    }
+           @Override
+           public ApplicationRole read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `remainingSeats` to the URL query string
-    if (getRemainingSeats() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sremainingSeats%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRemainingSeats()))));
+       }.nullSafe();
     }
+  }
 
-    // add `selectedByDefault` to the URL query string
-    if (getSelectedByDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sselectedByDefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelectedByDefault()))));
-    }
+  /**
+   * Create an instance of ApplicationRole given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ApplicationRole
+   * @throws IOException if the JSON string is invalid with respect to ApplicationRole
+   */
+  public static ApplicationRole fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ApplicationRole.class);
+  }
 
-    // add `userCount` to the URL query string
-    if (getUserCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suserCount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserCount()))));
-    }
-
-    // add `userCountDescription` to the URL query string
-    if (getUserCountDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suserCountDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUserCountDescription()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ApplicationRole to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

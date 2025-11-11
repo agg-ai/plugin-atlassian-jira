@@ -13,187 +13,155 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.WorkflowCompoundCondition;
 import io.kestra.plugin.jira.client.model.WorkflowSimpleCondition;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+
 import io.kestra.plugin.jira.client.invoker.JSON;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-@JsonDeserialize(using = WorkflowCondition.WorkflowConditionDeserializer.class)
-@JsonSerialize(using = WorkflowCondition.WorkflowConditionSerializer.class)
 public class WorkflowCondition extends AbstractOpenApiSchema {
     private static final Logger log = Logger.getLogger(WorkflowCondition.class.getName());
 
-    public static class WorkflowConditionSerializer extends StdSerializer<WorkflowCondition> {
-        public WorkflowConditionSerializer(Class<WorkflowCondition> t) {
-            super(t);
-        }
-
-        public WorkflowConditionSerializer() {
-            this(null);
-        }
-
+    public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
         @Override
-        public void serialize(WorkflowCondition value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeObject(value.getActualInstance());
-        }
-    }
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (!WorkflowCondition.class.isAssignableFrom(type.getRawType())) {
+                return null; // this class only serializes 'WorkflowCondition' and its subtypes
+            }
+            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+            final TypeAdapter<WorkflowSimpleCondition> adapterWorkflowSimpleCondition = gson.getDelegateAdapter(this, TypeToken.get(WorkflowSimpleCondition.class));
+            final TypeAdapter<WorkflowCompoundCondition> adapterWorkflowCompoundCondition = gson.getDelegateAdapter(this, TypeToken.get(WorkflowCompoundCondition.class));
 
-    public static class WorkflowConditionDeserializer extends StdDeserializer<WorkflowCondition> {
-        public WorkflowConditionDeserializer() {
-            this(WorkflowCondition.class);
-        }
-
-        public WorkflowConditionDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public WorkflowCondition deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode tree = jp.readValueAsTree();
-            Object deserialized = null;
-            boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
-            int match = 0;
-            JsonToken token = tree.traverse(jp.getCodec()).nextToken();
-            // deserialize WorkflowCompoundCondition
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (WorkflowCompoundCondition.class.equals(Integer.class) || WorkflowCompoundCondition.class.equals(Long.class) || WorkflowCompoundCondition.class.equals(Float.class) || WorkflowCompoundCondition.class.equals(Double.class) || WorkflowCompoundCondition.class.equals(Boolean.class) || WorkflowCompoundCondition.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((WorkflowCompoundCondition.class.equals(Integer.class) || WorkflowCompoundCondition.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((WorkflowCompoundCondition.class.equals(Float.class) || WorkflowCompoundCondition.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (WorkflowCompoundCondition.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (WorkflowCompoundCondition.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+            return (TypeAdapter<T>) new TypeAdapter<WorkflowCondition>() {
+                @Override
+                public void write(JsonWriter out, WorkflowCondition value) throws IOException {
+                    if (value == null || value.getActualInstance() == null) {
+                        elementAdapter.write(out, null);
+                        return;
                     }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(WorkflowCompoundCondition.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'WorkflowCompoundCondition'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'WorkflowCompoundCondition'", e);
-            }
 
-            // deserialize WorkflowSimpleCondition
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (WorkflowSimpleCondition.class.equals(Integer.class) || WorkflowSimpleCondition.class.equals(Long.class) || WorkflowSimpleCondition.class.equals(Float.class) || WorkflowSimpleCondition.class.equals(Double.class) || WorkflowSimpleCondition.class.equals(Boolean.class) || WorkflowSimpleCondition.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((WorkflowSimpleCondition.class.equals(Integer.class) || WorkflowSimpleCondition.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((WorkflowSimpleCondition.class.equals(Float.class) || WorkflowSimpleCondition.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (WorkflowSimpleCondition.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (WorkflowSimpleCondition.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    // check if the actual instance is of the type `WorkflowSimpleCondition`
+                    if (value.getActualInstance() instanceof WorkflowSimpleCondition) {
+                        JsonElement element = adapterWorkflowSimpleCondition.toJsonTree((WorkflowSimpleCondition)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
                     }
+                    // check if the actual instance is of the type `WorkflowCompoundCondition`
+                    if (value.getActualInstance() instanceof WorkflowCompoundCondition) {
+                        JsonElement element = adapterWorkflowCompoundCondition.toJsonTree((WorkflowCompoundCondition)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    throw new IOException("Failed to serialize as the type doesn't match oneOf schemas: WorkflowCompoundCondition, WorkflowSimpleCondition");
                 }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(WorkflowSimpleCondition.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'WorkflowSimpleCondition'");
+
+                @Override
+                public WorkflowCondition read(JsonReader in) throws IOException {
+                    Object deserialized = null;
+                    JsonElement jsonElement = elementAdapter.read(in);
+
+                    int match = 0;
+                    ArrayList<String> errorMessages = new ArrayList<>();
+                    TypeAdapter actualAdapter = elementAdapter;
+
+                    // deserialize WorkflowSimpleCondition
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        WorkflowSimpleCondition.validateJsonElement(jsonElement);
+                        actualAdapter = adapterWorkflowSimpleCondition;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'WorkflowSimpleCondition'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for WorkflowSimpleCondition failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'WorkflowSimpleCondition'", e);
+                    }
+                    // deserialize WorkflowCompoundCondition
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        WorkflowCompoundCondition.validateJsonElement(jsonElement);
+                        actualAdapter = adapterWorkflowCompoundCondition;
+                        match++;
+                        log.log(Level.FINER, "Input data matches schema 'WorkflowCompoundCondition'");
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for WorkflowCompoundCondition failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'WorkflowCompoundCondition'", e);
+                    }
+
+                    if (match == 1) {
+                        WorkflowCondition ret = new WorkflowCondition();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    }
+
+                    throw new IOException(String.format(Locale.ROOT, "Failed deserialization for WorkflowCondition: %d classes match result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", match, errorMessages, jsonElement.toString()));
                 }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'WorkflowSimpleCondition'", e);
-            }
-
-            if (match == 1) {
-                WorkflowCondition ret = new WorkflowCondition();
-                ret.setActualInstance(deserialized);
-                return ret;
-            }
-            throw new IOException(String.format(Locale.ROOT, "Failed deserialization for WorkflowCondition: %d classes match result, expected 1", match));
-        }
-
-        /**
-         * Handle deserialization of the 'null' value.
-         */
-        @Override
-        public WorkflowCondition getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "WorkflowCondition cannot be null");
+            }.nullSafe();
         }
     }
 
     // store a list of schema names defined in oneOf
-    public static final Map<String, Class<?>> schemas = new HashMap<>();
+    public static final Map<String, Class<?>> schemas = new HashMap<String, Class<?>>();
 
     public WorkflowCondition() {
         super("oneOf", Boolean.FALSE);
     }
 
-    public WorkflowCondition(WorkflowCompoundCondition o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public WorkflowCondition(WorkflowSimpleCondition o) {
+    public WorkflowCondition(Object o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
     static {
-        schemas.put("WorkflowCompoundCondition", WorkflowCompoundCondition.class);
         schemas.put("WorkflowSimpleCondition", WorkflowSimpleCondition.class);
-        JSON.registerDescendants(WorkflowCondition.class, Collections.unmodifiableMap(schemas));
-        // Initialize and register the discriminator mappings.
-        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("compound", WorkflowCompoundCondition.class);
-        mappings.put("simple", WorkflowSimpleCondition.class);
-        mappings.put("WorkflowCondition", WorkflowCondition.class);
-        JSON.registerDiscriminator(WorkflowCondition.class, "nodeType", mappings);
+        schemas.put("WorkflowCompoundCondition", WorkflowCompoundCondition.class);
     }
 
     @Override
@@ -207,16 +175,15 @@ public class WorkflowCondition extends AbstractOpenApiSchema {
      * WorkflowCompoundCondition, WorkflowSimpleCondition
      *
      * It could be an instance of the 'oneOf' schemas.
-     * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(WorkflowCompoundCondition.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof WorkflowSimpleCondition) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(WorkflowSimpleCondition.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof WorkflowCompoundCondition) {
             super.setActualInstance(instance);
             return;
         }
@@ -230,9 +197,21 @@ public class WorkflowCondition extends AbstractOpenApiSchema {
      *
      * @return The actual instance (WorkflowCompoundCondition, WorkflowSimpleCondition)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `WorkflowSimpleCondition`. If the actual instance is not `WorkflowSimpleCondition`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `WorkflowSimpleCondition`
+     * @throws ClassCastException if the instance is not `WorkflowSimpleCondition`
+     */
+    public WorkflowSimpleCondition getWorkflowSimpleCondition() throws ClassCastException {
+        return (WorkflowSimpleCondition)super.getActualInstance();
     }
 
     /**
@@ -247,64 +226,54 @@ public class WorkflowCondition extends AbstractOpenApiSchema {
     }
 
     /**
-     * Get the actual instance of `WorkflowSimpleCondition`. If the actual instance is not `WorkflowSimpleCondition`,
-     * the ClassCastException will be thrown.
+     * Validates the JSON Element and throws an exception if issues found
      *
-     * @return The actual instance of `WorkflowSimpleCondition`
-     * @throws ClassCastException if the instance is not `WorkflowSimpleCondition`
+     * @param jsonElement JSON Element
+     * @throws IOException if the JSON Element is invalid with respect to WorkflowCondition
      */
-    public WorkflowSimpleCondition getWorkflowSimpleCondition() throws ClassCastException {
-        return (WorkflowSimpleCondition)super.getActualInstance();
-    }
-
-
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
-  }
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @param prefix prefix of the query string
-   * @return URL query string
-   */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    if (getActualInstance() instanceof WorkflowSimpleCondition) {
-        if (getActualInstance() != null) {
-          joiner.add(((WorkflowSimpleCondition)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+        // validate oneOf schemas one by one
+        int validCount = 0;
+        ArrayList<String> errorMessages = new ArrayList<>();
+        // validate the json string with WorkflowSimpleCondition
+        try {
+            WorkflowSimpleCondition.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for WorkflowSimpleCondition failed with `%s`.", e.getMessage()));
+            // continue to the next one
         }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof WorkflowCompoundCondition) {
-        if (getActualInstance() != null) {
-          joiner.add(((WorkflowCompoundCondition)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
+        // validate the json string with WorkflowCompoundCondition
+        try {
+            WorkflowCompoundCondition.validateJsonElement(jsonElement);
+            validCount++;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for WorkflowCompoundCondition failed with `%s`.", e.getMessage()));
+            // continue to the next one
         }
-        return joiner.toString();
+        if (validCount != 1) {
+            throw new IOException(String.format(Locale.ROOT, "The JSON string is invalid for WorkflowCondition with oneOf schemas: WorkflowCompoundCondition, WorkflowSimpleCondition. %d class(es) match the result, expected 1. Detailed failure message for oneOf schemas: %s. JSON: %s", validCount, errorMessages, jsonElement.toString()));
+        }
     }
-    return null;
-  }
 
+    /**
+     * Create an instance of WorkflowCondition given an JSON string
+     *
+     * @param jsonString JSON string
+     * @return An instance of WorkflowCondition
+     * @throws IOException if the JSON string is invalid with respect to WorkflowCondition
+     */
+    public static WorkflowCondition fromJson(String jsonString) throws IOException {
+        return JSON.getGson().fromJson(jsonString, WorkflowCondition.class);
+    }
+
+    /**
+     * Convert an instance of WorkflowCondition to an JSON string
+     *
+     * @return JSON string
+     */
+    public String toJson() {
+        return JSON.getGson().toJson(this);
+    }
 }
 

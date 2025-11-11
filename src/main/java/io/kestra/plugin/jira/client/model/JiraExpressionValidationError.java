@@ -13,60 +13,75 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about syntax and type errors. The error details apply to the entire expression, unless the object includes:   *  &#x60;line&#x60; and &#x60;column&#x60;  *  &#x60;expression&#x60;
  */
-@JsonPropertyOrder({
-  JiraExpressionValidationError.JSON_PROPERTY_COLUMN,
-  JiraExpressionValidationError.JSON_PROPERTY_EXPRESSION,
-  JiraExpressionValidationError.JSON_PROPERTY_LINE,
-  JiraExpressionValidationError.JSON_PROPERTY_MESSAGE,
-  JiraExpressionValidationError.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraExpressionValidationError {
-  public static final String JSON_PROPERTY_COLUMN = "column";
+  public static final String SERIALIZED_NAME_COLUMN = "column";
+  @SerializedName(SERIALIZED_NAME_COLUMN)
   @javax.annotation.Nullable
   private Integer column;
 
-  public static final String JSON_PROPERTY_EXPRESSION = "expression";
+  public static final String SERIALIZED_NAME_EXPRESSION = "expression";
+  @SerializedName(SERIALIZED_NAME_EXPRESSION)
   @javax.annotation.Nullable
   private String expression;
 
-  public static final String JSON_PROPERTY_LINE = "line";
+  public static final String SERIALIZED_NAME_LINE = "line";
+  @SerializedName(SERIALIZED_NAME_LINE)
   @javax.annotation.Nullable
   private Integer line;
 
-  public static final String JSON_PROPERTY_MESSAGE = "message";
+  public static final String SERIALIZED_NAME_MESSAGE = "message";
+  @SerializedName(SERIALIZED_NAME_MESSAGE)
   @javax.annotation.Nonnull
   private String message;
 
   /**
    * The error type.
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    SYNTAX(String.valueOf("syntax")),
+    SYNTAX("syntax"),
     
-    TYPE(String.valueOf("type")),
+    TYPE("type"),
     
-    OTHER(String.valueOf("other"));
+    OTHER("other");
 
     private String value;
 
@@ -74,7 +89,6 @@ public class JiraExpressionValidationError {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -84,7 +98,6 @@ public class JiraExpressionValidationError {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -93,13 +106,32 @@ public class JiraExpressionValidationError {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nonnull
   private TypeEnum type;
 
-  public JiraExpressionValidationError() { 
+  public JiraExpressionValidationError() {
   }
 
   public JiraExpressionValidationError column(@javax.annotation.Nullable Integer column) {
@@ -112,15 +144,10 @@ public class JiraExpressionValidationError {
    * @return column
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COLUMN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getColumn() {
     return column;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_COLUMN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setColumn(@javax.annotation.Nullable Integer column) {
     this.column = column;
   }
@@ -136,15 +163,10 @@ public class JiraExpressionValidationError {
    * @return expression
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPRESSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpression() {
     return expression;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPRESSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExpression(@javax.annotation.Nullable String expression) {
     this.expression = expression;
   }
@@ -160,15 +182,10 @@ public class JiraExpressionValidationError {
    * @return line
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LINE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getLine() {
     return line;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LINE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLine(@javax.annotation.Nullable Integer line) {
     this.line = line;
   }
@@ -184,15 +201,10 @@ public class JiraExpressionValidationError {
    * @return message
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getMessage() {
     return message;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setMessage(@javax.annotation.Nonnull String message) {
     this.message = message;
   }
@@ -208,23 +220,16 @@ public class JiraExpressionValidationError {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this JiraExpressionValidationError object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -270,64 +275,106 @@ public class JiraExpressionValidationError {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("column", "expression", "line", "message", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("message", "type"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraExpressionValidationError
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraExpressionValidationError.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraExpressionValidationError is not found in the empty JSON string", JiraExpressionValidationError.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraExpressionValidationError.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraExpressionValidationError` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraExpressionValidationError.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("expression") != null && !jsonObj.get("expression").isJsonNull()) && !jsonObj.get("expression").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expression` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expression").toString()));
+      }
+      if (!jsonObj.get("message").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `message` to be a primitive type in the JSON string but got `%s`", jsonObj.get("message").toString()));
+      }
+      if (!jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the required field `type`
+      TypeEnum.validateJsonElement(jsonObj.get("type"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraExpressionValidationError.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraExpressionValidationError' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraExpressionValidationError> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraExpressionValidationError.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraExpressionValidationError>() {
+           @Override
+           public void write(JsonWriter out, JiraExpressionValidationError value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraExpressionValidationError read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of JiraExpressionValidationError given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraExpressionValidationError
+   * @throws IOException if the JSON string is invalid with respect to JiraExpressionValidationError
+   */
+  public static JiraExpressionValidationError fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraExpressionValidationError.class);
+  }
 
-    // add `column` to the URL query string
-    if (getColumn() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scolumn%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColumn()))));
-    }
-
-    // add `expression` to the URL query string
-    if (getExpression() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpression%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpression()))));
-    }
-
-    // add `line` to the URL query string
-    if (getLine() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sline%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLine()))));
-    }
-
-    // add `message` to the URL query string
-    if (getMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JiraExpressionValidationError to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

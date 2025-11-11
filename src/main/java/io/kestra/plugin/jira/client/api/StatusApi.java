@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.JiraStatus;
 import io.kestra.plugin.jira.client.model.PageOfStatuses;
@@ -26,1338 +35,1387 @@ import io.kestra.plugin.jira.client.model.StatusProjectUsageDTO;
 import io.kestra.plugin.jira.client.model.StatusUpdateRequest;
 import io.kestra.plugin.jira.client.model.StatusWorkflowUsageDTO;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class StatusApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public StatusApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public StatusApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createStatuses
+     * @param statusCreateRequest Details of the statuses being created and their scope. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createStatusesCall(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public StatusApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public StatusApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Bulk create statuses
-   * Creates statuses for a global or project scope.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param statusCreateRequest Details of the statuses being created and their scope. (required)
-   * @return List&lt;JiraStatus&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<JiraStatus> createStatuses(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest) throws ApiException {
-    return createStatuses(statusCreateRequest, null);
-  }
-
-  /**
-   * Bulk create statuses
-   * Creates statuses for a global or project scope.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param statusCreateRequest Details of the statuses being created and their scope. (required)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;JiraStatus&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<JiraStatus> createStatuses(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<JiraStatus>> localVarResponse = createStatusesWithHttpInfo(statusCreateRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk create statuses
-   * Creates statuses for a global or project scope.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param statusCreateRequest Details of the statuses being created and their scope. (required)
-   * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<JiraStatus>> createStatusesWithHttpInfo(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest) throws ApiException {
-    return createStatusesWithHttpInfo(statusCreateRequest, null);
-  }
-
-  /**
-   * Bulk create statuses
-   * Creates statuses for a global or project scope.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param statusCreateRequest Details of the statuses being created and their scope. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<JiraStatus>> createStatusesWithHttpInfo(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createStatusesRequestBuilder(statusCreateRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createStatuses", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<JiraStatus>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<JiraStatus> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<JiraStatus>>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = statusCreateRequest;
 
-        return new ApiResponse<List<JiraStatus>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses";
 
-  private HttpRequest.Builder createStatusesRequestBuilder(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'statusCreateRequest' is set
-    if (statusCreateRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'statusCreateRequest' when calling createStatuses");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(statusCreateRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk delete Statuses
-   * Deletes statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteStatusesById(@javax.annotation.Nonnull List<String> id) throws ApiException {
-    return deleteStatusesById(id, null);
-  }
-
-  /**
-   * Bulk delete Statuses
-   * Deletes statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteStatusesById(@javax.annotation.Nonnull List<String> id, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deleteStatusesByIdWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk delete Statuses
-   * Deletes statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteStatusesByIdWithHttpInfo(@javax.annotation.Nonnull List<String> id) throws ApiException {
-    return deleteStatusesByIdWithHttpInfo(id, null);
-  }
-
-  /**
-   * Bulk delete Statuses
-   * Deletes statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteStatusesByIdWithHttpInfo(@javax.annotation.Nonnull List<String> id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteStatusesByIdRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteStatusesById", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteStatusesByIdRequestBuilder(@javax.annotation.Nonnull List<String> id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteStatusesById");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue type usages by status and project
-   * Returns a page of issue types in a project using a given status.
-   * @param statusId The statusId to fetch issue type usages for (required)
-   * @param projectId The projectId to fetch issue type usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @return StatusProjectIssueTypeUsageDTO
-   * @throws ApiException if fails to make API call
-   */
-  public StatusProjectIssueTypeUsageDTO getProjectIssueTypeUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getProjectIssueTypeUsagesForStatus(statusId, projectId, nextPageToken, maxResults, null);
-  }
-
-  /**
-   * Get issue type usages by status and project
-   * Returns a page of issue types in a project using a given status.
-   * @param statusId The statusId to fetch issue type usages for (required)
-   * @param projectId The projectId to fetch issue type usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return StatusProjectIssueTypeUsageDTO
-   * @throws ApiException if fails to make API call
-   */
-  public StatusProjectIssueTypeUsageDTO getProjectIssueTypeUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<StatusProjectIssueTypeUsageDTO> localVarResponse = getProjectIssueTypeUsagesForStatusWithHttpInfo(statusId, projectId, nextPageToken, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue type usages by status and project
-   * Returns a page of issue types in a project using a given status.
-   * @param statusId The statusId to fetch issue type usages for (required)
-   * @param projectId The projectId to fetch issue type usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @return ApiResponse&lt;StatusProjectIssueTypeUsageDTO&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<StatusProjectIssueTypeUsageDTO> getProjectIssueTypeUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getProjectIssueTypeUsagesForStatusWithHttpInfo(statusId, projectId, nextPageToken, maxResults, null);
-  }
-
-  /**
-   * Get issue type usages by status and project
-   * Returns a page of issue types in a project using a given status.
-   * @param statusId The statusId to fetch issue type usages for (required)
-   * @param projectId The projectId to fetch issue type usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;StatusProjectIssueTypeUsageDTO&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<StatusProjectIssueTypeUsageDTO> getProjectIssueTypeUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectIssueTypeUsagesForStatusRequestBuilder(statusId, projectId, nextPageToken, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectIssueTypeUsagesForStatus", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<StatusProjectIssueTypeUsageDTO>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        StatusProjectIssueTypeUsageDTO responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<StatusProjectIssueTypeUsageDTO>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<StatusProjectIssueTypeUsageDTO>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectIssueTypeUsagesForStatusRequestBuilder(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'statusId' is set
-    if (statusId == null) {
-      throw new ApiException(400, "Missing the required parameter 'statusId' when calling getProjectIssueTypeUsagesForStatus");
-    }
-    // verify the required parameter 'projectId' is set
-    if (projectId == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectId' when calling getProjectIssueTypeUsagesForStatus");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses/{statusId}/project/{projectId}/issueTypeUsages"
-        .replace("{statusId}", ApiClient.urlEncode(statusId.toString()))
-        .replace("{projectId}", ApiClient.urlEncode(projectId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "nextPageToken";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("nextPageToken", nextPageToken));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get project usages by status
-   * Returns a page of projects using a given status.
-   * @param statusId The statusId to fetch project usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @return StatusProjectUsageDTO
-   * @throws ApiException if fails to make API call
-   */
-  public StatusProjectUsageDTO getProjectUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getProjectUsagesForStatus(statusId, nextPageToken, maxResults, null);
-  }
-
-  /**
-   * Get project usages by status
-   * Returns a page of projects using a given status.
-   * @param statusId The statusId to fetch project usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return StatusProjectUsageDTO
-   * @throws ApiException if fails to make API call
-   */
-  public StatusProjectUsageDTO getProjectUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<StatusProjectUsageDTO> localVarResponse = getProjectUsagesForStatusWithHttpInfo(statusId, nextPageToken, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get project usages by status
-   * Returns a page of projects using a given status.
-   * @param statusId The statusId to fetch project usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @return ApiResponse&lt;StatusProjectUsageDTO&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<StatusProjectUsageDTO> getProjectUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getProjectUsagesForStatusWithHttpInfo(statusId, nextPageToken, maxResults, null);
-  }
-
-  /**
-   * Get project usages by status
-   * Returns a page of projects using a given status.
-   * @param statusId The statusId to fetch project usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;StatusProjectUsageDTO&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<StatusProjectUsageDTO> getProjectUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectUsagesForStatusRequestBuilder(statusId, nextPageToken, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectUsagesForStatus", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<StatusProjectUsageDTO>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createStatusesValidateBeforeCall(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'statusCreateRequest' is set
+        if (statusCreateRequest == null) {
+            throw new ApiException("Missing the required parameter 'statusCreateRequest' when calling createStatuses(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        StatusProjectUsageDTO responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<StatusProjectUsageDTO>() {});
-        
-        localVarResponse.body().close();
+        return createStatusesCall(statusCreateRequest, _callback);
 
-        return new ApiResponse<StatusProjectUsageDTO>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectUsagesForStatusRequestBuilder(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'statusId' is set
-    if (statusId == null) {
-      throw new ApiException(400, "Missing the required parameter 'statusId' when calling getProjectUsagesForStatus");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses/{statusId}/projectUsages"
-        .replace("{statusId}", ApiClient.urlEncode(statusId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "nextPageToken";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("nextPageToken", nextPageToken));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Bulk create statuses
+     * Creates statuses for a global or project scope.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param statusCreateRequest Details of the statuses being created and their scope. (required)
+     * @return List&lt;JiraStatus&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<JiraStatus> createStatuses(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest) throws ApiException {
+        ApiResponse<List<JiraStatus>> localVarResp = createStatusesWithHttpInfo(statusCreateRequest);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Bulk create statuses
+     * Creates statuses for a global or project scope.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param statusCreateRequest Details of the statuses being created and their scope. (required)
+     * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<JiraStatus>> createStatusesWithHttpInfo(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest) throws ApiException {
+        okhttp3.Call localVarCall = createStatusesValidateBeforeCall(statusCreateRequest, null);
+        Type localVarReturnType = new TypeToken<List<JiraStatus>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Bulk create statuses (asynchronously)
+     * Creates statuses for a global or project scope.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param statusCreateRequest Details of the statuses being created and their scope. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createStatusesAsync(@javax.annotation.Nonnull StatusCreateRequest statusCreateRequest, final ApiCallback<List<JiraStatus>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createStatusesValidateBeforeCall(statusCreateRequest, _callback);
+        Type localVarReturnType = new TypeToken<List<JiraStatus>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for deleteStatusesById
+     * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteStatusesByIdCall(@javax.annotation.Nonnull List<String> id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Bulk get statuses
-   * Returns a list of the statuses specified by one or more status IDs.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @return List&lt;JiraStatus&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<JiraStatus> getStatusesById(@javax.annotation.Nonnull List<String> id) throws ApiException {
-    return getStatusesById(id, null);
-  }
-
-  /**
-   * Bulk get statuses
-   * Returns a list of the statuses specified by one or more status IDs.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;JiraStatus&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<JiraStatus> getStatusesById(@javax.annotation.Nonnull List<String> id, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<JiraStatus>> localVarResponse = getStatusesByIdWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk get statuses
-   * Returns a list of the statuses specified by one or more status IDs.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<JiraStatus>> getStatusesByIdWithHttpInfo(@javax.annotation.Nonnull List<String> id) throws ApiException {
-    return getStatusesByIdWithHttpInfo(id, null);
-  }
-
-  /**
-   * Bulk get statuses
-   * Returns a list of the statuses specified by one or more status IDs.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<JiraStatus>> getStatusesByIdWithHttpInfo(@javax.annotation.Nonnull List<String> id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getStatusesByIdRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getStatusesById", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<JiraStatus>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<JiraStatus> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<JiraStatus>>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<List<JiraStatus>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses";
 
-  private HttpRequest.Builder getStatusesByIdRequestBuilder(@javax.annotation.Nonnull List<String> id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getStatusesById");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk get statuses by name
-   * Returns a list of the statuses specified by one or more status names.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Browse projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param name The list of status names. To include multiple names, provide an ampersand-separated list. For example, name&#x3D;nameXX&amp;name&#x3D;nameYY.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @param projectId The project the status is part of or null for global statuses. (optional)
-   * @return List&lt;JiraStatus&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<JiraStatus> getStatusesByName(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId) throws ApiException {
-    return getStatusesByName(name, projectId, null);
-  }
-
-  /**
-   * Bulk get statuses by name
-   * Returns a list of the statuses specified by one or more status names.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Browse projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param name The list of status names. To include multiple names, provide an ampersand-separated list. For example, name&#x3D;nameXX&amp;name&#x3D;nameYY.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @param projectId The project the status is part of or null for global statuses. (optional)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;JiraStatus&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<JiraStatus> getStatusesByName(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<JiraStatus>> localVarResponse = getStatusesByNameWithHttpInfo(name, projectId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk get statuses by name
-   * Returns a list of the statuses specified by one or more status names.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Browse projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param name The list of status names. To include multiple names, provide an ampersand-separated list. For example, name&#x3D;nameXX&amp;name&#x3D;nameYY.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @param projectId The project the status is part of or null for global statuses. (optional)
-   * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<JiraStatus>> getStatusesByNameWithHttpInfo(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId) throws ApiException {
-    return getStatusesByNameWithHttpInfo(name, projectId, null);
-  }
-
-  /**
-   * Bulk get statuses by name
-   * Returns a list of the statuses specified by one or more status names.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Browse projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param name The list of status names. To include multiple names, provide an ampersand-separated list. For example, name&#x3D;nameXX&amp;name&#x3D;nameYY.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
-   * @param projectId The project the status is part of or null for global statuses. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<JiraStatus>> getStatusesByNameWithHttpInfo(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getStatusesByNameRequestBuilder(name, projectId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getStatusesByName", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<JiraStatus>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<JiraStatus> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<JiraStatus>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<JiraStatus>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getStatusesByNameRequestBuilder(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'name' is set
-    if (name == null) {
-      throw new ApiException(400, "Missing the required parameter 'name' when calling getStatusesByName");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses/byNames";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "name";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "name", name));
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectId", projectId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get workflow usages by status
-   * Returns a page of workflows using a given status.
-   * @param statusId The statusId to fetch workflow usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @return StatusWorkflowUsageDTO
-   * @throws ApiException if fails to make API call
-   */
-  public StatusWorkflowUsageDTO getWorkflowUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getWorkflowUsagesForStatus(statusId, nextPageToken, maxResults, null);
-  }
-
-  /**
-   * Get workflow usages by status
-   * Returns a page of workflows using a given status.
-   * @param statusId The statusId to fetch workflow usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return StatusWorkflowUsageDTO
-   * @throws ApiException if fails to make API call
-   */
-  public StatusWorkflowUsageDTO getWorkflowUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<StatusWorkflowUsageDTO> localVarResponse = getWorkflowUsagesForStatusWithHttpInfo(statusId, nextPageToken, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get workflow usages by status
-   * Returns a page of workflows using a given status.
-   * @param statusId The statusId to fetch workflow usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @return ApiResponse&lt;StatusWorkflowUsageDTO&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<StatusWorkflowUsageDTO> getWorkflowUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getWorkflowUsagesForStatusWithHttpInfo(statusId, nextPageToken, maxResults, null);
-  }
-
-  /**
-   * Get workflow usages by status
-   * Returns a page of workflows using a given status.
-   * @param statusId The statusId to fetch workflow usages for (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;StatusWorkflowUsageDTO&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<StatusWorkflowUsageDTO> getWorkflowUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getWorkflowUsagesForStatusRequestBuilder(statusId, nextPageToken, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getWorkflowUsagesForStatus", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<StatusWorkflowUsageDTO>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        StatusWorkflowUsageDTO responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<StatusWorkflowUsageDTO>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<StatusWorkflowUsageDTO>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getWorkflowUsagesForStatusRequestBuilder(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'statusId' is set
-    if (statusId == null) {
-      throw new ApiException(400, "Missing the required parameter 'statusId' when calling getWorkflowUsagesForStatus");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses/{statusId}/workflowUsages"
-        .replace("{statusId}", ApiClient.urlEncode(statusId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "nextPageToken";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("nextPageToken", nextPageToken));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Search statuses paginated
-   * Returns a [paginated](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#pagination) list of statuses that match a search on name or project.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param projectId The project the status is part of or null for global statuses. (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 200)
-   * @param searchString Term to match status names against or null to search for all statuses in the search scope. (optional)
-   * @param statusCategory Category of the status to filter by. The supported values are: &#x60;TODO&#x60;, &#x60;IN_PROGRESS&#x60;, and &#x60;DONE&#x60;. (optional)
-   * @return PageOfStatuses
-   * @throws ApiException if fails to make API call
-   */
-  public PageOfStatuses search(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory) throws ApiException {
-    return search(projectId, startAt, maxResults, searchString, statusCategory, null);
-  }
-
-  /**
-   * Search statuses paginated
-   * Returns a [paginated](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#pagination) list of statuses that match a search on name or project.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param projectId The project the status is part of or null for global statuses. (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 200)
-   * @param searchString Term to match status names against or null to search for all statuses in the search scope. (optional)
-   * @param statusCategory Category of the status to filter by. The supported values are: &#x60;TODO&#x60;, &#x60;IN_PROGRESS&#x60;, and &#x60;DONE&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageOfStatuses
-   * @throws ApiException if fails to make API call
-   */
-  public PageOfStatuses search(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageOfStatuses> localVarResponse = searchWithHttpInfo(projectId, startAt, maxResults, searchString, statusCategory, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Search statuses paginated
-   * Returns a [paginated](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#pagination) list of statuses that match a search on name or project.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param projectId The project the status is part of or null for global statuses. (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 200)
-   * @param searchString Term to match status names against or null to search for all statuses in the search scope. (optional)
-   * @param statusCategory Category of the status to filter by. The supported values are: &#x60;TODO&#x60;, &#x60;IN_PROGRESS&#x60;, and &#x60;DONE&#x60;. (optional)
-   * @return ApiResponse&lt;PageOfStatuses&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageOfStatuses> searchWithHttpInfo(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory) throws ApiException {
-    return searchWithHttpInfo(projectId, startAt, maxResults, searchString, statusCategory, null);
-  }
-
-  /**
-   * Search statuses paginated
-   * Returns a [paginated](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#pagination) list of statuses that match a search on name or project.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param projectId The project the status is part of or null for global statuses. (optional)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 200)
-   * @param searchString Term to match status names against or null to search for all statuses in the search scope. (optional)
-   * @param statusCategory Category of the status to filter by. The supported values are: &#x60;TODO&#x60;, &#x60;IN_PROGRESS&#x60;, and &#x60;DONE&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageOfStatuses&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageOfStatuses> searchWithHttpInfo(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = searchRequestBuilder(projectId, startAt, maxResults, searchString, statusCategory, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("search", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageOfStatuses>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageOfStatuses responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageOfStatuses>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageOfStatuses>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder searchRequestBuilder(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses/search";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("projectId", projectId));
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "searchString";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("searchString", searchString));
-    localVarQueryParameterBaseName = "statusCategory";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("statusCategory", statusCategory));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk update statuses
-   * Updates statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param statusUpdateRequest The list of statuses that will be updated. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateStatuses(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest) throws ApiException {
-    return updateStatuses(statusUpdateRequest, null);
-  }
-
-  /**
-   * Bulk update statuses
-   * Updates statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param statusUpdateRequest The list of statuses that will be updated. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateStatuses(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateStatusesWithHttpInfo(statusUpdateRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk update statuses
-   * Updates statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param statusUpdateRequest The list of statuses that will be updated. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateStatusesWithHttpInfo(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest) throws ApiException {
-    return updateStatusesWithHttpInfo(statusUpdateRequest, null);
-  }
-
-  /**
-   * Bulk update statuses
-   * Updates statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
-   * @param statusUpdateRequest The list of statuses that will be updated. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateStatusesWithHttpInfo(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateStatusesRequestBuilder(statusUpdateRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateStatuses", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteStatusesByIdValidateBeforeCall(@javax.annotation.Nonnull List<String> id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteStatusesById(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        return deleteStatusesByIdCall(id, _callback);
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateStatusesRequestBuilder(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'statusUpdateRequest' is set
-    if (statusUpdateRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'statusUpdateRequest' when calling updateStatuses");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/statuses";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(statusUpdateRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Bulk delete Statuses
+     * Deletes statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deleteStatusesById(@javax.annotation.Nonnull List<String> id) throws ApiException {
+        ApiResponse<Object> localVarResp = deleteStatusesByIdWithHttpInfo(id);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Bulk delete Statuses
+     * Deletes statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deleteStatusesByIdWithHttpInfo(@javax.annotation.Nonnull List<String> id) throws ApiException {
+        okhttp3.Call localVarCall = deleteStatusesByIdValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk delete Statuses (asynchronously)
+     * Deletes statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteStatusesByIdAsync(@javax.annotation.Nonnull List<String> id, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteStatusesByIdValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectIssueTypeUsagesForStatus
+     * @param statusId The statusId to fetch issue type usages for (required)
+     * @param projectId The projectId to fetch issue type usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectIssueTypeUsagesForStatusCall(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses/{statusId}/project/{projectId}/issueTypeUsages"
+            .replace("{" + "statusId" + "}", localVarApiClient.escapeString(statusId.toString()))
+            .replace("{" + "projectId" + "}", localVarApiClient.escapeString(projectId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (nextPageToken != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nextPageToken", nextPageToken));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectIssueTypeUsagesForStatusValidateBeforeCall(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'statusId' is set
+        if (statusId == null) {
+            throw new ApiException("Missing the required parameter 'statusId' when calling getProjectIssueTypeUsagesForStatus(Async)");
+        }
+
+        // verify the required parameter 'projectId' is set
+        if (projectId == null) {
+            throw new ApiException("Missing the required parameter 'projectId' when calling getProjectIssueTypeUsagesForStatus(Async)");
+        }
+
+        return getProjectIssueTypeUsagesForStatusCall(statusId, projectId, nextPageToken, maxResults, _callback);
+
+    }
+
+    /**
+     * Get issue type usages by status and project
+     * Returns a page of issue types in a project using a given status.
+     * @param statusId The statusId to fetch issue type usages for (required)
+     * @param projectId The projectId to fetch issue type usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @return StatusProjectIssueTypeUsageDTO
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public StatusProjectIssueTypeUsageDTO getProjectIssueTypeUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<StatusProjectIssueTypeUsageDTO> localVarResp = getProjectIssueTypeUsagesForStatusWithHttpInfo(statusId, projectId, nextPageToken, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue type usages by status and project
+     * Returns a page of issue types in a project using a given status.
+     * @param statusId The statusId to fetch issue type usages for (required)
+     * @param projectId The projectId to fetch issue type usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @return ApiResponse&lt;StatusProjectIssueTypeUsageDTO&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<StatusProjectIssueTypeUsageDTO> getProjectIssueTypeUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getProjectIssueTypeUsagesForStatusValidateBeforeCall(statusId, projectId, nextPageToken, maxResults, null);
+        Type localVarReturnType = new TypeToken<StatusProjectIssueTypeUsageDTO>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue type usages by status and project (asynchronously)
+     * Returns a page of issue types in a project using a given status.
+     * @param statusId The statusId to fetch issue type usages for (required)
+     * @param projectId The projectId to fetch issue type usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectIssueTypeUsagesForStatusAsync(@javax.annotation.Nonnull String statusId, @javax.annotation.Nonnull String projectId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback<StatusProjectIssueTypeUsageDTO> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectIssueTypeUsagesForStatusValidateBeforeCall(statusId, projectId, nextPageToken, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<StatusProjectIssueTypeUsageDTO>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectUsagesForStatus
+     * @param statusId The statusId to fetch project usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectUsagesForStatusCall(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses/{statusId}/projectUsages"
+            .replace("{" + "statusId" + "}", localVarApiClient.escapeString(statusId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (nextPageToken != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nextPageToken", nextPageToken));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectUsagesForStatusValidateBeforeCall(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'statusId' is set
+        if (statusId == null) {
+            throw new ApiException("Missing the required parameter 'statusId' when calling getProjectUsagesForStatus(Async)");
+        }
+
+        return getProjectUsagesForStatusCall(statusId, nextPageToken, maxResults, _callback);
+
+    }
+
+    /**
+     * Get project usages by status
+     * Returns a page of projects using a given status.
+     * @param statusId The statusId to fetch project usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @return StatusProjectUsageDTO
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public StatusProjectUsageDTO getProjectUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<StatusProjectUsageDTO> localVarResp = getProjectUsagesForStatusWithHttpInfo(statusId, nextPageToken, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get project usages by status
+     * Returns a page of projects using a given status.
+     * @param statusId The statusId to fetch project usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @return ApiResponse&lt;StatusProjectUsageDTO&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<StatusProjectUsageDTO> getProjectUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getProjectUsagesForStatusValidateBeforeCall(statusId, nextPageToken, maxResults, null);
+        Type localVarReturnType = new TypeToken<StatusProjectUsageDTO>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get project usages by status (asynchronously)
+     * Returns a page of projects using a given status.
+     * @param statusId The statusId to fetch project usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectUsagesForStatusAsync(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback<StatusProjectUsageDTO> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectUsagesForStatusValidateBeforeCall(statusId, nextPageToken, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<StatusProjectUsageDTO>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getStatusesById
+     * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getStatusesByIdCall(@javax.annotation.Nonnull List<String> id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getStatusesByIdValidateBeforeCall(@javax.annotation.Nonnull List<String> id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getStatusesById(Async)");
+        }
+
+        return getStatusesByIdCall(id, _callback);
+
+    }
+
+    /**
+     * Bulk get statuses
+     * Returns a list of the statuses specified by one or more status IDs.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @return List&lt;JiraStatus&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<JiraStatus> getStatusesById(@javax.annotation.Nonnull List<String> id) throws ApiException {
+        ApiResponse<List<JiraStatus>> localVarResp = getStatusesByIdWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk get statuses
+     * Returns a list of the statuses specified by one or more status IDs.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<JiraStatus>> getStatusesByIdWithHttpInfo(@javax.annotation.Nonnull List<String> id) throws ApiException {
+        okhttp3.Call localVarCall = getStatusesByIdValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<List<JiraStatus>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk get statuses (asynchronously)
+     * Returns a list of the statuses specified by one or more status IDs.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param id The list of status IDs. To include multiple IDs, provide an ampersand-separated list. For example, id&#x3D;10000&amp;id&#x3D;10001.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getStatusesByIdAsync(@javax.annotation.Nonnull List<String> id, final ApiCallback<List<JiraStatus>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getStatusesByIdValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<List<JiraStatus>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getStatusesByName
+     * @param name The list of status names. To include multiple names, provide an ampersand-separated list. For example, name&#x3D;nameXX&amp;name&#x3D;nameYY.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @param projectId The project the status is part of or null for global statuses. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getStatusesByNameCall(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses/byNames";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (name != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "name", name));
+        }
+
+        if (projectId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectId", projectId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getStatusesByNameValidateBeforeCall(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'name' is set
+        if (name == null) {
+            throw new ApiException("Missing the required parameter 'name' when calling getStatusesByName(Async)");
+        }
+
+        return getStatusesByNameCall(name, projectId, _callback);
+
+    }
+
+    /**
+     * Bulk get statuses by name
+     * Returns a list of the statuses specified by one or more status names.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Browse projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param name The list of status names. To include multiple names, provide an ampersand-separated list. For example, name&#x3D;nameXX&amp;name&#x3D;nameYY.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @param projectId The project the status is part of or null for global statuses. (optional)
+     * @return List&lt;JiraStatus&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<JiraStatus> getStatusesByName(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId) throws ApiException {
+        ApiResponse<List<JiraStatus>> localVarResp = getStatusesByNameWithHttpInfo(name, projectId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk get statuses by name
+     * Returns a list of the statuses specified by one or more status names.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Browse projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param name The list of status names. To include multiple names, provide an ampersand-separated list. For example, name&#x3D;nameXX&amp;name&#x3D;nameYY.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @param projectId The project the status is part of or null for global statuses. (optional)
+     * @return ApiResponse&lt;List&lt;JiraStatus&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<JiraStatus>> getStatusesByNameWithHttpInfo(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId) throws ApiException {
+        okhttp3.Call localVarCall = getStatusesByNameValidateBeforeCall(name, projectId, null);
+        Type localVarReturnType = new TypeToken<List<JiraStatus>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk get statuses by name (asynchronously)
+     * Returns a list of the statuses specified by one or more status names.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Browse projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param name The list of status names. To include multiple names, provide an ampersand-separated list. For example, name&#x3D;nameXX&amp;name&#x3D;nameYY.  Min items &#x60;1&#x60;, Max items &#x60;50&#x60; (required)
+     * @param projectId The project the status is part of or null for global statuses. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getStatusesByNameAsync(@javax.annotation.Nonnull List<String> name, @javax.annotation.Nullable String projectId, final ApiCallback<List<JiraStatus>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getStatusesByNameValidateBeforeCall(name, projectId, _callback);
+        Type localVarReturnType = new TypeToken<List<JiraStatus>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getWorkflowUsagesForStatus
+     * @param statusId The statusId to fetch workflow usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowUsagesForStatusCall(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses/{statusId}/workflowUsages"
+            .replace("{" + "statusId" + "}", localVarApiClient.escapeString(statusId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (nextPageToken != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nextPageToken", nextPageToken));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getWorkflowUsagesForStatusValidateBeforeCall(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'statusId' is set
+        if (statusId == null) {
+            throw new ApiException("Missing the required parameter 'statusId' when calling getWorkflowUsagesForStatus(Async)");
+        }
+
+        return getWorkflowUsagesForStatusCall(statusId, nextPageToken, maxResults, _callback);
+
+    }
+
+    /**
+     * Get workflow usages by status
+     * Returns a page of workflows using a given status.
+     * @param statusId The statusId to fetch workflow usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @return StatusWorkflowUsageDTO
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public StatusWorkflowUsageDTO getWorkflowUsagesForStatus(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<StatusWorkflowUsageDTO> localVarResp = getWorkflowUsagesForStatusWithHttpInfo(statusId, nextPageToken, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get workflow usages by status
+     * Returns a page of workflows using a given status.
+     * @param statusId The statusId to fetch workflow usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @return ApiResponse&lt;StatusWorkflowUsageDTO&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<StatusWorkflowUsageDTO> getWorkflowUsagesForStatusWithHttpInfo(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getWorkflowUsagesForStatusValidateBeforeCall(statusId, nextPageToken, maxResults, null);
+        Type localVarReturnType = new TypeToken<StatusWorkflowUsageDTO>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get workflow usages by status (asynchronously)
+     * Returns a page of workflows using a given status.
+     * @param statusId The statusId to fetch workflow usages for (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the status with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowUsagesForStatusAsync(@javax.annotation.Nonnull String statusId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback<StatusWorkflowUsageDTO> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getWorkflowUsagesForStatusValidateBeforeCall(statusId, nextPageToken, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<StatusWorkflowUsageDTO>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for search
+     * @param projectId The project the status is part of or null for global statuses. (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 200)
+     * @param searchString Term to match status names against or null to search for all statuses in the search scope. (optional)
+     * @param statusCategory Category of the status to filter by. The supported values are: &#x60;TODO&#x60;, &#x60;IN_PROGRESS&#x60;, and &#x60;DONE&#x60;. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call searchCall(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses/search";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (projectId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("projectId", projectId));
+        }
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (searchString != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("searchString", searchString));
+        }
+
+        if (statusCategory != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("statusCategory", statusCategory));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call searchValidateBeforeCall(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory, final ApiCallback _callback) throws ApiException {
+        return searchCall(projectId, startAt, maxResults, searchString, statusCategory, _callback);
+
+    }
+
+    /**
+     * Search statuses paginated
+     * Returns a [paginated](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#pagination) list of statuses that match a search on name or project.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param projectId The project the status is part of or null for global statuses. (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 200)
+     * @param searchString Term to match status names against or null to search for all statuses in the search scope. (optional)
+     * @param statusCategory Category of the status to filter by. The supported values are: &#x60;TODO&#x60;, &#x60;IN_PROGRESS&#x60;, and &#x60;DONE&#x60;. (optional)
+     * @return PageOfStatuses
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageOfStatuses search(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory) throws ApiException {
+        ApiResponse<PageOfStatuses> localVarResp = searchWithHttpInfo(projectId, startAt, maxResults, searchString, statusCategory);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Search statuses paginated
+     * Returns a [paginated](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#pagination) list of statuses that match a search on name or project.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param projectId The project the status is part of or null for global statuses. (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 200)
+     * @param searchString Term to match status names against or null to search for all statuses in the search scope. (optional)
+     * @param statusCategory Category of the status to filter by. The supported values are: &#x60;TODO&#x60;, &#x60;IN_PROGRESS&#x60;, and &#x60;DONE&#x60;. (optional)
+     * @return ApiResponse&lt;PageOfStatuses&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageOfStatuses> searchWithHttpInfo(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory) throws ApiException {
+        okhttp3.Call localVarCall = searchValidateBeforeCall(projectId, startAt, maxResults, searchString, statusCategory, null);
+        Type localVarReturnType = new TypeToken<PageOfStatuses>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Search statuses paginated (asynchronously)
+     * Returns a [paginated](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#pagination) list of statuses that match a search on name or project.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param projectId The project the status is part of or null for global statuses. (optional)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 200)
+     * @param searchString Term to match status names against or null to search for all statuses in the search scope. (optional)
+     * @param statusCategory Category of the status to filter by. The supported values are: &#x60;TODO&#x60;, &#x60;IN_PROGRESS&#x60;, and &#x60;DONE&#x60;. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call searchAsync(@javax.annotation.Nullable String projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String searchString, @javax.annotation.Nullable String statusCategory, final ApiCallback<PageOfStatuses> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = searchValidateBeforeCall(projectId, startAt, maxResults, searchString, statusCategory, _callback);
+        Type localVarReturnType = new TypeToken<PageOfStatuses>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateStatuses
+     * @param statusUpdateRequest The list of statuses that will be updated. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateStatusesCall(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = statusUpdateRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/statuses";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateStatusesValidateBeforeCall(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'statusUpdateRequest' is set
+        if (statusUpdateRequest == null) {
+            throw new ApiException("Missing the required parameter 'statusUpdateRequest' when calling updateStatuses(Async)");
+        }
+
+        return updateStatusesCall(statusUpdateRequest, _callback);
+
+    }
+
+    /**
+     * Bulk update statuses
+     * Updates statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param statusUpdateRequest The list of statuses that will be updated. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateStatuses(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = updateStatusesWithHttpInfo(statusUpdateRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk update statuses
+     * Updates statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param statusUpdateRequest The list of statuses that will be updated. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateStatusesWithHttpInfo(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest) throws ApiException {
+        okhttp3.Call localVarCall = updateStatusesValidateBeforeCall(statusUpdateRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk update statuses (asynchronously)
+     * Updates statuses by ID.  **[Permissions](#permissions) required:**   *  *Administer projects* [project permission.](https://confluence.atlassian.com/x/yodKLg)  *  *Administer Jira* [project permission.](https://confluence.atlassian.com/x/yodKLg)
+     * @param statusUpdateRequest The list of statuses that will be updated. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateStatusesAsync(@javax.annotation.Nonnull StatusUpdateRequest statusUpdateRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateStatusesValidateBeforeCall(statusUpdateRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

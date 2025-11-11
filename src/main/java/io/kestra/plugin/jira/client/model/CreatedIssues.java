@@ -13,53 +13,67 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.BulkOperationErrorResult;
 import io.kestra.plugin.jira.client.model.CreatedIssue;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the issues created and the errors for requests that failed.
  */
-@JsonPropertyOrder({
-  CreatedIssues.JSON_PROPERTY_ERRORS,
-  CreatedIssues.JSON_PROPERTY_ISSUES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CreatedIssues {
-  public static final String JSON_PROPERTY_ERRORS = "errors";
+  public static final String SERIALIZED_NAME_ERRORS = "errors";
+  @SerializedName(SERIALIZED_NAME_ERRORS)
   @javax.annotation.Nullable
   private List<BulkOperationErrorResult> errors = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ISSUES = "issues";
+  public static final String SERIALIZED_NAME_ISSUES = "issues";
+  @SerializedName(SERIALIZED_NAME_ISSUES)
   @javax.annotation.Nullable
   private List<CreatedIssue> issues = new ArrayList<>();
 
-  public CreatedIssues() { 
+  public CreatedIssues() {
   }
 
-  @JsonCreator
   public CreatedIssues(
-    @JsonProperty(JSON_PROPERTY_ERRORS) List<BulkOperationErrorResult> errors, 
-    @JsonProperty(JSON_PROPERTY_ISSUES) List<CreatedIssue> issues
+     List<BulkOperationErrorResult> errors, 
+     List<CreatedIssue> issues
   ) {
-  this();
+    this();
     this.errors = errors;
     this.issues = issues;
   }
@@ -69,12 +83,9 @@ public class CreatedIssues {
    * @return errors
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ERRORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<BulkOperationErrorResult> getErrors() {
     return errors;
   }
-
 
 
 
@@ -83,8 +94,6 @@ public class CreatedIssues {
    * @return issues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<CreatedIssue> getIssues() {
     return issues;
   }
@@ -92,9 +101,6 @@ public class CreatedIssues {
 
 
 
-  /**
-   * Return true if this CreatedIssues object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -134,59 +140,116 @@ public class CreatedIssues {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("errors", "issues"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CreatedIssues
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `errors` to the URL query string
-    if (getErrors() != null) {
-      for (int i = 0; i < getErrors().size(); i++) {
-        if (getErrors().get(i) != null) {
-          joiner.add(getErrors().get(i).toUrlQueryString(String.format(Locale.ROOT, "%serrors%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CreatedIssues.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CreatedIssues is not found in the empty JSON string", CreatedIssues.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `issues` to the URL query string
-    if (getIssues() != null) {
-      for (int i = 0; i < getIssues().size(); i++) {
-        if (getIssues().get(i) != null) {
-          joiner.add(getIssues().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissues%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CreatedIssues.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CreatedIssues` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("errors") != null && !jsonObj.get("errors").isJsonNull()) {
+        JsonArray jsonArrayerrors = jsonObj.getAsJsonArray("errors");
+        if (jsonArrayerrors != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("errors").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `errors` to be an array in the JSON string but got `%s`", jsonObj.get("errors").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `errors` (array)
+          for (int i = 0; i < jsonArrayerrors.size(); i++) {
+            BulkOperationErrorResult.validateJsonElement(jsonArrayerrors.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("issues") != null && !jsonObj.get("issues").isJsonNull()) {
+        JsonArray jsonArrayissues = jsonObj.getAsJsonArray("issues");
+        if (jsonArrayissues != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issues").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issues` to be an array in the JSON string but got `%s`", jsonObj.get("issues").toString()));
+          }
+
+          // validate the optional field `issues` (array)
+          for (int i = 0; i < jsonArrayissues.size(); i++) {
+            CreatedIssue.validateJsonElement(jsonArrayissues.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CreatedIssues.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CreatedIssues' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CreatedIssues> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CreatedIssues.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CreatedIssues>() {
+           @Override
+           public void write(JsonWriter out, CreatedIssues value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CreatedIssues read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of CreatedIssues given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CreatedIssues
+   * @throws IOException if the JSON string is invalid with respect to CreatedIssues
+   */
+  public static CreatedIssues fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CreatedIssues.class);
+  }
+
+  /**
+   * Convert an instance of CreatedIssues to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

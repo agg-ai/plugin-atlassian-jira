@@ -13,51 +13,65 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.GlobalScopeBean;
 import io.kestra.plugin.jira.client.model.ProjectScopeBean;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * IssueFieldOptionScopeBean
  */
-@JsonPropertyOrder({
-  IssueFieldOptionScopeBean.JSON_PROPERTY_GLOBAL,
-  IssueFieldOptionScopeBean.JSON_PROPERTY_PROJECTS,
-  IssueFieldOptionScopeBean.JSON_PROPERTY_PROJECTS2
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueFieldOptionScopeBean {
-  public static final String JSON_PROPERTY_GLOBAL = "global";
+  public static final String SERIALIZED_NAME_GLOBAL = "global";
+  @SerializedName(SERIALIZED_NAME_GLOBAL)
   @javax.annotation.Nullable
   private GlobalScopeBean global;
 
-  public static final String JSON_PROPERTY_PROJECTS = "projects";
+  public static final String SERIALIZED_NAME_PROJECTS = "projects";
+  @SerializedName(SERIALIZED_NAME_PROJECTS)
   @javax.annotation.Nullable
   private Set<Long> projects = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_PROJECTS2 = "projects2";
+  public static final String SERIALIZED_NAME_PROJECTS2 = "projects2";
+  @SerializedName(SERIALIZED_NAME_PROJECTS2)
   @javax.annotation.Nullable
   private Set<ProjectScopeBean> projects2 = new LinkedHashSet<>();
 
-  public IssueFieldOptionScopeBean() { 
+  public IssueFieldOptionScopeBean() {
   }
 
   public IssueFieldOptionScopeBean global(@javax.annotation.Nullable GlobalScopeBean global) {
@@ -70,15 +84,10 @@ public class IssueFieldOptionScopeBean {
    * @return global
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GLOBAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GlobalScopeBean getGlobal() {
     return global;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GLOBAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGlobal(@javax.annotation.Nullable GlobalScopeBean global) {
     this.global = global;
   }
@@ -102,16 +111,10 @@ public class IssueFieldOptionScopeBean {
    * @return projects
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<Long> getProjects() {
     return projects;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjects(@javax.annotation.Nullable Set<Long> projects) {
     this.projects = projects;
   }
@@ -135,24 +138,16 @@ public class IssueFieldOptionScopeBean {
    * @return projects2
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS2, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<ProjectScopeBean> getProjects2() {
     return projects2;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS2, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjects2(@javax.annotation.Nullable Set<ProjectScopeBean> projects2) {
     this.projects2 = projects2;
   }
 
 
-  /**
-   * Return true if this IssueFieldOptionScopeBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -194,67 +189,110 @@ public class IssueFieldOptionScopeBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("global", "projects", "projects2"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueFieldOptionScopeBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `global` to the URL query string
-    if (getGlobal() != null) {
-      joiner.add(getGlobal().toUrlQueryString(prefix + "global" + suffix));
-    }
-
-    // add `projects` to the URL query string
-    if (getProjects() != null) {
-      int i = 0;
-      for (Long _item : getProjects()) {
-        joiner.add(String.format(Locale.ROOT, "%sprojects%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
-      }
-      i++;
-    }
-
-    // add `projects2` to the URL query string
-    if (getProjects2() != null) {
-      int i = 0;
-      for (ProjectScopeBean _item : getProjects2()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%sprojects2%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueFieldOptionScopeBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueFieldOptionScopeBean is not found in the empty JSON string", IssueFieldOptionScopeBean.openapiRequiredFields.toString()));
         }
       }
-      i++;
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueFieldOptionScopeBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueFieldOptionScopeBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `global`
+      if (jsonObj.get("global") != null && !jsonObj.get("global").isJsonNull()) {
+        GlobalScopeBean.validateJsonElement(jsonObj.get("global"));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("projects") != null && !jsonObj.get("projects").isJsonNull() && !jsonObj.get("projects").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projects` to be an array in the JSON string but got `%s`", jsonObj.get("projects").toString()));
+      }
+      if (jsonObj.get("projects2") != null && !jsonObj.get("projects2").isJsonNull()) {
+        JsonArray jsonArrayprojects2 = jsonObj.getAsJsonArray("projects2");
+        if (jsonArrayprojects2 != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("projects2").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projects2` to be an array in the JSON string but got `%s`", jsonObj.get("projects2").toString()));
+          }
+
+          // validate the optional field `projects2` (array)
+          for (int i = 0; i < jsonArrayprojects2.size(); i++) {
+            ProjectScopeBean.validateJsonElement(jsonArrayprojects2.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueFieldOptionScopeBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueFieldOptionScopeBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueFieldOptionScopeBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueFieldOptionScopeBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueFieldOptionScopeBean>() {
+           @Override
+           public void write(JsonWriter out, IssueFieldOptionScopeBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueFieldOptionScopeBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssueFieldOptionScopeBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueFieldOptionScopeBean
+   * @throws IOException if the JSON string is invalid with respect to IssueFieldOptionScopeBean
+   */
+  public static IssueFieldOptionScopeBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueFieldOptionScopeBean.class);
+  }
+
+  /**
+   * Convert an instance of IssueFieldOptionScopeBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

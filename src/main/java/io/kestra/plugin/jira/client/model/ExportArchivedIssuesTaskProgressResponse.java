@@ -13,62 +13,77 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The response for status request for a running/completed export task.
  */
-@JsonPropertyOrder({
-  ExportArchivedIssuesTaskProgressResponse.JSON_PROPERTY_FILE_URL,
-  ExportArchivedIssuesTaskProgressResponse.JSON_PROPERTY_PAYLOAD,
-  ExportArchivedIssuesTaskProgressResponse.JSON_PROPERTY_PROGRESS,
-  ExportArchivedIssuesTaskProgressResponse.JSON_PROPERTY_STATUS,
-  ExportArchivedIssuesTaskProgressResponse.JSON_PROPERTY_SUBMITTED_TIME,
-  ExportArchivedIssuesTaskProgressResponse.JSON_PROPERTY_TASK_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ExportArchivedIssuesTaskProgressResponse {
-  public static final String JSON_PROPERTY_FILE_URL = "fileUrl";
+  public static final String SERIALIZED_NAME_FILE_URL = "fileUrl";
+  @SerializedName(SERIALIZED_NAME_FILE_URL)
   @javax.annotation.Nullable
   private String fileUrl;
 
-  public static final String JSON_PROPERTY_PAYLOAD = "payload";
+  public static final String SERIALIZED_NAME_PAYLOAD = "payload";
+  @SerializedName(SERIALIZED_NAME_PAYLOAD)
   @javax.annotation.Nullable
   private String payload;
 
-  public static final String JSON_PROPERTY_PROGRESS = "progress";
+  public static final String SERIALIZED_NAME_PROGRESS = "progress";
+  @SerializedName(SERIALIZED_NAME_PROGRESS)
   @javax.annotation.Nullable
   private Long progress;
 
-  public static final String JSON_PROPERTY_STATUS = "status";
+  public static final String SERIALIZED_NAME_STATUS = "status";
+  @SerializedName(SERIALIZED_NAME_STATUS)
   @javax.annotation.Nullable
   private String status;
 
-  public static final String JSON_PROPERTY_SUBMITTED_TIME = "submittedTime";
+  public static final String SERIALIZED_NAME_SUBMITTED_TIME = "submittedTime";
+  @SerializedName(SERIALIZED_NAME_SUBMITTED_TIME)
   @javax.annotation.Nullable
   private OffsetDateTime submittedTime;
 
-  public static final String JSON_PROPERTY_TASK_ID = "taskId";
+  public static final String SERIALIZED_NAME_TASK_ID = "taskId";
+  @SerializedName(SERIALIZED_NAME_TASK_ID)
   @javax.annotation.Nullable
   private String taskId;
 
-  public ExportArchivedIssuesTaskProgressResponse() { 
+  public ExportArchivedIssuesTaskProgressResponse() {
   }
 
   public ExportArchivedIssuesTaskProgressResponse fileUrl(@javax.annotation.Nullable String fileUrl) {
@@ -81,15 +96,10 @@ public class ExportArchivedIssuesTaskProgressResponse {
    * @return fileUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FILE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFileUrl() {
     return fileUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FILE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFileUrl(@javax.annotation.Nullable String fileUrl) {
     this.fileUrl = fileUrl;
   }
@@ -105,15 +115,10 @@ public class ExportArchivedIssuesTaskProgressResponse {
    * @return payload
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PAYLOAD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPayload() {
     return payload;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PAYLOAD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPayload(@javax.annotation.Nullable String payload) {
     this.payload = payload;
   }
@@ -129,15 +134,10 @@ public class ExportArchivedIssuesTaskProgressResponse {
    * @return progress
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROGRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getProgress() {
     return progress;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROGRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProgress(@javax.annotation.Nullable Long progress) {
     this.progress = progress;
   }
@@ -153,15 +153,10 @@ public class ExportArchivedIssuesTaskProgressResponse {
    * @return status
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStatus() {
     return status;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatus(@javax.annotation.Nullable String status) {
     this.status = status;
   }
@@ -177,15 +172,10 @@ public class ExportArchivedIssuesTaskProgressResponse {
    * @return submittedTime
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUBMITTED_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getSubmittedTime() {
     return submittedTime;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SUBMITTED_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubmittedTime(@javax.annotation.Nullable OffsetDateTime submittedTime) {
     this.submittedTime = submittedTime;
   }
@@ -201,23 +191,16 @@ public class ExportArchivedIssuesTaskProgressResponse {
    * @return taskId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TASK_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTaskId() {
     return taskId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TASK_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTaskId(@javax.annotation.Nullable String taskId) {
     this.taskId = taskId;
   }
 
 
-  /**
-   * Return true if this ExportArchivedIssuesTaskProgressResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -265,69 +248,100 @@ public class ExportArchivedIssuesTaskProgressResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("fileUrl", "payload", "progress", "status", "submittedTime", "taskId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ExportArchivedIssuesTaskProgressResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ExportArchivedIssuesTaskProgressResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ExportArchivedIssuesTaskProgressResponse is not found in the empty JSON string", ExportArchivedIssuesTaskProgressResponse.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ExportArchivedIssuesTaskProgressResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ExportArchivedIssuesTaskProgressResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("fileUrl") != null && !jsonObj.get("fileUrl").isJsonNull()) && !jsonObj.get("fileUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fileUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fileUrl").toString()));
+      }
+      if ((jsonObj.get("payload") != null && !jsonObj.get("payload").isJsonNull()) && !jsonObj.get("payload").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `payload` to be a primitive type in the JSON string but got `%s`", jsonObj.get("payload").toString()));
+      }
+      if ((jsonObj.get("status") != null && !jsonObj.get("status").isJsonNull()) && !jsonObj.get("status").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `status` to be a primitive type in the JSON string but got `%s`", jsonObj.get("status").toString()));
+      }
+      if ((jsonObj.get("taskId") != null && !jsonObj.get("taskId").isJsonNull()) && !jsonObj.get("taskId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `taskId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("taskId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ExportArchivedIssuesTaskProgressResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ExportArchivedIssuesTaskProgressResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ExportArchivedIssuesTaskProgressResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ExportArchivedIssuesTaskProgressResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ExportArchivedIssuesTaskProgressResponse>() {
+           @Override
+           public void write(JsonWriter out, ExportArchivedIssuesTaskProgressResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ExportArchivedIssuesTaskProgressResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ExportArchivedIssuesTaskProgressResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ExportArchivedIssuesTaskProgressResponse
+   * @throws IOException if the JSON string is invalid with respect to ExportArchivedIssuesTaskProgressResponse
+   */
+  public static ExportArchivedIssuesTaskProgressResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ExportArchivedIssuesTaskProgressResponse.class);
+  }
 
-    // add `fileUrl` to the URL query string
-    if (getFileUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfileUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFileUrl()))));
-    }
-
-    // add `payload` to the URL query string
-    if (getPayload() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spayload%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPayload()))));
-    }
-
-    // add `progress` to the URL query string
-    if (getProgress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprogress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProgress()))));
-    }
-
-    // add `status` to the URL query string
-    if (getStatus() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
-    }
-
-    // add `submittedTime` to the URL query string
-    if (getSubmittedTime() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssubmittedTime%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubmittedTime()))));
-    }
-
-    // add `taskId` to the URL query string
-    if (getTaskId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%staskId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTaskId()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ExportArchivedIssuesTaskProgressResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

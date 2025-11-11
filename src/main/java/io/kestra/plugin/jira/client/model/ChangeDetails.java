@@ -13,79 +13,93 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A change item.
  */
-@JsonPropertyOrder({
-  ChangeDetails.JSON_PROPERTY_FIELD,
-  ChangeDetails.JSON_PROPERTY_FIELD_ID,
-  ChangeDetails.JSON_PROPERTY_FIELDTYPE,
-  ChangeDetails.JSON_PROPERTY_FROM,
-  ChangeDetails.JSON_PROPERTY_FROM_STRING,
-  ChangeDetails.JSON_PROPERTY_TO,
-  ChangeDetails.JSON_PROPERTY_TO_STRING
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ChangeDetails {
-  public static final String JSON_PROPERTY_FIELD = "field";
+  public static final String SERIALIZED_NAME_FIELD = "field";
+  @SerializedName(SERIALIZED_NAME_FIELD)
   @javax.annotation.Nullable
   private String field;
 
-  public static final String JSON_PROPERTY_FIELD_ID = "fieldId";
+  public static final String SERIALIZED_NAME_FIELD_ID = "fieldId";
+  @SerializedName(SERIALIZED_NAME_FIELD_ID)
   @javax.annotation.Nullable
   private String fieldId;
 
-  public static final String JSON_PROPERTY_FIELDTYPE = "fieldtype";
+  public static final String SERIALIZED_NAME_FIELDTYPE = "fieldtype";
+  @SerializedName(SERIALIZED_NAME_FIELDTYPE)
   @javax.annotation.Nullable
   private String fieldtype;
 
-  public static final String JSON_PROPERTY_FROM = "from";
+  public static final String SERIALIZED_NAME_FROM = "from";
+  @SerializedName(SERIALIZED_NAME_FROM)
   @javax.annotation.Nullable
   private String from;
 
-  public static final String JSON_PROPERTY_FROM_STRING = "fromString";
+  public static final String SERIALIZED_NAME_FROM_STRING = "fromString";
+  @SerializedName(SERIALIZED_NAME_FROM_STRING)
   @javax.annotation.Nullable
   private String fromString;
 
-  public static final String JSON_PROPERTY_TO = "to";
+  public static final String SERIALIZED_NAME_TO = "to";
+  @SerializedName(SERIALIZED_NAME_TO)
   @javax.annotation.Nullable
   private String to;
 
-  public static final String JSON_PROPERTY_TO_STRING = "toString";
+  public static final String SERIALIZED_NAME_TO_STRING = "toString";
+  @SerializedName(SERIALIZED_NAME_TO_STRING)
   @javax.annotation.Nullable
   private String toString;
 
-  public ChangeDetails() { 
+  public ChangeDetails() {
   }
 
-  @JsonCreator
   public ChangeDetails(
-    @JsonProperty(JSON_PROPERTY_FIELD) String field, 
-    @JsonProperty(JSON_PROPERTY_FIELD_ID) String fieldId, 
-    @JsonProperty(JSON_PROPERTY_FIELDTYPE) String fieldtype, 
-    @JsonProperty(JSON_PROPERTY_FROM) String from, 
-    @JsonProperty(JSON_PROPERTY_FROM_STRING) String fromString, 
-    @JsonProperty(JSON_PROPERTY_TO) String to, 
-    @JsonProperty(JSON_PROPERTY_TO_STRING) String toString
+     String field, 
+     String fieldId, 
+     String fieldtype, 
+     String from, 
+     String fromString, 
+     String to, 
+     String toString
   ) {
-  this();
+    this();
     this.field = field;
     this.fieldId = fieldId;
     this.fieldtype = fieldtype;
@@ -100,12 +114,9 @@ public class ChangeDetails {
    * @return field
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getField() {
     return field;
   }
-
 
 
 
@@ -114,12 +125,9 @@ public class ChangeDetails {
    * @return fieldId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFieldId() {
     return fieldId;
   }
-
 
 
 
@@ -128,12 +136,9 @@ public class ChangeDetails {
    * @return fieldtype
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDTYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFieldtype() {
     return fieldtype;
   }
-
 
 
 
@@ -142,12 +147,9 @@ public class ChangeDetails {
    * @return from
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FROM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFrom() {
     return from;
   }
-
 
 
 
@@ -156,12 +158,9 @@ public class ChangeDetails {
    * @return fromString
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FROM_STRING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFromString() {
     return fromString;
   }
-
 
 
 
@@ -170,12 +169,9 @@ public class ChangeDetails {
    * @return to
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTo() {
     return to;
   }
-
 
 
 
@@ -184,8 +180,6 @@ public class ChangeDetails {
    * @return toString
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TO_STRING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getToString() {
     return toString;
   }
@@ -193,9 +187,6 @@ public class ChangeDetails {
 
 
 
-  /**
-   * Return true if this ChangeDetails object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -245,74 +236,109 @@ public class ChangeDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("field", "fieldId", "fieldtype", "from", "fromString", "to", "toString"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ChangeDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ChangeDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ChangeDetails is not found in the empty JSON string", ChangeDetails.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ChangeDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ChangeDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("field") != null && !jsonObj.get("field").isJsonNull()) && !jsonObj.get("field").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `field` to be a primitive type in the JSON string but got `%s`", jsonObj.get("field").toString()));
+      }
+      if ((jsonObj.get("fieldId") != null && !jsonObj.get("fieldId").isJsonNull()) && !jsonObj.get("fieldId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldId").toString()));
+      }
+      if ((jsonObj.get("fieldtype") != null && !jsonObj.get("fieldtype").isJsonNull()) && !jsonObj.get("fieldtype").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldtype` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldtype").toString()));
+      }
+      if ((jsonObj.get("from") != null && !jsonObj.get("from").isJsonNull()) && !jsonObj.get("from").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `from` to be a primitive type in the JSON string but got `%s`", jsonObj.get("from").toString()));
+      }
+      if ((jsonObj.get("fromString") != null && !jsonObj.get("fromString").isJsonNull()) && !jsonObj.get("fromString").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fromString` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fromString").toString()));
+      }
+      if ((jsonObj.get("to") != null && !jsonObj.get("to").isJsonNull()) && !jsonObj.get("to").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `to` to be a primitive type in the JSON string but got `%s`", jsonObj.get("to").toString()));
+      }
+      if ((jsonObj.get("toString") != null && !jsonObj.get("toString").isJsonNull()) && !jsonObj.get("toString").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `toString` to be a primitive type in the JSON string but got `%s`", jsonObj.get("toString").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ChangeDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ChangeDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ChangeDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ChangeDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ChangeDetails>() {
+           @Override
+           public void write(JsonWriter out, ChangeDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ChangeDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ChangeDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ChangeDetails
+   * @throws IOException if the JSON string is invalid with respect to ChangeDetails
+   */
+  public static ChangeDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ChangeDetails.class);
+  }
 
-    // add `field` to the URL query string
-    if (getField() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfield%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getField()))));
-    }
-
-    // add `fieldId` to the URL query string
-    if (getFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldId()))));
-    }
-
-    // add `fieldtype` to the URL query string
-    if (getFieldtype() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldtype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldtype()))));
-    }
-
-    // add `from` to the URL query string
-    if (getFrom() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfrom%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFrom()))));
-    }
-
-    // add `fromString` to the URL query string
-    if (getFromString() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfromString%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFromString()))));
-    }
-
-    // add `to` to the URL query string
-    if (getTo() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sto%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTo()))));
-    }
-
-    // add `toString` to the URL query string
-    if (getToString() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stoString%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getToString()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ChangeDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

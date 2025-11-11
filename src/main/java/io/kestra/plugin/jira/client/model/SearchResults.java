@@ -13,91 +13,105 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueBean;
 import io.kestra.plugin.jira.client.model.JsonTypeBean;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The result of a JQL search.
  */
-@JsonPropertyOrder({
-  SearchResults.JSON_PROPERTY_EXPAND,
-  SearchResults.JSON_PROPERTY_ISSUES,
-  SearchResults.JSON_PROPERTY_MAX_RESULTS,
-  SearchResults.JSON_PROPERTY_NAMES,
-  SearchResults.JSON_PROPERTY_SCHEMA,
-  SearchResults.JSON_PROPERTY_START_AT,
-  SearchResults.JSON_PROPERTY_TOTAL,
-  SearchResults.JSON_PROPERTY_WARNING_MESSAGES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SearchResults {
-  public static final String JSON_PROPERTY_EXPAND = "expand";
+  public static final String SERIALIZED_NAME_EXPAND = "expand";
+  @SerializedName(SERIALIZED_NAME_EXPAND)
   @javax.annotation.Nullable
   private String expand;
 
-  public static final String JSON_PROPERTY_ISSUES = "issues";
+  public static final String SERIALIZED_NAME_ISSUES = "issues";
+  @SerializedName(SERIALIZED_NAME_ISSUES)
   @javax.annotation.Nullable
   private List<IssueBean> issues = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MAX_RESULTS = "maxResults";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "maxResults";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nullable
   private Integer maxResults;
 
-  public static final String JSON_PROPERTY_NAMES = "names";
+  public static final String SERIALIZED_NAME_NAMES = "names";
+  @SerializedName(SERIALIZED_NAME_NAMES)
   @javax.annotation.Nullable
   private Map<String, String> names = new HashMap<>();
 
-  public static final String JSON_PROPERTY_SCHEMA = "schema";
+  public static final String SERIALIZED_NAME_SCHEMA = "schema";
+  @SerializedName(SERIALIZED_NAME_SCHEMA)
   @javax.annotation.Nullable
   private Map<String, JsonTypeBean> schema = new HashMap<>();
 
-  public static final String JSON_PROPERTY_START_AT = "startAt";
+  public static final String SERIALIZED_NAME_START_AT = "startAt";
+  @SerializedName(SERIALIZED_NAME_START_AT)
   @javax.annotation.Nullable
   private Integer startAt;
 
-  public static final String JSON_PROPERTY_TOTAL = "total";
+  public static final String SERIALIZED_NAME_TOTAL = "total";
+  @SerializedName(SERIALIZED_NAME_TOTAL)
   @javax.annotation.Nullable
   private Integer total;
 
-  public static final String JSON_PROPERTY_WARNING_MESSAGES = "warningMessages";
+  public static final String SERIALIZED_NAME_WARNING_MESSAGES = "warningMessages";
+  @SerializedName(SERIALIZED_NAME_WARNING_MESSAGES)
   @javax.annotation.Nullable
   private List<String> warningMessages = new ArrayList<>();
 
-  public SearchResults() { 
+  public SearchResults() {
   }
 
-  @JsonCreator
   public SearchResults(
-    @JsonProperty(JSON_PROPERTY_EXPAND) String expand, 
-    @JsonProperty(JSON_PROPERTY_ISSUES) List<IssueBean> issues, 
-    @JsonProperty(JSON_PROPERTY_MAX_RESULTS) Integer maxResults, 
-    @JsonProperty(JSON_PROPERTY_NAMES) Map<String, String> names, 
-    @JsonProperty(JSON_PROPERTY_SCHEMA) Map<String, JsonTypeBean> schema, 
-    @JsonProperty(JSON_PROPERTY_START_AT) Integer startAt, 
-    @JsonProperty(JSON_PROPERTY_TOTAL) Integer total, 
-    @JsonProperty(JSON_PROPERTY_WARNING_MESSAGES) List<String> warningMessages
+     String expand, 
+     List<IssueBean> issues, 
+     Integer maxResults, 
+     Map<String, String> names, 
+     Map<String, JsonTypeBean> schema, 
+     Integer startAt, 
+     Integer total, 
+     List<String> warningMessages
   ) {
-  this();
+    this();
     this.expand = expand;
     this.issues = issues;
     this.maxResults = maxResults;
@@ -113,12 +127,9 @@ public class SearchResults {
    * @return expand
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXPAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExpand() {
     return expand;
   }
-
 
 
 
@@ -127,12 +138,9 @@ public class SearchResults {
    * @return issues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueBean> getIssues() {
     return issues;
   }
-
 
 
 
@@ -141,12 +149,9 @@ public class SearchResults {
    * @return maxResults
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResults() {
     return maxResults;
   }
-
 
 
 
@@ -155,12 +160,9 @@ public class SearchResults {
    * @return names
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getNames() {
     return names;
   }
-
 
 
 
@@ -169,12 +171,9 @@ public class SearchResults {
    * @return schema
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCHEMA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, JsonTypeBean> getSchema() {
     return schema;
   }
-
 
 
 
@@ -183,12 +182,9 @@ public class SearchResults {
    * @return startAt
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getStartAt() {
     return startAt;
   }
-
 
 
 
@@ -197,12 +193,9 @@ public class SearchResults {
    * @return total
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTotal() {
     return total;
   }
-
 
 
 
@@ -211,8 +204,6 @@ public class SearchResults {
    * @return warningMessages
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WARNING_MESSAGES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getWarningMessages() {
     return warningMessages;
   }
@@ -220,9 +211,6 @@ public class SearchResults {
 
 
 
-  /**
-   * Return true if this SearchResults object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -274,97 +262,109 @@ public class SearchResults {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("expand", "issues", "maxResults", "names", "schema", "startAt", "total", "warningMessages"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SearchResults
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `expand` to the URL query string
-    if (getExpand() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpand%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpand()))));
-    }
-
-    // add `issues` to the URL query string
-    if (getIssues() != null) {
-      for (int i = 0; i < getIssues().size(); i++) {
-        if (getIssues().get(i) != null) {
-          joiner.add(getIssues().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissues%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SearchResults.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SearchResults is not found in the empty JSON string", SearchResults.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `maxResults` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smaxResults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
-
-    // add `names` to the URL query string
-    if (getNames() != null) {
-      for (String _key : getNames().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%snames%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getNames().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getNames().get(_key)))));
-      }
-    }
-
-    // add `schema` to the URL query string
-    if (getSchema() != null) {
-      for (String _key : getSchema().keySet()) {
-        if (getSchema().get(_key) != null) {
-          joiner.add(getSchema().get(_key).toUrlQueryString(String.format(Locale.ROOT, "%sschema%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SearchResults.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SearchResults` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
-
-    // add `startAt` to the URL query string
-    if (getStartAt() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartAt%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartAt()))));
-    }
-
-    // add `total` to the URL query string
-    if (getTotal() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stotal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTotal()))));
-    }
-
-    // add `warningMessages` to the URL query string
-    if (getWarningMessages() != null) {
-      for (int i = 0; i < getWarningMessages().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%swarningMessages%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getWarningMessages().get(i)))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("expand") != null && !jsonObj.get("expand").isJsonNull()) && !jsonObj.get("expand").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expand` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expand").toString()));
       }
-    }
+      if (jsonObj.get("issues") != null && !jsonObj.get("issues").isJsonNull()) {
+        JsonArray jsonArrayissues = jsonObj.getAsJsonArray("issues");
+        if (jsonArrayissues != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issues").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issues` to be an array in the JSON string but got `%s`", jsonObj.get("issues").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `issues` (array)
+          for (int i = 0; i < jsonArrayissues.size(); i++) {
+            IssueBean.validateJsonElement(jsonArrayissues.get(i));
+          };
+        }
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("warningMessages") != null && !jsonObj.get("warningMessages").isJsonNull() && !jsonObj.get("warningMessages").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `warningMessages` to be an array in the JSON string but got `%s`", jsonObj.get("warningMessages").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SearchResults.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SearchResults' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SearchResults> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SearchResults.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SearchResults>() {
+           @Override
+           public void write(JsonWriter out, SearchResults value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SearchResults read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of SearchResults given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SearchResults
+   * @throws IOException if the JSON string is invalid with respect to SearchResults
+   */
+  public static SearchResults fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SearchResults.class);
+  }
+
+  /**
+   * Convert an instance of SearchResults to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

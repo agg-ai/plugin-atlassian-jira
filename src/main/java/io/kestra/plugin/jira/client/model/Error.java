@@ -13,49 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Error
  */
-@JsonPropertyOrder({
-  Error.JSON_PROPERTY_COUNT,
-  Error.JSON_PROPERTY_ISSUE_IDS_OR_KEYS,
-  Error.JSON_PROPERTY_MESSAGE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class Error {
-  public static final String JSON_PROPERTY_COUNT = "count";
+  public static final String SERIALIZED_NAME_COUNT = "count";
+  @SerializedName(SERIALIZED_NAME_COUNT)
   @javax.annotation.Nullable
   private Long count;
 
-  public static final String JSON_PROPERTY_ISSUE_IDS_OR_KEYS = "issueIdsOrKeys";
+  public static final String SERIALIZED_NAME_ISSUE_IDS_OR_KEYS = "issueIdsOrKeys";
+  @SerializedName(SERIALIZED_NAME_ISSUE_IDS_OR_KEYS)
   @javax.annotation.Nullable
   private Set<String> issueIdsOrKeys = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_MESSAGE = "message";
+  public static final String SERIALIZED_NAME_MESSAGE = "message";
+  @SerializedName(SERIALIZED_NAME_MESSAGE)
   @javax.annotation.Nullable
   private String message;
 
-  public Error() { 
+  public Error() {
   }
 
   public Error count(@javax.annotation.Nullable Long count) {
@@ -68,15 +82,10 @@ public class Error {
    * @return count
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getCount() {
     return count;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCount(@javax.annotation.Nullable Long count) {
     this.count = count;
   }
@@ -100,16 +109,10 @@ public class Error {
    * @return issueIdsOrKeys
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS_OR_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getIssueIdsOrKeys() {
     return issueIdsOrKeys;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS_OR_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueIdsOrKeys(@javax.annotation.Nullable Set<String> issueIdsOrKeys) {
     this.issueIdsOrKeys = issueIdsOrKeys;
   }
@@ -125,23 +128,16 @@ public class Error {
    * @return message
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMessage() {
     return message;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMessage(@javax.annotation.Nullable String message) {
     this.message = message;
   }
 
 
-  /**
-   * Return true if this Error object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -183,60 +179,95 @@ public class Error {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("count", "issueIdsOrKeys", "message"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to Error
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `count` to the URL query string
-    if (getCount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCount()))));
-    }
-
-    // add `issueIdsOrKeys` to the URL query string
-    if (getIssueIdsOrKeys() != null) {
-      int i = 0;
-      for (String _item : getIssueIdsOrKeys()) {
-        joiner.add(String.format(Locale.ROOT, "%sissueIdsOrKeys%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!Error.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in Error is not found in the empty JSON string", Error.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `message` to the URL query string
-    if (getMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!Error.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `Error` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("issueIdsOrKeys") != null && !jsonObj.get("issueIdsOrKeys").isJsonNull() && !jsonObj.get("issueIdsOrKeys").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueIdsOrKeys` to be an array in the JSON string but got `%s`", jsonObj.get("issueIdsOrKeys").toString()));
+      }
+      if ((jsonObj.get("message") != null && !jsonObj.get("message").isJsonNull()) && !jsonObj.get("message").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `message` to be a primitive type in the JSON string but got `%s`", jsonObj.get("message").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!Error.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'Error' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<Error> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(Error.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<Error>() {
+           @Override
+           public void write(JsonWriter out, Error value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public Error read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of Error given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of Error
+   * @throws IOException if the JSON string is invalid with respect to Error
+   */
+  public static Error fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, Error.class);
+  }
+
+  /**
+   * Convert an instance of Error to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

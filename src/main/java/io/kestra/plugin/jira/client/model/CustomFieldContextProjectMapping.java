@@ -13,55 +13,69 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a context to project association.
  */
-@JsonPropertyOrder({
-  CustomFieldContextProjectMapping.JSON_PROPERTY_CONTEXT_ID,
-  CustomFieldContextProjectMapping.JSON_PROPERTY_IS_GLOBAL_CONTEXT,
-  CustomFieldContextProjectMapping.JSON_PROPERTY_PROJECT_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CustomFieldContextProjectMapping {
-  public static final String JSON_PROPERTY_CONTEXT_ID = "contextId";
+  public static final String SERIALIZED_NAME_CONTEXT_ID = "contextId";
+  @SerializedName(SERIALIZED_NAME_CONTEXT_ID)
   @javax.annotation.Nonnull
   private String contextId;
 
-  public static final String JSON_PROPERTY_IS_GLOBAL_CONTEXT = "isGlobalContext";
+  public static final String SERIALIZED_NAME_IS_GLOBAL_CONTEXT = "isGlobalContext";
+  @SerializedName(SERIALIZED_NAME_IS_GLOBAL_CONTEXT)
   @javax.annotation.Nullable
   private Boolean isGlobalContext;
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nullable
   private String projectId;
 
-  public CustomFieldContextProjectMapping() { 
+  public CustomFieldContextProjectMapping() {
   }
 
-  @JsonCreator
   public CustomFieldContextProjectMapping(
-    @JsonProperty(JSON_PROPERTY_CONTEXT_ID) String contextId, 
-    @JsonProperty(JSON_PROPERTY_IS_GLOBAL_CONTEXT) Boolean isGlobalContext, 
-    @JsonProperty(JSON_PROPERTY_PROJECT_ID) String projectId
+     String contextId, 
+     Boolean isGlobalContext, 
+     String projectId
   ) {
-  this();
+    this();
     this.contextId = contextId;
     this.isGlobalContext = isGlobalContext;
     this.projectId = projectId;
@@ -72,12 +86,9 @@ public class CustomFieldContextProjectMapping {
    * @return contextId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CONTEXT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getContextId() {
     return contextId;
   }
-
 
 
 
@@ -86,12 +97,9 @@ public class CustomFieldContextProjectMapping {
    * @return isGlobalContext
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_GLOBAL_CONTEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsGlobalContext() {
     return isGlobalContext;
   }
-
 
 
 
@@ -100,8 +108,6 @@ public class CustomFieldContextProjectMapping {
    * @return projectId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProjectId() {
     return projectId;
   }
@@ -109,9 +115,6 @@ public class CustomFieldContextProjectMapping {
 
 
 
-  /**
-   * Return true if this CustomFieldContextProjectMapping object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -153,54 +156,101 @@ public class CustomFieldContextProjectMapping {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("contextId", "isGlobalContext", "projectId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("contextId"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CustomFieldContextProjectMapping
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CustomFieldContextProjectMapping.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CustomFieldContextProjectMapping is not found in the empty JSON string", CustomFieldContextProjectMapping.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CustomFieldContextProjectMapping.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CustomFieldContextProjectMapping` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CustomFieldContextProjectMapping.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("contextId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `contextId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("contextId").toString()));
+      }
+      if ((jsonObj.get("projectId") != null && !jsonObj.get("projectId").isJsonNull()) && !jsonObj.get("projectId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CustomFieldContextProjectMapping.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CustomFieldContextProjectMapping' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CustomFieldContextProjectMapping> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextProjectMapping.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CustomFieldContextProjectMapping>() {
+           @Override
+           public void write(JsonWriter out, CustomFieldContextProjectMapping value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CustomFieldContextProjectMapping read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CustomFieldContextProjectMapping given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CustomFieldContextProjectMapping
+   * @throws IOException if the JSON string is invalid with respect to CustomFieldContextProjectMapping
+   */
+  public static CustomFieldContextProjectMapping fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CustomFieldContextProjectMapping.class);
+  }
 
-    // add `contextId` to the URL query string
-    if (getContextId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontextId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContextId()))));
-    }
-
-    // add `isGlobalContext` to the URL query string
-    if (getIsGlobalContext() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisGlobalContext%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsGlobalContext()))));
-    }
-
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CustomFieldContextProjectMapping to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

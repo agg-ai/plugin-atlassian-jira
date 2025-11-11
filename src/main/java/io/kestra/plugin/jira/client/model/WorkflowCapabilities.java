@@ -13,53 +13,64 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.AvailableWorkflowConnectRule;
 import io.kestra.plugin.jira.client.model.AvailableWorkflowForgeRule;
 import io.kestra.plugin.jira.client.model.AvailableWorkflowSystemRule;
 import io.kestra.plugin.jira.client.model.AvailableWorkflowTriggers;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * WorkflowCapabilities
  */
-@JsonPropertyOrder({
-  WorkflowCapabilities.JSON_PROPERTY_CONNECT_RULES,
-  WorkflowCapabilities.JSON_PROPERTY_EDITOR_SCOPE,
-  WorkflowCapabilities.JSON_PROPERTY_FORGE_RULES,
-  WorkflowCapabilities.JSON_PROPERTY_PROJECT_TYPES,
-  WorkflowCapabilities.JSON_PROPERTY_SYSTEM_RULES,
-  WorkflowCapabilities.JSON_PROPERTY_TRIGGER_RULES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowCapabilities {
-  public static final String JSON_PROPERTY_CONNECT_RULES = "connectRules";
+  public static final String SERIALIZED_NAME_CONNECT_RULES = "connectRules";
+  @SerializedName(SERIALIZED_NAME_CONNECT_RULES)
   @javax.annotation.Nullable
   private List<AvailableWorkflowConnectRule> connectRules = new ArrayList<>();
 
   /**
    * The scope of the workflow capabilities. &#x60;GLOBAL&#x60; for company-managed projects and &#x60;PROJECT&#x60; for team-managed projects.
    */
+  @JsonAdapter(EditorScopeEnum.Adapter.class)
   public enum EditorScopeEnum {
-    PROJECT(String.valueOf("PROJECT")),
+    PROJECT("PROJECT"),
     
-    GLOBAL(String.valueOf("GLOBAL"));
+    GLOBAL("GLOBAL");
 
     private String value;
 
@@ -67,7 +78,6 @@ public class WorkflowCapabilities {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -77,7 +87,6 @@ public class WorkflowCapabilities {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static EditorScopeEnum fromValue(String value) {
       for (EditorScopeEnum b : EditorScopeEnum.values()) {
         if (b.value.equals(value)) {
@@ -86,29 +95,50 @@ public class WorkflowCapabilities {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<EditorScopeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final EditorScopeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public EditorScopeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return EditorScopeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      EditorScopeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_EDITOR_SCOPE = "editorScope";
+  public static final String SERIALIZED_NAME_EDITOR_SCOPE = "editorScope";
+  @SerializedName(SERIALIZED_NAME_EDITOR_SCOPE)
   @javax.annotation.Nullable
   private EditorScopeEnum editorScope;
 
-  public static final String JSON_PROPERTY_FORGE_RULES = "forgeRules";
+  public static final String SERIALIZED_NAME_FORGE_RULES = "forgeRules";
+  @SerializedName(SERIALIZED_NAME_FORGE_RULES)
   @javax.annotation.Nullable
   private List<AvailableWorkflowForgeRule> forgeRules = new ArrayList<>();
 
   /**
    * Gets or Sets projectTypes
    */
+  @JsonAdapter(ProjectTypesEnum.Adapter.class)
   public enum ProjectTypesEnum {
-    SOFTWARE(String.valueOf("software")),
+    SOFTWARE("software"),
     
-    SERVICE_DESK(String.valueOf("service_desk")),
+    SERVICE_DESK("service_desk"),
     
-    PRODUCT_DISCOVERY(String.valueOf("product_discovery")),
+    PRODUCT_DISCOVERY("product_discovery"),
     
-    BUSINESS(String.valueOf("business")),
+    BUSINESS("business"),
     
-    UNKNOWN(String.valueOf("unknown"));
+    UNKNOWN("unknown");
 
     private String value;
 
@@ -116,7 +146,6 @@ public class WorkflowCapabilities {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -126,7 +155,6 @@ public class WorkflowCapabilities {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ProjectTypesEnum fromValue(String value) {
       for (ProjectTypesEnum b : ProjectTypesEnum.values()) {
         if (b.value.equals(value)) {
@@ -135,21 +163,42 @@ public class WorkflowCapabilities {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ProjectTypesEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ProjectTypesEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ProjectTypesEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ProjectTypesEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ProjectTypesEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_PROJECT_TYPES = "projectTypes";
+  public static final String SERIALIZED_NAME_PROJECT_TYPES = "projectTypes";
+  @SerializedName(SERIALIZED_NAME_PROJECT_TYPES)
   @javax.annotation.Nullable
   private List<ProjectTypesEnum> projectTypes = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SYSTEM_RULES = "systemRules";
+  public static final String SERIALIZED_NAME_SYSTEM_RULES = "systemRules";
+  @SerializedName(SERIALIZED_NAME_SYSTEM_RULES)
   @javax.annotation.Nullable
   private List<AvailableWorkflowSystemRule> systemRules = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_TRIGGER_RULES = "triggerRules";
+  public static final String SERIALIZED_NAME_TRIGGER_RULES = "triggerRules";
+  @SerializedName(SERIALIZED_NAME_TRIGGER_RULES)
   @javax.annotation.Nullable
   private List<AvailableWorkflowTriggers> triggerRules = new ArrayList<>();
 
-  public WorkflowCapabilities() { 
+  public WorkflowCapabilities() {
   }
 
   public WorkflowCapabilities connectRules(@javax.annotation.Nullable List<AvailableWorkflowConnectRule> connectRules) {
@@ -170,15 +219,10 @@ public class WorkflowCapabilities {
    * @return connectRules
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONNECT_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<AvailableWorkflowConnectRule> getConnectRules() {
     return connectRules;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONNECT_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConnectRules(@javax.annotation.Nullable List<AvailableWorkflowConnectRule> connectRules) {
     this.connectRules = connectRules;
   }
@@ -194,15 +238,10 @@ public class WorkflowCapabilities {
    * @return editorScope
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EDITOR_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public EditorScopeEnum getEditorScope() {
     return editorScope;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EDITOR_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEditorScope(@javax.annotation.Nullable EditorScopeEnum editorScope) {
     this.editorScope = editorScope;
   }
@@ -226,15 +265,10 @@ public class WorkflowCapabilities {
    * @return forgeRules
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FORGE_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<AvailableWorkflowForgeRule> getForgeRules() {
     return forgeRules;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FORGE_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setForgeRules(@javax.annotation.Nullable List<AvailableWorkflowForgeRule> forgeRules) {
     this.forgeRules = forgeRules;
   }
@@ -258,15 +292,10 @@ public class WorkflowCapabilities {
    * @return projectTypes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProjectTypesEnum> getProjectTypes() {
     return projectTypes;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectTypes(@javax.annotation.Nullable List<ProjectTypesEnum> projectTypes) {
     this.projectTypes = projectTypes;
   }
@@ -290,15 +319,10 @@ public class WorkflowCapabilities {
    * @return systemRules
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SYSTEM_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<AvailableWorkflowSystemRule> getSystemRules() {
     return systemRules;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SYSTEM_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSystemRules(@javax.annotation.Nullable List<AvailableWorkflowSystemRule> systemRules) {
     this.systemRules = systemRules;
   }
@@ -322,23 +346,16 @@ public class WorkflowCapabilities {
    * @return triggerRules
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRIGGER_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<AvailableWorkflowTriggers> getTriggerRules() {
     return triggerRules;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRIGGER_RULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTriggerRules(@javax.annotation.Nullable List<AvailableWorkflowTriggers> triggerRules) {
     this.triggerRules = triggerRules;
   }
 
 
-  /**
-   * Return true if this WorkflowCapabilities object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -386,93 +403,155 @@ public class WorkflowCapabilities {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("connectRules", "editorScope", "forgeRules", "projectTypes", "systemRules", "triggerRules"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowCapabilities
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `connectRules` to the URL query string
-    if (getConnectRules() != null) {
-      for (int i = 0; i < getConnectRules().size(); i++) {
-        if (getConnectRules().get(i) != null) {
-          joiner.add(getConnectRules().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sconnectRules%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowCapabilities.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowCapabilities is not found in the empty JSON string", WorkflowCapabilities.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `editorScope` to the URL query string
-    if (getEditorScope() != null) {
-      joiner.add(String.format(Locale.ROOT, "%seditorScope%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEditorScope()))));
-    }
-
-    // add `forgeRules` to the URL query string
-    if (getForgeRules() != null) {
-      for (int i = 0; i < getForgeRules().size(); i++) {
-        if (getForgeRules().get(i) != null) {
-          joiner.add(getForgeRules().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sforgeRules%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowCapabilities.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowCapabilities` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("connectRules") != null && !jsonObj.get("connectRules").isJsonNull()) {
+        JsonArray jsonArrayconnectRules = jsonObj.getAsJsonArray("connectRules");
+        if (jsonArrayconnectRules != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("connectRules").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `connectRules` to be an array in the JSON string but got `%s`", jsonObj.get("connectRules").toString()));
+          }
 
-    // add `projectTypes` to the URL query string
-    if (getProjectTypes() != null) {
-      for (int i = 0; i < getProjectTypes().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sprojectTypes%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getProjectTypes().get(i)))));
-      }
-    }
-
-    // add `systemRules` to the URL query string
-    if (getSystemRules() != null) {
-      for (int i = 0; i < getSystemRules().size(); i++) {
-        if (getSystemRules().get(i) != null) {
-          joiner.add(getSystemRules().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssystemRules%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `connectRules` (array)
+          for (int i = 0; i < jsonArrayconnectRules.size(); i++) {
+            AvailableWorkflowConnectRule.validateJsonElement(jsonArrayconnectRules.get(i));
+          };
         }
       }
-    }
+      if ((jsonObj.get("editorScope") != null && !jsonObj.get("editorScope").isJsonNull()) && !jsonObj.get("editorScope").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `editorScope` to be a primitive type in the JSON string but got `%s`", jsonObj.get("editorScope").toString()));
+      }
+      // validate the optional field `editorScope`
+      if (jsonObj.get("editorScope") != null && !jsonObj.get("editorScope").isJsonNull()) {
+        EditorScopeEnum.validateJsonElement(jsonObj.get("editorScope"));
+      }
+      if (jsonObj.get("forgeRules") != null && !jsonObj.get("forgeRules").isJsonNull()) {
+        JsonArray jsonArrayforgeRules = jsonObj.getAsJsonArray("forgeRules");
+        if (jsonArrayforgeRules != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("forgeRules").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `forgeRules` to be an array in the JSON string but got `%s`", jsonObj.get("forgeRules").toString()));
+          }
 
-    // add `triggerRules` to the URL query string
-    if (getTriggerRules() != null) {
-      for (int i = 0; i < getTriggerRules().size(); i++) {
-        if (getTriggerRules().get(i) != null) {
-          joiner.add(getTriggerRules().get(i).toUrlQueryString(String.format(Locale.ROOT, "%striggerRules%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `forgeRules` (array)
+          for (int i = 0; i < jsonArrayforgeRules.size(); i++) {
+            AvailableWorkflowForgeRule.validateJsonElement(jsonArrayforgeRules.get(i));
+          };
         }
       }
-    }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("projectTypes") != null && !jsonObj.get("projectTypes").isJsonNull() && !jsonObj.get("projectTypes").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectTypes` to be an array in the JSON string but got `%s`", jsonObj.get("projectTypes").toString()));
+      }
+      if (jsonObj.get("systemRules") != null && !jsonObj.get("systemRules").isJsonNull()) {
+        JsonArray jsonArraysystemRules = jsonObj.getAsJsonArray("systemRules");
+        if (jsonArraysystemRules != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("systemRules").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `systemRules` to be an array in the JSON string but got `%s`", jsonObj.get("systemRules").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `systemRules` (array)
+          for (int i = 0; i < jsonArraysystemRules.size(); i++) {
+            AvailableWorkflowSystemRule.validateJsonElement(jsonArraysystemRules.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("triggerRules") != null && !jsonObj.get("triggerRules").isJsonNull()) {
+        JsonArray jsonArraytriggerRules = jsonObj.getAsJsonArray("triggerRules");
+        if (jsonArraytriggerRules != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("triggerRules").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `triggerRules` to be an array in the JSON string but got `%s`", jsonObj.get("triggerRules").toString()));
+          }
+
+          // validate the optional field `triggerRules` (array)
+          for (int i = 0; i < jsonArraytriggerRules.size(); i++) {
+            AvailableWorkflowTriggers.validateJsonElement(jsonArraytriggerRules.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowCapabilities.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowCapabilities' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowCapabilities> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowCapabilities.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowCapabilities>() {
+           @Override
+           public void write(JsonWriter out, WorkflowCapabilities value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowCapabilities read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowCapabilities given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowCapabilities
+   * @throws IOException if the JSON string is invalid with respect to WorkflowCapabilities
+   */
+  public static WorkflowCapabilities fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowCapabilities.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowCapabilities to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

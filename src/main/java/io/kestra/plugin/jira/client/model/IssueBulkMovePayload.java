@@ -13,51 +13,64 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.TargetToSourcesMapping;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Issue Bulk Move Payload
  */
-@JsonPropertyOrder({
-  IssueBulkMovePayload.JSON_PROPERTY_SEND_BULK_NOTIFICATION,
-  IssueBulkMovePayload.JSON_PROPERTY_TARGET_TO_SOURCES_MAPPING
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueBulkMovePayload {
-  public static final String JSON_PROPERTY_SEND_BULK_NOTIFICATION = "sendBulkNotification";
-  private JsonNullable<Boolean> sendBulkNotification = JsonNullable.<Boolean>of(true);
+  public static final String SERIALIZED_NAME_SEND_BULK_NOTIFICATION = "sendBulkNotification";
+  @SerializedName(SERIALIZED_NAME_SEND_BULK_NOTIFICATION)
+  @javax.annotation.Nullable
+  private Boolean sendBulkNotification = true;
 
-  public static final String JSON_PROPERTY_TARGET_TO_SOURCES_MAPPING = "targetToSourcesMapping";
+  public static final String SERIALIZED_NAME_TARGET_TO_SOURCES_MAPPING = "targetToSourcesMapping";
+  @SerializedName(SERIALIZED_NAME_TARGET_TO_SOURCES_MAPPING)
   @javax.annotation.Nullable
   private Map<String, TargetToSourcesMapping> targetToSourcesMapping = new HashMap<>();
 
-  public IssueBulkMovePayload() { 
+  public IssueBulkMovePayload() {
   }
 
   public IssueBulkMovePayload sendBulkNotification(@javax.annotation.Nullable Boolean sendBulkNotification) {
-    this.sendBulkNotification = JsonNullable.<Boolean>of(sendBulkNotification);
+    this.sendBulkNotification = sendBulkNotification;
     return this;
   }
 
@@ -66,25 +79,12 @@ public class IssueBulkMovePayload {
    * @return sendBulkNotification
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Boolean getSendBulkNotification() {
-        return sendBulkNotification.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_SEND_BULK_NOTIFICATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Boolean> getSendBulkNotification_JsonNullable() {
     return sendBulkNotification;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_SEND_BULK_NOTIFICATION)
-  public void setSendBulkNotification_JsonNullable(JsonNullable<Boolean> sendBulkNotification) {
-    this.sendBulkNotification = sendBulkNotification;
   }
 
   public void setSendBulkNotification(@javax.annotation.Nullable Boolean sendBulkNotification) {
-    this.sendBulkNotification = JsonNullable.<Boolean>of(sendBulkNotification);
+    this.sendBulkNotification = sendBulkNotification;
   }
 
 
@@ -106,23 +106,16 @@ public class IssueBulkMovePayload {
    * @return targetToSourcesMapping
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TARGET_TO_SOURCES_MAPPING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, TargetToSourcesMapping> getTargetToSourcesMapping() {
     return targetToSourcesMapping;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TARGET_TO_SOURCES_MAPPING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTargetToSourcesMapping(@javax.annotation.Nullable Map<String, TargetToSourcesMapping> targetToSourcesMapping) {
     this.targetToSourcesMapping = targetToSourcesMapping;
   }
 
 
-  /**
-   * Return true if this IssueBulkMovePayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -132,7 +125,7 @@ public class IssueBulkMovePayload {
       return false;
     }
     IssueBulkMovePayload issueBulkMovePayload = (IssueBulkMovePayload) o;
-    return equalsNullable(this.sendBulkNotification, issueBulkMovePayload.sendBulkNotification) &&
+    return Objects.equals(this.sendBulkNotification, issueBulkMovePayload.sendBulkNotification) &&
         Objects.equals(this.targetToSourcesMapping, issueBulkMovePayload.targetToSourcesMapping);
   }
 
@@ -142,7 +135,7 @@ public class IssueBulkMovePayload {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(sendBulkNotification), targetToSourcesMapping);
+    return Objects.hash(sendBulkNotification, targetToSourcesMapping);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -173,54 +166,88 @@ public class IssueBulkMovePayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("sendBulkNotification", "targetToSourcesMapping"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueBulkMovePayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `sendBulkNotification` to the URL query string
-    if (getSendBulkNotification() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssendBulkNotification%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSendBulkNotification()))));
-    }
-
-    // add `targetToSourcesMapping` to the URL query string
-    if (getTargetToSourcesMapping() != null) {
-      for (String _key : getTargetToSourcesMapping().keySet()) {
-        if (getTargetToSourcesMapping().get(_key) != null) {
-          joiner.add(getTargetToSourcesMapping().get(_key).toUrlQueryString(String.format(Locale.ROOT, "%stargetToSourcesMapping%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueBulkMovePayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueBulkMovePayload is not found in the empty JSON string", IssueBulkMovePayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueBulkMovePayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueBulkMovePayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueBulkMovePayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueBulkMovePayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueBulkMovePayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueBulkMovePayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueBulkMovePayload>() {
+           @Override
+           public void write(JsonWriter out, IssueBulkMovePayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueBulkMovePayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssueBulkMovePayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueBulkMovePayload
+   * @throws IOException if the JSON string is invalid with respect to IssueBulkMovePayload
+   */
+  public static IssueBulkMovePayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueBulkMovePayload.class);
+  }
+
+  /**
+   * Convert an instance of IssueBulkMovePayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

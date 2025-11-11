@@ -13,51 +13,64 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueLayoutItemPayload;
 import io.kestra.plugin.jira.client.model.ProjectCreateResourceIdentifier;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Defines the payload to configure the issue layouts for a project.
  */
-@JsonPropertyOrder({
-  IssueLayoutPayload.JSON_PROPERTY_CONTAINER_ID,
-  IssueLayoutPayload.JSON_PROPERTY_ISSUE_LAYOUT_TYPE,
-  IssueLayoutPayload.JSON_PROPERTY_ITEMS,
-  IssueLayoutPayload.JSON_PROPERTY_PCRI
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueLayoutPayload {
-  public static final String JSON_PROPERTY_CONTAINER_ID = "containerId";
+  public static final String SERIALIZED_NAME_CONTAINER_ID = "containerId";
+  @SerializedName(SERIALIZED_NAME_CONTAINER_ID)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier containerId;
 
   /**
    * The issue layout type
    */
+  @JsonAdapter(IssueLayoutTypeEnum.Adapter.class)
   public enum IssueLayoutTypeEnum {
-    ISSUE_VIEW(String.valueOf("ISSUE_VIEW")),
+    ISSUE_VIEW("ISSUE_VIEW"),
     
-    ISSUE_CREATE(String.valueOf("ISSUE_CREATE")),
+    ISSUE_CREATE("ISSUE_CREATE"),
     
-    REQUEST_FORM(String.valueOf("REQUEST_FORM"));
+    REQUEST_FORM("REQUEST_FORM");
 
     private String value;
 
@@ -65,7 +78,6 @@ public class IssueLayoutPayload {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -75,7 +87,6 @@ public class IssueLayoutPayload {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static IssueLayoutTypeEnum fromValue(String value) {
       for (IssueLayoutTypeEnum b : IssueLayoutTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -84,21 +95,42 @@ public class IssueLayoutPayload {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<IssueLayoutTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final IssueLayoutTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public IssueLayoutTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return IssueLayoutTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      IssueLayoutTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ISSUE_LAYOUT_TYPE = "issueLayoutType";
+  public static final String SERIALIZED_NAME_ISSUE_LAYOUT_TYPE = "issueLayoutType";
+  @SerializedName(SERIALIZED_NAME_ISSUE_LAYOUT_TYPE)
   @javax.annotation.Nullable
   private IssueLayoutTypeEnum issueLayoutType;
 
-  public static final String JSON_PROPERTY_ITEMS = "items";
+  public static final String SERIALIZED_NAME_ITEMS = "items";
+  @SerializedName(SERIALIZED_NAME_ITEMS)
   @javax.annotation.Nullable
   private List<IssueLayoutItemPayload> items = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PCRI = "pcri";
+  public static final String SERIALIZED_NAME_PCRI = "pcri";
+  @SerializedName(SERIALIZED_NAME_PCRI)
   @javax.annotation.Nullable
   private ProjectCreateResourceIdentifier pcri;
 
-  public IssueLayoutPayload() { 
+  public IssueLayoutPayload() {
   }
 
   public IssueLayoutPayload containerId(@javax.annotation.Nullable ProjectCreateResourceIdentifier containerId) {
@@ -111,15 +143,10 @@ public class IssueLayoutPayload {
    * @return containerId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getContainerId() {
     return containerId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainerId(@javax.annotation.Nullable ProjectCreateResourceIdentifier containerId) {
     this.containerId = containerId;
   }
@@ -135,15 +162,10 @@ public class IssueLayoutPayload {
    * @return issueLayoutType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_LAYOUT_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public IssueLayoutTypeEnum getIssueLayoutType() {
     return issueLayoutType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_LAYOUT_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueLayoutType(@javax.annotation.Nullable IssueLayoutTypeEnum issueLayoutType) {
     this.issueLayoutType = issueLayoutType;
   }
@@ -167,15 +189,10 @@ public class IssueLayoutPayload {
    * @return items
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueLayoutItemPayload> getItems() {
     return items;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItems(@javax.annotation.Nullable List<IssueLayoutItemPayload> items) {
     this.items = items;
   }
@@ -191,23 +208,16 @@ public class IssueLayoutPayload {
    * @return pcri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectCreateResourceIdentifier getPcri() {
     return pcri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PCRI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPcri(@javax.annotation.Nullable ProjectCreateResourceIdentifier pcri) {
     this.pcri = pcri;
   }
 
 
-  /**
-   * Return true if this IssueLayoutPayload object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -251,64 +261,117 @@ public class IssueLayoutPayload {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("containerId", "issueLayoutType", "items", "pcri"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueLayoutPayload
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `containerId` to the URL query string
-    if (getContainerId() != null) {
-      joiner.add(getContainerId().toUrlQueryString(prefix + "containerId" + suffix));
-    }
-
-    // add `issueLayoutType` to the URL query string
-    if (getIssueLayoutType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueLayoutType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueLayoutType()))));
-    }
-
-    // add `items` to the URL query string
-    if (getItems() != null) {
-      for (int i = 0; i < getItems().size(); i++) {
-        if (getItems().get(i) != null) {
-          joiner.add(getItems().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sitems%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueLayoutPayload.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueLayoutPayload is not found in the empty JSON string", IssueLayoutPayload.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `pcri` to the URL query string
-    if (getPcri() != null) {
-      joiner.add(getPcri().toUrlQueryString(prefix + "pcri" + suffix));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueLayoutPayload.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueLayoutPayload` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `containerId`
+      if (jsonObj.get("containerId") != null && !jsonObj.get("containerId").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("containerId"));
+      }
+      if ((jsonObj.get("issueLayoutType") != null && !jsonObj.get("issueLayoutType").isJsonNull()) && !jsonObj.get("issueLayoutType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueLayoutType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("issueLayoutType").toString()));
+      }
+      // validate the optional field `issueLayoutType`
+      if (jsonObj.get("issueLayoutType") != null && !jsonObj.get("issueLayoutType").isJsonNull()) {
+        IssueLayoutTypeEnum.validateJsonElement(jsonObj.get("issueLayoutType"));
+      }
+      if (jsonObj.get("items") != null && !jsonObj.get("items").isJsonNull()) {
+        JsonArray jsonArrayitems = jsonObj.getAsJsonArray("items");
+        if (jsonArrayitems != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("items").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `items` to be an array in the JSON string but got `%s`", jsonObj.get("items").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `items` (array)
+          for (int i = 0; i < jsonArrayitems.size(); i++) {
+            IssueLayoutItemPayload.validateJsonElement(jsonArrayitems.get(i));
+          };
+        }
+      }
+      // validate the optional field `pcri`
+      if (jsonObj.get("pcri") != null && !jsonObj.get("pcri").isJsonNull()) {
+        ProjectCreateResourceIdentifier.validateJsonElement(jsonObj.get("pcri"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueLayoutPayload.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueLayoutPayload' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueLayoutPayload> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueLayoutPayload.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueLayoutPayload>() {
+           @Override
+           public void write(JsonWriter out, IssueLayoutPayload value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueLayoutPayload read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssueLayoutPayload given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueLayoutPayload
+   * @throws IOException if the JSON string is invalid with respect to IssueLayoutPayload
+   */
+  public static IssueLayoutPayload fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueLayoutPayload.class);
+  }
+
+  /**
+   * Convert an instance of IssueLayoutPayload to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

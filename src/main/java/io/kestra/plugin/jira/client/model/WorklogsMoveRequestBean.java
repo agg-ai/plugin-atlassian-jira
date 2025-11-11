@@ -13,44 +13,58 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * WorklogsMoveRequestBean
  */
-@JsonPropertyOrder({
-  WorklogsMoveRequestBean.JSON_PROPERTY_IDS,
-  WorklogsMoveRequestBean.JSON_PROPERTY_ISSUE_ID_OR_KEY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorklogsMoveRequestBean {
-  public static final String JSON_PROPERTY_IDS = "ids";
+  public static final String SERIALIZED_NAME_IDS = "ids";
+  @SerializedName(SERIALIZED_NAME_IDS)
   @javax.annotation.Nullable
   private Set<Long> ids = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_ISSUE_ID_OR_KEY = "issueIdOrKey";
+  public static final String SERIALIZED_NAME_ISSUE_ID_OR_KEY = "issueIdOrKey";
+  @SerializedName(SERIALIZED_NAME_ISSUE_ID_OR_KEY)
   @javax.annotation.Nullable
   private String issueIdOrKey;
 
-  public WorklogsMoveRequestBean() { 
+  public WorklogsMoveRequestBean() {
   }
 
   public WorklogsMoveRequestBean ids(@javax.annotation.Nullable Set<Long> ids) {
@@ -71,16 +85,10 @@ public class WorklogsMoveRequestBean {
    * @return ids
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<Long> getIds() {
     return ids;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIds(@javax.annotation.Nullable Set<Long> ids) {
     this.ids = ids;
   }
@@ -96,23 +104,16 @@ public class WorklogsMoveRequestBean {
    * @return issueIdOrKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_ID_OR_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIssueIdOrKey() {
     return issueIdOrKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_ID_OR_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueIdOrKey(@javax.annotation.Nullable String issueIdOrKey) {
     this.issueIdOrKey = issueIdOrKey;
   }
 
 
-  /**
-   * Return true if this WorklogsMoveRequestBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -152,55 +153,95 @@ public class WorklogsMoveRequestBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("ids", "issueIdOrKey"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorklogsMoveRequestBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `ids` to the URL query string
-    if (getIds() != null) {
-      int i = 0;
-      for (Long _item : getIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sids%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorklogsMoveRequestBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorklogsMoveRequestBean is not found in the empty JSON string", WorklogsMoveRequestBean.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `issueIdOrKey` to the URL query string
-    if (getIssueIdOrKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueIdOrKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueIdOrKey()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorklogsMoveRequestBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorklogsMoveRequestBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("ids") != null && !jsonObj.get("ids").isJsonNull() && !jsonObj.get("ids").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `ids` to be an array in the JSON string but got `%s`", jsonObj.get("ids").toString()));
+      }
+      if ((jsonObj.get("issueIdOrKey") != null && !jsonObj.get("issueIdOrKey").isJsonNull()) && !jsonObj.get("issueIdOrKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueIdOrKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("issueIdOrKey").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorklogsMoveRequestBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorklogsMoveRequestBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorklogsMoveRequestBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorklogsMoveRequestBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorklogsMoveRequestBean>() {
+           @Override
+           public void write(JsonWriter out, WorklogsMoveRequestBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorklogsMoveRequestBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorklogsMoveRequestBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorklogsMoveRequestBean
+   * @throws IOException if the JSON string is invalid with respect to WorklogsMoveRequestBean
+   */
+  public static WorklogsMoveRequestBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorklogsMoveRequestBean.class);
+  }
+
+  /**
+   * Convert an instance of WorklogsMoveRequestBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

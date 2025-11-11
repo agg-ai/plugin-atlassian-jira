@@ -13,45 +13,57 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of the time tracking configuration.
  */
-@JsonPropertyOrder({
-  TimeTrackingConfiguration.JSON_PROPERTY_DEFAULT_UNIT,
-  TimeTrackingConfiguration.JSON_PROPERTY_TIME_FORMAT,
-  TimeTrackingConfiguration.JSON_PROPERTY_WORKING_DAYS_PER_WEEK,
-  TimeTrackingConfiguration.JSON_PROPERTY_WORKING_HOURS_PER_DAY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TimeTrackingConfiguration {
   /**
    * The default unit of time applied to logged time.
    */
+  @JsonAdapter(DefaultUnitEnum.Adapter.class)
   public enum DefaultUnitEnum {
-    MINUTE(String.valueOf("minute")),
+    MINUTE("minute"),
     
-    HOUR(String.valueOf("hour")),
+    HOUR("hour"),
     
-    DAY(String.valueOf("day")),
+    DAY("day"),
     
-    WEEK(String.valueOf("week"));
+    WEEK("week");
 
     private String value;
 
@@ -59,7 +71,6 @@ public class TimeTrackingConfiguration {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -69,7 +80,6 @@ public class TimeTrackingConfiguration {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static DefaultUnitEnum fromValue(String value) {
       for (DefaultUnitEnum b : DefaultUnitEnum.values()) {
         if (b.value.equals(value)) {
@@ -78,21 +88,41 @@ public class TimeTrackingConfiguration {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<DefaultUnitEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final DefaultUnitEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public DefaultUnitEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return DefaultUnitEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      DefaultUnitEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_DEFAULT_UNIT = "defaultUnit";
+  public static final String SERIALIZED_NAME_DEFAULT_UNIT = "defaultUnit";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_UNIT)
   @javax.annotation.Nonnull
   private DefaultUnitEnum defaultUnit;
 
   /**
    * The format that will appear on an issue&#39;s *Time Spent* field.
    */
+  @JsonAdapter(TimeFormatEnum.Adapter.class)
   public enum TimeFormatEnum {
-    PRETTY(String.valueOf("pretty")),
+    PRETTY("pretty"),
     
-    DAYS(String.valueOf("days")),
+    DAYS("days"),
     
-    HOURS(String.valueOf("hours"));
+    HOURS("hours");
 
     private String value;
 
@@ -100,7 +130,6 @@ public class TimeTrackingConfiguration {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -110,7 +139,6 @@ public class TimeTrackingConfiguration {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TimeFormatEnum fromValue(String value) {
       for (TimeFormatEnum b : TimeFormatEnum.values()) {
         if (b.value.equals(value)) {
@@ -119,21 +147,42 @@ public class TimeTrackingConfiguration {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TimeFormatEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TimeFormatEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TimeFormatEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TimeFormatEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TimeFormatEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TIME_FORMAT = "timeFormat";
+  public static final String SERIALIZED_NAME_TIME_FORMAT = "timeFormat";
+  @SerializedName(SERIALIZED_NAME_TIME_FORMAT)
   @javax.annotation.Nonnull
   private TimeFormatEnum timeFormat;
 
-  public static final String JSON_PROPERTY_WORKING_DAYS_PER_WEEK = "workingDaysPerWeek";
+  public static final String SERIALIZED_NAME_WORKING_DAYS_PER_WEEK = "workingDaysPerWeek";
+  @SerializedName(SERIALIZED_NAME_WORKING_DAYS_PER_WEEK)
   @javax.annotation.Nonnull
   private Double workingDaysPerWeek;
 
-  public static final String JSON_PROPERTY_WORKING_HOURS_PER_DAY = "workingHoursPerDay";
+  public static final String SERIALIZED_NAME_WORKING_HOURS_PER_DAY = "workingHoursPerDay";
+  @SerializedName(SERIALIZED_NAME_WORKING_HOURS_PER_DAY)
   @javax.annotation.Nonnull
   private Double workingHoursPerDay;
 
-  public TimeTrackingConfiguration() { 
+  public TimeTrackingConfiguration() {
   }
 
   public TimeTrackingConfiguration defaultUnit(@javax.annotation.Nonnull DefaultUnitEnum defaultUnit) {
@@ -146,15 +195,10 @@ public class TimeTrackingConfiguration {
    * @return defaultUnit
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_UNIT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public DefaultUnitEnum getDefaultUnit() {
     return defaultUnit;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_UNIT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setDefaultUnit(@javax.annotation.Nonnull DefaultUnitEnum defaultUnit) {
     this.defaultUnit = defaultUnit;
   }
@@ -170,15 +214,10 @@ public class TimeTrackingConfiguration {
    * @return timeFormat
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TIME_FORMAT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TimeFormatEnum getTimeFormat() {
     return timeFormat;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TIME_FORMAT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setTimeFormat(@javax.annotation.Nonnull TimeFormatEnum timeFormat) {
     this.timeFormat = timeFormat;
   }
@@ -194,15 +233,10 @@ public class TimeTrackingConfiguration {
    * @return workingDaysPerWeek
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_WORKING_DAYS_PER_WEEK, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Double getWorkingDaysPerWeek() {
     return workingDaysPerWeek;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKING_DAYS_PER_WEEK, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setWorkingDaysPerWeek(@javax.annotation.Nonnull Double workingDaysPerWeek) {
     this.workingDaysPerWeek = workingDaysPerWeek;
   }
@@ -218,23 +252,16 @@ public class TimeTrackingConfiguration {
    * @return workingHoursPerDay
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_WORKING_HOURS_PER_DAY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Double getWorkingHoursPerDay() {
     return workingHoursPerDay;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKING_HOURS_PER_DAY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setWorkingHoursPerDay(@javax.annotation.Nonnull Double workingHoursPerDay) {
     this.workingHoursPerDay = workingHoursPerDay;
   }
 
 
-  /**
-   * Return true if this TimeTrackingConfiguration object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -278,59 +305,105 @@ public class TimeTrackingConfiguration {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("defaultUnit", "timeFormat", "workingDaysPerWeek", "workingHoursPerDay"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("defaultUnit", "timeFormat", "workingDaysPerWeek", "workingHoursPerDay"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TimeTrackingConfiguration
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TimeTrackingConfiguration.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TimeTrackingConfiguration is not found in the empty JSON string", TimeTrackingConfiguration.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!TimeTrackingConfiguration.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `TimeTrackingConfiguration` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : TimeTrackingConfiguration.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("defaultUnit").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `defaultUnit` to be a primitive type in the JSON string but got `%s`", jsonObj.get("defaultUnit").toString()));
+      }
+      // validate the required field `defaultUnit`
+      DefaultUnitEnum.validateJsonElement(jsonObj.get("defaultUnit"));
+      if (!jsonObj.get("timeFormat").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `timeFormat` to be a primitive type in the JSON string but got `%s`", jsonObj.get("timeFormat").toString()));
+      }
+      // validate the required field `timeFormat`
+      TimeFormatEnum.validateJsonElement(jsonObj.get("timeFormat"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TimeTrackingConfiguration.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TimeTrackingConfiguration' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TimeTrackingConfiguration> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TimeTrackingConfiguration.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TimeTrackingConfiguration>() {
+           @Override
+           public void write(JsonWriter out, TimeTrackingConfiguration value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TimeTrackingConfiguration read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of TimeTrackingConfiguration given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TimeTrackingConfiguration
+   * @throws IOException if the JSON string is invalid with respect to TimeTrackingConfiguration
+   */
+  public static TimeTrackingConfiguration fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TimeTrackingConfiguration.class);
+  }
 
-    // add `defaultUnit` to the URL query string
-    if (getDefaultUnit() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefaultUnit%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultUnit()))));
-    }
-
-    // add `timeFormat` to the URL query string
-    if (getTimeFormat() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stimeFormat%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimeFormat()))));
-    }
-
-    // add `workingDaysPerWeek` to the URL query string
-    if (getWorkingDaysPerWeek() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sworkingDaysPerWeek%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWorkingDaysPerWeek()))));
-    }
-
-    // add `workingHoursPerDay` to the URL query string
-    if (getWorkingHoursPerDay() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sworkingHoursPerDay%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWorkingHoursPerDay()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of TimeTrackingConfiguration to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

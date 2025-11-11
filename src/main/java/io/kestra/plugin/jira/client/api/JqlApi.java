@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.AutoCompleteSuggestions;
 import io.kestra.plugin.jira.client.model.ConvertedJQLQueries;
@@ -29,882 +38,882 @@ import io.kestra.plugin.jira.client.model.ParsedJqlQueries;
 import io.kestra.plugin.jira.client.model.SanitizedJqlQueries;
 import io.kestra.plugin.jira.client.model.SearchAutoCompleteFilter;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JqlApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public JqlApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public JqlApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for getAutoComplete
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call getAutoCompleteCall(final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public JqlApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public JqlApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Get field reference data (GET)
-   * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  To filter visible field details by project or collapse non-unique fields by field type then [Get field reference data (POST)](#api-rest-api-3-jql-autocompletedata-post) can be used.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @return JQLReferenceData
-   * @throws ApiException if fails to make API call
-   */
-  public JQLReferenceData getAutoComplete() throws ApiException {
-    return getAutoComplete(null);
-  }
-
-  /**
-   * Get field reference data (GET)
-   * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  To filter visible field details by project or collapse non-unique fields by field type then [Get field reference data (POST)](#api-rest-api-3-jql-autocompletedata-post) can be used.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param headers Optional headers to include in the request
-   * @return JQLReferenceData
-   * @throws ApiException if fails to make API call
-   */
-  public JQLReferenceData getAutoComplete(Map<String, String> headers) throws ApiException {
-    ApiResponse<JQLReferenceData> localVarResponse = getAutoCompleteWithHttpInfo(headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get field reference data (GET)
-   * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  To filter visible field details by project or collapse non-unique fields by field type then [Get field reference data (POST)](#api-rest-api-3-jql-autocompletedata-post) can be used.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @return ApiResponse&lt;JQLReferenceData&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<JQLReferenceData> getAutoCompleteWithHttpInfo() throws ApiException {
-    return getAutoCompleteWithHttpInfo(null);
-  }
-
-  /**
-   * Get field reference data (GET)
-   * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  To filter visible field details by project or collapse non-unique fields by field type then [Get field reference data (POST)](#api-rest-api-3-jql-autocompletedata-post) can be used.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;JQLReferenceData&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<JQLReferenceData> getAutoCompleteWithHttpInfo(Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAutoCompleteRequestBuilder(headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAutoComplete", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<JQLReferenceData>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        JQLReferenceData responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<JQLReferenceData>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<JQLReferenceData>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/autocompletedata";
 
-  private HttpRequest.Builder getAutoCompleteRequestBuilder(Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/jql/autocompletedata";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get field reference data (POST)
-   * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  This operation can filter the custom fields returned by project. Invalid project IDs in &#x60;projectIds&#x60; are ignored. System fields are always returned.  It can also return the collapsed field for custom fields. Collapsed fields enable searches to be performed across all fields with the same name and of the same field type. For example, the collapsed field &#x60;Component - Component[Dropdown]&#x60; enables dropdown fields &#x60;Component - cf[10061]&#x60; and &#x60;Component - cf[10062]&#x60; to be searched simultaneously.  **[Permissions](#permissions) required:** None.
-   * @param searchAutoCompleteFilter  (required)
-   * @return JQLReferenceData
-   * @throws ApiException if fails to make API call
-   */
-  public JQLReferenceData getAutoCompletePost(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter) throws ApiException {
-    return getAutoCompletePost(searchAutoCompleteFilter, null);
-  }
-
-  /**
-   * Get field reference data (POST)
-   * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  This operation can filter the custom fields returned by project. Invalid project IDs in &#x60;projectIds&#x60; are ignored. System fields are always returned.  It can also return the collapsed field for custom fields. Collapsed fields enable searches to be performed across all fields with the same name and of the same field type. For example, the collapsed field &#x60;Component - Component[Dropdown]&#x60; enables dropdown fields &#x60;Component - cf[10061]&#x60; and &#x60;Component - cf[10062]&#x60; to be searched simultaneously.  **[Permissions](#permissions) required:** None.
-   * @param searchAutoCompleteFilter  (required)
-   * @param headers Optional headers to include in the request
-   * @return JQLReferenceData
-   * @throws ApiException if fails to make API call
-   */
-  public JQLReferenceData getAutoCompletePost(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter, Map<String, String> headers) throws ApiException {
-    ApiResponse<JQLReferenceData> localVarResponse = getAutoCompletePostWithHttpInfo(searchAutoCompleteFilter, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get field reference data (POST)
-   * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  This operation can filter the custom fields returned by project. Invalid project IDs in &#x60;projectIds&#x60; are ignored. System fields are always returned.  It can also return the collapsed field for custom fields. Collapsed fields enable searches to be performed across all fields with the same name and of the same field type. For example, the collapsed field &#x60;Component - Component[Dropdown]&#x60; enables dropdown fields &#x60;Component - cf[10061]&#x60; and &#x60;Component - cf[10062]&#x60; to be searched simultaneously.  **[Permissions](#permissions) required:** None.
-   * @param searchAutoCompleteFilter  (required)
-   * @return ApiResponse&lt;JQLReferenceData&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<JQLReferenceData> getAutoCompletePostWithHttpInfo(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter) throws ApiException {
-    return getAutoCompletePostWithHttpInfo(searchAutoCompleteFilter, null);
-  }
-
-  /**
-   * Get field reference data (POST)
-   * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  This operation can filter the custom fields returned by project. Invalid project IDs in &#x60;projectIds&#x60; are ignored. System fields are always returned.  It can also return the collapsed field for custom fields. Collapsed fields enable searches to be performed across all fields with the same name and of the same field type. For example, the collapsed field &#x60;Component - Component[Dropdown]&#x60; enables dropdown fields &#x60;Component - cf[10061]&#x60; and &#x60;Component - cf[10062]&#x60; to be searched simultaneously.  **[Permissions](#permissions) required:** None.
-   * @param searchAutoCompleteFilter  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;JQLReferenceData&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<JQLReferenceData> getAutoCompletePostWithHttpInfo(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAutoCompletePostRequestBuilder(searchAutoCompleteFilter, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAutoCompletePost", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<JQLReferenceData>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        JQLReferenceData responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<JQLReferenceData>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<JQLReferenceData>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAutoCompletePostRequestBuilder(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'searchAutoCompleteFilter' is set
-    if (searchAutoCompleteFilter == null) {
-      throw new ApiException(400, "Missing the required parameter 'searchAutoCompleteFilter' when calling getAutoCompletePost");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/jql/autocompletedata";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(searchAutoCompleteFilter);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get field auto complete suggestions
-   * Returns the JQL search auto complete suggestions for a field.  Suggestions can be obtained by providing:   *  &#x60;fieldName&#x60; to get a list of all values for the field.  *  &#x60;fieldName&#x60; and &#x60;fieldValue&#x60; to get a list of values containing the text in &#x60;fieldValue&#x60;.  *  &#x60;fieldName&#x60; and &#x60;predicateName&#x60; to get a list of all predicate values for the field.  *  &#x60;fieldName&#x60;, &#x60;predicateName&#x60;, and &#x60;predicateValue&#x60; to get a list of predicate values containing the text in &#x60;predicateValue&#x60;.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param fieldName The name of the field. (optional)
-   * @param fieldValue The partial field item name entered by the user. (optional)
-   * @param predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*. (optional)
-   * @param predicateValue The partial predicate item name entered by the user. (optional)
-   * @return AutoCompleteSuggestions
-   * @throws ApiException if fails to make API call
-   */
-  public AutoCompleteSuggestions getFieldAutoCompleteForQueryString(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue) throws ApiException {
-    return getFieldAutoCompleteForQueryString(fieldName, fieldValue, predicateName, predicateValue, null);
-  }
-
-  /**
-   * Get field auto complete suggestions
-   * Returns the JQL search auto complete suggestions for a field.  Suggestions can be obtained by providing:   *  &#x60;fieldName&#x60; to get a list of all values for the field.  *  &#x60;fieldName&#x60; and &#x60;fieldValue&#x60; to get a list of values containing the text in &#x60;fieldValue&#x60;.  *  &#x60;fieldName&#x60; and &#x60;predicateName&#x60; to get a list of all predicate values for the field.  *  &#x60;fieldName&#x60;, &#x60;predicateName&#x60;, and &#x60;predicateValue&#x60; to get a list of predicate values containing the text in &#x60;predicateValue&#x60;.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param fieldName The name of the field. (optional)
-   * @param fieldValue The partial field item name entered by the user. (optional)
-   * @param predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*. (optional)
-   * @param predicateValue The partial predicate item name entered by the user. (optional)
-   * @param headers Optional headers to include in the request
-   * @return AutoCompleteSuggestions
-   * @throws ApiException if fails to make API call
-   */
-  public AutoCompleteSuggestions getFieldAutoCompleteForQueryString(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue, Map<String, String> headers) throws ApiException {
-    ApiResponse<AutoCompleteSuggestions> localVarResponse = getFieldAutoCompleteForQueryStringWithHttpInfo(fieldName, fieldValue, predicateName, predicateValue, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get field auto complete suggestions
-   * Returns the JQL search auto complete suggestions for a field.  Suggestions can be obtained by providing:   *  &#x60;fieldName&#x60; to get a list of all values for the field.  *  &#x60;fieldName&#x60; and &#x60;fieldValue&#x60; to get a list of values containing the text in &#x60;fieldValue&#x60;.  *  &#x60;fieldName&#x60; and &#x60;predicateName&#x60; to get a list of all predicate values for the field.  *  &#x60;fieldName&#x60;, &#x60;predicateName&#x60;, and &#x60;predicateValue&#x60; to get a list of predicate values containing the text in &#x60;predicateValue&#x60;.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param fieldName The name of the field. (optional)
-   * @param fieldValue The partial field item name entered by the user. (optional)
-   * @param predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*. (optional)
-   * @param predicateValue The partial predicate item name entered by the user. (optional)
-   * @return ApiResponse&lt;AutoCompleteSuggestions&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<AutoCompleteSuggestions> getFieldAutoCompleteForQueryStringWithHttpInfo(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue) throws ApiException {
-    return getFieldAutoCompleteForQueryStringWithHttpInfo(fieldName, fieldValue, predicateName, predicateValue, null);
-  }
-
-  /**
-   * Get field auto complete suggestions
-   * Returns the JQL search auto complete suggestions for a field.  Suggestions can be obtained by providing:   *  &#x60;fieldName&#x60; to get a list of all values for the field.  *  &#x60;fieldName&#x60; and &#x60;fieldValue&#x60; to get a list of values containing the text in &#x60;fieldValue&#x60;.  *  &#x60;fieldName&#x60; and &#x60;predicateName&#x60; to get a list of all predicate values for the field.  *  &#x60;fieldName&#x60;, &#x60;predicateName&#x60;, and &#x60;predicateValue&#x60; to get a list of predicate values containing the text in &#x60;predicateValue&#x60;.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param fieldName The name of the field. (optional)
-   * @param fieldValue The partial field item name entered by the user. (optional)
-   * @param predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*. (optional)
-   * @param predicateValue The partial predicate item name entered by the user. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;AutoCompleteSuggestions&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<AutoCompleteSuggestions> getFieldAutoCompleteForQueryStringWithHttpInfo(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getFieldAutoCompleteForQueryStringRequestBuilder(fieldName, fieldValue, predicateName, predicateValue, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getFieldAutoCompleteForQueryString", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<AutoCompleteSuggestions>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        AutoCompleteSuggestions responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<AutoCompleteSuggestions>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<AutoCompleteSuggestions>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getFieldAutoCompleteForQueryStringRequestBuilder(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/jql/autocompletedata/suggestions";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "fieldName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("fieldName", fieldName));
-    localVarQueryParameterBaseName = "fieldValue";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("fieldValue", fieldValue));
-    localVarQueryParameterBaseName = "predicateName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("predicateName", predicateName));
-    localVarQueryParameterBaseName = "predicateValue";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("predicateValue", predicateValue));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAutoCompleteValidateBeforeCall(final ApiCallback _callback) throws ApiException {
+        return getAutoCompleteCall(_callback);
 
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Get field reference data (GET)
+     * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  To filter visible field details by project or collapse non-unique fields by field type then [Get field reference data (POST)](#api-rest-api-3-jql-autocompletedata-post) can be used.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @return JQLReferenceData
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public JQLReferenceData getAutoComplete() throws ApiException {
+        ApiResponse<JQLReferenceData> localVarResp = getAutoCompleteWithHttpInfo();
+        return localVarResp.getData();
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Convert user identifiers to account IDs in JQL queries
-   * Converts one or more JQL queries with user identifiers (username or user key) to equivalent JQL queries with account IDs.  You may wish to use this operation if your system stores JQL queries and you want to make them GDPR-compliant. For more information about GDPR-related changes, see the [migration guide](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/).  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param jqLPersonalDataMigrationRequest  (required)
-   * @return ConvertedJQLQueries
-   * @throws ApiException if fails to make API call
-   */
-  public ConvertedJQLQueries migrateQueries(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest) throws ApiException {
-    return migrateQueries(jqLPersonalDataMigrationRequest, null);
-  }
+    /**
+     * Get field reference data (GET)
+     * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  To filter visible field details by project or collapse non-unique fields by field type then [Get field reference data (POST)](#api-rest-api-3-jql-autocompletedata-post) can be used.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @return ApiResponse&lt;JQLReferenceData&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<JQLReferenceData> getAutoCompleteWithHttpInfo() throws ApiException {
+        okhttp3.Call localVarCall = getAutoCompleteValidateBeforeCall(null);
+        Type localVarReturnType = new TypeToken<JQLReferenceData>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
 
-  /**
-   * Convert user identifiers to account IDs in JQL queries
-   * Converts one or more JQL queries with user identifiers (username or user key) to equivalent JQL queries with account IDs.  You may wish to use this operation if your system stores JQL queries and you want to make them GDPR-compliant. For more information about GDPR-related changes, see the [migration guide](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/).  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param jqLPersonalDataMigrationRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ConvertedJQLQueries
-   * @throws ApiException if fails to make API call
-   */
-  public ConvertedJQLQueries migrateQueries(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<ConvertedJQLQueries> localVarResponse = migrateQueriesWithHttpInfo(jqLPersonalDataMigrationRequest, headers);
-    return localVarResponse.getData();
-  }
+    /**
+     * Get field reference data (GET) (asynchronously)
+     * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  To filter visible field details by project or collapse non-unique fields by field type then [Get field reference data (POST)](#api-rest-api-3-jql-autocompletedata-post) can be used.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAutoCompleteAsync(final ApiCallback<JQLReferenceData> _callback) throws ApiException {
 
-  /**
-   * Convert user identifiers to account IDs in JQL queries
-   * Converts one or more JQL queries with user identifiers (username or user key) to equivalent JQL queries with account IDs.  You may wish to use this operation if your system stores JQL queries and you want to make them GDPR-compliant. For more information about GDPR-related changes, see the [migration guide](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/).  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param jqLPersonalDataMigrationRequest  (required)
-   * @return ApiResponse&lt;ConvertedJQLQueries&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ConvertedJQLQueries> migrateQueriesWithHttpInfo(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest) throws ApiException {
-    return migrateQueriesWithHttpInfo(jqLPersonalDataMigrationRequest, null);
-  }
+        okhttp3.Call localVarCall = getAutoCompleteValidateBeforeCall(_callback);
+        Type localVarReturnType = new TypeToken<JQLReferenceData>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAutoCompletePost
+     * @param searchAutoCompleteFilter  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAutoCompletePostCall(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Convert user identifiers to account IDs in JQL queries
-   * Converts one or more JQL queries with user identifiers (username or user key) to equivalent JQL queries with account IDs.  You may wish to use this operation if your system stores JQL queries and you want to make them GDPR-compliant. For more information about GDPR-related changes, see the [migration guide](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/).  **[Permissions](#permissions) required:** Permission to access Jira.
-   * @param jqLPersonalDataMigrationRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ConvertedJQLQueries&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ConvertedJQLQueries> migrateQueriesWithHttpInfo(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = migrateQueriesRequestBuilder(jqLPersonalDataMigrationRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("migrateQueries", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ConvertedJQLQueries>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ConvertedJQLQueries responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ConvertedJQLQueries>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = searchAutoCompleteFilter;
 
-        return new ApiResponse<ConvertedJQLQueries>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/autocompletedata";
 
-  private HttpRequest.Builder migrateQueriesRequestBuilder(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'jqLPersonalDataMigrationRequest' is set
-    if (jqLPersonalDataMigrationRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'jqLPersonalDataMigrationRequest' when calling migrateQueries");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/jql/pdcleaner";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(jqLPersonalDataMigrationRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Parse JQL query
-   * Parses and validates JQL queries.  Validation is performed in context of the current user.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param validation How to validate the JQL query and treat the validation results. Validation options include:   *  &#x60;strict&#x60; Returns all errors. If validation fails, the query structure is not returned.  *  &#x60;warn&#x60; Returns all errors. If validation fails but the JQL query is correctly formed, the query structure is returned.  *  &#x60;none&#x60; No validation is performed. If JQL query is correctly formed, the query structure is returned. (required)
-   * @param jqlQueriesToParse  (required)
-   * @return ParsedJqlQueries
-   * @throws ApiException if fails to make API call
-   */
-  public ParsedJqlQueries parseJqlQueries(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse) throws ApiException {
-    return parseJqlQueries(validation, jqlQueriesToParse, null);
-  }
-
-  /**
-   * Parse JQL query
-   * Parses and validates JQL queries.  Validation is performed in context of the current user.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param validation How to validate the JQL query and treat the validation results. Validation options include:   *  &#x60;strict&#x60; Returns all errors. If validation fails, the query structure is not returned.  *  &#x60;warn&#x60; Returns all errors. If validation fails but the JQL query is correctly formed, the query structure is returned.  *  &#x60;none&#x60; No validation is performed. If JQL query is correctly formed, the query structure is returned. (required)
-   * @param jqlQueriesToParse  (required)
-   * @param headers Optional headers to include in the request
-   * @return ParsedJqlQueries
-   * @throws ApiException if fails to make API call
-   */
-  public ParsedJqlQueries parseJqlQueries(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse, Map<String, String> headers) throws ApiException {
-    ApiResponse<ParsedJqlQueries> localVarResponse = parseJqlQueriesWithHttpInfo(validation, jqlQueriesToParse, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Parse JQL query
-   * Parses and validates JQL queries.  Validation is performed in context of the current user.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param validation How to validate the JQL query and treat the validation results. Validation options include:   *  &#x60;strict&#x60; Returns all errors. If validation fails, the query structure is not returned.  *  &#x60;warn&#x60; Returns all errors. If validation fails but the JQL query is correctly formed, the query structure is returned.  *  &#x60;none&#x60; No validation is performed. If JQL query is correctly formed, the query structure is returned. (required)
-   * @param jqlQueriesToParse  (required)
-   * @return ApiResponse&lt;ParsedJqlQueries&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ParsedJqlQueries> parseJqlQueriesWithHttpInfo(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse) throws ApiException {
-    return parseJqlQueriesWithHttpInfo(validation, jqlQueriesToParse, null);
-  }
-
-  /**
-   * Parse JQL query
-   * Parses and validates JQL queries.  Validation is performed in context of the current user.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
-   * @param validation How to validate the JQL query and treat the validation results. Validation options include:   *  &#x60;strict&#x60; Returns all errors. If validation fails, the query structure is not returned.  *  &#x60;warn&#x60; Returns all errors. If validation fails but the JQL query is correctly formed, the query structure is returned.  *  &#x60;none&#x60; No validation is performed. If JQL query is correctly formed, the query structure is returned. (required)
-   * @param jqlQueriesToParse  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ParsedJqlQueries&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ParsedJqlQueries> parseJqlQueriesWithHttpInfo(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = parseJqlQueriesRequestBuilder(validation, jqlQueriesToParse, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("parseJqlQueries", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ParsedJqlQueries>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ParsedJqlQueries responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ParsedJqlQueries>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ParsedJqlQueries>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder parseJqlQueriesRequestBuilder(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'validation' is set
-    if (validation == null) {
-      throw new ApiException(400, "Missing the required parameter 'validation' when calling parseJqlQueries");
-    }
-    // verify the required parameter 'jqlQueriesToParse' is set
-    if (jqlQueriesToParse == null) {
-      throw new ApiException(400, "Missing the required parameter 'jqlQueriesToParse' when calling parseJqlQueries");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/jql/parse";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "validation";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("validation", validation));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(jqlQueriesToParse);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Sanitize JQL queries
-   * Sanitizes one or more JQL queries by converting readable details into IDs where a user doesn&#39;t have permission to view the entity.  For example, if the query contains the clause *project &#x3D; &#39;Secret project&#39;*, and a user does not have browse permission for the project \&quot;Secret project\&quot;, the sanitized query replaces the clause with *project &#x3D; 12345\&quot;* (where 12345 is the ID of the project). If a user has the required permission, the clause is not sanitized. If the account ID is null, sanitizing is performed for an anonymous user.  Note that sanitization doesn&#39;t make the queries GDPR-compliant, because it doesn&#39;t remove user identifiers (username or user key). If you need to make queries GDPR-compliant, use [Convert user identifiers to account IDs in JQL queries](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-jql/#api-rest-api-3-jql-sanitize-post).  Before sanitization each JQL query is parsed. The queries are returned in the same order that they were passed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param jqlQueriesToSanitize  (required)
-   * @return SanitizedJqlQueries
-   * @throws ApiException if fails to make API call
-   */
-  public SanitizedJqlQueries sanitiseJqlQueries(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize) throws ApiException {
-    return sanitiseJqlQueries(jqlQueriesToSanitize, null);
-  }
-
-  /**
-   * Sanitize JQL queries
-   * Sanitizes one or more JQL queries by converting readable details into IDs where a user doesn&#39;t have permission to view the entity.  For example, if the query contains the clause *project &#x3D; &#39;Secret project&#39;*, and a user does not have browse permission for the project \&quot;Secret project\&quot;, the sanitized query replaces the clause with *project &#x3D; 12345\&quot;* (where 12345 is the ID of the project). If a user has the required permission, the clause is not sanitized. If the account ID is null, sanitizing is performed for an anonymous user.  Note that sanitization doesn&#39;t make the queries GDPR-compliant, because it doesn&#39;t remove user identifiers (username or user key). If you need to make queries GDPR-compliant, use [Convert user identifiers to account IDs in JQL queries](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-jql/#api-rest-api-3-jql-sanitize-post).  Before sanitization each JQL query is parsed. The queries are returned in the same order that they were passed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param jqlQueriesToSanitize  (required)
-   * @param headers Optional headers to include in the request
-   * @return SanitizedJqlQueries
-   * @throws ApiException if fails to make API call
-   */
-  public SanitizedJqlQueries sanitiseJqlQueries(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize, Map<String, String> headers) throws ApiException {
-    ApiResponse<SanitizedJqlQueries> localVarResponse = sanitiseJqlQueriesWithHttpInfo(jqlQueriesToSanitize, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Sanitize JQL queries
-   * Sanitizes one or more JQL queries by converting readable details into IDs where a user doesn&#39;t have permission to view the entity.  For example, if the query contains the clause *project &#x3D; &#39;Secret project&#39;*, and a user does not have browse permission for the project \&quot;Secret project\&quot;, the sanitized query replaces the clause with *project &#x3D; 12345\&quot;* (where 12345 is the ID of the project). If a user has the required permission, the clause is not sanitized. If the account ID is null, sanitizing is performed for an anonymous user.  Note that sanitization doesn&#39;t make the queries GDPR-compliant, because it doesn&#39;t remove user identifiers (username or user key). If you need to make queries GDPR-compliant, use [Convert user identifiers to account IDs in JQL queries](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-jql/#api-rest-api-3-jql-sanitize-post).  Before sanitization each JQL query is parsed. The queries are returned in the same order that they were passed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param jqlQueriesToSanitize  (required)
-   * @return ApiResponse&lt;SanitizedJqlQueries&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SanitizedJqlQueries> sanitiseJqlQueriesWithHttpInfo(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize) throws ApiException {
-    return sanitiseJqlQueriesWithHttpInfo(jqlQueriesToSanitize, null);
-  }
-
-  /**
-   * Sanitize JQL queries
-   * Sanitizes one or more JQL queries by converting readable details into IDs where a user doesn&#39;t have permission to view the entity.  For example, if the query contains the clause *project &#x3D; &#39;Secret project&#39;*, and a user does not have browse permission for the project \&quot;Secret project\&quot;, the sanitized query replaces the clause with *project &#x3D; 12345\&quot;* (where 12345 is the ID of the project). If a user has the required permission, the clause is not sanitized. If the account ID is null, sanitizing is performed for an anonymous user.  Note that sanitization doesn&#39;t make the queries GDPR-compliant, because it doesn&#39;t remove user identifiers (username or user key). If you need to make queries GDPR-compliant, use [Convert user identifiers to account IDs in JQL queries](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-jql/#api-rest-api-3-jql-sanitize-post).  Before sanitization each JQL query is parsed. The queries are returned in the same order that they were passed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param jqlQueriesToSanitize  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;SanitizedJqlQueries&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<SanitizedJqlQueries> sanitiseJqlQueriesWithHttpInfo(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = sanitiseJqlQueriesRequestBuilder(jqlQueriesToSanitize, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("sanitiseJqlQueries", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<SanitizedJqlQueries>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        SanitizedJqlQueries responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<SanitizedJqlQueries>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<SanitizedJqlQueries>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder sanitiseJqlQueriesRequestBuilder(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'jqlQueriesToSanitize' is set
-    if (jqlQueriesToSanitize == null) {
-      throw new ApiException(400, "Missing the required parameter 'jqlQueriesToSanitize' when calling sanitiseJqlQueries");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAutoCompletePostValidateBeforeCall(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'searchAutoCompleteFilter' is set
+        if (searchAutoCompleteFilter == null) {
+            throw new ApiException("Missing the required parameter 'searchAutoCompleteFilter' when calling getAutoCompletePost(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/jql/sanitize";
+        return getAutoCompletePostCall(searchAutoCompleteFilter, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(jqlQueriesToSanitize);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Get field reference data (POST)
+     * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  This operation can filter the custom fields returned by project. Invalid project IDs in &#x60;projectIds&#x60; are ignored. System fields are always returned.  It can also return the collapsed field for custom fields. Collapsed fields enable searches to be performed across all fields with the same name and of the same field type. For example, the collapsed field &#x60;Component - Component[Dropdown]&#x60; enables dropdown fields &#x60;Component - cf[10061]&#x60; and &#x60;Component - cf[10062]&#x60; to be searched simultaneously.  **[Permissions](#permissions) required:** None.
+     * @param searchAutoCompleteFilter  (required)
+     * @return JQLReferenceData
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public JQLReferenceData getAutoCompletePost(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter) throws ApiException {
+        ApiResponse<JQLReferenceData> localVarResp = getAutoCompletePostWithHttpInfo(searchAutoCompleteFilter);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get field reference data (POST)
+     * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  This operation can filter the custom fields returned by project. Invalid project IDs in &#x60;projectIds&#x60; are ignored. System fields are always returned.  It can also return the collapsed field for custom fields. Collapsed fields enable searches to be performed across all fields with the same name and of the same field type. For example, the collapsed field &#x60;Component - Component[Dropdown]&#x60; enables dropdown fields &#x60;Component - cf[10061]&#x60; and &#x60;Component - cf[10062]&#x60; to be searched simultaneously.  **[Permissions](#permissions) required:** None.
+     * @param searchAutoCompleteFilter  (required)
+     * @return ApiResponse&lt;JQLReferenceData&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<JQLReferenceData> getAutoCompletePostWithHttpInfo(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter) throws ApiException {
+        okhttp3.Call localVarCall = getAutoCompletePostValidateBeforeCall(searchAutoCompleteFilter, null);
+        Type localVarReturnType = new TypeToken<JQLReferenceData>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get field reference data (POST) (asynchronously)
+     * Returns reference data for JQL searches. This is a downloadable version of the documentation provided in [Advanced searching - fields reference](https://confluence.atlassian.com/x/gwORLQ) and [Advanced searching - functions reference](https://confluence.atlassian.com/x/hgORLQ), along with a list of JQL-reserved words. Use this information to assist with the programmatic creation of JQL queries or the validation of queries built in a custom query builder.  This operation can filter the custom fields returned by project. Invalid project IDs in &#x60;projectIds&#x60; are ignored. System fields are always returned.  It can also return the collapsed field for custom fields. Collapsed fields enable searches to be performed across all fields with the same name and of the same field type. For example, the collapsed field &#x60;Component - Component[Dropdown]&#x60; enables dropdown fields &#x60;Component - cf[10061]&#x60; and &#x60;Component - cf[10062]&#x60; to be searched simultaneously.  **[Permissions](#permissions) required:** None.
+     * @param searchAutoCompleteFilter  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAutoCompletePostAsync(@javax.annotation.Nonnull SearchAutoCompleteFilter searchAutoCompleteFilter, final ApiCallback<JQLReferenceData> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAutoCompletePostValidateBeforeCall(searchAutoCompleteFilter, _callback);
+        Type localVarReturnType = new TypeToken<JQLReferenceData>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getFieldAutoCompleteForQueryString
+     * @param fieldName The name of the field. (optional)
+     * @param fieldValue The partial field item name entered by the user. (optional)
+     * @param predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*. (optional)
+     * @param predicateValue The partial predicate item name entered by the user. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if an invalid combination of parameters is passed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFieldAutoCompleteForQueryStringCall(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/autocompletedata/suggestions";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (fieldName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fieldName", fieldName));
+        }
+
+        if (fieldValue != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("fieldValue", fieldValue));
+        }
+
+        if (predicateName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("predicateName", predicateName));
+        }
+
+        if (predicateValue != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("predicateValue", predicateValue));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getFieldAutoCompleteForQueryStringValidateBeforeCall(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue, final ApiCallback _callback) throws ApiException {
+        return getFieldAutoCompleteForQueryStringCall(fieldName, fieldValue, predicateName, predicateValue, _callback);
+
+    }
+
+    /**
+     * Get field auto complete suggestions
+     * Returns the JQL search auto complete suggestions for a field.  Suggestions can be obtained by providing:   *  &#x60;fieldName&#x60; to get a list of all values for the field.  *  &#x60;fieldName&#x60; and &#x60;fieldValue&#x60; to get a list of values containing the text in &#x60;fieldValue&#x60;.  *  &#x60;fieldName&#x60; and &#x60;predicateName&#x60; to get a list of all predicate values for the field.  *  &#x60;fieldName&#x60;, &#x60;predicateName&#x60;, and &#x60;predicateValue&#x60; to get a list of predicate values containing the text in &#x60;predicateValue&#x60;.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param fieldName The name of the field. (optional)
+     * @param fieldValue The partial field item name entered by the user. (optional)
+     * @param predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*. (optional)
+     * @param predicateValue The partial predicate item name entered by the user. (optional)
+     * @return AutoCompleteSuggestions
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if an invalid combination of parameters is passed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public AutoCompleteSuggestions getFieldAutoCompleteForQueryString(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue) throws ApiException {
+        ApiResponse<AutoCompleteSuggestions> localVarResp = getFieldAutoCompleteForQueryStringWithHttpInfo(fieldName, fieldValue, predicateName, predicateValue);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get field auto complete suggestions
+     * Returns the JQL search auto complete suggestions for a field.  Suggestions can be obtained by providing:   *  &#x60;fieldName&#x60; to get a list of all values for the field.  *  &#x60;fieldName&#x60; and &#x60;fieldValue&#x60; to get a list of values containing the text in &#x60;fieldValue&#x60;.  *  &#x60;fieldName&#x60; and &#x60;predicateName&#x60; to get a list of all predicate values for the field.  *  &#x60;fieldName&#x60;, &#x60;predicateName&#x60;, and &#x60;predicateValue&#x60; to get a list of predicate values containing the text in &#x60;predicateValue&#x60;.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param fieldName The name of the field. (optional)
+     * @param fieldValue The partial field item name entered by the user. (optional)
+     * @param predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*. (optional)
+     * @param predicateValue The partial predicate item name entered by the user. (optional)
+     * @return ApiResponse&lt;AutoCompleteSuggestions&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if an invalid combination of parameters is passed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<AutoCompleteSuggestions> getFieldAutoCompleteForQueryStringWithHttpInfo(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue) throws ApiException {
+        okhttp3.Call localVarCall = getFieldAutoCompleteForQueryStringValidateBeforeCall(fieldName, fieldValue, predicateName, predicateValue, null);
+        Type localVarReturnType = new TypeToken<AutoCompleteSuggestions>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get field auto complete suggestions (asynchronously)
+     * Returns the JQL search auto complete suggestions for a field.  Suggestions can be obtained by providing:   *  &#x60;fieldName&#x60; to get a list of all values for the field.  *  &#x60;fieldName&#x60; and &#x60;fieldValue&#x60; to get a list of values containing the text in &#x60;fieldValue&#x60;.  *  &#x60;fieldName&#x60; and &#x60;predicateName&#x60; to get a list of all predicate values for the field.  *  &#x60;fieldName&#x60;, &#x60;predicateName&#x60;, and &#x60;predicateValue&#x60; to get a list of predicate values containing the text in &#x60;predicateValue&#x60;.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param fieldName The name of the field. (optional)
+     * @param fieldValue The partial field item name entered by the user. (optional)
+     * @param predicateName The name of the [ CHANGED operator predicate](https://confluence.atlassian.com/x/hQORLQ#Advancedsearching-operatorsreference-CHANGEDCHANGED) for which the suggestions are generated. The valid predicate operators are *by*, *from*, and *to*. (optional)
+     * @param predicateValue The partial predicate item name entered by the user. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if an invalid combination of parameters is passed. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getFieldAutoCompleteForQueryStringAsync(@javax.annotation.Nullable String fieldName, @javax.annotation.Nullable String fieldValue, @javax.annotation.Nullable String predicateName, @javax.annotation.Nullable String predicateValue, final ApiCallback<AutoCompleteSuggestions> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getFieldAutoCompleteForQueryStringValidateBeforeCall(fieldName, fieldValue, predicateName, predicateValue, _callback);
+        Type localVarReturnType = new TypeToken<AutoCompleteSuggestions>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for migrateQueries
+     * @param jqLPersonalDataMigrationRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. Note that the JQL queries are returned in the same order that they were passed. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if at least one of the queries cannot be converted. For example, the JQL has invalid operators or invalid keywords, or the users in the query cannot be found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call migrateQueriesCall(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = jqLPersonalDataMigrationRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/pdcleaner";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call migrateQueriesValidateBeforeCall(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'jqLPersonalDataMigrationRequest' is set
+        if (jqLPersonalDataMigrationRequest == null) {
+            throw new ApiException("Missing the required parameter 'jqLPersonalDataMigrationRequest' when calling migrateQueries(Async)");
+        }
+
+        return migrateQueriesCall(jqLPersonalDataMigrationRequest, _callback);
+
+    }
+
+    /**
+     * Convert user identifiers to account IDs in JQL queries
+     * Converts one or more JQL queries with user identifiers (username or user key) to equivalent JQL queries with account IDs.  You may wish to use this operation if your system stores JQL queries and you want to make them GDPR-compliant. For more information about GDPR-related changes, see the [migration guide](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/).  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param jqLPersonalDataMigrationRequest  (required)
+     * @return ConvertedJQLQueries
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. Note that the JQL queries are returned in the same order that they were passed. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if at least one of the queries cannot be converted. For example, the JQL has invalid operators or invalid keywords, or the users in the query cannot be found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ConvertedJQLQueries migrateQueries(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest) throws ApiException {
+        ApiResponse<ConvertedJQLQueries> localVarResp = migrateQueriesWithHttpInfo(jqLPersonalDataMigrationRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Convert user identifiers to account IDs in JQL queries
+     * Converts one or more JQL queries with user identifiers (username or user key) to equivalent JQL queries with account IDs.  You may wish to use this operation if your system stores JQL queries and you want to make them GDPR-compliant. For more information about GDPR-related changes, see the [migration guide](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/).  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param jqLPersonalDataMigrationRequest  (required)
+     * @return ApiResponse&lt;ConvertedJQLQueries&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. Note that the JQL queries are returned in the same order that they were passed. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if at least one of the queries cannot be converted. For example, the JQL has invalid operators or invalid keywords, or the users in the query cannot be found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ConvertedJQLQueries> migrateQueriesWithHttpInfo(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest) throws ApiException {
+        okhttp3.Call localVarCall = migrateQueriesValidateBeforeCall(jqLPersonalDataMigrationRequest, null);
+        Type localVarReturnType = new TypeToken<ConvertedJQLQueries>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Convert user identifiers to account IDs in JQL queries (asynchronously)
+     * Converts one or more JQL queries with user identifiers (username or user key) to equivalent JQL queries with account IDs.  You may wish to use this operation if your system stores JQL queries and you want to make them GDPR-compliant. For more information about GDPR-related changes, see the [migration guide](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/).  **[Permissions](#permissions) required:** Permission to access Jira.
+     * @param jqLPersonalDataMigrationRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. Note that the JQL queries are returned in the same order that they were passed. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if at least one of the queries cannot be converted. For example, the JQL has invalid operators or invalid keywords, or the users in the query cannot be found. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call migrateQueriesAsync(@javax.annotation.Nonnull JQLPersonalDataMigrationRequest jqLPersonalDataMigrationRequest, final ApiCallback<ConvertedJQLQueries> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = migrateQueriesValidateBeforeCall(jqLPersonalDataMigrationRequest, _callback);
+        Type localVarReturnType = new TypeToken<ConvertedJQLQueries>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for parseJqlQueries
+     * @param validation How to validate the JQL query and treat the validation results. Validation options include:   *  &#x60;strict&#x60; Returns all errors. If validation fails, the query structure is not returned.  *  &#x60;warn&#x60; Returns all errors. If validation fails but the JQL query is correctly formed, the query structure is returned.  *  &#x60;none&#x60; No validation is performed. If JQL query is correctly formed, the query structure is returned. (required)
+     * @param jqlQueriesToParse  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call parseJqlQueriesCall(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = jqlQueriesToParse;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/parse";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (validation != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("validation", validation));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call parseJqlQueriesValidateBeforeCall(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'validation' is set
+        if (validation == null) {
+            throw new ApiException("Missing the required parameter 'validation' when calling parseJqlQueries(Async)");
+        }
+
+        // verify the required parameter 'jqlQueriesToParse' is set
+        if (jqlQueriesToParse == null) {
+            throw new ApiException("Missing the required parameter 'jqlQueriesToParse' when calling parseJqlQueries(Async)");
+        }
+
+        return parseJqlQueriesCall(validation, jqlQueriesToParse, _callback);
+
+    }
+
+    /**
+     * Parse JQL query
+     * Parses and validates JQL queries.  Validation is performed in context of the current user.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param validation How to validate the JQL query and treat the validation results. Validation options include:   *  &#x60;strict&#x60; Returns all errors. If validation fails, the query structure is not returned.  *  &#x60;warn&#x60; Returns all errors. If validation fails but the JQL query is correctly formed, the query structure is returned.  *  &#x60;none&#x60; No validation is performed. If JQL query is correctly formed, the query structure is returned. (required)
+     * @param jqlQueriesToParse  (required)
+     * @return ParsedJqlQueries
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ParsedJqlQueries parseJqlQueries(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse) throws ApiException {
+        ApiResponse<ParsedJqlQueries> localVarResp = parseJqlQueriesWithHttpInfo(validation, jqlQueriesToParse);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Parse JQL query
+     * Parses and validates JQL queries.  Validation is performed in context of the current user.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param validation How to validate the JQL query and treat the validation results. Validation options include:   *  &#x60;strict&#x60; Returns all errors. If validation fails, the query structure is not returned.  *  &#x60;warn&#x60; Returns all errors. If validation fails but the JQL query is correctly formed, the query structure is returned.  *  &#x60;none&#x60; No validation is performed. If JQL query is correctly formed, the query structure is returned. (required)
+     * @param jqlQueriesToParse  (required)
+     * @return ApiResponse&lt;ParsedJqlQueries&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ParsedJqlQueries> parseJqlQueriesWithHttpInfo(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse) throws ApiException {
+        okhttp3.Call localVarCall = parseJqlQueriesValidateBeforeCall(validation, jqlQueriesToParse, null);
+        Type localVarReturnType = new TypeToken<ParsedJqlQueries>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Parse JQL query (asynchronously)
+     * Parses and validates JQL queries.  Validation is performed in context of the current user.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** None.
+     * @param validation How to validate the JQL query and treat the validation results. Validation options include:   *  &#x60;strict&#x60; Returns all errors. If validation fails, the query structure is not returned.  *  &#x60;warn&#x60; Returns all errors. If validation fails but the JQL query is correctly formed, the query structure is returned.  *  &#x60;none&#x60; No validation is performed. If JQL query is correctly formed, the query structure is returned. (required)
+     * @param jqlQueriesToParse  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call parseJqlQueriesAsync(@javax.annotation.Nonnull String validation, @javax.annotation.Nonnull JqlQueriesToParse jqlQueriesToParse, final ApiCallback<ParsedJqlQueries> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = parseJqlQueriesValidateBeforeCall(validation, jqlQueriesToParse, _callback);
+        Type localVarReturnType = new TypeToken<ParsedJqlQueries>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for sanitiseJqlQueries
+     * @param jqlQueriesToSanitize  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call sanitiseJqlQueriesCall(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = jqlQueriesToSanitize;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/jql/sanitize";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call sanitiseJqlQueriesValidateBeforeCall(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'jqlQueriesToSanitize' is set
+        if (jqlQueriesToSanitize == null) {
+            throw new ApiException("Missing the required parameter 'jqlQueriesToSanitize' when calling sanitiseJqlQueries(Async)");
+        }
+
+        return sanitiseJqlQueriesCall(jqlQueriesToSanitize, _callback);
+
+    }
+
+    /**
+     * Sanitize JQL queries
+     * Sanitizes one or more JQL queries by converting readable details into IDs where a user doesn&#39;t have permission to view the entity.  For example, if the query contains the clause *project &#x3D; &#39;Secret project&#39;*, and a user does not have browse permission for the project \&quot;Secret project\&quot;, the sanitized query replaces the clause with *project &#x3D; 12345\&quot;* (where 12345 is the ID of the project). If a user has the required permission, the clause is not sanitized. If the account ID is null, sanitizing is performed for an anonymous user.  Note that sanitization doesn&#39;t make the queries GDPR-compliant, because it doesn&#39;t remove user identifiers (username or user key). If you need to make queries GDPR-compliant, use [Convert user identifiers to account IDs in JQL queries](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-jql/#api-rest-api-3-jql-sanitize-post).  Before sanitization each JQL query is parsed. The queries are returned in the same order that they were passed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param jqlQueriesToSanitize  (required)
+     * @return SanitizedJqlQueries
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public SanitizedJqlQueries sanitiseJqlQueries(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize) throws ApiException {
+        ApiResponse<SanitizedJqlQueries> localVarResp = sanitiseJqlQueriesWithHttpInfo(jqlQueriesToSanitize);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Sanitize JQL queries
+     * Sanitizes one or more JQL queries by converting readable details into IDs where a user doesn&#39;t have permission to view the entity.  For example, if the query contains the clause *project &#x3D; &#39;Secret project&#39;*, and a user does not have browse permission for the project \&quot;Secret project\&quot;, the sanitized query replaces the clause with *project &#x3D; 12345\&quot;* (where 12345 is the ID of the project). If a user has the required permission, the clause is not sanitized. If the account ID is null, sanitizing is performed for an anonymous user.  Note that sanitization doesn&#39;t make the queries GDPR-compliant, because it doesn&#39;t remove user identifiers (username or user key). If you need to make queries GDPR-compliant, use [Convert user identifiers to account IDs in JQL queries](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-jql/#api-rest-api-3-jql-sanitize-post).  Before sanitization each JQL query is parsed. The queries are returned in the same order that they were passed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param jqlQueriesToSanitize  (required)
+     * @return ApiResponse&lt;SanitizedJqlQueries&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<SanitizedJqlQueries> sanitiseJqlQueriesWithHttpInfo(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize) throws ApiException {
+        okhttp3.Call localVarCall = sanitiseJqlQueriesValidateBeforeCall(jqlQueriesToSanitize, null);
+        Type localVarReturnType = new TypeToken<SanitizedJqlQueries>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Sanitize JQL queries (asynchronously)
+     * Sanitizes one or more JQL queries by converting readable details into IDs where a user doesn&#39;t have permission to view the entity.  For example, if the query contains the clause *project &#x3D; &#39;Secret project&#39;*, and a user does not have browse permission for the project \&quot;Secret project\&quot;, the sanitized query replaces the clause with *project &#x3D; 12345\&quot;* (where 12345 is the ID of the project). If a user has the required permission, the clause is not sanitized. If the account ID is null, sanitizing is performed for an anonymous user.  Note that sanitization doesn&#39;t make the queries GDPR-compliant, because it doesn&#39;t remove user identifiers (username or user key). If you need to make queries GDPR-compliant, use [Convert user identifiers to account IDs in JQL queries](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-jql/#api-rest-api-3-jql-sanitize-post).  Before sanitization each JQL query is parsed. The queries are returned in the same order that they were passed.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param jqlQueriesToSanitize  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call sanitiseJqlQueriesAsync(@javax.annotation.Nonnull JqlQueriesToSanitize jqlQueriesToSanitize, final ApiCallback<SanitizedJqlQueries> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = sanitiseJqlQueriesValidateBeforeCall(jqlQueriesToSanitize, _callback);
+        Type localVarReturnType = new TypeToken<SanitizedJqlQueries>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

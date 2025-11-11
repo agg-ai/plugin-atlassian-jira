@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.IssueTypeIds;
 import io.kestra.plugin.jira.client.model.IssueTypeSchemeDetails;
@@ -29,1425 +38,1576 @@ import io.kestra.plugin.jira.client.model.PageBeanIssueTypeSchemeMapping;
 import io.kestra.plugin.jira.client.model.PageBeanIssueTypeSchemeProjects;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueTypeSchemesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueTypeSchemesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueTypeSchemesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addIssueTypesToIssueTypeScheme
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeIds  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type or the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addIssueTypesToIssueTypeSchemeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueTypeSchemesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueTypeSchemesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Add issue types to issue type scheme
-   * Adds issue types to an issue type scheme.  The added issue types are appended to the issue types list.  If any of the issue types exist in the issue type scheme, the operation fails and no issue types are added.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeIds  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object addIssueTypesToIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds) throws ApiException {
-    return addIssueTypesToIssueTypeScheme(issueTypeSchemeId, issueTypeIds, null);
-  }
-
-  /**
-   * Add issue types to issue type scheme
-   * Adds issue types to an issue type scheme.  The added issue types are appended to the issue types list.  If any of the issue types exist in the issue type scheme, the operation fails and no issue types are added.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeIds  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object addIssueTypesToIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = addIssueTypesToIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeIds, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add issue types to issue type scheme
-   * Adds issue types to an issue type scheme.  The added issue types are appended to the issue types list.  If any of the issue types exist in the issue type scheme, the operation fails and no issue types are added.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeIds  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> addIssueTypesToIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds) throws ApiException {
-    return addIssueTypesToIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeIds, null);
-  }
-
-  /**
-   * Add issue types to issue type scheme
-   * Adds issue types to an issue type scheme.  The added issue types are appended to the issue types list.  If any of the issue types exist in the issue type scheme, the operation fails and no issue types are added.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeIds  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> addIssueTypesToIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addIssueTypesToIssueTypeSchemeRequestBuilder(issueTypeSchemeId, issueTypeIds, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addIssueTypesToIssueTypeScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = issueTypeIds;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype"
+            .replace("{" + "issueTypeSchemeId" + "}", localVarApiClient.escapeString(issueTypeSchemeId.toString()));
 
-  private HttpRequest.Builder addIssueTypesToIssueTypeSchemeRequestBuilder(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueTypeSchemeId' is set
-    if (issueTypeSchemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeSchemeId' when calling addIssueTypesToIssueTypeScheme");
-    }
-    // verify the required parameter 'issueTypeIds' is set
-    if (issueTypeIds == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeIds' when calling addIssueTypesToIssueTypeScheme");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype"
-        .replace("{issueTypeSchemeId}", ApiClient.urlEncode(issueTypeSchemeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypeIds);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Assign issue type scheme to project
-   * Assigns an issue type scheme to a project.  If any issues in the project are assigned issue types not present in the new scheme, the operation will fail. To complete the assignment those issues must be updated to use issue types in the new scheme.  Issue type schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeProjectAssociation  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object assignIssueTypeSchemeToProject(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation) throws ApiException {
-    return assignIssueTypeSchemeToProject(issueTypeSchemeProjectAssociation, null);
-  }
-
-  /**
-   * Assign issue type scheme to project
-   * Assigns an issue type scheme to a project.  If any issues in the project are assigned issue types not present in the new scheme, the operation will fail. To complete the assignment those issues must be updated to use issue types in the new scheme.  Issue type schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeProjectAssociation  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object assignIssueTypeSchemeToProject(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = assignIssueTypeSchemeToProjectWithHttpInfo(issueTypeSchemeProjectAssociation, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Assign issue type scheme to project
-   * Assigns an issue type scheme to a project.  If any issues in the project are assigned issue types not present in the new scheme, the operation will fail. To complete the assignment those issues must be updated to use issue types in the new scheme.  Issue type schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeProjectAssociation  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> assignIssueTypeSchemeToProjectWithHttpInfo(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation) throws ApiException {
-    return assignIssueTypeSchemeToProjectWithHttpInfo(issueTypeSchemeProjectAssociation, null);
-  }
-
-  /**
-   * Assign issue type scheme to project
-   * Assigns an issue type scheme to a project.  If any issues in the project are assigned issue types not present in the new scheme, the operation will fail. To complete the assignment those issues must be updated to use issue types in the new scheme.  Issue type schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeProjectAssociation  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> assignIssueTypeSchemeToProjectWithHttpInfo(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = assignIssueTypeSchemeToProjectRequestBuilder(issueTypeSchemeProjectAssociation, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("assignIssueTypeSchemeToProject", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder assignIssueTypeSchemeToProjectRequestBuilder(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueTypeSchemeProjectAssociation' is set
-    if (issueTypeSchemeProjectAssociation == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeSchemeProjectAssociation' when calling assignIssueTypeSchemeToProject");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme/project";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypeSchemeProjectAssociation);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create issue type scheme
-   * Creates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeDetails  (required)
-   * @return IssueTypeSchemeID
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeSchemeID createIssueTypeScheme(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails) throws ApiException {
-    return createIssueTypeScheme(issueTypeSchemeDetails, null);
-  }
-
-  /**
-   * Create issue type scheme
-   * Creates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return IssueTypeSchemeID
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeSchemeID createIssueTypeScheme(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<IssueTypeSchemeID> localVarResponse = createIssueTypeSchemeWithHttpInfo(issueTypeSchemeDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create issue type scheme
-   * Creates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeDetails  (required)
-   * @return ApiResponse&lt;IssueTypeSchemeID&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeSchemeID> createIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails) throws ApiException {
-    return createIssueTypeSchemeWithHttpInfo(issueTypeSchemeDetails, null);
-  }
-
-  /**
-   * Create issue type scheme
-   * Creates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;IssueTypeSchemeID&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeSchemeID> createIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createIssueTypeSchemeRequestBuilder(issueTypeSchemeDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createIssueTypeScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<IssueTypeSchemeID>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        IssueTypeSchemeID responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<IssueTypeSchemeID>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<IssueTypeSchemeID>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createIssueTypeSchemeRequestBuilder(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueTypeSchemeDetails' is set
-    if (issueTypeSchemeDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeSchemeDetails' when calling createIssueTypeScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypeSchemeDetails);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete issue type scheme
-   * Deletes an issue type scheme.  Only issue type schemes used in classic projects can be deleted.  Any projects assigned to the scheme are reassigned to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId) throws ApiException {
-    return deleteIssueTypeScheme(issueTypeSchemeId, null);
-  }
-
-  /**
-   * Delete issue type scheme
-   * Deletes an issue type scheme.  Only issue type schemes used in classic projects can be deleted.  Any projects assigned to the scheme are reassigned to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deleteIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete issue type scheme
-   * Deletes an issue type scheme.  Only issue type schemes used in classic projects can be deleted.  Any projects assigned to the scheme are reassigned to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId) throws ApiException {
-    return deleteIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, null);
-  }
-
-  /**
-   * Delete issue type scheme
-   * Deletes an issue type scheme.  Only issue type schemes used in classic projects can be deleted.  Any projects assigned to the scheme are reassigned to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteIssueTypeSchemeRequestBuilder(issueTypeSchemeId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteIssueTypeScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addIssueTypesToIssueTypeSchemeValidateBeforeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueTypeSchemeId' is set
+        if (issueTypeSchemeId == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeSchemeId' when calling addIssueTypesToIssueTypeScheme(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteIssueTypeSchemeRequestBuilder(@javax.annotation.Nonnull Long issueTypeSchemeId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueTypeSchemeId' is set
-    if (issueTypeSchemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeSchemeId' when calling deleteIssueTypeScheme");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}"
-        .replace("{issueTypeSchemeId}", ApiClient.urlEncode(issueTypeSchemeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get all issue type schemes
-   * Returns a [paginated](#pagination) list of issue type schemes.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue type schemes IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;name&#x60; Sorts by issue type scheme name.  *  &#x60;id&#x60; Sorts by issue type scheme ID. (optional, default to id)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;projects&#x60; For each issue type schemes, returns information about the projects the issue type scheme is assigned to.  *  &#x60;issueTypes&#x60; For each issue type schemes, returns information about the issueTypes the issue type scheme have. (optional, default to )
-   * @param queryString String used to perform a case-insensitive partial match with issue type scheme name. (optional, default to )
-   * @return PageBeanIssueTypeScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanIssueTypeScheme getAllIssueTypeSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString) throws ApiException {
-    return getAllIssueTypeSchemes(startAt, maxResults, id, orderBy, expand, queryString, null);
-  }
-
-  /**
-   * Get all issue type schemes
-   * Returns a [paginated](#pagination) list of issue type schemes.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue type schemes IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;name&#x60; Sorts by issue type scheme name.  *  &#x60;id&#x60; Sorts by issue type scheme ID. (optional, default to id)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;projects&#x60; For each issue type schemes, returns information about the projects the issue type scheme is assigned to.  *  &#x60;issueTypes&#x60; For each issue type schemes, returns information about the issueTypes the issue type scheme have. (optional, default to )
-   * @param queryString String used to perform a case-insensitive partial match with issue type scheme name. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return PageBeanIssueTypeScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanIssueTypeScheme getAllIssueTypeSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanIssueTypeScheme> localVarResponse = getAllIssueTypeSchemesWithHttpInfo(startAt, maxResults, id, orderBy, expand, queryString, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all issue type schemes
-   * Returns a [paginated](#pagination) list of issue type schemes.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue type schemes IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;name&#x60; Sorts by issue type scheme name.  *  &#x60;id&#x60; Sorts by issue type scheme ID. (optional, default to id)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;projects&#x60; For each issue type schemes, returns information about the projects the issue type scheme is assigned to.  *  &#x60;issueTypes&#x60; For each issue type schemes, returns information about the issueTypes the issue type scheme have. (optional, default to )
-   * @param queryString String used to perform a case-insensitive partial match with issue type scheme name. (optional, default to )
-   * @return ApiResponse&lt;PageBeanIssueTypeScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanIssueTypeScheme> getAllIssueTypeSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString) throws ApiException {
-    return getAllIssueTypeSchemesWithHttpInfo(startAt, maxResults, id, orderBy, expand, queryString, null);
-  }
-
-  /**
-   * Get all issue type schemes
-   * Returns a [paginated](#pagination) list of issue type schemes.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param id The list of issue type schemes IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
-   * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;name&#x60; Sorts by issue type scheme name.  *  &#x60;id&#x60; Sorts by issue type scheme ID. (optional, default to id)
-   * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;projects&#x60; For each issue type schemes, returns information about the projects the issue type scheme is assigned to.  *  &#x60;issueTypes&#x60; For each issue type schemes, returns information about the issueTypes the issue type scheme have. (optional, default to )
-   * @param queryString String used to perform a case-insensitive partial match with issue type scheme name. (optional, default to )
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanIssueTypeScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanIssueTypeScheme> getAllIssueTypeSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllIssueTypeSchemesRequestBuilder(startAt, maxResults, id, orderBy, expand, queryString, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllIssueTypeSchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanIssueTypeScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'issueTypeIds' is set
+        if (issueTypeIds == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeIds' when calling addIssueTypesToIssueTypeScheme(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanIssueTypeScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanIssueTypeScheme>() {});
-        
-        localVarResponse.body().close();
+        return addIssueTypesToIssueTypeSchemeCall(issueTypeSchemeId, issueTypeIds, _callback);
 
-        return new ApiResponse<PageBeanIssueTypeScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAllIssueTypeSchemesRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "id";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "id", id));
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-    localVarQueryParameterBaseName = "queryString";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("queryString", queryString));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Add issue types to issue type scheme
+     * Adds issue types to an issue type scheme.  The added issue types are appended to the issue types list.  If any of the issue types exist in the issue type scheme, the operation fails and no issue types are added.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeIds  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type or the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object addIssueTypesToIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds) throws ApiException {
+        ApiResponse<Object> localVarResp = addIssueTypesToIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeIds);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Add issue types to issue type scheme
+     * Adds issue types to an issue type scheme.  The added issue types are appended to the issue types list.  If any of the issue types exist in the issue type scheme, the operation fails and no issue types are added.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeIds  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type or the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> addIssueTypesToIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds) throws ApiException {
+        okhttp3.Call localVarCall = addIssueTypesToIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, issueTypeIds, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Get issue type schemes for projects
-   * Returns a [paginated](#pagination) list of issue type schemes and, for each issue type scheme, a list of the projects that use it.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The list of project IDs. To include multiple project IDs, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return PageBeanIssueTypeSchemeProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanIssueTypeSchemeProjects getIssueTypeSchemeForProjects(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getIssueTypeSchemeForProjects(projectId, startAt, maxResults, null);
-  }
+    /**
+     * Add issue types to issue type scheme (asynchronously)
+     * Adds issue types to an issue type scheme.  The added issue types are appended to the issue types list.  If any of the issue types exist in the issue type scheme, the operation fails and no issue types are added.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeIds  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type or the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addIssueTypesToIssueTypeSchemeAsync(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeIds issueTypeIds, final ApiCallback<Object> _callback) throws ApiException {
 
-  /**
-   * Get issue type schemes for projects
-   * Returns a [paginated](#pagination) list of issue type schemes and, for each issue type scheme, a list of the projects that use it.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The list of project IDs. To include multiple project IDs, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanIssueTypeSchemeProjects
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanIssueTypeSchemeProjects getIssueTypeSchemeForProjects(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanIssueTypeSchemeProjects> localVarResponse = getIssueTypeSchemeForProjectsWithHttpInfo(projectId, startAt, maxResults, headers);
-    return localVarResponse.getData();
-  }
+        okhttp3.Call localVarCall = addIssueTypesToIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, issueTypeIds, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for assignIssueTypeSchemeToProject
+     * @param issueTypeSchemeProjectAssociation  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme or the project is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call assignIssueTypeSchemeToProjectCall(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get issue type schemes for projects
-   * Returns a [paginated](#pagination) list of issue type schemes and, for each issue type scheme, a list of the projects that use it.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The list of project IDs. To include multiple project IDs, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return ApiResponse&lt;PageBeanIssueTypeSchemeProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanIssueTypeSchemeProjects> getIssueTypeSchemeForProjectsWithHttpInfo(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getIssueTypeSchemeForProjectsWithHttpInfo(projectId, startAt, maxResults, null);
-  }
-
-  /**
-   * Get issue type schemes for projects
-   * Returns a [paginated](#pagination) list of issue type schemes and, for each issue type scheme, a list of the projects that use it.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param projectId The list of project IDs. To include multiple project IDs, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanIssueTypeSchemeProjects&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanIssueTypeSchemeProjects> getIssueTypeSchemeForProjectsWithHttpInfo(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueTypeSchemeForProjectsRequestBuilder(projectId, startAt, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueTypeSchemeForProjects", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanIssueTypeSchemeProjects>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanIssueTypeSchemeProjects responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanIssueTypeSchemeProjects>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = issueTypeSchemeProjectAssociation;
 
-        return new ApiResponse<PageBeanIssueTypeSchemeProjects>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme/project";
 
-  private HttpRequest.Builder getIssueTypeSchemeForProjectsRequestBuilder(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectId' is set
-    if (projectId == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectId' when calling getIssueTypeSchemeForProjects");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme/project";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "projectId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "projectId", projectId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue type scheme items
-   * Returns a [paginated](#pagination) list of issue type scheme items.  Only issue type scheme items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param issueTypeSchemeId The list of issue type scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;issueTypeSchemeId&#x3D;10000&amp;issueTypeSchemeId&#x3D;10001&#x60;. (optional)
-   * @return PageBeanIssueTypeSchemeMapping
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanIssueTypeSchemeMapping getIssueTypeSchemesMapping(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId) throws ApiException {
-    return getIssueTypeSchemesMapping(startAt, maxResults, issueTypeSchemeId, null);
-  }
-
-  /**
-   * Get issue type scheme items
-   * Returns a [paginated](#pagination) list of issue type scheme items.  Only issue type scheme items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param issueTypeSchemeId The list of issue type scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;issueTypeSchemeId&#x3D;10000&amp;issueTypeSchemeId&#x3D;10001&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanIssueTypeSchemeMapping
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanIssueTypeSchemeMapping getIssueTypeSchemesMapping(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanIssueTypeSchemeMapping> localVarResponse = getIssueTypeSchemesMappingWithHttpInfo(startAt, maxResults, issueTypeSchemeId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue type scheme items
-   * Returns a [paginated](#pagination) list of issue type scheme items.  Only issue type scheme items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param issueTypeSchemeId The list of issue type scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;issueTypeSchemeId&#x3D;10000&amp;issueTypeSchemeId&#x3D;10001&#x60;. (optional)
-   * @return ApiResponse&lt;PageBeanIssueTypeSchemeMapping&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanIssueTypeSchemeMapping> getIssueTypeSchemesMappingWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId) throws ApiException {
-    return getIssueTypeSchemesMappingWithHttpInfo(startAt, maxResults, issueTypeSchemeId, null);
-  }
-
-  /**
-   * Get issue type scheme items
-   * Returns a [paginated](#pagination) list of issue type scheme items.  Only issue type scheme items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param issueTypeSchemeId The list of issue type scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;issueTypeSchemeId&#x3D;10000&amp;issueTypeSchemeId&#x3D;10001&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanIssueTypeSchemeMapping&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanIssueTypeSchemeMapping> getIssueTypeSchemesMappingWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getIssueTypeSchemesMappingRequestBuilder(startAt, maxResults, issueTypeSchemeId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getIssueTypeSchemesMapping", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanIssueTypeSchemeMapping>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanIssueTypeSchemeMapping responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanIssueTypeSchemeMapping>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanIssueTypeSchemeMapping>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getIssueTypeSchemesMappingRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme/mapping";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "issueTypeSchemeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "issueTypeSchemeId", issueTypeSchemeId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Remove issue type from issue type scheme
-   * Removes an issue type from an issue type scheme.  This operation cannot remove:   *  any issue type used by issues.  *  any issue types from the default issue type scheme.  *  the last standard issue type from an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeId The ID of the issue type. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeIssueTypeFromIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId) throws ApiException {
-    return removeIssueTypeFromIssueTypeScheme(issueTypeSchemeId, issueTypeId, null);
-  }
-
-  /**
-   * Remove issue type from issue type scheme
-   * Removes an issue type from an issue type scheme.  This operation cannot remove:   *  any issue type used by issues.  *  any issue types from the default issue type scheme.  *  the last standard issue type from an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeId The ID of the issue type. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object removeIssueTypeFromIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = removeIssueTypeFromIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Remove issue type from issue type scheme
-   * Removes an issue type from an issue type scheme.  This operation cannot remove:   *  any issue type used by issues.  *  any issue types from the default issue type scheme.  *  the last standard issue type from an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeId The ID of the issue type. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeIssueTypeFromIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId) throws ApiException {
-    return removeIssueTypeFromIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeId, null);
-  }
-
-  /**
-   * Remove issue type from issue type scheme
-   * Removes an issue type from an issue type scheme.  This operation cannot remove:   *  any issue type used by issues.  *  any issue types from the default issue type scheme.  *  the last standard issue type from an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeId The ID of the issue type. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> removeIssueTypeFromIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeIssueTypeFromIssueTypeSchemeRequestBuilder(issueTypeSchemeId, issueTypeId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeIssueTypeFromIssueTypeScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder removeIssueTypeFromIssueTypeSchemeRequestBuilder(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueTypeSchemeId' is set
-    if (issueTypeSchemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeSchemeId' when calling removeIssueTypeFromIssueTypeScheme");
-    }
-    // verify the required parameter 'issueTypeId' is set
-    if (issueTypeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeId' when calling removeIssueTypeFromIssueTypeScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/{issueTypeId}"
-        .replace("{issueTypeSchemeId}", ApiClient.urlEncode(issueTypeSchemeId.toString()))
-        .replace("{issueTypeId}", ApiClient.urlEncode(issueTypeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Change order of issue types
-   * Changes the order of issue types in an issue type scheme.  The request body parameters must meet the following requirements:   *  all of the issue types must belong to the issue type scheme.  *  either &#x60;after&#x60; or &#x60;position&#x60; must be provided.  *  the issue type in &#x60;after&#x60; must not be in the issue type list.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param orderOfIssueTypes  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object reorderIssueTypesInIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes) throws ApiException {
-    return reorderIssueTypesInIssueTypeScheme(issueTypeSchemeId, orderOfIssueTypes, null);
-  }
-
-  /**
-   * Change order of issue types
-   * Changes the order of issue types in an issue type scheme.  The request body parameters must meet the following requirements:   *  all of the issue types must belong to the issue type scheme.  *  either &#x60;after&#x60; or &#x60;position&#x60; must be provided.  *  the issue type in &#x60;after&#x60; must not be in the issue type list.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param orderOfIssueTypes  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object reorderIssueTypesInIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = reorderIssueTypesInIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, orderOfIssueTypes, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Change order of issue types
-   * Changes the order of issue types in an issue type scheme.  The request body parameters must meet the following requirements:   *  all of the issue types must belong to the issue type scheme.  *  either &#x60;after&#x60; or &#x60;position&#x60; must be provided.  *  the issue type in &#x60;after&#x60; must not be in the issue type list.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param orderOfIssueTypes  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> reorderIssueTypesInIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes) throws ApiException {
-    return reorderIssueTypesInIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, orderOfIssueTypes, null);
-  }
-
-  /**
-   * Change order of issue types
-   * Changes the order of issue types in an issue type scheme.  The request body parameters must meet the following requirements:   *  all of the issue types must belong to the issue type scheme.  *  either &#x60;after&#x60; or &#x60;position&#x60; must be provided.  *  the issue type in &#x60;after&#x60; must not be in the issue type list.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param orderOfIssueTypes  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> reorderIssueTypesInIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = reorderIssueTypesInIssueTypeSchemeRequestBuilder(issueTypeSchemeId, orderOfIssueTypes, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("reorderIssueTypesInIssueTypeScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call assignIssueTypeSchemeToProjectValidateBeforeCall(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueTypeSchemeProjectAssociation' is set
+        if (issueTypeSchemeProjectAssociation == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeSchemeProjectAssociation' when calling assignIssueTypeSchemeToProject(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        return assignIssueTypeSchemeToProjectCall(issueTypeSchemeProjectAssociation, _callback);
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder reorderIssueTypesInIssueTypeSchemeRequestBuilder(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueTypeSchemeId' is set
-    if (issueTypeSchemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeSchemeId' when calling reorderIssueTypesInIssueTypeScheme");
-    }
-    // verify the required parameter 'orderOfIssueTypes' is set
-    if (orderOfIssueTypes == null) {
-      throw new ApiException(400, "Missing the required parameter 'orderOfIssueTypes' when calling reorderIssueTypesInIssueTypeScheme");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/move"
-        .replace("{issueTypeSchemeId}", ApiClient.urlEncode(issueTypeSchemeId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(orderOfIssueTypes);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Assign issue type scheme to project
+     * Assigns an issue type scheme to a project.  If any issues in the project are assigned issue types not present in the new scheme, the operation will fail. To complete the assignment those issues must be updated to use issue types in the new scheme.  Issue type schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeProjectAssociation  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme or the project is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object assignIssueTypeSchemeToProject(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation) throws ApiException {
+        ApiResponse<Object> localVarResp = assignIssueTypeSchemeToProjectWithHttpInfo(issueTypeSchemeProjectAssociation);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+
+    /**
+     * Assign issue type scheme to project
+     * Assigns an issue type scheme to a project.  If any issues in the project are assigned issue types not present in the new scheme, the operation will fail. To complete the assignment those issues must be updated to use issue types in the new scheme.  Issue type schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeProjectAssociation  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme or the project is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> assignIssueTypeSchemeToProjectWithHttpInfo(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation) throws ApiException {
+        okhttp3.Call localVarCall = assignIssueTypeSchemeToProjectValidateBeforeCall(issueTypeSchemeProjectAssociation, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Assign issue type scheme to project (asynchronously)
+     * Assigns an issue type scheme to a project.  If any issues in the project are assigned issue types not present in the new scheme, the operation will fail. To complete the assignment those issues must be updated to use issue types in the new scheme.  Issue type schemes can only be assigned to classic projects.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeProjectAssociation  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme or the project is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call assignIssueTypeSchemeToProjectAsync(@javax.annotation.Nonnull IssueTypeSchemeProjectAssociation issueTypeSchemeProjectAssociation, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = assignIssueTypeSchemeToProjectValidateBeforeCall(issueTypeSchemeProjectAssociation, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for createIssueTypeScheme
+     * @param issueTypeSchemeDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the scheme name is used by another scheme. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createIssueTypeSchemeCall(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Update issue type scheme
-   * Updates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeSchemeUpdateDetails  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails) throws ApiException {
-    return updateIssueTypeScheme(issueTypeSchemeId, issueTypeSchemeUpdateDetails, null);
-  }
-
-  /**
-   * Update issue type scheme
-   * Updates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeSchemeUpdateDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeSchemeUpdateDetails, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update issue type scheme
-   * Updates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeSchemeUpdateDetails  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails) throws ApiException {
-    return updateIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeSchemeUpdateDetails, null);
-  }
-
-  /**
-   * Update issue type scheme
-   * Updates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param issueTypeSchemeId The ID of the issue type scheme. (required)
-   * @param issueTypeSchemeUpdateDetails  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateIssueTypeSchemeRequestBuilder(issueTypeSchemeId, issueTypeSchemeUpdateDetails, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateIssueTypeScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = issueTypeSchemeDetails;
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme";
 
-  private HttpRequest.Builder updateIssueTypeSchemeRequestBuilder(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueTypeSchemeId' is set
-    if (issueTypeSchemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeSchemeId' when calling updateIssueTypeScheme");
-    }
-    // verify the required parameter 'issueTypeSchemeUpdateDetails' is set
-    if (issueTypeSchemeUpdateDetails == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeSchemeUpdateDetails' when calling updateIssueTypeScheme");
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createIssueTypeSchemeValidateBeforeCall(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueTypeSchemeDetails' is set
+        if (issueTypeSchemeDetails == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeSchemeDetails' when calling createIssueTypeScheme(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}"
-        .replace("{issueTypeSchemeId}", ApiClient.urlEncode(issueTypeSchemeId.toString()));
+        return createIssueTypeSchemeCall(issueTypeSchemeDetails, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypeSchemeUpdateDetails);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create issue type scheme
+     * Creates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeDetails  (required)
+     * @return IssueTypeSchemeID
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the scheme name is used by another scheme. </td><td>  -  </td></tr>
+     </table>
+     */
+    public IssueTypeSchemeID createIssueTypeScheme(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails) throws ApiException {
+        ApiResponse<IssueTypeSchemeID> localVarResp = createIssueTypeSchemeWithHttpInfo(issueTypeSchemeDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Create issue type scheme
+     * Creates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeDetails  (required)
+     * @return ApiResponse&lt;IssueTypeSchemeID&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the scheme name is used by another scheme. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<IssueTypeSchemeID> createIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails) throws ApiException {
+        okhttp3.Call localVarCall = createIssueTypeSchemeValidateBeforeCall(issueTypeSchemeDetails, null);
+        Type localVarReturnType = new TypeToken<IssueTypeSchemeID>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create issue type scheme (asynchronously)
+     * Creates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if the scheme name is used by another scheme. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createIssueTypeSchemeAsync(@javax.annotation.Nonnull IssueTypeSchemeDetails issueTypeSchemeDetails, final ApiCallback<IssueTypeSchemeID> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createIssueTypeSchemeValidateBeforeCall(issueTypeSchemeDetails, _callback);
+        Type localVarReturnType = new TypeToken<IssueTypeSchemeID>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteIssueTypeScheme
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the issue type scheme is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is to delete the default issue type scheme. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteIssueTypeSchemeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}"
+            .replace("{" + "issueTypeSchemeId" + "}", localVarApiClient.escapeString(issueTypeSchemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteIssueTypeSchemeValidateBeforeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueTypeSchemeId' is set
+        if (issueTypeSchemeId == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeSchemeId' when calling deleteIssueTypeScheme(Async)");
+        }
+
+        return deleteIssueTypeSchemeCall(issueTypeSchemeId, _callback);
+
+    }
+
+    /**
+     * Delete issue type scheme
+     * Deletes an issue type scheme.  Only issue type schemes used in classic projects can be deleted.  Any projects assigned to the scheme are reassigned to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the issue type scheme is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is to delete the default issue type scheme. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deleteIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId) throws ApiException {
+        ApiResponse<Object> localVarResp = deleteIssueTypeSchemeWithHttpInfo(issueTypeSchemeId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Delete issue type scheme
+     * Deletes an issue type scheme.  Only issue type schemes used in classic projects can be deleted.  Any projects assigned to the scheme are reassigned to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the issue type scheme is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is to delete the default issue type scheme. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deleteIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId) throws ApiException {
+        okhttp3.Call localVarCall = deleteIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete issue type scheme (asynchronously)
+     * Deletes an issue type scheme.  Only issue type schemes used in classic projects can be deleted.  Any projects assigned to the scheme are reassigned to the default issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the issue type scheme is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is to delete the default issue type scheme. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteIssueTypeSchemeAsync(@javax.annotation.Nonnull Long issueTypeSchemeId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAllIssueTypeSchemes
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue type schemes IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;name&#x60; Sorts by issue type scheme name.  *  &#x60;id&#x60; Sorts by issue type scheme ID. (optional, default to id)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;projects&#x60; For each issue type schemes, returns information about the projects the issue type scheme is assigned to.  *  &#x60;issueTypes&#x60; For each issue type schemes, returns information about the issueTypes the issue type scheme have. (optional, default to )
+     * @param queryString String used to perform a case-insensitive partial match with issue type scheme name. (optional, default to )
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllIssueTypeSchemesCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (id != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "id", id));
+        }
+
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        if (queryString != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("queryString", queryString));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllIssueTypeSchemesValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, final ApiCallback _callback) throws ApiException {
+        return getAllIssueTypeSchemesCall(startAt, maxResults, id, orderBy, expand, queryString, _callback);
+
+    }
+
+    /**
+     * Get all issue type schemes
+     * Returns a [paginated](#pagination) list of issue type schemes.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue type schemes IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;name&#x60; Sorts by issue type scheme name.  *  &#x60;id&#x60; Sorts by issue type scheme ID. (optional, default to id)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;projects&#x60; For each issue type schemes, returns information about the projects the issue type scheme is assigned to.  *  &#x60;issueTypes&#x60; For each issue type schemes, returns information about the issueTypes the issue type scheme have. (optional, default to )
+     * @param queryString String used to perform a case-insensitive partial match with issue type scheme name. (optional, default to )
+     * @return PageBeanIssueTypeScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanIssueTypeScheme getAllIssueTypeSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString) throws ApiException {
+        ApiResponse<PageBeanIssueTypeScheme> localVarResp = getAllIssueTypeSchemesWithHttpInfo(startAt, maxResults, id, orderBy, expand, queryString);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all issue type schemes
+     * Returns a [paginated](#pagination) list of issue type schemes.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue type schemes IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;name&#x60; Sorts by issue type scheme name.  *  &#x60;id&#x60; Sorts by issue type scheme ID. (optional, default to id)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;projects&#x60; For each issue type schemes, returns information about the projects the issue type scheme is assigned to.  *  &#x60;issueTypes&#x60; For each issue type schemes, returns information about the issueTypes the issue type scheme have. (optional, default to )
+     * @param queryString String used to perform a case-insensitive partial match with issue type scheme name. (optional, default to )
+     * @return ApiResponse&lt;PageBeanIssueTypeScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanIssueTypeScheme> getAllIssueTypeSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString) throws ApiException {
+        okhttp3.Call localVarCall = getAllIssueTypeSchemesValidateBeforeCall(startAt, maxResults, id, orderBy, expand, queryString, null);
+        Type localVarReturnType = new TypeToken<PageBeanIssueTypeScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all issue type schemes (asynchronously)
+     * Returns a [paginated](#pagination) list of issue type schemes.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param id The list of issue type schemes IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;id&#x3D;10000&amp;id&#x3D;10001&#x60;. (optional)
+     * @param orderBy [Order](#ordering) the results by a field:   *  &#x60;name&#x60; Sorts by issue type scheme name.  *  &#x60;id&#x60; Sorts by issue type scheme ID. (optional, default to id)
+     * @param expand Use [expand](#expansion) to include additional information in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;projects&#x60; For each issue type schemes, returns information about the projects the issue type scheme is assigned to.  *  &#x60;issueTypes&#x60; For each issue type schemes, returns information about the issueTypes the issue type scheme have. (optional, default to )
+     * @param queryString String used to perform a case-insensitive partial match with issue type scheme name. (optional, default to )
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllIssueTypeSchemesAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> id, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, @javax.annotation.Nullable String queryString, final ApiCallback<PageBeanIssueTypeScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAllIssueTypeSchemesValidateBeforeCall(startAt, maxResults, id, orderBy, expand, queryString, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanIssueTypeScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueTypeSchemeForProjects
+     * @param projectId The list of project IDs. To include multiple project IDs, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueTypeSchemeForProjectsCall(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme/project";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (projectId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "projectId", projectId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueTypeSchemeForProjectsValidateBeforeCall(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectId' is set
+        if (projectId == null) {
+            throw new ApiException("Missing the required parameter 'projectId' when calling getIssueTypeSchemeForProjects(Async)");
+        }
+
+        return getIssueTypeSchemeForProjectsCall(projectId, startAt, maxResults, _callback);
+
+    }
+
+    /**
+     * Get issue type schemes for projects
+     * Returns a [paginated](#pagination) list of issue type schemes and, for each issue type scheme, a list of the projects that use it.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The list of project IDs. To include multiple project IDs, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return PageBeanIssueTypeSchemeProjects
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanIssueTypeSchemeProjects getIssueTypeSchemeForProjects(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageBeanIssueTypeSchemeProjects> localVarResp = getIssueTypeSchemeForProjectsWithHttpInfo(projectId, startAt, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue type schemes for projects
+     * Returns a [paginated](#pagination) list of issue type schemes and, for each issue type scheme, a list of the projects that use it.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The list of project IDs. To include multiple project IDs, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return ApiResponse&lt;PageBeanIssueTypeSchemeProjects&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanIssueTypeSchemeProjects> getIssueTypeSchemeForProjectsWithHttpInfo(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getIssueTypeSchemeForProjectsValidateBeforeCall(projectId, startAt, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageBeanIssueTypeSchemeProjects>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue type schemes for projects (asynchronously)
+     * Returns a [paginated](#pagination) list of issue type schemes and, for each issue type scheme, a list of the projects that use it.  Only issue type schemes used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param projectId The list of project IDs. To include multiple project IDs, provide an ampersand-separated list. For example, &#x60;projectId&#x3D;10000&amp;projectId&#x3D;10001&#x60;. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueTypeSchemeForProjectsAsync(@javax.annotation.Nonnull Set<Long> projectId, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageBeanIssueTypeSchemeProjects> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueTypeSchemeForProjectsValidateBeforeCall(projectId, startAt, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanIssueTypeSchemeProjects>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getIssueTypeSchemesMapping
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param issueTypeSchemeId The list of issue type scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;issueTypeSchemeId&#x3D;10000&amp;issueTypeSchemeId&#x3D;10001&#x60;. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueTypeSchemesMappingCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme/mapping";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (issueTypeSchemeId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "issueTypeSchemeId", issueTypeSchemeId));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getIssueTypeSchemesMappingValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId, final ApiCallback _callback) throws ApiException {
+        return getIssueTypeSchemesMappingCall(startAt, maxResults, issueTypeSchemeId, _callback);
+
+    }
+
+    /**
+     * Get issue type scheme items
+     * Returns a [paginated](#pagination) list of issue type scheme items.  Only issue type scheme items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param issueTypeSchemeId The list of issue type scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;issueTypeSchemeId&#x3D;10000&amp;issueTypeSchemeId&#x3D;10001&#x60;. (optional)
+     * @return PageBeanIssueTypeSchemeMapping
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanIssueTypeSchemeMapping getIssueTypeSchemesMapping(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId) throws ApiException {
+        ApiResponse<PageBeanIssueTypeSchemeMapping> localVarResp = getIssueTypeSchemesMappingWithHttpInfo(startAt, maxResults, issueTypeSchemeId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue type scheme items
+     * Returns a [paginated](#pagination) list of issue type scheme items.  Only issue type scheme items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param issueTypeSchemeId The list of issue type scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;issueTypeSchemeId&#x3D;10000&amp;issueTypeSchemeId&#x3D;10001&#x60;. (optional)
+     * @return ApiResponse&lt;PageBeanIssueTypeSchemeMapping&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanIssueTypeSchemeMapping> getIssueTypeSchemesMappingWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId) throws ApiException {
+        okhttp3.Call localVarCall = getIssueTypeSchemesMappingValidateBeforeCall(startAt, maxResults, issueTypeSchemeId, null);
+        Type localVarReturnType = new TypeToken<PageBeanIssueTypeSchemeMapping>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue type scheme items (asynchronously)
+     * Returns a [paginated](#pagination) list of issue type scheme items.  Only issue type scheme items used in classic projects are returned.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param issueTypeSchemeId The list of issue type scheme IDs. To include multiple IDs, provide an ampersand-separated list. For example, &#x60;issueTypeSchemeId&#x3D;10000&amp;issueTypeSchemeId&#x3D;10001&#x60;. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getIssueTypeSchemesMappingAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<Long> issueTypeSchemeId, final ApiCallback<PageBeanIssueTypeSchemeMapping> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getIssueTypeSchemesMappingValidateBeforeCall(startAt, maxResults, issueTypeSchemeId, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanIssueTypeSchemeMapping>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeIssueTypeFromIssueTypeScheme
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeId The ID of the issue type. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is missing or the issue type is not found in the issue type scheme. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeIssueTypeFromIssueTypeSchemeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/{issueTypeId}"
+            .replace("{" + "issueTypeSchemeId" + "}", localVarApiClient.escapeString(issueTypeSchemeId.toString()))
+            .replace("{" + "issueTypeId" + "}", localVarApiClient.escapeString(issueTypeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeIssueTypeFromIssueTypeSchemeValidateBeforeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueTypeSchemeId' is set
+        if (issueTypeSchemeId == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeSchemeId' when calling removeIssueTypeFromIssueTypeScheme(Async)");
+        }
+
+        // verify the required parameter 'issueTypeId' is set
+        if (issueTypeId == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeId' when calling removeIssueTypeFromIssueTypeScheme(Async)");
+        }
+
+        return removeIssueTypeFromIssueTypeSchemeCall(issueTypeSchemeId, issueTypeId, _callback);
+
+    }
+
+    /**
+     * Remove issue type from issue type scheme
+     * Removes an issue type from an issue type scheme.  This operation cannot remove:   *  any issue type used by issues.  *  any issue types from the default issue type scheme.  *  the last standard issue type from an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeId The ID of the issue type. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is missing or the issue type is not found in the issue type scheme. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object removeIssueTypeFromIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId) throws ApiException {
+        ApiResponse<Object> localVarResp = removeIssueTypeFromIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeId);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Remove issue type from issue type scheme
+     * Removes an issue type from an issue type scheme.  This operation cannot remove:   *  any issue type used by issues.  *  any issue types from the default issue type scheme.  *  the last standard issue type from an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeId The ID of the issue type. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is missing or the issue type is not found in the issue type scheme. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> removeIssueTypeFromIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId) throws ApiException {
+        okhttp3.Call localVarCall = removeIssueTypeFromIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, issueTypeId, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Remove issue type from issue type scheme (asynchronously)
+     * Removes an issue type from an issue type scheme.  This operation cannot remove:   *  any issue type used by issues.  *  any issue types from the default issue type scheme.  *  the last standard issue type from an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeId The ID of the issue type. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is missing or the issue type is not found in the issue type scheme. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeIssueTypeFromIssueTypeSchemeAsync(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull Long issueTypeId, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeIssueTypeFromIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, issueTypeId, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for reorderIssueTypesInIssueTypeScheme
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param orderOfIssueTypes  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call reorderIssueTypesInIssueTypeSchemeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = orderOfIssueTypes;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/move"
+            .replace("{" + "issueTypeSchemeId" + "}", localVarApiClient.escapeString(issueTypeSchemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call reorderIssueTypesInIssueTypeSchemeValidateBeforeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueTypeSchemeId' is set
+        if (issueTypeSchemeId == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeSchemeId' when calling reorderIssueTypesInIssueTypeScheme(Async)");
+        }
+
+        // verify the required parameter 'orderOfIssueTypes' is set
+        if (orderOfIssueTypes == null) {
+            throw new ApiException("Missing the required parameter 'orderOfIssueTypes' when calling reorderIssueTypesInIssueTypeScheme(Async)");
+        }
+
+        return reorderIssueTypesInIssueTypeSchemeCall(issueTypeSchemeId, orderOfIssueTypes, _callback);
+
+    }
+
+    /**
+     * Change order of issue types
+     * Changes the order of issue types in an issue type scheme.  The request body parameters must meet the following requirements:   *  all of the issue types must belong to the issue type scheme.  *  either &#x60;after&#x60; or &#x60;position&#x60; must be provided.  *  the issue type in &#x60;after&#x60; must not be in the issue type list.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param orderOfIssueTypes  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object reorderIssueTypesInIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes) throws ApiException {
+        ApiResponse<Object> localVarResp = reorderIssueTypesInIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, orderOfIssueTypes);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Change order of issue types
+     * Changes the order of issue types in an issue type scheme.  The request body parameters must meet the following requirements:   *  all of the issue types must belong to the issue type scheme.  *  either &#x60;after&#x60; or &#x60;position&#x60; must be provided.  *  the issue type in &#x60;after&#x60; must not be in the issue type list.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param orderOfIssueTypes  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> reorderIssueTypesInIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes) throws ApiException {
+        okhttp3.Call localVarCall = reorderIssueTypesInIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, orderOfIssueTypes, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Change order of issue types (asynchronously)
+     * Changes the order of issue types in an issue type scheme.  The request body parameters must meet the following requirements:   *  all of the issue types must belong to the issue type scheme.  *  either &#x60;after&#x60; or &#x60;position&#x60; must be provided.  *  the issue type in &#x60;after&#x60; must not be in the issue type list.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param orderOfIssueTypes  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call reorderIssueTypesInIssueTypeSchemeAsync(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull OrderOfIssueTypes orderOfIssueTypes, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = reorderIssueTypesInIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, orderOfIssueTypes, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateIssueTypeScheme
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeSchemeUpdateDetails  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateIssueTypeSchemeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueTypeSchemeUpdateDetails;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issuetypescheme/{issueTypeSchemeId}"
+            .replace("{" + "issueTypeSchemeId" + "}", localVarApiClient.escapeString(issueTypeSchemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateIssueTypeSchemeValidateBeforeCall(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueTypeSchemeId' is set
+        if (issueTypeSchemeId == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeSchemeId' when calling updateIssueTypeScheme(Async)");
+        }
+
+        // verify the required parameter 'issueTypeSchemeUpdateDetails' is set
+        if (issueTypeSchemeUpdateDetails == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeSchemeUpdateDetails' when calling updateIssueTypeScheme(Async)");
+        }
+
+        return updateIssueTypeSchemeCall(issueTypeSchemeId, issueTypeSchemeUpdateDetails, _callback);
+
+    }
+
+    /**
+     * Update issue type scheme
+     * Updates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeSchemeUpdateDetails  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateIssueTypeScheme(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails) throws ApiException {
+        ApiResponse<Object> localVarResp = updateIssueTypeSchemeWithHttpInfo(issueTypeSchemeId, issueTypeSchemeUpdateDetails);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update issue type scheme
+     * Updates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeSchemeUpdateDetails  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateIssueTypeSchemeWithHttpInfo(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails) throws ApiException {
+        okhttp3.Call localVarCall = updateIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, issueTypeSchemeUpdateDetails, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update issue type scheme (asynchronously)
+     * Updates an issue type scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param issueTypeSchemeId The ID of the issue type scheme. (required)
+     * @param issueTypeSchemeUpdateDetails  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the required permissions. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue type scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateIssueTypeSchemeAsync(@javax.annotation.Nonnull Long issueTypeSchemeId, @javax.annotation.Nonnull IssueTypeSchemeUpdateDetails issueTypeSchemeUpdateDetails, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateIssueTypeSchemeValidateBeforeCall(issueTypeSchemeId, issueTypeSchemeUpdateDetails, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

@@ -13,73 +13,87 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a project feature.
  */
-@JsonPropertyOrder({
-  ProjectFeature.JSON_PROPERTY_FEATURE,
-  ProjectFeature.JSON_PROPERTY_IMAGE_URI,
-  ProjectFeature.JSON_PROPERTY_LOCALISED_DESCRIPTION,
-  ProjectFeature.JSON_PROPERTY_LOCALISED_NAME,
-  ProjectFeature.JSON_PROPERTY_PREREQUISITES,
-  ProjectFeature.JSON_PROPERTY_PROJECT_ID,
-  ProjectFeature.JSON_PROPERTY_STATE,
-  ProjectFeature.JSON_PROPERTY_TOGGLE_LOCKED
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectFeature {
-  public static final String JSON_PROPERTY_FEATURE = "feature";
+  public static final String SERIALIZED_NAME_FEATURE = "feature";
+  @SerializedName(SERIALIZED_NAME_FEATURE)
   @javax.annotation.Nullable
   private String feature;
 
-  public static final String JSON_PROPERTY_IMAGE_URI = "imageUri";
+  public static final String SERIALIZED_NAME_IMAGE_URI = "imageUri";
+  @SerializedName(SERIALIZED_NAME_IMAGE_URI)
   @javax.annotation.Nullable
   private String imageUri;
 
-  public static final String JSON_PROPERTY_LOCALISED_DESCRIPTION = "localisedDescription";
+  public static final String SERIALIZED_NAME_LOCALISED_DESCRIPTION = "localisedDescription";
+  @SerializedName(SERIALIZED_NAME_LOCALISED_DESCRIPTION)
   @javax.annotation.Nullable
   private String localisedDescription;
 
-  public static final String JSON_PROPERTY_LOCALISED_NAME = "localisedName";
+  public static final String SERIALIZED_NAME_LOCALISED_NAME = "localisedName";
+  @SerializedName(SERIALIZED_NAME_LOCALISED_NAME)
   @javax.annotation.Nullable
   private String localisedName;
 
-  public static final String JSON_PROPERTY_PREREQUISITES = "prerequisites";
+  public static final String SERIALIZED_NAME_PREREQUISITES = "prerequisites";
+  @SerializedName(SERIALIZED_NAME_PREREQUISITES)
   @javax.annotation.Nullable
   private List<String> prerequisites = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nullable
   private Long projectId;
 
   /**
    * The state of the feature. When updating the state of a feature, only ENABLED and DISABLED are supported. Responses can contain all values
    */
+  @JsonAdapter(StateEnum.Adapter.class)
   public enum StateEnum {
-    ENABLED(String.valueOf("ENABLED")),
+    ENABLED("ENABLED"),
     
-    DISABLED(String.valueOf("DISABLED")),
+    DISABLED("DISABLED"),
     
-    COMING_SOON(String.valueOf("COMING_SOON"));
+    COMING_SOON("COMING_SOON");
 
     private String value;
 
@@ -87,7 +101,6 @@ public class ProjectFeature {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -97,7 +110,6 @@ public class ProjectFeature {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static StateEnum fromValue(String value) {
       for (StateEnum b : StateEnum.values()) {
         if (b.value.equals(value)) {
@@ -106,17 +118,37 @@ public class ProjectFeature {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<StateEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StateEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StateEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return StateEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      StateEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_STATE = "state";
+  public static final String SERIALIZED_NAME_STATE = "state";
+  @SerializedName(SERIALIZED_NAME_STATE)
   @javax.annotation.Nullable
   private StateEnum state;
 
-  public static final String JSON_PROPERTY_TOGGLE_LOCKED = "toggleLocked";
+  public static final String SERIALIZED_NAME_TOGGLE_LOCKED = "toggleLocked";
+  @SerializedName(SERIALIZED_NAME_TOGGLE_LOCKED)
   @javax.annotation.Nullable
   private Boolean toggleLocked;
 
-  public ProjectFeature() { 
+  public ProjectFeature() {
   }
 
   public ProjectFeature feature(@javax.annotation.Nullable String feature) {
@@ -129,15 +161,10 @@ public class ProjectFeature {
    * @return feature
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FEATURE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFeature() {
     return feature;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FEATURE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFeature(@javax.annotation.Nullable String feature) {
     this.feature = feature;
   }
@@ -153,15 +180,10 @@ public class ProjectFeature {
    * @return imageUri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_URI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getImageUri() {
     return imageUri;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_URI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageUri(@javax.annotation.Nullable String imageUri) {
     this.imageUri = imageUri;
   }
@@ -177,15 +199,10 @@ public class ProjectFeature {
    * @return localisedDescription
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LOCALISED_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLocalisedDescription() {
     return localisedDescription;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LOCALISED_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalisedDescription(@javax.annotation.Nullable String localisedDescription) {
     this.localisedDescription = localisedDescription;
   }
@@ -201,15 +218,10 @@ public class ProjectFeature {
    * @return localisedName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LOCALISED_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLocalisedName() {
     return localisedName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LOCALISED_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalisedName(@javax.annotation.Nullable String localisedName) {
     this.localisedName = localisedName;
   }
@@ -233,15 +245,10 @@ public class ProjectFeature {
    * @return prerequisites
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PREREQUISITES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getPrerequisites() {
     return prerequisites;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PREREQUISITES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPrerequisites(@javax.annotation.Nullable List<String> prerequisites) {
     this.prerequisites = prerequisites;
   }
@@ -257,15 +264,10 @@ public class ProjectFeature {
    * @return projectId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getProjectId() {
     return projectId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectId(@javax.annotation.Nullable Long projectId) {
     this.projectId = projectId;
   }
@@ -281,15 +283,10 @@ public class ProjectFeature {
    * @return state
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public StateEnum getState() {
     return state;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setState(@javax.annotation.Nullable StateEnum state) {
     this.state = state;
   }
@@ -305,23 +302,16 @@ public class ProjectFeature {
    * @return toggleLocked
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOGGLE_LOCKED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getToggleLocked() {
     return toggleLocked;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TOGGLE_LOCKED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setToggleLocked(@javax.annotation.Nullable Boolean toggleLocked) {
     this.toggleLocked = toggleLocked;
   }
 
 
-  /**
-   * Return true if this ProjectFeature object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -373,83 +363,111 @@ public class ProjectFeature {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("feature", "imageUri", "localisedDescription", "localisedName", "prerequisites", "projectId", "state", "toggleLocked"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectFeature
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `feature` to the URL query string
-    if (getFeature() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfeature%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFeature()))));
-    }
-
-    // add `imageUri` to the URL query string
-    if (getImageUri() != null) {
-      joiner.add(String.format(Locale.ROOT, "%simageUri%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getImageUri()))));
-    }
-
-    // add `localisedDescription` to the URL query string
-    if (getLocalisedDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slocalisedDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocalisedDescription()))));
-    }
-
-    // add `localisedName` to the URL query string
-    if (getLocalisedName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slocalisedName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLocalisedName()))));
-    }
-
-    // add `prerequisites` to the URL query string
-    if (getPrerequisites() != null) {
-      for (int i = 0; i < getPrerequisites().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sprerequisites%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getPrerequisites().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectFeature.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectFeature is not found in the empty JSON string", ProjectFeature.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectFeature.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectFeature` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("feature") != null && !jsonObj.get("feature").isJsonNull()) && !jsonObj.get("feature").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `feature` to be a primitive type in the JSON string but got `%s`", jsonObj.get("feature").toString()));
+      }
+      if ((jsonObj.get("imageUri") != null && !jsonObj.get("imageUri").isJsonNull()) && !jsonObj.get("imageUri").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `imageUri` to be a primitive type in the JSON string but got `%s`", jsonObj.get("imageUri").toString()));
+      }
+      if ((jsonObj.get("localisedDescription") != null && !jsonObj.get("localisedDescription").isJsonNull()) && !jsonObj.get("localisedDescription").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `localisedDescription` to be a primitive type in the JSON string but got `%s`", jsonObj.get("localisedDescription").toString()));
+      }
+      if ((jsonObj.get("localisedName") != null && !jsonObj.get("localisedName").isJsonNull()) && !jsonObj.get("localisedName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `localisedName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("localisedName").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("prerequisites") != null && !jsonObj.get("prerequisites").isJsonNull() && !jsonObj.get("prerequisites").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `prerequisites` to be an array in the JSON string but got `%s`", jsonObj.get("prerequisites").toString()));
+      }
+      if ((jsonObj.get("state") != null && !jsonObj.get("state").isJsonNull()) && !jsonObj.get("state").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `state` to be a primitive type in the JSON string but got `%s`", jsonObj.get("state").toString()));
+      }
+      // validate the optional field `state`
+      if (jsonObj.get("state") != null && !jsonObj.get("state").isJsonNull()) {
+        StateEnum.validateJsonElement(jsonObj.get("state"));
+      }
+  }
 
-    // add `state` to the URL query string
-    if (getState() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstate%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getState()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectFeature.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectFeature' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectFeature> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectFeature.class));
 
-    // add `toggleLocked` to the URL query string
-    if (getToggleLocked() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stoggleLocked%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getToggleLocked()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<ProjectFeature>() {
+           @Override
+           public void write(JsonWriter out, ProjectFeature value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public ProjectFeature read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ProjectFeature given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectFeature
+   * @throws IOException if the JSON string is invalid with respect to ProjectFeature
+   */
+  public static ProjectFeature fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectFeature.class);
+  }
+
+  /**
+   * Convert an instance of ProjectFeature to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

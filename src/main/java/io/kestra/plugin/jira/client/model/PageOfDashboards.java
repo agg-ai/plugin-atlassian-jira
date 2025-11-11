@@ -13,76 +13,90 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.Dashboard;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A page containing dashboard details.
  */
-@JsonPropertyOrder({
-  PageOfDashboards.JSON_PROPERTY_DASHBOARDS,
-  PageOfDashboards.JSON_PROPERTY_MAX_RESULTS,
-  PageOfDashboards.JSON_PROPERTY_NEXT,
-  PageOfDashboards.JSON_PROPERTY_PREV,
-  PageOfDashboards.JSON_PROPERTY_START_AT,
-  PageOfDashboards.JSON_PROPERTY_TOTAL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PageOfDashboards {
-  public static final String JSON_PROPERTY_DASHBOARDS = "dashboards";
+  public static final String SERIALIZED_NAME_DASHBOARDS = "dashboards";
+  @SerializedName(SERIALIZED_NAME_DASHBOARDS)
   @javax.annotation.Nullable
   private List<Dashboard> dashboards = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MAX_RESULTS = "maxResults";
+  public static final String SERIALIZED_NAME_MAX_RESULTS = "maxResults";
+  @SerializedName(SERIALIZED_NAME_MAX_RESULTS)
   @javax.annotation.Nullable
   private Integer maxResults;
 
-  public static final String JSON_PROPERTY_NEXT = "next";
+  public static final String SERIALIZED_NAME_NEXT = "next";
+  @SerializedName(SERIALIZED_NAME_NEXT)
   @javax.annotation.Nullable
   private String next;
 
-  public static final String JSON_PROPERTY_PREV = "prev";
+  public static final String SERIALIZED_NAME_PREV = "prev";
+  @SerializedName(SERIALIZED_NAME_PREV)
   @javax.annotation.Nullable
   private String prev;
 
-  public static final String JSON_PROPERTY_START_AT = "startAt";
+  public static final String SERIALIZED_NAME_START_AT = "startAt";
+  @SerializedName(SERIALIZED_NAME_START_AT)
   @javax.annotation.Nullable
   private Integer startAt;
 
-  public static final String JSON_PROPERTY_TOTAL = "total";
+  public static final String SERIALIZED_NAME_TOTAL = "total";
+  @SerializedName(SERIALIZED_NAME_TOTAL)
   @javax.annotation.Nullable
   private Integer total;
 
-  public PageOfDashboards() { 
+  public PageOfDashboards() {
   }
 
-  @JsonCreator
   public PageOfDashboards(
-    @JsonProperty(JSON_PROPERTY_DASHBOARDS) List<Dashboard> dashboards, 
-    @JsonProperty(JSON_PROPERTY_MAX_RESULTS) Integer maxResults, 
-    @JsonProperty(JSON_PROPERTY_NEXT) String next, 
-    @JsonProperty(JSON_PROPERTY_PREV) String prev, 
-    @JsonProperty(JSON_PROPERTY_START_AT) Integer startAt, 
-    @JsonProperty(JSON_PROPERTY_TOTAL) Integer total
+     List<Dashboard> dashboards, 
+     Integer maxResults, 
+     String next, 
+     String prev, 
+     Integer startAt, 
+     Integer total
   ) {
-  this();
+    this();
     this.dashboards = dashboards;
     this.maxResults = maxResults;
     this.next = next;
@@ -96,12 +110,9 @@ public class PageOfDashboards {
    * @return dashboards
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DASHBOARDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Dashboard> getDashboards() {
     return dashboards;
   }
-
 
 
 
@@ -110,12 +121,9 @@ public class PageOfDashboards {
    * @return maxResults
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MAX_RESULTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxResults() {
     return maxResults;
   }
-
 
 
 
@@ -124,12 +132,9 @@ public class PageOfDashboards {
    * @return next
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNext() {
     return next;
   }
-
 
 
 
@@ -138,12 +143,9 @@ public class PageOfDashboards {
    * @return prev
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PREV, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPrev() {
     return prev;
   }
-
 
 
 
@@ -152,12 +154,9 @@ public class PageOfDashboards {
    * @return startAt
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getStartAt() {
     return startAt;
   }
-
 
 
 
@@ -166,8 +165,6 @@ public class PageOfDashboards {
    * @return total
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOTAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTotal() {
     return total;
   }
@@ -175,9 +172,6 @@ public class PageOfDashboards {
 
 
 
-  /**
-   * Return true if this PageOfDashboards object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -225,74 +219,108 @@ public class PageOfDashboards {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("dashboards", "maxResults", "next", "prev", "startAt", "total"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to PageOfDashboards
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `dashboards` to the URL query string
-    if (getDashboards() != null) {
-      for (int i = 0; i < getDashboards().size(); i++) {
-        if (getDashboards().get(i) != null) {
-          joiner.add(getDashboards().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sdashboards%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!PageOfDashboards.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in PageOfDashboards is not found in the empty JSON string", PageOfDashboards.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `maxResults` to the URL query string
-    if (getMaxResults() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smaxResults%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMaxResults()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!PageOfDashboards.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `PageOfDashboards` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("dashboards") != null && !jsonObj.get("dashboards").isJsonNull()) {
+        JsonArray jsonArraydashboards = jsonObj.getAsJsonArray("dashboards");
+        if (jsonArraydashboards != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("dashboards").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `dashboards` to be an array in the JSON string but got `%s`", jsonObj.get("dashboards").toString()));
+          }
 
-    // add `next` to the URL query string
-    if (getNext() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snext%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNext()))));
-    }
+          // validate the optional field `dashboards` (array)
+          for (int i = 0; i < jsonArraydashboards.size(); i++) {
+            Dashboard.validateJsonElement(jsonArraydashboards.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("next") != null && !jsonObj.get("next").isJsonNull()) && !jsonObj.get("next").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `next` to be a primitive type in the JSON string but got `%s`", jsonObj.get("next").toString()));
+      }
+      if ((jsonObj.get("prev") != null && !jsonObj.get("prev").isJsonNull()) && !jsonObj.get("prev").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `prev` to be a primitive type in the JSON string but got `%s`", jsonObj.get("prev").toString()));
+      }
+  }
 
-    // add `prev` to the URL query string
-    if (getPrev() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprev%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPrev()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!PageOfDashboards.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'PageOfDashboards' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<PageOfDashboards> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(PageOfDashboards.class));
 
-    // add `startAt` to the URL query string
-    if (getStartAt() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstartAt%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStartAt()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<PageOfDashboards>() {
+           @Override
+           public void write(JsonWriter out, PageOfDashboards value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `total` to the URL query string
-    if (getTotal() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stotal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTotal()))));
-    }
+           @Override
+           public PageOfDashboards read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    return joiner.toString();
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of PageOfDashboards given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of PageOfDashboards
+   * @throws IOException if the JSON string is invalid with respect to PageOfDashboards
+   */
+  public static PageOfDashboards fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, PageOfDashboards.class);
+  }
+
+  /**
+   * Convert an instance of PageOfDashboards to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

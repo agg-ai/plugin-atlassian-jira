@@ -13,56 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.DashboardGadgetPosition;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a gadget.
  */
-@JsonPropertyOrder({
-  DashboardGadget.JSON_PROPERTY_COLOR,
-  DashboardGadget.JSON_PROPERTY_ID,
-  DashboardGadget.JSON_PROPERTY_MODULE_KEY,
-  DashboardGadget.JSON_PROPERTY_POSITION,
-  DashboardGadget.JSON_PROPERTY_TITLE,
-  DashboardGadget.JSON_PROPERTY_URI
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class DashboardGadget {
   /**
    * The color of the gadget. Should be one of &#x60;blue&#x60;, &#x60;red&#x60;, &#x60;yellow&#x60;, &#x60;green&#x60;, &#x60;cyan&#x60;, &#x60;purple&#x60;, &#x60;gray&#x60;, or &#x60;white&#x60;.
    */
+  @JsonAdapter(ColorEnum.Adapter.class)
   public enum ColorEnum {
-    BLUE(String.valueOf("blue")),
+    BLUE("blue"),
     
-    RED(String.valueOf("red")),
+    RED("red"),
     
-    YELLOW(String.valueOf("yellow")),
+    YELLOW("yellow"),
     
-    GREEN(String.valueOf("green")),
+    GREEN("green"),
     
-    CYAN(String.valueOf("cyan")),
+    CYAN("cyan"),
     
-    PURPLE(String.valueOf("purple")),
+    PURPLE("purple"),
     
-    GRAY(String.valueOf("gray")),
+    GRAY("gray"),
     
-    WHITE(String.valueOf("white"));
+    WHITE("white");
 
     private String value;
 
@@ -70,7 +80,6 @@ public class DashboardGadget {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -80,7 +89,6 @@ public class DashboardGadget {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ColorEnum fromValue(String value) {
       for (ColorEnum b : ColorEnum.values()) {
         if (b.value.equals(value)) {
@@ -89,45 +97,68 @@ public class DashboardGadget {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ColorEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ColorEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ColorEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ColorEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ColorEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_COLOR = "color";
+  public static final String SERIALIZED_NAME_COLOR = "color";
+  @SerializedName(SERIALIZED_NAME_COLOR)
   @javax.annotation.Nonnull
   private ColorEnum color;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private Long id;
 
-  public static final String JSON_PROPERTY_MODULE_KEY = "moduleKey";
+  public static final String SERIALIZED_NAME_MODULE_KEY = "moduleKey";
+  @SerializedName(SERIALIZED_NAME_MODULE_KEY)
   @javax.annotation.Nullable
   private String moduleKey;
 
-  public static final String JSON_PROPERTY_POSITION = "position";
+  public static final String SERIALIZED_NAME_POSITION = "position";
+  @SerializedName(SERIALIZED_NAME_POSITION)
   @javax.annotation.Nonnull
   private DashboardGadgetPosition position;
 
-  public static final String JSON_PROPERTY_TITLE = "title";
+  public static final String SERIALIZED_NAME_TITLE = "title";
+  @SerializedName(SERIALIZED_NAME_TITLE)
   @javax.annotation.Nonnull
   private String title;
 
-  public static final String JSON_PROPERTY_URI = "uri";
+  public static final String SERIALIZED_NAME_URI = "uri";
+  @SerializedName(SERIALIZED_NAME_URI)
   @javax.annotation.Nullable
   private String uri;
 
-  public DashboardGadget() { 
+  public DashboardGadget() {
   }
 
-  @JsonCreator
   public DashboardGadget(
-    @JsonProperty(JSON_PROPERTY_COLOR) ColorEnum color, 
-    @JsonProperty(JSON_PROPERTY_ID) Long id, 
-    @JsonProperty(JSON_PROPERTY_MODULE_KEY) String moduleKey, 
-    @JsonProperty(JSON_PROPERTY_POSITION) DashboardGadgetPosition position, 
-    @JsonProperty(JSON_PROPERTY_TITLE) String title, 
-    @JsonProperty(JSON_PROPERTY_URI) String uri
+     ColorEnum color, 
+     Long id, 
+     String moduleKey, 
+     DashboardGadgetPosition position, 
+     String title, 
+     String uri
   ) {
-  this();
+    this();
     this.color = color;
     this.id = id;
     this.moduleKey = moduleKey;
@@ -141,12 +172,9 @@ public class DashboardGadget {
    * @return color
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_COLOR, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public ColorEnum getColor() {
     return color;
   }
-
 
 
 
@@ -155,12 +183,9 @@ public class DashboardGadget {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getId() {
     return id;
   }
-
 
 
 
@@ -169,12 +194,9 @@ public class DashboardGadget {
    * @return moduleKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MODULE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getModuleKey() {
     return moduleKey;
   }
-
 
 
 
@@ -183,12 +205,9 @@ public class DashboardGadget {
    * @return position
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_POSITION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public DashboardGadgetPosition getPosition() {
     return position;
   }
-
 
 
 
@@ -197,12 +216,9 @@ public class DashboardGadget {
    * @return title
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TITLE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTitle() {
     return title;
   }
-
 
 
 
@@ -211,8 +227,6 @@ public class DashboardGadget {
    * @return uri
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUri() {
     return uri;
   }
@@ -220,9 +234,6 @@ public class DashboardGadget {
 
 
 
-  /**
-   * Return true if this DashboardGadget object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -270,69 +281,111 @@ public class DashboardGadget {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("color", "id", "moduleKey", "position", "title", "uri"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("color", "id", "position", "title"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to DashboardGadget
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!DashboardGadget.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in DashboardGadget is not found in the empty JSON string", DashboardGadget.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!DashboardGadget.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `DashboardGadget` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : DashboardGadget.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("color").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `color` to be a primitive type in the JSON string but got `%s`", jsonObj.get("color").toString()));
+      }
+      // validate the required field `color`
+      ColorEnum.validateJsonElement(jsonObj.get("color"));
+      if ((jsonObj.get("moduleKey") != null && !jsonObj.get("moduleKey").isJsonNull()) && !jsonObj.get("moduleKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `moduleKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("moduleKey").toString()));
+      }
+      // validate the required field `position`
+      DashboardGadgetPosition.validateJsonElement(jsonObj.get("position"));
+      if (!jsonObj.get("title").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `title` to be a primitive type in the JSON string but got `%s`", jsonObj.get("title").toString()));
+      }
+      if ((jsonObj.get("uri") != null && !jsonObj.get("uri").isJsonNull()) && !jsonObj.get("uri").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `uri` to be a primitive type in the JSON string but got `%s`", jsonObj.get("uri").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!DashboardGadget.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'DashboardGadget' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<DashboardGadget> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(DashboardGadget.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<DashboardGadget>() {
+           @Override
+           public void write(JsonWriter out, DashboardGadget value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public DashboardGadget read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of DashboardGadget given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of DashboardGadget
+   * @throws IOException if the JSON string is invalid with respect to DashboardGadget
+   */
+  public static DashboardGadget fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, DashboardGadget.class);
+  }
 
-    // add `color` to the URL query string
-    if (getColor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scolor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getColor()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `moduleKey` to the URL query string
-    if (getModuleKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smoduleKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getModuleKey()))));
-    }
-
-    // add `position` to the URL query string
-    if (getPosition() != null) {
-      joiner.add(getPosition().toUrlQueryString(prefix + "position" + suffix));
-    }
-
-    // add `title` to the URL query string
-    if (getTitle() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stitle%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
-    }
-
-    // add `uri` to the URL query string
-    if (getUri() != null) {
-      joiner.add(String.format(Locale.ROOT, "%suri%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUri()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of DashboardGadget to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

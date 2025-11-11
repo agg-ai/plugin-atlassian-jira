@@ -13,75 +13,89 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectCreateResourceIdentifier;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * List of permission grants
  */
-@JsonPropertyOrder({
-  PermissionGrantDTO.JSON_PROPERTY_APPLICATION_ACCESS,
-  PermissionGrantDTO.JSON_PROPERTY_GROUP_CUSTOM_FIELDS,
-  PermissionGrantDTO.JSON_PROPERTY_GROUPS,
-  PermissionGrantDTO.JSON_PROPERTY_PERMISSION_KEYS,
-  PermissionGrantDTO.JSON_PROPERTY_PROJECT_ROLES,
-  PermissionGrantDTO.JSON_PROPERTY_SPECIAL_GRANTS,
-  PermissionGrantDTO.JSON_PROPERTY_USER_CUSTOM_FIELDS,
-  PermissionGrantDTO.JSON_PROPERTY_USERS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PermissionGrantDTO {
-  public static final String JSON_PROPERTY_APPLICATION_ACCESS = "applicationAccess";
+  public static final String SERIALIZED_NAME_APPLICATION_ACCESS = "applicationAccess";
+  @SerializedName(SERIALIZED_NAME_APPLICATION_ACCESS)
   @javax.annotation.Nullable
   private Set<String> applicationAccess = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_GROUP_CUSTOM_FIELDS = "groupCustomFields";
+  public static final String SERIALIZED_NAME_GROUP_CUSTOM_FIELDS = "groupCustomFields";
+  @SerializedName(SERIALIZED_NAME_GROUP_CUSTOM_FIELDS)
   @javax.annotation.Nullable
   private Set<ProjectCreateResourceIdentifier> groupCustomFields = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_GROUPS = "groups";
+  public static final String SERIALIZED_NAME_GROUPS = "groups";
+  @SerializedName(SERIALIZED_NAME_GROUPS)
   @javax.annotation.Nullable
   private Set<ProjectCreateResourceIdentifier> groups = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_PERMISSION_KEYS = "permissionKeys";
+  public static final String SERIALIZED_NAME_PERMISSION_KEYS = "permissionKeys";
+  @SerializedName(SERIALIZED_NAME_PERMISSION_KEYS)
   @javax.annotation.Nullable
   private Set<String> permissionKeys = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_PROJECT_ROLES = "projectRoles";
+  public static final String SERIALIZED_NAME_PROJECT_ROLES = "projectRoles";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ROLES)
   @javax.annotation.Nullable
   private Set<ProjectCreateResourceIdentifier> projectRoles = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_SPECIAL_GRANTS = "specialGrants";
+  public static final String SERIALIZED_NAME_SPECIAL_GRANTS = "specialGrants";
+  @SerializedName(SERIALIZED_NAME_SPECIAL_GRANTS)
   @javax.annotation.Nullable
   private Set<String> specialGrants = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_USER_CUSTOM_FIELDS = "userCustomFields";
+  public static final String SERIALIZED_NAME_USER_CUSTOM_FIELDS = "userCustomFields";
+  @SerializedName(SERIALIZED_NAME_USER_CUSTOM_FIELDS)
   @javax.annotation.Nullable
   private Set<ProjectCreateResourceIdentifier> userCustomFields = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_USERS = "users";
+  public static final String SERIALIZED_NAME_USERS = "users";
+  @SerializedName(SERIALIZED_NAME_USERS)
   @javax.annotation.Nullable
   private Set<ProjectCreateResourceIdentifier> users = new LinkedHashSet<>();
 
-  public PermissionGrantDTO() { 
+  public PermissionGrantDTO() {
   }
 
   public PermissionGrantDTO applicationAccess(@javax.annotation.Nullable Set<String> applicationAccess) {
@@ -102,16 +116,10 @@ public class PermissionGrantDTO {
    * @return applicationAccess
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getApplicationAccess() {
     return applicationAccess;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setApplicationAccess(@javax.annotation.Nullable Set<String> applicationAccess) {
     this.applicationAccess = applicationAccess;
   }
@@ -135,16 +143,10 @@ public class PermissionGrantDTO {
    * @return groupCustomFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUP_CUSTOM_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<ProjectCreateResourceIdentifier> getGroupCustomFields() {
     return groupCustomFields;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_GROUP_CUSTOM_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupCustomFields(@javax.annotation.Nullable Set<ProjectCreateResourceIdentifier> groupCustomFields) {
     this.groupCustomFields = groupCustomFields;
   }
@@ -168,16 +170,10 @@ public class PermissionGrantDTO {
    * @return groups
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<ProjectCreateResourceIdentifier> getGroups() {
     return groups;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_GROUPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroups(@javax.annotation.Nullable Set<ProjectCreateResourceIdentifier> groups) {
     this.groups = groups;
   }
@@ -201,16 +197,10 @@ public class PermissionGrantDTO {
    * @return permissionKeys
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getPermissionKeys() {
     return permissionKeys;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_KEYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPermissionKeys(@javax.annotation.Nullable Set<String> permissionKeys) {
     this.permissionKeys = permissionKeys;
   }
@@ -234,16 +224,10 @@ public class PermissionGrantDTO {
    * @return projectRoles
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ROLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<ProjectCreateResourceIdentifier> getProjectRoles() {
     return projectRoles;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ROLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectRoles(@javax.annotation.Nullable Set<ProjectCreateResourceIdentifier> projectRoles) {
     this.projectRoles = projectRoles;
   }
@@ -267,16 +251,10 @@ public class PermissionGrantDTO {
    * @return specialGrants
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SPECIAL_GRANTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<String> getSpecialGrants() {
     return specialGrants;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_SPECIAL_GRANTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSpecialGrants(@javax.annotation.Nullable Set<String> specialGrants) {
     this.specialGrants = specialGrants;
   }
@@ -300,16 +278,10 @@ public class PermissionGrantDTO {
    * @return userCustomFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USER_CUSTOM_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<ProjectCreateResourceIdentifier> getUserCustomFields() {
     return userCustomFields;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_USER_CUSTOM_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserCustomFields(@javax.annotation.Nullable Set<ProjectCreateResourceIdentifier> userCustomFields) {
     this.userCustomFields = userCustomFields;
   }
@@ -333,24 +305,16 @@ public class PermissionGrantDTO {
    * @return users
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<ProjectCreateResourceIdentifier> getUsers() {
     return users;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUsers(@javax.annotation.Nullable Set<ProjectCreateResourceIdentifier> users) {
     this.users = users;
   }
 
 
-  /**
-   * Return true if this PermissionGrantDTO object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -402,132 +366,170 @@ public class PermissionGrantDTO {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("applicationAccess", "groupCustomFields", "groups", "permissionKeys", "projectRoles", "specialGrants", "userCustomFields", "users"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to PermissionGrantDTO
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `applicationAccess` to the URL query string
-    if (getApplicationAccess() != null) {
-      int i = 0;
-      for (String _item : getApplicationAccess()) {
-        joiner.add(String.format(Locale.ROOT, "%sapplicationAccess%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
-      }
-      i++;
-    }
-
-    // add `groupCustomFields` to the URL query string
-    if (getGroupCustomFields() != null) {
-      int i = 0;
-      for (ProjectCreateResourceIdentifier _item : getGroupCustomFields()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%sgroupCustomFields%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!PermissionGrantDTO.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in PermissionGrantDTO is not found in the empty JSON string", PermissionGrantDTO.openapiRequiredFields.toString()));
         }
       }
-      i++;
-    }
 
-    // add `groups` to the URL query string
-    if (getGroups() != null) {
-      int i = 0;
-      for (ProjectCreateResourceIdentifier _item : getGroups()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%sgroups%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!PermissionGrantDTO.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `PermissionGrantDTO` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-      i++;
-    }
-
-    // add `permissionKeys` to the URL query string
-    if (getPermissionKeys() != null) {
-      int i = 0;
-      for (String _item : getPermissionKeys()) {
-        joiner.add(String.format(Locale.ROOT, "%spermissionKeys%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("applicationAccess") != null && !jsonObj.get("applicationAccess").isJsonNull() && !jsonObj.get("applicationAccess").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `applicationAccess` to be an array in the JSON string but got `%s`", jsonObj.get("applicationAccess").toString()));
       }
-      i++;
-    }
+      if (jsonObj.get("groupCustomFields") != null && !jsonObj.get("groupCustomFields").isJsonNull()) {
+        JsonArray jsonArraygroupCustomFields = jsonObj.getAsJsonArray("groupCustomFields");
+        if (jsonArraygroupCustomFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("groupCustomFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groupCustomFields` to be an array in the JSON string but got `%s`", jsonObj.get("groupCustomFields").toString()));
+          }
 
-    // add `projectRoles` to the URL query string
-    if (getProjectRoles() != null) {
-      int i = 0;
-      for (ProjectCreateResourceIdentifier _item : getProjectRoles()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%sprojectRoles%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `groupCustomFields` (array)
+          for (int i = 0; i < jsonArraygroupCustomFields.size(); i++) {
+            ProjectCreateResourceIdentifier.validateJsonElement(jsonArraygroupCustomFields.get(i));
+          };
         }
       }
-      i++;
-    }
+      if (jsonObj.get("groups") != null && !jsonObj.get("groups").isJsonNull()) {
+        JsonArray jsonArraygroups = jsonObj.getAsJsonArray("groups");
+        if (jsonArraygroups != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("groups").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `groups` to be an array in the JSON string but got `%s`", jsonObj.get("groups").toString()));
+          }
 
-    // add `specialGrants` to the URL query string
-    if (getSpecialGrants() != null) {
-      int i = 0;
-      for (String _item : getSpecialGrants()) {
-        joiner.add(String.format(Locale.ROOT, "%sspecialGrants%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
-      }
-      i++;
-    }
-
-    // add `userCustomFields` to the URL query string
-    if (getUserCustomFields() != null) {
-      int i = 0;
-      for (ProjectCreateResourceIdentifier _item : getUserCustomFields()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%suserCustomFields%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `groups` (array)
+          for (int i = 0; i < jsonArraygroups.size(); i++) {
+            ProjectCreateResourceIdentifier.validateJsonElement(jsonArraygroups.get(i));
+          };
         }
       }
-      i++;
-    }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("permissionKeys") != null && !jsonObj.get("permissionKeys").isJsonNull() && !jsonObj.get("permissionKeys").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `permissionKeys` to be an array in the JSON string but got `%s`", jsonObj.get("permissionKeys").toString()));
+      }
+      if (jsonObj.get("projectRoles") != null && !jsonObj.get("projectRoles").isJsonNull()) {
+        JsonArray jsonArrayprojectRoles = jsonObj.getAsJsonArray("projectRoles");
+        if (jsonArrayprojectRoles != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("projectRoles").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectRoles` to be an array in the JSON string but got `%s`", jsonObj.get("projectRoles").toString()));
+          }
 
-    // add `users` to the URL query string
-    if (getUsers() != null) {
-      int i = 0;
-      for (ProjectCreateResourceIdentifier _item : getUsers()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%susers%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `projectRoles` (array)
+          for (int i = 0; i < jsonArrayprojectRoles.size(); i++) {
+            ProjectCreateResourceIdentifier.validateJsonElement(jsonArrayprojectRoles.get(i));
+          };
         }
       }
-      i++;
-    }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("specialGrants") != null && !jsonObj.get("specialGrants").isJsonNull() && !jsonObj.get("specialGrants").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `specialGrants` to be an array in the JSON string but got `%s`", jsonObj.get("specialGrants").toString()));
+      }
+      if (jsonObj.get("userCustomFields") != null && !jsonObj.get("userCustomFields").isJsonNull()) {
+        JsonArray jsonArrayuserCustomFields = jsonObj.getAsJsonArray("userCustomFields");
+        if (jsonArrayuserCustomFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("userCustomFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `userCustomFields` to be an array in the JSON string but got `%s`", jsonObj.get("userCustomFields").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `userCustomFields` (array)
+          for (int i = 0; i < jsonArrayuserCustomFields.size(); i++) {
+            ProjectCreateResourceIdentifier.validateJsonElement(jsonArrayuserCustomFields.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("users") != null && !jsonObj.get("users").isJsonNull()) {
+        JsonArray jsonArrayusers = jsonObj.getAsJsonArray("users");
+        if (jsonArrayusers != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("users").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `users` to be an array in the JSON string but got `%s`", jsonObj.get("users").toString()));
+          }
+
+          // validate the optional field `users` (array)
+          for (int i = 0; i < jsonArrayusers.size(); i++) {
+            ProjectCreateResourceIdentifier.validateJsonElement(jsonArrayusers.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!PermissionGrantDTO.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'PermissionGrantDTO' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<PermissionGrantDTO> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(PermissionGrantDTO.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<PermissionGrantDTO>() {
+           @Override
+           public void write(JsonWriter out, PermissionGrantDTO value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public PermissionGrantDTO read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of PermissionGrantDTO given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of PermissionGrantDTO
+   * @throws IOException if the JSON string is invalid with respect to PermissionGrantDTO
+   */
+  public static PermissionGrantDTO fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, PermissionGrantDTO.class);
+  }
+
+  /**
+   * Convert an instance of PermissionGrantDTO to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

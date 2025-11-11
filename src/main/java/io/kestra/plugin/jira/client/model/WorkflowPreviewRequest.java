@@ -13,53 +13,68 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The details of the preview workflow request.
  */
-@JsonPropertyOrder({
-  WorkflowPreviewRequest.JSON_PROPERTY_ISSUE_TYPE_IDS,
-  WorkflowPreviewRequest.JSON_PROPERTY_PROJECT_ID,
-  WorkflowPreviewRequest.JSON_PROPERTY_WORKFLOW_IDS,
-  WorkflowPreviewRequest.JSON_PROPERTY_WORKFLOW_NAMES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowPreviewRequest {
-  public static final String JSON_PROPERTY_ISSUE_TYPE_IDS = "issueTypeIds";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_IDS = "issueTypeIds";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_IDS)
   @javax.annotation.Nullable
   private List<String> issueTypeIds = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nonnull
   private String projectId;
 
-  public static final String JSON_PROPERTY_WORKFLOW_IDS = "workflowIds";
+  public static final String SERIALIZED_NAME_WORKFLOW_IDS = "workflowIds";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW_IDS)
   @javax.annotation.Nullable
   private List<String> workflowIds = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_WORKFLOW_NAMES = "workflowNames";
+  public static final String SERIALIZED_NAME_WORKFLOW_NAMES = "workflowNames";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW_NAMES)
   @javax.annotation.Nullable
   private List<String> workflowNames = new ArrayList<>();
 
-  public WorkflowPreviewRequest() { 
+  public WorkflowPreviewRequest() {
   }
 
   public WorkflowPreviewRequest issueTypeIds(@javax.annotation.Nullable List<String> issueTypeIds) {
@@ -80,15 +95,10 @@ public class WorkflowPreviewRequest {
    * @return issueTypeIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getIssueTypeIds() {
     return issueTypeIds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeIds(@javax.annotation.Nullable List<String> issueTypeIds) {
     this.issueTypeIds = issueTypeIds;
   }
@@ -104,15 +114,10 @@ public class WorkflowPreviewRequest {
    * @return projectId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getProjectId() {
     return projectId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setProjectId(@javax.annotation.Nonnull String projectId) {
     this.projectId = projectId;
   }
@@ -136,15 +141,10 @@ public class WorkflowPreviewRequest {
    * @return workflowIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getWorkflowIds() {
     return workflowIds;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkflowIds(@javax.annotation.Nullable List<String> workflowIds) {
     this.workflowIds = workflowIds;
   }
@@ -168,23 +168,16 @@ public class WorkflowPreviewRequest {
    * @return workflowNames
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getWorkflowNames() {
     return workflowNames;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkflowNames(@javax.annotation.Nullable List<String> workflowNames) {
     this.workflowNames = workflowNames;
   }
 
 
-  /**
-   * Return true if this WorkflowPreviewRequest object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -228,71 +221,110 @@ public class WorkflowPreviewRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueTypeIds", "projectId", "workflowIds", "workflowNames"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("projectId"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowPreviewRequest
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `issueTypeIds` to the URL query string
-    if (getIssueTypeIds() != null) {
-      for (int i = 0; i < getIssueTypeIds().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sissueTypeIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getIssueTypeIds().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowPreviewRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowPreviewRequest is not found in the empty JSON string", WorkflowPreviewRequest.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
-
-    // add `workflowIds` to the URL query string
-    if (getWorkflowIds() != null) {
-      for (int i = 0; i < getWorkflowIds().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sworkflowIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getWorkflowIds().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowPreviewRequest.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowPreviewRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
 
-    // add `workflowNames` to the URL query string
-    if (getWorkflowNames() != null) {
-      for (int i = 0; i < getWorkflowNames().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sworkflowNames%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getWorkflowNames().get(i)))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : WorkflowPreviewRequest.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("issueTypeIds") != null && !jsonObj.get("issueTypeIds").isJsonNull() && !jsonObj.get("issueTypeIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypeIds` to be an array in the JSON string but got `%s`", jsonObj.get("issueTypeIds").toString()));
+      }
+      if (!jsonObj.get("projectId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectId").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("workflowIds") != null && !jsonObj.get("workflowIds").isJsonNull() && !jsonObj.get("workflowIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `workflowIds` to be an array in the JSON string but got `%s`", jsonObj.get("workflowIds").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("workflowNames") != null && !jsonObj.get("workflowNames").isJsonNull() && !jsonObj.get("workflowNames").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `workflowNames` to be an array in the JSON string but got `%s`", jsonObj.get("workflowNames").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowPreviewRequest.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowPreviewRequest' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowPreviewRequest> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowPreviewRequest.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowPreviewRequest>() {
+           @Override
+           public void write(JsonWriter out, WorkflowPreviewRequest value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowPreviewRequest read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowPreviewRequest given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowPreviewRequest
+   * @throws IOException if the JSON string is invalid with respect to WorkflowPreviewRequest
+   */
+  public static WorkflowPreviewRequest fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowPreviewRequest.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowPreviewRequest to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

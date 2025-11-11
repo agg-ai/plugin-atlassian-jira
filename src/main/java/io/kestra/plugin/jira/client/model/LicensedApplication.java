@@ -13,45 +13,60 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a licensed Jira application.
  */
-@JsonPropertyOrder({
-  LicensedApplication.JSON_PROPERTY_ID,
-  LicensedApplication.JSON_PROPERTY_PLAN
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class LicensedApplication {
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private String id;
 
   /**
    * The licensing plan.
    */
+  @JsonAdapter(PlanEnum.Adapter.class)
   public enum PlanEnum {
-    UNLICENSED(String.valueOf("UNLICENSED")),
+    UNLICENSED("UNLICENSED"),
     
-    FREE(String.valueOf("FREE")),
+    FREE("FREE"),
     
-    PAID(String.valueOf("PAID"));
+    PAID("PAID");
 
     private String value;
 
@@ -59,7 +74,6 @@ public class LicensedApplication {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -69,7 +83,6 @@ public class LicensedApplication {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static PlanEnum fromValue(String value) {
       for (PlanEnum b : PlanEnum.values()) {
         if (b.value.equals(value)) {
@@ -78,21 +91,39 @@ public class LicensedApplication {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<PlanEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final PlanEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public PlanEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return PlanEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      PlanEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_PLAN = "plan";
+  public static final String SERIALIZED_NAME_PLAN = "plan";
+  @SerializedName(SERIALIZED_NAME_PLAN)
   @javax.annotation.Nonnull
   private PlanEnum plan;
 
-  public LicensedApplication() { 
+  public LicensedApplication() {
   }
 
-  @JsonCreator
   public LicensedApplication(
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_PLAN) PlanEnum plan
+     String id, 
+     PlanEnum plan
   ) {
-  this();
+    this();
     this.id = id;
     this.plan = plan;
   }
@@ -102,12 +133,9 @@ public class LicensedApplication {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -116,8 +144,6 @@ public class LicensedApplication {
    * @return plan
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PLAN, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public PlanEnum getPlan() {
     return plan;
   }
@@ -125,9 +151,6 @@ public class LicensedApplication {
 
 
 
-  /**
-   * Return true if this LicensedApplication object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -167,49 +190,103 @@ public class LicensedApplication {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("id", "plan"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("id", "plan"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to LicensedApplication
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!LicensedApplication.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in LicensedApplication is not found in the empty JSON string", LicensedApplication.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!LicensedApplication.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `LicensedApplication` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : LicensedApplication.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (!jsonObj.get("plan").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `plan` to be a primitive type in the JSON string but got `%s`", jsonObj.get("plan").toString()));
+      }
+      // validate the required field `plan`
+      PlanEnum.validateJsonElement(jsonObj.get("plan"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!LicensedApplication.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'LicensedApplication' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<LicensedApplication> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(LicensedApplication.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<LicensedApplication>() {
+           @Override
+           public void write(JsonWriter out, LicensedApplication value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public LicensedApplication read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of LicensedApplication given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of LicensedApplication
+   * @throws IOException if the JSON string is invalid with respect to LicensedApplication
+   */
+  public static LicensedApplication fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, LicensedApplication.class);
+  }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `plan` to the URL query string
-    if (getPlan() != null) {
-      joiner.add(String.format(Locale.ROOT, "%splan%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPlan()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of LicensedApplication to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,49 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * List of project permissions and the projects and issues those permissions grant access to.
  */
-@JsonPropertyOrder({
-  BulkProjectPermissionGrants.JSON_PROPERTY_ISSUES,
-  BulkProjectPermissionGrants.JSON_PROPERTY_PERMISSION,
-  BulkProjectPermissionGrants.JSON_PROPERTY_PROJECTS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class BulkProjectPermissionGrants {
-  public static final String JSON_PROPERTY_ISSUES = "issues";
+  public static final String SERIALIZED_NAME_ISSUES = "issues";
+  @SerializedName(SERIALIZED_NAME_ISSUES)
   @javax.annotation.Nonnull
   private Set<Long> issues = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_PERMISSION = "permission";
+  public static final String SERIALIZED_NAME_PERMISSION = "permission";
+  @SerializedName(SERIALIZED_NAME_PERMISSION)
   @javax.annotation.Nonnull
   private String permission;
 
-  public static final String JSON_PROPERTY_PROJECTS = "projects";
+  public static final String SERIALIZED_NAME_PROJECTS = "projects";
+  @SerializedName(SERIALIZED_NAME_PROJECTS)
   @javax.annotation.Nonnull
   private Set<Long> projects = new LinkedHashSet<>();
 
-  public BulkProjectPermissionGrants() { 
+  public BulkProjectPermissionGrants() {
   }
 
   public BulkProjectPermissionGrants issues(@javax.annotation.Nonnull Set<Long> issues) {
@@ -76,16 +90,10 @@ public class BulkProjectPermissionGrants {
    * @return issues
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ISSUES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Set<Long> getIssues() {
     return issues;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_ISSUES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIssues(@javax.annotation.Nonnull Set<Long> issues) {
     this.issues = issues;
   }
@@ -101,15 +109,10 @@ public class BulkProjectPermissionGrants {
    * @return permission
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getPermission() {
     return permission;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setPermission(@javax.annotation.Nonnull String permission) {
     this.permission = permission;
   }
@@ -133,24 +136,16 @@ public class BulkProjectPermissionGrants {
    * @return projects
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Set<Long> getProjects() {
     return projects;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_PROJECTS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setProjects(@javax.annotation.Nonnull Set<Long> projects) {
     this.projects = projects;
   }
 
 
-  /**
-   * Return true if this BulkProjectPermissionGrants object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -192,66 +187,110 @@ public class BulkProjectPermissionGrants {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issues", "permission", "projects"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("issues", "permission", "projects"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to BulkProjectPermissionGrants
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `issues` to the URL query string
-    if (getIssues() != null) {
-      int i = 0;
-      for (Long _item : getIssues()) {
-        joiner.add(String.format(Locale.ROOT, "%sissues%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!BulkProjectPermissionGrants.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in BulkProjectPermissionGrants is not found in the empty JSON string", BulkProjectPermissionGrants.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `permission` to the URL query string
-    if (getPermission() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spermission%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPermission()))));
-    }
-
-    // add `projects` to the URL query string
-    if (getProjects() != null) {
-      int i = 0;
-      for (Long _item : getProjects()) {
-        joiner.add(String.format(Locale.ROOT, "%sprojects%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!BulkProjectPermissionGrants.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `BulkProjectPermissionGrants` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-      i++;
-    }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : BulkProjectPermissionGrants.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the required json array is present
+      if (jsonObj.get("issues") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("issues").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issues` to be an array in the JSON string but got `%s`", jsonObj.get("issues").toString()));
+      }
+      if (!jsonObj.get("permission").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `permission` to be a primitive type in the JSON string but got `%s`", jsonObj.get("permission").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("projects") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("projects").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projects` to be an array in the JSON string but got `%s`", jsonObj.get("projects").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!BulkProjectPermissionGrants.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'BulkProjectPermissionGrants' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<BulkProjectPermissionGrants> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(BulkProjectPermissionGrants.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<BulkProjectPermissionGrants>() {
+           @Override
+           public void write(JsonWriter out, BulkProjectPermissionGrants value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public BulkProjectPermissionGrants read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of BulkProjectPermissionGrants given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of BulkProjectPermissionGrants
+   * @throws IOException if the JSON string is invalid with respect to BulkProjectPermissionGrants
+   */
+  public static BulkProjectPermissionGrants fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, BulkProjectPermissionGrants.class);
+  }
+
+  /**
+   * Convert an instance of BulkProjectPermissionGrants to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

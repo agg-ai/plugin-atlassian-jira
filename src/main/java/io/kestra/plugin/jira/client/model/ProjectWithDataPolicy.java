@@ -13,50 +13,64 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectDataPolicy;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about data policies for a project.
  */
-@JsonPropertyOrder({
-  ProjectWithDataPolicy.JSON_PROPERTY_DATA_POLICY,
-  ProjectWithDataPolicy.JSON_PROPERTY_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectWithDataPolicy {
-  public static final String JSON_PROPERTY_DATA_POLICY = "dataPolicy";
+  public static final String SERIALIZED_NAME_DATA_POLICY = "dataPolicy";
+  @SerializedName(SERIALIZED_NAME_DATA_POLICY)
   @javax.annotation.Nullable
   private ProjectDataPolicy dataPolicy;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public ProjectWithDataPolicy() { 
+  public ProjectWithDataPolicy() {
   }
 
-  @JsonCreator
   public ProjectWithDataPolicy(
-    @JsonProperty(JSON_PROPERTY_DATA_POLICY) ProjectDataPolicy dataPolicy, 
-    @JsonProperty(JSON_PROPERTY_ID) Long id
+     ProjectDataPolicy dataPolicy, 
+     Long id
   ) {
-  this();
+    this();
     this.dataPolicy = dataPolicy;
     this.id = id;
   }
@@ -66,12 +80,9 @@ public class ProjectWithDataPolicy {
    * @return dataPolicy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DATA_POLICY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectDataPolicy getDataPolicy() {
     return dataPolicy;
   }
-
 
 
 
@@ -80,8 +91,6 @@ public class ProjectWithDataPolicy {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
@@ -89,9 +98,6 @@ public class ProjectWithDataPolicy {
 
 
 
-  /**
-   * Return true if this ProjectWithDataPolicy object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -131,49 +137,92 @@ public class ProjectWithDataPolicy {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("dataPolicy", "id"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectWithDataPolicy
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectWithDataPolicy.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectWithDataPolicy is not found in the empty JSON string", ProjectWithDataPolicy.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectWithDataPolicy.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectWithDataPolicy` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `dataPolicy`
+      if (jsonObj.get("dataPolicy") != null && !jsonObj.get("dataPolicy").isJsonNull()) {
+        ProjectDataPolicy.validateJsonElement(jsonObj.get("dataPolicy"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectWithDataPolicy.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectWithDataPolicy' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectWithDataPolicy> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectWithDataPolicy.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ProjectWithDataPolicy>() {
+           @Override
+           public void write(JsonWriter out, ProjectWithDataPolicy value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectWithDataPolicy read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ProjectWithDataPolicy given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectWithDataPolicy
+   * @throws IOException if the JSON string is invalid with respect to ProjectWithDataPolicy
+   */
+  public static ProjectWithDataPolicy fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectWithDataPolicy.class);
+  }
 
-    // add `dataPolicy` to the URL query string
-    if (getDataPolicy() != null) {
-      joiner.add(getDataPolicy().toUrlQueryString(prefix + "dataPolicy" + suffix));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ProjectWithDataPolicy to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

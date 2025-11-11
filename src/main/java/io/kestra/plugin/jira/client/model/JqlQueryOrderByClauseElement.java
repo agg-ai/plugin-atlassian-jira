@@ -13,40 +13,54 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JqlQueryField;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * An element of the order-by JQL clause.
  */
-@JsonPropertyOrder({
-  JqlQueryOrderByClauseElement.JSON_PROPERTY_DIRECTION,
-  JqlQueryOrderByClauseElement.JSON_PROPERTY_FIELD
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JqlQueryOrderByClauseElement {
   /**
    * The direction in which to order the results.
    */
+  @JsonAdapter(DirectionEnum.Adapter.class)
   public enum DirectionEnum {
-    ASC(String.valueOf("asc")),
+    ASC("asc"),
     
-    DESC(String.valueOf("desc"));
+    DESC("desc");
 
     private String value;
 
@@ -54,7 +68,6 @@ public class JqlQueryOrderByClauseElement {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -64,7 +77,6 @@ public class JqlQueryOrderByClauseElement {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static DirectionEnum fromValue(String value) {
       for (DirectionEnum b : DirectionEnum.values()) {
         if (b.value.equals(value)) {
@@ -73,17 +85,37 @@ public class JqlQueryOrderByClauseElement {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<DirectionEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final DirectionEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public DirectionEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return DirectionEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      DirectionEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_DIRECTION = "direction";
+  public static final String SERIALIZED_NAME_DIRECTION = "direction";
+  @SerializedName(SERIALIZED_NAME_DIRECTION)
   @javax.annotation.Nullable
   private DirectionEnum direction;
 
-  public static final String JSON_PROPERTY_FIELD = "field";
+  public static final String SERIALIZED_NAME_FIELD = "field";
+  @SerializedName(SERIALIZED_NAME_FIELD)
   @javax.annotation.Nonnull
   private JqlQueryField field;
 
-  public JqlQueryOrderByClauseElement() { 
+  public JqlQueryOrderByClauseElement() {
   }
 
   public JqlQueryOrderByClauseElement direction(@javax.annotation.Nullable DirectionEnum direction) {
@@ -96,15 +128,10 @@ public class JqlQueryOrderByClauseElement {
    * @return direction
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DIRECTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DirectionEnum getDirection() {
     return direction;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DIRECTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDirection(@javax.annotation.Nullable DirectionEnum direction) {
     this.direction = direction;
   }
@@ -120,23 +147,16 @@ public class JqlQueryOrderByClauseElement {
    * @return field
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public JqlQueryField getField() {
     return field;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setField(@javax.annotation.Nonnull JqlQueryField field) {
     this.field = field;
   }
 
 
-  /**
-   * Return true if this JqlQueryOrderByClauseElement object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -176,49 +196,104 @@ public class JqlQueryOrderByClauseElement {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("direction", "field"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("field"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JqlQueryOrderByClauseElement
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JqlQueryOrderByClauseElement.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JqlQueryOrderByClauseElement is not found in the empty JSON string", JqlQueryOrderByClauseElement.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JqlQueryOrderByClauseElement.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JqlQueryOrderByClauseElement` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JqlQueryOrderByClauseElement.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("direction") != null && !jsonObj.get("direction").isJsonNull()) && !jsonObj.get("direction").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `direction` to be a primitive type in the JSON string but got `%s`", jsonObj.get("direction").toString()));
+      }
+      // validate the optional field `direction`
+      if (jsonObj.get("direction") != null && !jsonObj.get("direction").isJsonNull()) {
+        DirectionEnum.validateJsonElement(jsonObj.get("direction"));
+      }
+      // validate the required field `field`
+      JqlQueryField.validateJsonElement(jsonObj.get("field"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JqlQueryOrderByClauseElement.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JqlQueryOrderByClauseElement' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JqlQueryOrderByClauseElement> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JqlQueryOrderByClauseElement.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JqlQueryOrderByClauseElement>() {
+           @Override
+           public void write(JsonWriter out, JqlQueryOrderByClauseElement value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JqlQueryOrderByClauseElement read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of JqlQueryOrderByClauseElement given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JqlQueryOrderByClauseElement
+   * @throws IOException if the JSON string is invalid with respect to JqlQueryOrderByClauseElement
+   */
+  public static JqlQueryOrderByClauseElement fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JqlQueryOrderByClauseElement.class);
+  }
 
-    // add `direction` to the URL query string
-    if (getDirection() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdirection%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDirection()))));
-    }
-
-    // add `field` to the URL query string
-    if (getField() != null) {
-      joiner.add(getField().toUrlQueryString(prefix + "field" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JqlQueryOrderByClauseElement to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,18 +13,13 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.CompoundClause;
 import io.kestra.plugin.jira.client.model.FieldChangedClause;
 import io.kestra.plugin.jira.client.model.FieldValueClause;
@@ -32,122 +27,163 @@ import io.kestra.plugin.jira.client.model.FieldWasClause;
 import io.kestra.plugin.jira.client.model.JqlQueryClauseOperand;
 import io.kestra.plugin.jira.client.model.JqlQueryClauseTimePredicate;
 import io.kestra.plugin.jira.client.model.JqlQueryField;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+
 import io.kestra.plugin.jira.client.invoker.JSON;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-@JsonDeserialize(using=JqlQueryClause.JqlQueryClauseDeserializer.class)
-@JsonSerialize(using = JqlQueryClause.JqlQueryClauseSerializer.class)
 public class JqlQueryClause extends AbstractOpenApiSchema {
     private static final Logger log = Logger.getLogger(JqlQueryClause.class.getName());
 
-    public static class JqlQueryClauseSerializer extends StdSerializer<JqlQueryClause> {
-        public JqlQueryClauseSerializer(Class<JqlQueryClause> t) {
-            super(t);
-        }
-
-        public JqlQueryClauseSerializer() {
-            this(null);
-        }
-
+    public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
         @Override
-        public void serialize(JqlQueryClause value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeObject(value.getActualInstance());
-        }
-    }
-
-    public static class JqlQueryClauseDeserializer extends StdDeserializer<JqlQueryClause> {
-        public JqlQueryClauseDeserializer() {
-            this(JqlQueryClause.class);
-        }
-
-        public JqlQueryClauseDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public JqlQueryClause deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode tree = jp.readValueAsTree();
-
-            Object deserialized = null;
-            // deserialize CompoundClause
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(CompoundClause.class);
-                JqlQueryClause ret = new JqlQueryClause();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'JqlQueryClause'", e);
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (!JqlQueryClause.class.isAssignableFrom(type.getRawType())) {
+                return null; // this class only serializes 'JqlQueryClause' and its subtypes
             }
+            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+            final TypeAdapter<CompoundClause> adapterCompoundClause = gson.getDelegateAdapter(this, TypeToken.get(CompoundClause.class));
+            final TypeAdapter<FieldValueClause> adapterFieldValueClause = gson.getDelegateAdapter(this, TypeToken.get(FieldValueClause.class));
+            final TypeAdapter<FieldWasClause> adapterFieldWasClause = gson.getDelegateAdapter(this, TypeToken.get(FieldWasClause.class));
+            final TypeAdapter<FieldChangedClause> adapterFieldChangedClause = gson.getDelegateAdapter(this, TypeToken.get(FieldChangedClause.class));
 
-            // deserialize FieldChangedClause
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(FieldChangedClause.class);
-                JqlQueryClause ret = new JqlQueryClause();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'JqlQueryClause'", e);
-            }
+            return (TypeAdapter<T>) new TypeAdapter<JqlQueryClause>() {
+                @Override
+                public void write(JsonWriter out, JqlQueryClause value) throws IOException {
+                    if (value == null || value.getActualInstance() == null) {
+                        elementAdapter.write(out, null);
+                        return;
+                    }
 
-            // deserialize FieldValueClause
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(FieldValueClause.class);
-                JqlQueryClause ret = new JqlQueryClause();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'JqlQueryClause'", e);
-            }
+                    // check if the actual instance is of the type `CompoundClause`
+                    if (value.getActualInstance() instanceof CompoundClause) {
+                        JsonElement element = adapterCompoundClause.toJsonTree((CompoundClause)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    // check if the actual instance is of the type `FieldValueClause`
+                    if (value.getActualInstance() instanceof FieldValueClause) {
+                        JsonElement element = adapterFieldValueClause.toJsonTree((FieldValueClause)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    // check if the actual instance is of the type `FieldWasClause`
+                    if (value.getActualInstance() instanceof FieldWasClause) {
+                        JsonElement element = adapterFieldWasClause.toJsonTree((FieldWasClause)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    // check if the actual instance is of the type `FieldChangedClause`
+                    if (value.getActualInstance() instanceof FieldChangedClause) {
+                        JsonElement element = adapterFieldChangedClause.toJsonTree((FieldChangedClause)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    throw new IOException("Failed to serialize as the type doesn't match anyOf schemas: CompoundClause, FieldChangedClause, FieldValueClause, FieldWasClause");
+                }
 
-            // deserialize FieldWasClause
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(FieldWasClause.class);
-                JqlQueryClause ret = new JqlQueryClause();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'JqlQueryClause'", e);
-            }
+                @Override
+                public JqlQueryClause read(JsonReader in) throws IOException {
+                    Object deserialized = null;
+                    JsonElement jsonElement = elementAdapter.read(in);
 
-            throw new IOException("Failed deserialization for JqlQueryClause: no match found");
-        }
+                    ArrayList<String> errorMessages = new ArrayList<>();
+                    TypeAdapter actualAdapter = elementAdapter;
 
-        /**
-         * Handle deserialization of the 'null' value.
-         */
-        @Override
-        public JqlQueryClause getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "JqlQueryClause cannot be null");
+                    // deserialize CompoundClause
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        CompoundClause.validateJsonElement(jsonElement);
+                        actualAdapter = adapterCompoundClause;
+                        JqlQueryClause ret = new JqlQueryClause();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for CompoundClause failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'CompoundClause'", e);
+                    }
+                    // deserialize FieldValueClause
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        FieldValueClause.validateJsonElement(jsonElement);
+                        actualAdapter = adapterFieldValueClause;
+                        JqlQueryClause ret = new JqlQueryClause();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for FieldValueClause failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'FieldValueClause'", e);
+                    }
+                    // deserialize FieldWasClause
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        FieldWasClause.validateJsonElement(jsonElement);
+                        actualAdapter = adapterFieldWasClause;
+                        JqlQueryClause ret = new JqlQueryClause();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for FieldWasClause failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'FieldWasClause'", e);
+                    }
+                    // deserialize FieldChangedClause
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        FieldChangedClause.validateJsonElement(jsonElement);
+                        actualAdapter = adapterFieldChangedClause;
+                        JqlQueryClause ret = new JqlQueryClause();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for FieldChangedClause failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'FieldChangedClause'", e);
+                    }
+
+                    throw new IOException(String.format(Locale.ROOT, "Failed deserialization for JqlQueryClause: no class matches result, expected at least 1. Detailed failure message for anyOf schemas: %s. JSON: %s", errorMessages, jsonElement.toString()));
+                }
+            }.nullSafe();
         }
     }
 
@@ -158,32 +194,16 @@ public class JqlQueryClause extends AbstractOpenApiSchema {
         super("anyOf", Boolean.FALSE);
     }
 
-    public JqlQueryClause(CompoundClause o) {
-        super("anyOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public JqlQueryClause(FieldChangedClause o) {
-        super("anyOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public JqlQueryClause(FieldValueClause o) {
-        super("anyOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public JqlQueryClause(FieldWasClause o) {
+    public JqlQueryClause(Object o) {
         super("anyOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
     static {
         schemas.put("CompoundClause", CompoundClause.class);
-        schemas.put("FieldChangedClause", FieldChangedClause.class);
         schemas.put("FieldValueClause", FieldValueClause.class);
         schemas.put("FieldWasClause", FieldWasClause.class);
-        JSON.registerDescendants(JqlQueryClause.class, Collections.unmodifiableMap(schemas));
+        schemas.put("FieldChangedClause", FieldChangedClause.class);
     }
 
     @Override
@@ -197,26 +217,25 @@ public class JqlQueryClause extends AbstractOpenApiSchema {
      * CompoundClause, FieldChangedClause, FieldValueClause, FieldWasClause
      *
      * It could be an instance of the 'anyOf' schemas.
-     * The anyOf child schemas may themselves be a composed schema (allOf, anyOf, anyOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(CompoundClause.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof CompoundClause) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(FieldChangedClause.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof FieldValueClause) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(FieldValueClause.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof FieldWasClause) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(FieldWasClause.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof FieldChangedClause) {
             super.setActualInstance(instance);
             return;
         }
@@ -230,6 +249,7 @@ public class JqlQueryClause extends AbstractOpenApiSchema {
      *
      * @return The actual instance (CompoundClause, FieldChangedClause, FieldValueClause, FieldWasClause)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
@@ -244,17 +264,6 @@ public class JqlQueryClause extends AbstractOpenApiSchema {
      */
     public CompoundClause getCompoundClause() throws ClassCastException {
         return (CompoundClause)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `FieldChangedClause`. If the actual instance is not `FieldChangedClause`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `FieldChangedClause`
-     * @throws ClassCastException if the instance is not `FieldChangedClause`
-     */
-    public FieldChangedClause getFieldChangedClause() throws ClassCastException {
-        return (FieldChangedClause)super.getActualInstance();
     }
 
     /**
@@ -279,42 +288,79 @@ public class JqlQueryClause extends AbstractOpenApiSchema {
         return (FieldWasClause)super.getActualInstance();
     }
 
-
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
-  }
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @param prefix prefix of the query string
-   * @return URL query string
-   */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+    /**
+     * Get the actual instance of `FieldChangedClause`. If the actual instance is not `FieldChangedClause`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `FieldChangedClause`
+     * @throws ClassCastException if the instance is not `FieldChangedClause`
+     */
+    public FieldChangedClause getFieldChangedClause() throws ClassCastException {
+        return (FieldChangedClause)super.getActualInstance();
     }
 
-    StringJoiner joiner = new StringJoiner("&");
+    /**
+     * Validates the JSON Element and throws an exception if issues found
+     *
+     * @param jsonElement JSON Element
+     * @throws IOException if the JSON Element is invalid with respect to JqlQueryClause
+     */
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+        // validate anyOf schemas one by one
+        ArrayList<String> errorMessages = new ArrayList<>();
+        // validate the json string with CompoundClause
+        try {
+            CompoundClause.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for CompoundClause failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with FieldValueClause
+        try {
+            FieldValueClause.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for FieldValueClause failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with FieldWasClause
+        try {
+            FieldWasClause.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for FieldWasClause failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with FieldChangedClause
+        try {
+            FieldChangedClause.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for FieldChangedClause failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        throw new IOException(String.format(Locale.ROOT, "The JSON string is invalid for JqlQueryClause with anyOf schemas: CompoundClause, FieldChangedClause, FieldValueClause, FieldWasClause. no class match the result, expected at least 1. Detailed failure message for anyOf schemas: %s. JSON: %s", errorMessages, jsonElement.toString()));
+    }
 
-    return null;
-  }
+    /**
+     * Create an instance of JqlQueryClause given an JSON string
+     *
+     * @param jsonString JSON string
+     * @return An instance of JqlQueryClause
+     * @throws IOException if the JSON string is invalid with respect to JqlQueryClause
+     */
+    public static JqlQueryClause fromJson(String jsonString) throws IOException {
+        return JSON.getGson().fromJson(jsonString, JqlQueryClause.class);
+    }
 
+    /**
+     * Convert an instance of JqlQueryClause to an JSON string
+     *
+     * @return JSON string
+     */
+    public String toJson() {
+        return JSON.getGson().toJson(this);
+    }
 }
 

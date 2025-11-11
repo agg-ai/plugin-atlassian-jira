@@ -13,49 +13,55 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a field that can be used in advanced searches.
  */
-@JsonPropertyOrder({
-  FieldReferenceData.JSON_PROPERTY_AUTO,
-  FieldReferenceData.JSON_PROPERTY_CFID,
-  FieldReferenceData.JSON_PROPERTY_DEPRECATED,
-  FieldReferenceData.JSON_PROPERTY_DEPRECATED_SEARCHER_KEY,
-  FieldReferenceData.JSON_PROPERTY_DISPLAY_NAME,
-  FieldReferenceData.JSON_PROPERTY_OPERATORS,
-  FieldReferenceData.JSON_PROPERTY_ORDERABLE,
-  FieldReferenceData.JSON_PROPERTY_SEARCHABLE,
-  FieldReferenceData.JSON_PROPERTY_TYPES,
-  FieldReferenceData.JSON_PROPERTY_VALUE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class FieldReferenceData {
   /**
    * Whether the field provide auto-complete suggestions.
    */
+  @JsonAdapter(AutoEnum.Adapter.class)
   public enum AutoEnum {
-    TRUE(String.valueOf("true")),
+    TRUE("true"),
     
-    FALSE(String.valueOf("false"));
+    FALSE("false");
 
     private String value;
 
@@ -63,7 +69,6 @@ public class FieldReferenceData {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -73,7 +78,6 @@ public class FieldReferenceData {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static AutoEnum fromValue(String value) {
       for (AutoEnum b : AutoEnum.values()) {
         if (b.value.equals(value)) {
@@ -82,23 +86,44 @@ public class FieldReferenceData {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<AutoEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final AutoEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public AutoEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return AutoEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      AutoEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_AUTO = "auto";
+  public static final String SERIALIZED_NAME_AUTO = "auto";
+  @SerializedName(SERIALIZED_NAME_AUTO)
   @javax.annotation.Nullable
   private AutoEnum auto;
 
-  public static final String JSON_PROPERTY_CFID = "cfid";
+  public static final String SERIALIZED_NAME_CFID = "cfid";
+  @SerializedName(SERIALIZED_NAME_CFID)
   @javax.annotation.Nullable
   private String cfid;
 
   /**
    * Whether this field has been deprecated.
    */
+  @JsonAdapter(DeprecatedEnum.Adapter.class)
   public enum DeprecatedEnum {
-    TRUE(String.valueOf("true")),
+    TRUE("true"),
     
-    FALSE(String.valueOf("false"));
+    FALSE("false");
 
     private String value;
 
@@ -106,7 +131,6 @@ public class FieldReferenceData {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -116,7 +140,6 @@ public class FieldReferenceData {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static DeprecatedEnum fromValue(String value) {
       for (DeprecatedEnum b : DeprecatedEnum.values()) {
         if (b.value.equals(value)) {
@@ -125,31 +148,54 @@ public class FieldReferenceData {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<DeprecatedEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final DeprecatedEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public DeprecatedEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return DeprecatedEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      DeprecatedEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_DEPRECATED = "deprecated";
+  public static final String SERIALIZED_NAME_DEPRECATED = "deprecated";
+  @SerializedName(SERIALIZED_NAME_DEPRECATED)
   @javax.annotation.Nullable
   private DeprecatedEnum deprecated;
 
-  public static final String JSON_PROPERTY_DEPRECATED_SEARCHER_KEY = "deprecatedSearcherKey";
+  public static final String SERIALIZED_NAME_DEPRECATED_SEARCHER_KEY = "deprecatedSearcherKey";
+  @SerializedName(SERIALIZED_NAME_DEPRECATED_SEARCHER_KEY)
   @javax.annotation.Nullable
   private String deprecatedSearcherKey;
 
-  public static final String JSON_PROPERTY_DISPLAY_NAME = "displayName";
+  public static final String SERIALIZED_NAME_DISPLAY_NAME = "displayName";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_NAME)
   @javax.annotation.Nullable
   private String displayName;
 
-  public static final String JSON_PROPERTY_OPERATORS = "operators";
+  public static final String SERIALIZED_NAME_OPERATORS = "operators";
+  @SerializedName(SERIALIZED_NAME_OPERATORS)
   @javax.annotation.Nullable
   private List<String> operators = new ArrayList<>();
 
   /**
    * Whether the field can be used in a query&#39;s &#x60;ORDER BY&#x60; clause.
    */
+  @JsonAdapter(OrderableEnum.Adapter.class)
   public enum OrderableEnum {
-    TRUE(String.valueOf("true")),
+    TRUE("true"),
     
-    FALSE(String.valueOf("false"));
+    FALSE("false");
 
     private String value;
 
@@ -157,7 +203,6 @@ public class FieldReferenceData {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -167,7 +212,6 @@ public class FieldReferenceData {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static OrderableEnum fromValue(String value) {
       for (OrderableEnum b : OrderableEnum.values()) {
         if (b.value.equals(value)) {
@@ -176,19 +220,39 @@ public class FieldReferenceData {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<OrderableEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final OrderableEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public OrderableEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return OrderableEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      OrderableEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ORDERABLE = "orderable";
+  public static final String SERIALIZED_NAME_ORDERABLE = "orderable";
+  @SerializedName(SERIALIZED_NAME_ORDERABLE)
   @javax.annotation.Nullable
   private OrderableEnum orderable;
 
   /**
    * Whether the content of this field can be searched.
    */
+  @JsonAdapter(SearchableEnum.Adapter.class)
   public enum SearchableEnum {
-    TRUE(String.valueOf("true")),
+    TRUE("true"),
     
-    FALSE(String.valueOf("false"));
+    FALSE("false");
 
     private String value;
 
@@ -196,7 +260,6 @@ public class FieldReferenceData {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -206,7 +269,6 @@ public class FieldReferenceData {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static SearchableEnum fromValue(String value) {
       for (SearchableEnum b : SearchableEnum.values()) {
         if (b.value.equals(value)) {
@@ -215,21 +277,42 @@ public class FieldReferenceData {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<SearchableEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final SearchableEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public SearchableEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return SearchableEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      SearchableEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_SEARCHABLE = "searchable";
+  public static final String SERIALIZED_NAME_SEARCHABLE = "searchable";
+  @SerializedName(SERIALIZED_NAME_SEARCHABLE)
   @javax.annotation.Nullable
   private SearchableEnum searchable;
 
-  public static final String JSON_PROPERTY_TYPES = "types";
+  public static final String SERIALIZED_NAME_TYPES = "types";
+  @SerializedName(SERIALIZED_NAME_TYPES)
   @javax.annotation.Nullable
   private List<String> types = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_VALUE = "value";
+  public static final String SERIALIZED_NAME_VALUE = "value";
+  @SerializedName(SERIALIZED_NAME_VALUE)
   @javax.annotation.Nullable
   private String value;
 
-  public FieldReferenceData() { 
+  public FieldReferenceData() {
   }
 
   public FieldReferenceData auto(@javax.annotation.Nullable AutoEnum auto) {
@@ -242,15 +325,10 @@ public class FieldReferenceData {
    * @return auto
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AutoEnum getAuto() {
     return auto;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_AUTO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAuto(@javax.annotation.Nullable AutoEnum auto) {
     this.auto = auto;
   }
@@ -266,15 +344,10 @@ public class FieldReferenceData {
    * @return cfid
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CFID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCfid() {
     return cfid;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CFID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCfid(@javax.annotation.Nullable String cfid) {
     this.cfid = cfid;
   }
@@ -290,15 +363,10 @@ public class FieldReferenceData {
    * @return deprecated
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEPRECATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DeprecatedEnum getDeprecated() {
     return deprecated;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEPRECATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeprecated(@javax.annotation.Nullable DeprecatedEnum deprecated) {
     this.deprecated = deprecated;
   }
@@ -314,15 +382,10 @@ public class FieldReferenceData {
    * @return deprecatedSearcherKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEPRECATED_SEARCHER_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeprecatedSearcherKey() {
     return deprecatedSearcherKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEPRECATED_SEARCHER_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeprecatedSearcherKey(@javax.annotation.Nullable String deprecatedSearcherKey) {
     this.deprecatedSearcherKey = deprecatedSearcherKey;
   }
@@ -338,15 +401,10 @@ public class FieldReferenceData {
    * @return displayName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayName() {
     return displayName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayName(@javax.annotation.Nullable String displayName) {
     this.displayName = displayName;
   }
@@ -370,15 +428,10 @@ public class FieldReferenceData {
    * @return operators
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getOperators() {
     return operators;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPERATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOperators(@javax.annotation.Nullable List<String> operators) {
     this.operators = operators;
   }
@@ -394,15 +447,10 @@ public class FieldReferenceData {
    * @return orderable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ORDERABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OrderableEnum getOrderable() {
     return orderable;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ORDERABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOrderable(@javax.annotation.Nullable OrderableEnum orderable) {
     this.orderable = orderable;
   }
@@ -418,15 +466,10 @@ public class FieldReferenceData {
    * @return searchable
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SEARCHABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SearchableEnum getSearchable() {
     return searchable;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SEARCHABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearchable(@javax.annotation.Nullable SearchableEnum searchable) {
     this.searchable = searchable;
   }
@@ -450,15 +493,10 @@ public class FieldReferenceData {
    * @return types
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getTypes() {
     return types;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypes(@javax.annotation.Nullable List<String> types) {
     this.types = types;
   }
@@ -474,23 +512,16 @@ public class FieldReferenceData {
    * @return value
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getValue() {
     return value;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValue(@javax.annotation.Nullable String value) {
     this.value = value;
   }
 
 
-  /**
-   * Return true if this FieldReferenceData object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -546,97 +577,136 @@ public class FieldReferenceData {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("auto", "cfid", "deprecated", "deprecatedSearcherKey", "displayName", "operators", "orderable", "searchable", "types", "value"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to FieldReferenceData
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `auto` to the URL query string
-    if (getAuto() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sauto%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAuto()))));
-    }
-
-    // add `cfid` to the URL query string
-    if (getCfid() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scfid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCfid()))));
-    }
-
-    // add `deprecated` to the URL query string
-    if (getDeprecated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdeprecated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeprecated()))));
-    }
-
-    // add `deprecatedSearcherKey` to the URL query string
-    if (getDeprecatedSearcherKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdeprecatedSearcherKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeprecatedSearcherKey()))));
-    }
-
-    // add `displayName` to the URL query string
-    if (getDisplayName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-    }
-
-    // add `operators` to the URL query string
-    if (getOperators() != null) {
-      for (int i = 0; i < getOperators().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%soperators%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getOperators().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!FieldReferenceData.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in FieldReferenceData is not found in the empty JSON string", FieldReferenceData.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `orderable` to the URL query string
-    if (getOrderable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sorderable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOrderable()))));
-    }
-
-    // add `searchable` to the URL query string
-    if (getSearchable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssearchable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSearchable()))));
-    }
-
-    // add `types` to the URL query string
-    if (getTypes() != null) {
-      for (int i = 0; i < getTypes().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%stypes%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getTypes().get(i)))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!FieldReferenceData.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `FieldReferenceData` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("auto") != null && !jsonObj.get("auto").isJsonNull()) && !jsonObj.get("auto").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `auto` to be a primitive type in the JSON string but got `%s`", jsonObj.get("auto").toString()));
+      }
+      // validate the optional field `auto`
+      if (jsonObj.get("auto") != null && !jsonObj.get("auto").isJsonNull()) {
+        AutoEnum.validateJsonElement(jsonObj.get("auto"));
+      }
+      if ((jsonObj.get("cfid") != null && !jsonObj.get("cfid").isJsonNull()) && !jsonObj.get("cfid").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `cfid` to be a primitive type in the JSON string but got `%s`", jsonObj.get("cfid").toString()));
+      }
+      if ((jsonObj.get("deprecated") != null && !jsonObj.get("deprecated").isJsonNull()) && !jsonObj.get("deprecated").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `deprecated` to be a primitive type in the JSON string but got `%s`", jsonObj.get("deprecated").toString()));
+      }
+      // validate the optional field `deprecated`
+      if (jsonObj.get("deprecated") != null && !jsonObj.get("deprecated").isJsonNull()) {
+        DeprecatedEnum.validateJsonElement(jsonObj.get("deprecated"));
+      }
+      if ((jsonObj.get("deprecatedSearcherKey") != null && !jsonObj.get("deprecatedSearcherKey").isJsonNull()) && !jsonObj.get("deprecatedSearcherKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `deprecatedSearcherKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("deprecatedSearcherKey").toString()));
+      }
+      if ((jsonObj.get("displayName") != null && !jsonObj.get("displayName").isJsonNull()) && !jsonObj.get("displayName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayName").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("operators") != null && !jsonObj.get("operators").isJsonNull() && !jsonObj.get("operators").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `operators` to be an array in the JSON string but got `%s`", jsonObj.get("operators").toString()));
+      }
+      if ((jsonObj.get("orderable") != null && !jsonObj.get("orderable").isJsonNull()) && !jsonObj.get("orderable").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `orderable` to be a primitive type in the JSON string but got `%s`", jsonObj.get("orderable").toString()));
+      }
+      // validate the optional field `orderable`
+      if (jsonObj.get("orderable") != null && !jsonObj.get("orderable").isJsonNull()) {
+        OrderableEnum.validateJsonElement(jsonObj.get("orderable"));
+      }
+      if ((jsonObj.get("searchable") != null && !jsonObj.get("searchable").isJsonNull()) && !jsonObj.get("searchable").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `searchable` to be a primitive type in the JSON string but got `%s`", jsonObj.get("searchable").toString()));
+      }
+      // validate the optional field `searchable`
+      if (jsonObj.get("searchable") != null && !jsonObj.get("searchable").isJsonNull()) {
+        SearchableEnum.validateJsonElement(jsonObj.get("searchable"));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("types") != null && !jsonObj.get("types").isJsonNull() && !jsonObj.get("types").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `types` to be an array in the JSON string but got `%s`", jsonObj.get("types").toString()));
+      }
+      if ((jsonObj.get("value") != null && !jsonObj.get("value").isJsonNull()) && !jsonObj.get("value").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `value` to be a primitive type in the JSON string but got `%s`", jsonObj.get("value").toString()));
+      }
+  }
 
-    // add `value` to the URL query string
-    if (getValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!FieldReferenceData.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'FieldReferenceData' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<FieldReferenceData> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(FieldReferenceData.class));
 
-    return joiner.toString();
+       return (TypeAdapter<T>) new TypeAdapter<FieldReferenceData>() {
+           @Override
+           public void write(JsonWriter out, FieldReferenceData value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public FieldReferenceData read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of FieldReferenceData given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of FieldReferenceData
+   * @throws IOException if the JSON string is invalid with respect to FieldReferenceData
+   */
+  public static FieldReferenceData fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, FieldReferenceData.class);
+  }
+
+  /**
+   * Convert an instance of FieldReferenceData to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

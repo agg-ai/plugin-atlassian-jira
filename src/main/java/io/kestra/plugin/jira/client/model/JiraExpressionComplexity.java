@@ -13,43 +13,58 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the complexity of the analysed Jira expression.
  */
-@JsonPropertyOrder({
-  JiraExpressionComplexity.JSON_PROPERTY_EXPENSIVE_OPERATIONS,
-  JiraExpressionComplexity.JSON_PROPERTY_VARIABLES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraExpressionComplexity {
-  public static final String JSON_PROPERTY_EXPENSIVE_OPERATIONS = "expensiveOperations";
+  public static final String SERIALIZED_NAME_EXPENSIVE_OPERATIONS = "expensiveOperations";
+  @SerializedName(SERIALIZED_NAME_EXPENSIVE_OPERATIONS)
   @javax.annotation.Nonnull
   private String expensiveOperations;
 
-  public static final String JSON_PROPERTY_VARIABLES = "variables";
+  public static final String SERIALIZED_NAME_VARIABLES = "variables";
+  @SerializedName(SERIALIZED_NAME_VARIABLES)
   @javax.annotation.Nullable
   private Map<String, String> variables = new HashMap<>();
 
-  public JiraExpressionComplexity() { 
+  public JiraExpressionComplexity() {
   }
 
   public JiraExpressionComplexity expensiveOperations(@javax.annotation.Nonnull String expensiveOperations) {
@@ -62,15 +77,10 @@ public class JiraExpressionComplexity {
    * @return expensiveOperations
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EXPENSIVE_OPERATIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getExpensiveOperations() {
     return expensiveOperations;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPENSIVE_OPERATIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setExpensiveOperations(@javax.annotation.Nonnull String expensiveOperations) {
     this.expensiveOperations = expensiveOperations;
   }
@@ -94,23 +104,16 @@ public class JiraExpressionComplexity {
    * @return variables
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VARIABLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getVariables() {
     return variables;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VARIABLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVariables(@javax.annotation.Nullable Map<String, String> variables) {
     this.variables = variables;
   }
 
 
-  /**
-   * Return true if this JiraExpressionComplexity object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -150,53 +153,98 @@ public class JiraExpressionComplexity {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("expensiveOperations", "variables"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("expensiveOperations"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraExpressionComplexity
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `expensiveOperations` to the URL query string
-    if (getExpensiveOperations() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpensiveOperations%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpensiveOperations()))));
-    }
-
-    // add `variables` to the URL query string
-    if (getVariables() != null) {
-      for (String _key : getVariables().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%svariables%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getVariables().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getVariables().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraExpressionComplexity.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraExpressionComplexity is not found in the empty JSON string", JiraExpressionComplexity.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraExpressionComplexity.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraExpressionComplexity` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraExpressionComplexity.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("expensiveOperations").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expensiveOperations` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expensiveOperations").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraExpressionComplexity.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraExpressionComplexity' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraExpressionComplexity> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraExpressionComplexity.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraExpressionComplexity>() {
+           @Override
+           public void write(JsonWriter out, JiraExpressionComplexity value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraExpressionComplexity read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JiraExpressionComplexity given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraExpressionComplexity
+   * @throws IOException if the JSON string is invalid with respect to JiraExpressionComplexity
+   */
+  public static JiraExpressionComplexity fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraExpressionComplexity.class);
+  }
+
+  /**
+   * Convert an instance of JiraExpressionComplexity to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,71 +13,86 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * An issue priority with sequence information.
  */
-@JsonPropertyOrder({
-  PriorityWithSequence.JSON_PROPERTY_DESCRIPTION,
-  PriorityWithSequence.JSON_PROPERTY_ICON_URL,
-  PriorityWithSequence.JSON_PROPERTY_ID,
-  PriorityWithSequence.JSON_PROPERTY_IS_DEFAULT,
-  PriorityWithSequence.JSON_PROPERTY_NAME,
-  PriorityWithSequence.JSON_PROPERTY_SELF,
-  PriorityWithSequence.JSON_PROPERTY_SEQUENCE,
-  PriorityWithSequence.JSON_PROPERTY_STATUS_COLOR
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class PriorityWithSequence {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ICON_URL = "iconUrl";
+  public static final String SERIALIZED_NAME_ICON_URL = "iconUrl";
+  @SerializedName(SERIALIZED_NAME_ICON_URL)
   @javax.annotation.Nullable
   private String iconUrl;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_IS_DEFAULT = "isDefault";
+  public static final String SERIALIZED_NAME_IS_DEFAULT = "isDefault";
+  @SerializedName(SERIALIZED_NAME_IS_DEFAULT)
   @javax.annotation.Nullable
   private Boolean isDefault;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public static final String JSON_PROPERTY_SEQUENCE = "sequence";
+  public static final String SERIALIZED_NAME_SEQUENCE = "sequence";
+  @SerializedName(SERIALIZED_NAME_SEQUENCE)
   @javax.annotation.Nullable
   private String sequence;
 
-  public static final String JSON_PROPERTY_STATUS_COLOR = "statusColor";
+  public static final String SERIALIZED_NAME_STATUS_COLOR = "statusColor";
+  @SerializedName(SERIALIZED_NAME_STATUS_COLOR)
   @javax.annotation.Nullable
   private String statusColor;
 
-  public PriorityWithSequence() { 
+  public PriorityWithSequence() {
   }
 
   public PriorityWithSequence description(@javax.annotation.Nullable String description) {
@@ -90,15 +105,10 @@ public class PriorityWithSequence {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -114,15 +124,10 @@ public class PriorityWithSequence {
    * @return iconUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIconUrl() {
     return iconUrl;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIconUrl(@javax.annotation.Nullable String iconUrl) {
     this.iconUrl = iconUrl;
   }
@@ -138,15 +143,10 @@ public class PriorityWithSequence {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -162,15 +162,10 @@ public class PriorityWithSequence {
    * @return isDefault
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsDefault() {
     return isDefault;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsDefault(@javax.annotation.Nullable Boolean isDefault) {
     this.isDefault = isDefault;
   }
@@ -186,15 +181,10 @@ public class PriorityWithSequence {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -210,15 +200,10 @@ public class PriorityWithSequence {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSelf(@javax.annotation.Nullable String self) {
     this.self = self;
   }
@@ -234,15 +219,10 @@ public class PriorityWithSequence {
    * @return sequence
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SEQUENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSequence() {
     return sequence;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SEQUENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSequence(@javax.annotation.Nullable String sequence) {
     this.sequence = sequence;
   }
@@ -258,23 +238,16 @@ public class PriorityWithSequence {
    * @return statusColor
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_COLOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStatusColor() {
     return statusColor;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_COLOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusColor(@javax.annotation.Nullable String statusColor) {
     this.statusColor = statusColor;
   }
 
 
-  /**
-   * Return true if this PriorityWithSequence object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -326,79 +299,109 @@ public class PriorityWithSequence {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "iconUrl", "id", "isDefault", "name", "self", "sequence", "statusColor"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to PriorityWithSequence
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!PriorityWithSequence.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in PriorityWithSequence is not found in the empty JSON string", PriorityWithSequence.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!PriorityWithSequence.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `PriorityWithSequence` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("iconUrl") != null && !jsonObj.get("iconUrl").isJsonNull()) && !jsonObj.get("iconUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `iconUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("iconUrl").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("sequence") != null && !jsonObj.get("sequence").isJsonNull()) && !jsonObj.get("sequence").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `sequence` to be a primitive type in the JSON string but got `%s`", jsonObj.get("sequence").toString()));
+      }
+      if ((jsonObj.get("statusColor") != null && !jsonObj.get("statusColor").isJsonNull()) && !jsonObj.get("statusColor").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusColor` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusColor").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!PriorityWithSequence.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'PriorityWithSequence' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<PriorityWithSequence> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(PriorityWithSequence.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<PriorityWithSequence>() {
+           @Override
+           public void write(JsonWriter out, PriorityWithSequence value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public PriorityWithSequence read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of PriorityWithSequence given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of PriorityWithSequence
+   * @throws IOException if the JSON string is invalid with respect to PriorityWithSequence
+   */
+  public static PriorityWithSequence fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, PriorityWithSequence.class);
+  }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `iconUrl` to the URL query string
-    if (getIconUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%siconUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `isDefault` to the URL query string
-    if (getIsDefault() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisDefault%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsDefault()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `sequence` to the URL query string
-    if (getSequence() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssequence%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSequence()))));
-    }
-
-    // add `statusColor` to the URL query string
-    if (getStatusColor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusColor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusColor()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of PriorityWithSequence to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

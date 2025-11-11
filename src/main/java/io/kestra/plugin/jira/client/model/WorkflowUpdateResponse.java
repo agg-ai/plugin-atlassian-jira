@@ -13,54 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraWorkflow;
 import io.kestra.plugin.jira.client.model.JiraWorkflowStatus;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * WorkflowUpdateResponse
  */
-@JsonPropertyOrder({
-  WorkflowUpdateResponse.JSON_PROPERTY_STATUSES,
-  WorkflowUpdateResponse.JSON_PROPERTY_TASK_ID,
-  WorkflowUpdateResponse.JSON_PROPERTY_WORKFLOWS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowUpdateResponse {
-  public static final String JSON_PROPERTY_STATUSES = "statuses";
+  public static final String SERIALIZED_NAME_STATUSES = "statuses";
+  @SerializedName(SERIALIZED_NAME_STATUSES)
   @javax.annotation.Nullable
   private Set<JiraWorkflowStatus> statuses = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_TASK_ID = "taskId";
-  private JsonNullable<String> taskId = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_TASK_ID = "taskId";
+  @SerializedName(SERIALIZED_NAME_TASK_ID)
+  @javax.annotation.Nullable
+  private String taskId;
 
-  public static final String JSON_PROPERTY_WORKFLOWS = "workflows";
+  public static final String SERIALIZED_NAME_WORKFLOWS = "workflows";
+  @SerializedName(SERIALIZED_NAME_WORKFLOWS)
   @javax.annotation.Nullable
   private Set<JiraWorkflow> workflows = new LinkedHashSet<>();
 
-  public WorkflowUpdateResponse() { 
+  public WorkflowUpdateResponse() {
   }
 
   public WorkflowUpdateResponse statuses(@javax.annotation.Nullable Set<JiraWorkflowStatus> statuses) {
@@ -81,23 +93,17 @@ public class WorkflowUpdateResponse {
    * @return statuses
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUSES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<JiraWorkflowStatus> getStatuses() {
     return statuses;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_STATUSES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatuses(@javax.annotation.Nullable Set<JiraWorkflowStatus> statuses) {
     this.statuses = statuses;
   }
 
 
   public WorkflowUpdateResponse taskId(@javax.annotation.Nullable String taskId) {
-    this.taskId = JsonNullable.<String>of(taskId);
+    this.taskId = taskId;
     return this;
   }
 
@@ -106,25 +112,12 @@ public class WorkflowUpdateResponse {
    * @return taskId
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getTaskId() {
-        return taskId.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_TASK_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getTaskId_JsonNullable() {
     return taskId;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TASK_ID)
-  public void setTaskId_JsonNullable(JsonNullable<String> taskId) {
-    this.taskId = taskId;
   }
 
   public void setTaskId(@javax.annotation.Nullable String taskId) {
-    this.taskId = JsonNullable.<String>of(taskId);
+    this.taskId = taskId;
   }
 
 
@@ -146,24 +139,16 @@ public class WorkflowUpdateResponse {
    * @return workflows
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOWS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<JiraWorkflow> getWorkflows() {
     return workflows;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOWS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkflows(@javax.annotation.Nullable Set<JiraWorkflow> workflows) {
     this.workflows = workflows;
   }
 
 
-  /**
-   * Return true if this WorkflowUpdateResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -174,7 +159,7 @@ public class WorkflowUpdateResponse {
     }
     WorkflowUpdateResponse workflowUpdateResponse = (WorkflowUpdateResponse) o;
     return Objects.equals(this.statuses, workflowUpdateResponse.statuses) &&
-        equalsNullable(this.taskId, workflowUpdateResponse.taskId) &&
+        Objects.equals(this.taskId, workflowUpdateResponse.taskId) &&
         Objects.equals(this.workflows, workflowUpdateResponse.workflows);
   }
 
@@ -184,7 +169,7 @@ public class WorkflowUpdateResponse {
 
   @Override
   public int hashCode() {
-    return Objects.hash(statuses, hashCodeNullable(taskId), workflows);
+    return Objects.hash(statuses, taskId, workflows);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -216,68 +201,119 @@ public class WorkflowUpdateResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("statuses", "taskId", "workflows"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowUpdateResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `statuses` to the URL query string
-    if (getStatuses() != null) {
-      int i = 0;
-      for (JiraWorkflowStatus _item : getStatuses()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%sstatuses%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowUpdateResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowUpdateResponse is not found in the empty JSON string", WorkflowUpdateResponse.openapiRequiredFields.toString()));
         }
       }
-      i++;
-    }
 
-    // add `taskId` to the URL query string
-    if (getTaskId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%staskId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTaskId()))));
-    }
-
-    // add `workflows` to the URL query string
-    if (getWorkflows() != null) {
-      int i = 0;
-      for (JiraWorkflow _item : getWorkflows()) {
-        if (_item != null) {
-          joiner.add(_item.toUrlQueryString(String.format(Locale.ROOT, "%sworkflows%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowUpdateResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowUpdateResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-      i++;
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("statuses") != null && !jsonObj.get("statuses").isJsonNull()) {
+        JsonArray jsonArraystatuses = jsonObj.getAsJsonArray("statuses");
+        if (jsonArraystatuses != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("statuses").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statuses` to be an array in the JSON string but got `%s`", jsonObj.get("statuses").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `statuses` (array)
+          for (int i = 0; i < jsonArraystatuses.size(); i++) {
+            JiraWorkflowStatus.validateJsonElement(jsonArraystatuses.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("taskId") != null && !jsonObj.get("taskId").isJsonNull()) && !jsonObj.get("taskId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `taskId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("taskId").toString()));
+      }
+      if (jsonObj.get("workflows") != null && !jsonObj.get("workflows").isJsonNull()) {
+        JsonArray jsonArrayworkflows = jsonObj.getAsJsonArray("workflows");
+        if (jsonArrayworkflows != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("workflows").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `workflows` to be an array in the JSON string but got `%s`", jsonObj.get("workflows").toString()));
+          }
+
+          // validate the optional field `workflows` (array)
+          for (int i = 0; i < jsonArrayworkflows.size(); i++) {
+            JiraWorkflow.validateJsonElement(jsonArrayworkflows.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowUpdateResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowUpdateResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowUpdateResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowUpdateResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowUpdateResponse>() {
+           @Override
+           public void write(JsonWriter out, WorkflowUpdateResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowUpdateResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowUpdateResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowUpdateResponse
+   * @throws IOException if the JSON string is invalid with respect to WorkflowUpdateResponse
+   */
+  public static WorkflowUpdateResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowUpdateResponse.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowUpdateResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

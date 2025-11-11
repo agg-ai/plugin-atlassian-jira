@@ -13,66 +13,80 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ApprovalConfiguration;
 import io.kestra.plugin.jira.client.model.WorkflowStatusLayout;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The statuses referenced in the workflow.
  */
-@JsonPropertyOrder({
-  WorkflowReferenceStatus.JSON_PROPERTY_APPROVAL_CONFIGURATION,
-  WorkflowReferenceStatus.JSON_PROPERTY_DEPRECATED,
-  WorkflowReferenceStatus.JSON_PROPERTY_LAYOUT,
-  WorkflowReferenceStatus.JSON_PROPERTY_PROPERTIES,
-  WorkflowReferenceStatus.JSON_PROPERTY_STATUS_REFERENCE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowReferenceStatus {
-  public static final String JSON_PROPERTY_APPROVAL_CONFIGURATION = "approvalConfiguration";
-  private JsonNullable<ApprovalConfiguration> approvalConfiguration = JsonNullable.<ApprovalConfiguration>undefined();
+  public static final String SERIALIZED_NAME_APPROVAL_CONFIGURATION = "approvalConfiguration";
+  @SerializedName(SERIALIZED_NAME_APPROVAL_CONFIGURATION)
+  @javax.annotation.Nullable
+  private ApprovalConfiguration approvalConfiguration;
 
-  public static final String JSON_PROPERTY_DEPRECATED = "deprecated";
+  public static final String SERIALIZED_NAME_DEPRECATED = "deprecated";
+  @SerializedName(SERIALIZED_NAME_DEPRECATED)
   @javax.annotation.Nullable
   private Boolean deprecated;
 
-  public static final String JSON_PROPERTY_LAYOUT = "layout";
-  private JsonNullable<WorkflowStatusLayout> layout = JsonNullable.<WorkflowStatusLayout>undefined();
+  public static final String SERIALIZED_NAME_LAYOUT = "layout";
+  @SerializedName(SERIALIZED_NAME_LAYOUT)
+  @javax.annotation.Nullable
+  private WorkflowStatusLayout layout;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private Map<String, String> properties = new HashMap<>();
 
-  public static final String JSON_PROPERTY_STATUS_REFERENCE = "statusReference";
+  public static final String SERIALIZED_NAME_STATUS_REFERENCE = "statusReference";
+  @SerializedName(SERIALIZED_NAME_STATUS_REFERENCE)
   @javax.annotation.Nullable
   private String statusReference;
 
-  public WorkflowReferenceStatus() { 
+  public WorkflowReferenceStatus() {
   }
 
   public WorkflowReferenceStatus approvalConfiguration(@javax.annotation.Nullable ApprovalConfiguration approvalConfiguration) {
-    this.approvalConfiguration = JsonNullable.<ApprovalConfiguration>of(approvalConfiguration);
+    this.approvalConfiguration = approvalConfiguration;
     return this;
   }
 
@@ -81,25 +95,12 @@ public class WorkflowReferenceStatus {
    * @return approvalConfiguration
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public ApprovalConfiguration getApprovalConfiguration() {
-        return approvalConfiguration.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_APPROVAL_CONFIGURATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<ApprovalConfiguration> getApprovalConfiguration_JsonNullable() {
     return approvalConfiguration;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_APPROVAL_CONFIGURATION)
-  public void setApprovalConfiguration_JsonNullable(JsonNullable<ApprovalConfiguration> approvalConfiguration) {
-    this.approvalConfiguration = approvalConfiguration;
   }
 
   public void setApprovalConfiguration(@javax.annotation.Nullable ApprovalConfiguration approvalConfiguration) {
-    this.approvalConfiguration = JsonNullable.<ApprovalConfiguration>of(approvalConfiguration);
+    this.approvalConfiguration = approvalConfiguration;
   }
 
 
@@ -113,22 +114,17 @@ public class WorkflowReferenceStatus {
    * @return deprecated
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEPRECATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDeprecated() {
     return deprecated;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEPRECATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeprecated(@javax.annotation.Nullable Boolean deprecated) {
     this.deprecated = deprecated;
   }
 
 
   public WorkflowReferenceStatus layout(@javax.annotation.Nullable WorkflowStatusLayout layout) {
-    this.layout = JsonNullable.<WorkflowStatusLayout>of(layout);
+    this.layout = layout;
     return this;
   }
 
@@ -137,25 +133,12 @@ public class WorkflowReferenceStatus {
    * @return layout
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public WorkflowStatusLayout getLayout() {
-        return layout.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<WorkflowStatusLayout> getLayout_JsonNullable() {
     return layout;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_LAYOUT)
-  public void setLayout_JsonNullable(JsonNullable<WorkflowStatusLayout> layout) {
-    this.layout = layout;
   }
 
   public void setLayout(@javax.annotation.Nullable WorkflowStatusLayout layout) {
-    this.layout = JsonNullable.<WorkflowStatusLayout>of(layout);
+    this.layout = layout;
   }
 
 
@@ -177,15 +160,10 @@ public class WorkflowReferenceStatus {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable Map<String, String> properties) {
     this.properties = properties;
   }
@@ -201,23 +179,16 @@ public class WorkflowReferenceStatus {
    * @return statusReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStatusReference() {
     return statusReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusReference(@javax.annotation.Nullable String statusReference) {
     this.statusReference = statusReference;
   }
 
 
-  /**
-   * Return true if this WorkflowReferenceStatus object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -227,9 +198,9 @@ public class WorkflowReferenceStatus {
       return false;
     }
     WorkflowReferenceStatus workflowReferenceStatus = (WorkflowReferenceStatus) o;
-    return equalsNullable(this.approvalConfiguration, workflowReferenceStatus.approvalConfiguration) &&
+    return Objects.equals(this.approvalConfiguration, workflowReferenceStatus.approvalConfiguration) &&
         Objects.equals(this.deprecated, workflowReferenceStatus.deprecated) &&
-        equalsNullable(this.layout, workflowReferenceStatus.layout) &&
+        Objects.equals(this.layout, workflowReferenceStatus.layout) &&
         Objects.equals(this.properties, workflowReferenceStatus.properties) &&
         Objects.equals(this.statusReference, workflowReferenceStatus.statusReference);
   }
@@ -240,7 +211,7 @@ public class WorkflowReferenceStatus {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(approvalConfiguration), deprecated, hashCodeNullable(layout), properties, statusReference);
+    return Objects.hash(approvalConfiguration, deprecated, layout, properties, statusReference);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -274,68 +245,99 @@ public class WorkflowReferenceStatus {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("approvalConfiguration", "deprecated", "layout", "properties", "statusReference"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowReferenceStatus
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `approvalConfiguration` to the URL query string
-    if (getApprovalConfiguration() != null) {
-      joiner.add(getApprovalConfiguration().toUrlQueryString(prefix + "approvalConfiguration" + suffix));
-    }
-
-    // add `deprecated` to the URL query string
-    if (getDeprecated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdeprecated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDeprecated()))));
-    }
-
-    // add `layout` to the URL query string
-    if (getLayout() != null) {
-      joiner.add(getLayout().toUrlQueryString(prefix + "layout" + suffix));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowReferenceStatus.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowReferenceStatus is not found in the empty JSON string", WorkflowReferenceStatus.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `statusReference` to the URL query string
-    if (getStatusReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusReference()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowReferenceStatus.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowReferenceStatus` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `approvalConfiguration`
+      if (jsonObj.get("approvalConfiguration") != null && !jsonObj.get("approvalConfiguration").isJsonNull()) {
+        ApprovalConfiguration.validateJsonElement(jsonObj.get("approvalConfiguration"));
+      }
+      // validate the optional field `layout`
+      if (jsonObj.get("layout") != null && !jsonObj.get("layout").isJsonNull()) {
+        WorkflowStatusLayout.validateJsonElement(jsonObj.get("layout"));
+      }
+      if ((jsonObj.get("statusReference") != null && !jsonObj.get("statusReference").isJsonNull()) && !jsonObj.get("statusReference").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusReference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusReference").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowReferenceStatus.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowReferenceStatus' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowReferenceStatus> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowReferenceStatus.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowReferenceStatus>() {
+           @Override
+           public void write(JsonWriter out, WorkflowReferenceStatus value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowReferenceStatus read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowReferenceStatus given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowReferenceStatus
+   * @throws IOException if the JSON string is invalid with respect to WorkflowReferenceStatus
+   */
+  public static WorkflowReferenceStatus fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowReferenceStatus.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowReferenceStatus to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

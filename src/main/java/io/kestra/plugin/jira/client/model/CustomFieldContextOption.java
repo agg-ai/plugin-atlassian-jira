@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of the custom field options for a context.
  */
-@JsonPropertyOrder({
-  CustomFieldContextOption.JSON_PROPERTY_DISABLED,
-  CustomFieldContextOption.JSON_PROPERTY_ID,
-  CustomFieldContextOption.JSON_PROPERTY_OPTION_ID,
-  CustomFieldContextOption.JSON_PROPERTY_VALUE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CustomFieldContextOption {
-  public static final String JSON_PROPERTY_DISABLED = "disabled";
+  public static final String SERIALIZED_NAME_DISABLED = "disabled";
+  @SerializedName(SERIALIZED_NAME_DISABLED)
   @javax.annotation.Nonnull
   private Boolean disabled;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nonnull
   private String id;
 
-  public static final String JSON_PROPERTY_OPTION_ID = "optionId";
+  public static final String SERIALIZED_NAME_OPTION_ID = "optionId";
+  @SerializedName(SERIALIZED_NAME_OPTION_ID)
   @javax.annotation.Nullable
   private String optionId;
 
-  public static final String JSON_PROPERTY_VALUE = "value";
+  public static final String SERIALIZED_NAME_VALUE = "value";
+  @SerializedName(SERIALIZED_NAME_VALUE)
   @javax.annotation.Nonnull
   private String value;
 
-  public CustomFieldContextOption() { 
+  public CustomFieldContextOption() {
   }
 
   public CustomFieldContextOption disabled(@javax.annotation.Nonnull Boolean disabled) {
@@ -70,15 +85,10 @@ public class CustomFieldContextOption {
    * @return disabled
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DISABLED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getDisabled() {
     return disabled;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DISABLED, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setDisabled(@javax.annotation.Nonnull Boolean disabled) {
     this.disabled = disabled;
   }
@@ -94,15 +104,10 @@ public class CustomFieldContextOption {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setId(@javax.annotation.Nonnull String id) {
     this.id = id;
   }
@@ -118,15 +123,10 @@ public class CustomFieldContextOption {
    * @return optionId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPTION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOptionId() {
     return optionId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPTION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOptionId(@javax.annotation.Nullable String optionId) {
     this.optionId = optionId;
   }
@@ -142,23 +142,16 @@ public class CustomFieldContextOption {
    * @return value
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getValue() {
     return value;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setValue(@javax.annotation.Nonnull String value) {
     this.value = value;
   }
 
 
-  /**
-   * Return true if this CustomFieldContextOption object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,59 +195,104 @@ public class CustomFieldContextOption {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("disabled", "id", "optionId", "value"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("disabled", "id", "value"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CustomFieldContextOption
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CustomFieldContextOption.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CustomFieldContextOption is not found in the empty JSON string", CustomFieldContextOption.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CustomFieldContextOption.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CustomFieldContextOption` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CustomFieldContextOption.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("optionId") != null && !jsonObj.get("optionId").isJsonNull()) && !jsonObj.get("optionId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `optionId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("optionId").toString()));
+      }
+      if (!jsonObj.get("value").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `value` to be a primitive type in the JSON string but got `%s`", jsonObj.get("value").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CustomFieldContextOption.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CustomFieldContextOption' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CustomFieldContextOption> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CustomFieldContextOption.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CustomFieldContextOption>() {
+           @Override
+           public void write(JsonWriter out, CustomFieldContextOption value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CustomFieldContextOption read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CustomFieldContextOption given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CustomFieldContextOption
+   * @throws IOException if the JSON string is invalid with respect to CustomFieldContextOption
+   */
+  public static CustomFieldContextOption fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CustomFieldContextOption.class);
+  }
 
-    // add `disabled` to the URL query string
-    if (getDisabled() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisabled()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `optionId` to the URL query string
-    if (getOptionId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soptionId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOptionId()))));
-    }
-
-    // add `value` to the URL query string
-    if (getValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CustomFieldContextOption to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

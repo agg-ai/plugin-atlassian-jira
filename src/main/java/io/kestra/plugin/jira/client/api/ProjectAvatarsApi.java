@@ -10,658 +10,671 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.Avatar;
 import io.kestra.plugin.jira.client.model.ProjectAvatars;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectAvatarsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public ProjectAvatarsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public ProjectAvatarsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createProjectAvatar
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param body  (required)
+     * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param size The length of each side of the crop region. (optional, default to 0)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  an image isn&#39;t included in the request.  *  the image type is unsupported.  *  the crop parameters extend the crop area beyond the edge of the image. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer the project or an anonymous call is made to the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createProjectAvatarCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public ProjectAvatarsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public ProjectAvatarsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Load project avatar
-   * Loads an avatar for a project.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST &#x60;  &#x60;--user email@example.com:&lt;api_token&gt; &#x60;  &#x60;--header &#39;X-Atlassian-Token: no-check&#39; &#x60;  &#x60;--header &#39;Content-Type: image/&lt; image_type&gt;&#39; &#x60;  &#x60;--data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; &#x60;  &#x60;--url &#39;https://your-domain.atlassian.net/rest/api/3/project/{projectIdOrKey}/avatar2&#39;&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar use [Set project avatar](#api-rest-api-3-project-projectIdOrKey-avatar-put) to set it as the project&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param body  (required)
-   * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param size The length of each side of the crop region. (optional, default to 0)
-   * @return Avatar
-   * @throws ApiException if fails to make API call
-   */
-  public Avatar createProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size) throws ApiException {
-    return createProjectAvatar(projectIdOrKey, body, x, y, size, null);
-  }
-
-  /**
-   * Load project avatar
-   * Loads an avatar for a project.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST &#x60;  &#x60;--user email@example.com:&lt;api_token&gt; &#x60;  &#x60;--header &#39;X-Atlassian-Token: no-check&#39; &#x60;  &#x60;--header &#39;Content-Type: image/&lt; image_type&gt;&#39; &#x60;  &#x60;--data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; &#x60;  &#x60;--url &#39;https://your-domain.atlassian.net/rest/api/3/project/{projectIdOrKey}/avatar2&#39;&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar use [Set project avatar](#api-rest-api-3-project-projectIdOrKey-avatar-put) to set it as the project&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param body  (required)
-   * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param size The length of each side of the crop region. (optional, default to 0)
-   * @param headers Optional headers to include in the request
-   * @return Avatar
-   * @throws ApiException if fails to make API call
-   */
-  public Avatar createProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size, Map<String, String> headers) throws ApiException {
-    ApiResponse<Avatar> localVarResponse = createProjectAvatarWithHttpInfo(projectIdOrKey, body, x, y, size, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Load project avatar
-   * Loads an avatar for a project.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST &#x60;  &#x60;--user email@example.com:&lt;api_token&gt; &#x60;  &#x60;--header &#39;X-Atlassian-Token: no-check&#39; &#x60;  &#x60;--header &#39;Content-Type: image/&lt; image_type&gt;&#39; &#x60;  &#x60;--data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; &#x60;  &#x60;--url &#39;https://your-domain.atlassian.net/rest/api/3/project/{projectIdOrKey}/avatar2&#39;&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar use [Set project avatar](#api-rest-api-3-project-projectIdOrKey-avatar-put) to set it as the project&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param body  (required)
-   * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param size The length of each side of the crop region. (optional, default to 0)
-   * @return ApiResponse&lt;Avatar&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Avatar> createProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size) throws ApiException {
-    return createProjectAvatarWithHttpInfo(projectIdOrKey, body, x, y, size, null);
-  }
-
-  /**
-   * Load project avatar
-   * Loads an avatar for a project.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST &#x60;  &#x60;--user email@example.com:&lt;api_token&gt; &#x60;  &#x60;--header &#39;X-Atlassian-Token: no-check&#39; &#x60;  &#x60;--header &#39;Content-Type: image/&lt; image_type&gt;&#39; &#x60;  &#x60;--data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; &#x60;  &#x60;--url &#39;https://your-domain.atlassian.net/rest/api/3/project/{projectIdOrKey}/avatar2&#39;&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar use [Set project avatar](#api-rest-api-3-project-projectIdOrKey-avatar-put) to set it as the project&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param body  (required)
-   * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
-   * @param size The length of each side of the crop region. (optional, default to 0)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Avatar&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Avatar> createProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createProjectAvatarRequestBuilder(projectIdOrKey, body, x, y, size, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createProjectAvatar", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Avatar>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Avatar responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Avatar>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = body;
 
-        return new ApiResponse<Avatar>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/avatar2"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
 
-  private HttpRequest.Builder createProjectAvatarRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling createProjectAvatar");
-    }
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling createProjectAvatar");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/avatar2"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "x";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("x", x));
-    localVarQueryParameterBaseName = "y";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("y", y));
-    localVarQueryParameterBaseName = "size";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("size", size));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(body);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete project avatar
-   * Deletes a custom avatar from a project. Note that system avatars cannot be deleted.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The project ID or (case-sensitive) key. (required)
-   * @param id The ID of the avatar. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id) throws ApiException {
-    deleteProjectAvatar(projectIdOrKey, id, null);
-  }
-
-  /**
-   * Delete project avatar
-   * Deletes a custom avatar from a project. Note that system avatars cannot be deleted.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The project ID or (case-sensitive) key. (required)
-   * @param id The ID of the avatar. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    deleteProjectAvatarWithHttpInfo(projectIdOrKey, id, headers);
-  }
-
-  /**
-   * Delete project avatar
-   * Deletes a custom avatar from a project. Note that system avatars cannot be deleted.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The project ID or (case-sensitive) key. (required)
-   * @param id The ID of the avatar. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id) throws ApiException {
-    return deleteProjectAvatarWithHttpInfo(projectIdOrKey, id, null);
-  }
-
-  /**
-   * Delete project avatar
-   * Deletes a custom avatar from a project. Note that system avatars cannot be deleted.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The project ID or (case-sensitive) key. (required)
-   * @param id The ID of the avatar. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteProjectAvatarRequestBuilder(projectIdOrKey, id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteProjectAvatar", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteProjectAvatarRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling deleteProjectAvatar");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteProjectAvatar");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/avatar/{id}"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get all project avatars
-   * Returns all project avatars, grouped by system and custom avatars.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @return ProjectAvatars
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectAvatars getAllProjectAvatars(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
-    return getAllProjectAvatars(projectIdOrKey, null);
-  }
-
-  /**
-   * Get all project avatars
-   * Returns all project avatars, grouped by system and custom avatars.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param headers Optional headers to include in the request
-   * @return ProjectAvatars
-   * @throws ApiException if fails to make API call
-   */
-  public ProjectAvatars getAllProjectAvatars(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<ProjectAvatars> localVarResponse = getAllProjectAvatarsWithHttpInfo(projectIdOrKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all project avatars
-   * Returns all project avatars, grouped by system and custom avatars.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @return ApiResponse&lt;ProjectAvatars&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectAvatars> getAllProjectAvatarsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
-    return getAllProjectAvatarsWithHttpInfo(projectIdOrKey, null);
-  }
-
-  /**
-   * Get all project avatars
-   * Returns all project avatars, grouped by system and custom avatars.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;ProjectAvatars&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<ProjectAvatars> getAllProjectAvatarsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllProjectAvatarsRequestBuilder(projectIdOrKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllProjectAvatars", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<ProjectAvatars>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (x != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("x", x));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        ProjectAvatars responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ProjectAvatars>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<ProjectAvatars>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getAllProjectAvatarsRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling getAllProjectAvatars");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/avatars"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Set project avatar
-   * Sets the avatar displayed for a project.  Use [Load project avatar](#api-rest-api-3-project-projectIdOrKey-avatar2-post) to store avatars against the project, before using this operation to set the displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param avatar  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar) throws ApiException {
-    return updateProjectAvatar(projectIdOrKey, avatar, null);
-  }
-
-  /**
-   * Set project avatar
-   * Sets the avatar displayed for a project.  Use [Load project avatar](#api-rest-api-3-project-projectIdOrKey-avatar2-post) to store avatars against the project, before using this operation to set the displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param avatar  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateProjectAvatarWithHttpInfo(projectIdOrKey, avatar, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set project avatar
-   * Sets the avatar displayed for a project.  Use [Load project avatar](#api-rest-api-3-project-projectIdOrKey-avatar2-post) to store avatars against the project, before using this operation to set the displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param avatar  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar) throws ApiException {
-    return updateProjectAvatarWithHttpInfo(projectIdOrKey, avatar, null);
-  }
-
-  /**
-   * Set project avatar
-   * Sets the avatar displayed for a project.  Use [Load project avatar](#api-rest-api-3-project-projectIdOrKey-avatar2-post) to store avatars against the project, before using this operation to set the displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
-   * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
-   * @param avatar  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateProjectAvatarRequestBuilder(projectIdOrKey, avatar, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateProjectAvatar", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (y != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("y", y));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
+        if (size != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("size", size));
+        }
 
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
 
-  private HttpRequest.Builder updateProjectAvatarRequestBuilder(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'projectIdOrKey' is set
-    if (projectIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'projectIdOrKey' when calling updateProjectAvatar");
-    }
-    // verify the required parameter 'avatar' is set
-    if (avatar == null) {
-      throw new ApiException(400, "Missing the required parameter 'avatar' when calling updateProjectAvatar");
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createProjectAvatarValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling createProjectAvatar(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/project/{projectIdOrKey}/avatar"
-        .replace("{projectIdOrKey}", ApiClient.urlEncode(projectIdOrKey.toString()));
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException("Missing the required parameter 'body' when calling createProjectAvatar(Async)");
+        }
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        return createProjectAvatarCall(projectIdOrKey, body, x, y, size, _callback);
 
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(avatar);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Load project avatar
+     * Loads an avatar for a project.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST &#x60;  &#x60;--user email@example.com:&lt;api_token&gt; &#x60;  &#x60;--header &#39;X-Atlassian-Token: no-check&#39; &#x60;  &#x60;--header &#39;Content-Type: image/&lt; image_type&gt;&#39; &#x60;  &#x60;--data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; &#x60;  &#x60;--url &#39;https://your-domain.atlassian.net/rest/api/3/project/{projectIdOrKey}/avatar2&#39;&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar use [Set project avatar](#api-rest-api-3-project-projectIdOrKey-avatar-put) to set it as the project&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param body  (required)
+     * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param size The length of each side of the crop region. (optional, default to 0)
+     * @return Avatar
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  an image isn&#39;t included in the request.  *  the image type is unsupported.  *  the crop parameters extend the crop area beyond the edge of the image. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer the project or an anonymous call is made to the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Avatar createProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size) throws ApiException {
+        ApiResponse<Avatar> localVarResp = createProjectAvatarWithHttpInfo(projectIdOrKey, body, x, y, size);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Load project avatar
+     * Loads an avatar for a project.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST &#x60;  &#x60;--user email@example.com:&lt;api_token&gt; &#x60;  &#x60;--header &#39;X-Atlassian-Token: no-check&#39; &#x60;  &#x60;--header &#39;Content-Type: image/&lt; image_type&gt;&#39; &#x60;  &#x60;--data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; &#x60;  &#x60;--url &#39;https://your-domain.atlassian.net/rest/api/3/project/{projectIdOrKey}/avatar2&#39;&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar use [Set project avatar](#api-rest-api-3-project-projectIdOrKey-avatar-put) to set it as the project&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param body  (required)
+     * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param size The length of each side of the crop region. (optional, default to 0)
+     * @return ApiResponse&lt;Avatar&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  an image isn&#39;t included in the request.  *  the image type is unsupported.  *  the crop parameters extend the crop area beyond the edge of the image. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer the project or an anonymous call is made to the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Avatar> createProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size) throws ApiException {
+        okhttp3.Call localVarCall = createProjectAvatarValidateBeforeCall(projectIdOrKey, body, x, y, size, null);
+        Type localVarReturnType = new TypeToken<Avatar>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Load project avatar (asynchronously)
+     * Loads an avatar for a project.  Specify the avatar&#39;s local file location in the body of the request. Also, include the following headers:   *  &#x60;X-Atlassian-Token: no-check&#x60; To prevent XSRF protection blocking the request, for more information see [Special Headers](#special-request-headers).  *  &#x60;Content-Type: image/image type&#x60; Valid image types are JPEG, GIF, or PNG.  For example:   &#x60;curl --request POST &#x60;  &#x60;--user email@example.com:&lt;api_token&gt; &#x60;  &#x60;--header &#39;X-Atlassian-Token: no-check&#39; &#x60;  &#x60;--header &#39;Content-Type: image/&lt; image_type&gt;&#39; &#x60;  &#x60;--data-binary \&quot;&lt;@/path/to/file/with/your/avatar&gt;\&quot; &#x60;  &#x60;--url &#39;https://your-domain.atlassian.net/rest/api/3/project/{projectIdOrKey}/avatar2&#39;&#x60;  The avatar is cropped to a square. If no crop parameters are specified, the square originates at the top left of the image. The length of the square&#39;s sides is set to the smaller of the height or width of the image.  The cropped image is then used to create avatars of 16x16, 24x24, 32x32, and 48x48 in size.  After creating the avatar use [Set project avatar](#api-rest-api-3-project-projectIdOrKey-avatar-put) to set it as the project&#39;s displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param body  (required)
+     * @param x The X coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param y The Y coordinate of the top-left corner of the crop region. (optional, default to 0)
+     * @param size The length of each side of the crop region. (optional, default to 0)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  an image isn&#39;t included in the request.  *  the image type is unsupported.  *  the crop parameters extend the crop area beyond the edge of the image. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer the project or an anonymous call is made to the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createProjectAvatarAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nullable Object body, @javax.annotation.Nullable Integer x, @javax.annotation.Nullable Integer y, @javax.annotation.Nullable Integer size, final ApiCallback<Avatar> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createProjectAvatarValidateBeforeCall(projectIdOrKey, body, x, y, size, _callback);
+        Type localVarReturnType = new TypeToken<Avatar>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteProjectAvatar
+     * @param projectIdOrKey The project ID or (case-sensitive) key. (required)
+     * @param id The ID of the avatar. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the avatar is a system avatar or the user does not have permission to administer the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or avatar is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteProjectAvatarCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/avatar/{id}"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteProjectAvatarValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling deleteProjectAvatar(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteProjectAvatar(Async)");
+        }
+
+        return deleteProjectAvatarCall(projectIdOrKey, id, _callback);
+
+    }
+
+    /**
+     * Delete project avatar
+     * Deletes a custom avatar from a project. Note that system avatars cannot be deleted.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The project ID or (case-sensitive) key. (required)
+     * @param id The ID of the avatar. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the avatar is a system avatar or the user does not have permission to administer the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or avatar is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id) throws ApiException {
+        deleteProjectAvatarWithHttpInfo(projectIdOrKey, id);
+    }
+
+    /**
+     * Delete project avatar
+     * Deletes a custom avatar from a project. Note that system avatars cannot be deleted.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The project ID or (case-sensitive) key. (required)
+     * @param id The ID of the avatar. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the avatar is a system avatar or the user does not have permission to administer the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or avatar is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = deleteProjectAvatarValidateBeforeCall(projectIdOrKey, id, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete project avatar (asynchronously)
+     * Deletes a custom avatar from a project. Note that system avatars cannot be deleted.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The project ID or (case-sensitive) key. (required)
+     * @param id The ID of the avatar. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the avatar is a system avatar or the user does not have permission to administer the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or avatar is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteProjectAvatarAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Long id, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteProjectAvatarValidateBeforeCall(projectIdOrKey, id, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAllProjectAvatars
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllProjectAvatarsCall(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/avatars"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllProjectAvatarsValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling getAllProjectAvatars(Async)");
+        }
+
+        return getAllProjectAvatarsCall(projectIdOrKey, _callback);
+
+    }
+
+    /**
+     * Get all project avatars
+     * Returns all project avatars, grouped by system and custom avatars.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @return ProjectAvatars
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ProjectAvatars getAllProjectAvatars(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
+        ApiResponse<ProjectAvatars> localVarResp = getAllProjectAvatarsWithHttpInfo(projectIdOrKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all project avatars
+     * Returns all project avatars, grouped by system and custom avatars.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @return ApiResponse&lt;ProjectAvatars&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<ProjectAvatars> getAllProjectAvatarsWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey) throws ApiException {
+        okhttp3.Call localVarCall = getAllProjectAvatarsValidateBeforeCall(projectIdOrKey, null);
+        Type localVarReturnType = new TypeToken<ProjectAvatars>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all project avatars (asynchronously)
+     * Returns all project avatars, grouped by system and custom avatars.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project.
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllProjectAvatarsAsync(@javax.annotation.Nonnull String projectIdOrKey, final ApiCallback<ProjectAvatars> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAllProjectAvatarsValidateBeforeCall(projectIdOrKey, _callback);
+        Type localVarReturnType = new TypeToken<ProjectAvatars>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateProjectAvatar
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param avatar  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or avatar is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateProjectAvatarCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = avatar;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/project/{projectIdOrKey}/avatar"
+            .replace("{" + "projectIdOrKey" + "}", localVarApiClient.escapeString(projectIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateProjectAvatarValidateBeforeCall(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'projectIdOrKey' is set
+        if (projectIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'projectIdOrKey' when calling updateProjectAvatar(Async)");
+        }
+
+        // verify the required parameter 'avatar' is set
+        if (avatar == null) {
+            throw new ApiException("Missing the required parameter 'avatar' when calling updateProjectAvatar(Async)");
+        }
+
+        return updateProjectAvatarCall(projectIdOrKey, avatar, _callback);
+
+    }
+
+    /**
+     * Set project avatar
+     * Sets the avatar displayed for a project.  Use [Load project avatar](#api-rest-api-3-project-projectIdOrKey-avatar2-post) to store avatars against the project, before using this operation to set the displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param avatar  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or avatar is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateProjectAvatar(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar) throws ApiException {
+        ApiResponse<Object> localVarResp = updateProjectAvatarWithHttpInfo(projectIdOrKey, avatar);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set project avatar
+     * Sets the avatar displayed for a project.  Use [Load project avatar](#api-rest-api-3-project-projectIdOrKey-avatar2-post) to store avatars against the project, before using this operation to set the displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param avatar  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or avatar is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateProjectAvatarWithHttpInfo(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar) throws ApiException {
+        okhttp3.Call localVarCall = updateProjectAvatarValidateBeforeCall(projectIdOrKey, avatar, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set project avatar (asynchronously)
+     * Sets the avatar displayed for a project.  Use [Load project avatar](#api-rest-api-3-project-projectIdOrKey-avatar2-post) to store avatars against the project, before using this operation to set the displayed avatar.  **[Permissions](#permissions) required:** *Administer projects* [project permission](https://confluence.atlassian.com/x/yodKLg).
+     * @param projectIdOrKey The ID or (case-sensitive) key of the project. (required)
+     * @param avatar  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have permission to administer the project. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the project or avatar is not found or the user does not have permission to view the project. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateProjectAvatarAsync(@javax.annotation.Nonnull String projectIdOrKey, @javax.annotation.Nonnull Avatar avatar, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateProjectAvatarValidateBeforeCall(projectIdOrKey, avatar, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

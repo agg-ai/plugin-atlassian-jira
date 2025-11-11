@@ -13,71 +13,86 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectRoleGroup;
 import io.kestra.plugin.jira.client.model.ProjectRoleUser;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about a user assigned to a project role.
  */
-@JsonPropertyOrder({
-  RoleActor.JSON_PROPERTY_ACTOR_GROUP,
-  RoleActor.JSON_PROPERTY_ACTOR_USER,
-  RoleActor.JSON_PROPERTY_AVATAR_URL,
-  RoleActor.JSON_PROPERTY_DISPLAY_NAME,
-  RoleActor.JSON_PROPERTY_ID,
-  RoleActor.JSON_PROPERTY_NAME,
-  RoleActor.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class RoleActor {
-  public static final String JSON_PROPERTY_ACTOR_GROUP = "actorGroup";
+  public static final String SERIALIZED_NAME_ACTOR_GROUP = "actorGroup";
+  @SerializedName(SERIALIZED_NAME_ACTOR_GROUP)
   @javax.annotation.Nullable
   private ProjectRoleGroup actorGroup;
 
-  public static final String JSON_PROPERTY_ACTOR_USER = "actorUser";
+  public static final String SERIALIZED_NAME_ACTOR_USER = "actorUser";
+  @SerializedName(SERIALIZED_NAME_ACTOR_USER)
   @javax.annotation.Nullable
   private ProjectRoleUser actorUser;
 
-  public static final String JSON_PROPERTY_AVATAR_URL = "avatarUrl";
+  public static final String SERIALIZED_NAME_AVATAR_URL = "avatarUrl";
+  @SerializedName(SERIALIZED_NAME_AVATAR_URL)
   @javax.annotation.Nullable
   private URI avatarUrl;
 
-  public static final String JSON_PROPERTY_DISPLAY_NAME = "displayName";
+  public static final String SERIALIZED_NAME_DISPLAY_NAME = "displayName";
+  @SerializedName(SERIALIZED_NAME_DISPLAY_NAME)
   @javax.annotation.Nullable
   private String displayName;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
   /**
    * The type of role actor.
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    ATLASSIAN_GROUP_ROLE_ACTOR(String.valueOf("atlassian-group-role-actor")),
+    ATLASSIAN_GROUP_ROLE_ACTOR("atlassian-group-role-actor"),
     
-    ATLASSIAN_USER_ROLE_ACTOR(String.valueOf("atlassian-user-role-actor"));
+    ATLASSIAN_USER_ROLE_ACTOR("atlassian-user-role-actor");
 
     private String value;
 
@@ -85,7 +100,6 @@ public class RoleActor {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -95,7 +109,6 @@ public class RoleActor {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -104,26 +117,44 @@ public class RoleActor {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private TypeEnum type;
 
-  public RoleActor() { 
+  public RoleActor() {
   }
 
-  @JsonCreator
   public RoleActor(
-    @JsonProperty(JSON_PROPERTY_ACTOR_GROUP) ProjectRoleGroup actorGroup, 
-    @JsonProperty(JSON_PROPERTY_ACTOR_USER) ProjectRoleUser actorUser, 
-    @JsonProperty(JSON_PROPERTY_AVATAR_URL) URI avatarUrl, 
-    @JsonProperty(JSON_PROPERTY_DISPLAY_NAME) String displayName, 
-    @JsonProperty(JSON_PROPERTY_ID) Long id, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_TYPE) TypeEnum type
+     ProjectRoleGroup actorGroup, 
+     ProjectRoleUser actorUser, 
+     URI avatarUrl, 
+     String displayName, 
+     Long id, 
+     String name, 
+     TypeEnum type
   ) {
-  this();
+    this();
     this.actorGroup = actorGroup;
     this.actorUser = actorUser;
     this.avatarUrl = avatarUrl;
@@ -138,12 +169,9 @@ public class RoleActor {
    * @return actorGroup
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTOR_GROUP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectRoleGroup getActorGroup() {
     return actorGroup;
   }
-
 
 
 
@@ -152,12 +180,9 @@ public class RoleActor {
    * @return actorUser
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTOR_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectRoleUser getActorUser() {
     return actorUser;
   }
-
 
 
 
@@ -166,12 +191,9 @@ public class RoleActor {
    * @return avatarUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getAvatarUrl() {
     return avatarUrl;
   }
-
 
 
 
@@ -180,12 +202,9 @@ public class RoleActor {
    * @return displayName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayName() {
     return displayName;
   }
-
 
 
 
@@ -194,12 +213,9 @@ public class RoleActor {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
-
 
 
 
@@ -208,12 +224,9 @@ public class RoleActor {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -222,8 +235,6 @@ public class RoleActor {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TypeEnum getType() {
     return type;
   }
@@ -231,9 +242,6 @@ public class RoleActor {
 
 
 
-  /**
-   * Return true if this RoleActor object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -283,74 +291,112 @@ public class RoleActor {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("actorGroup", "actorUser", "avatarUrl", "displayName", "id", "name", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to RoleActor
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!RoleActor.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in RoleActor is not found in the empty JSON string", RoleActor.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!RoleActor.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `RoleActor` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `actorGroup`
+      if (jsonObj.get("actorGroup") != null && !jsonObj.get("actorGroup").isJsonNull()) {
+        ProjectRoleGroup.validateJsonElement(jsonObj.get("actorGroup"));
+      }
+      // validate the optional field `actorUser`
+      if (jsonObj.get("actorUser") != null && !jsonObj.get("actorUser").isJsonNull()) {
+        ProjectRoleUser.validateJsonElement(jsonObj.get("actorUser"));
+      }
+      if ((jsonObj.get("avatarUrl") != null && !jsonObj.get("avatarUrl").isJsonNull()) && !jsonObj.get("avatarUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `avatarUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("avatarUrl").toString()));
+      }
+      if ((jsonObj.get("displayName") != null && !jsonObj.get("displayName").isJsonNull()) && !jsonObj.get("displayName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `displayName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("displayName").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the optional field `type`
+      if (jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) {
+        TypeEnum.validateJsonElement(jsonObj.get("type"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!RoleActor.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'RoleActor' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<RoleActor> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(RoleActor.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<RoleActor>() {
+           @Override
+           public void write(JsonWriter out, RoleActor value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public RoleActor read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of RoleActor given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of RoleActor
+   * @throws IOException if the JSON string is invalid with respect to RoleActor
+   */
+  public static RoleActor fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, RoleActor.class);
+  }
 
-    // add `actorGroup` to the URL query string
-    if (getActorGroup() != null) {
-      joiner.add(getActorGroup().toUrlQueryString(prefix + "actorGroup" + suffix));
-    }
-
-    // add `actorUser` to the URL query string
-    if (getActorUser() != null) {
-      joiner.add(getActorUser().toUrlQueryString(prefix + "actorUser" + suffix));
-    }
-
-    // add `avatarUrl` to the URL query string
-    if (getAvatarUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%savatarUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvatarUrl()))));
-    }
-
-    // add `displayName` to the URL query string
-    if (getDisplayName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdisplayName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of RoleActor to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

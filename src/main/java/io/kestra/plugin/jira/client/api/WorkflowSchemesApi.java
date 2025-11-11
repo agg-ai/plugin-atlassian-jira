@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.DefaultWorkflow;
 import io.kestra.plugin.jira.client.model.IssueTypeWorkflowMapping;
@@ -31,2491 +40,2750 @@ import io.kestra.plugin.jira.client.model.WorkflowSchemeUpdateRequest;
 import io.kestra.plugin.jira.client.model.WorkflowSchemeUpdateRequiredMappingsRequest;
 import io.kestra.plugin.jira.client.model.WorkflowSchemeUpdateRequiredMappingsResponse;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowSchemesApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public WorkflowSchemesApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public WorkflowSchemesApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createWorkflowScheme
+     * @param workflowScheme  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createWorkflowSchemeCall(@javax.annotation.Nonnull WorkflowScheme workflowScheme, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public WorkflowSchemesApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public WorkflowSchemesApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create workflow scheme
-   * Creates a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param workflowScheme  (required)
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme createWorkflowScheme(@javax.annotation.Nonnull WorkflowScheme workflowScheme) throws ApiException {
-    return createWorkflowScheme(workflowScheme, null);
-  }
-
-  /**
-   * Create workflow scheme
-   * Creates a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param workflowScheme  (required)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme createWorkflowScheme(@javax.annotation.Nonnull WorkflowScheme workflowScheme, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowScheme> localVarResponse = createWorkflowSchemeWithHttpInfo(workflowScheme, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create workflow scheme
-   * Creates a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param workflowScheme  (required)
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> createWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull WorkflowScheme workflowScheme) throws ApiException {
-    return createWorkflowSchemeWithHttpInfo(workflowScheme, null);
-  }
-
-  /**
-   * Create workflow scheme
-   * Creates a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param workflowScheme  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> createWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull WorkflowScheme workflowScheme, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createWorkflowSchemeRequestBuilder(workflowScheme, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createWorkflowScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowScheme>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = workflowScheme;
 
-        return new ApiResponse<WorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme";
 
-  private HttpRequest.Builder createWorkflowSchemeRequestBuilder(@javax.annotation.Nonnull WorkflowScheme workflowScheme, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'workflowScheme' is set
-    if (workflowScheme == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowScheme' when calling createWorkflowScheme");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowScheme);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete default workflow
-   * Resets the default workflow for a workflow scheme. That is, the default workflow is set to Jira&#39;s system workflow (the *jira* workflow).  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the default workflow reset. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional)
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme deleteDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
-    return deleteDefaultWorkflow(id, updateDraftIfNeeded, null);
-  }
-
-  /**
-   * Delete default workflow
-   * Resets the default workflow for a workflow scheme. That is, the default workflow is set to Jira&#39;s system workflow (the *jira* workflow).  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the default workflow reset. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme deleteDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowScheme> localVarResponse = deleteDefaultWorkflowWithHttpInfo(id, updateDraftIfNeeded, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete default workflow
-   * Resets the default workflow for a workflow scheme. That is, the default workflow is set to Jira&#39;s system workflow (the *jira* workflow).  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the default workflow reset. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional)
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> deleteDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
-    return deleteDefaultWorkflowWithHttpInfo(id, updateDraftIfNeeded, null);
-  }
-
-  /**
-   * Delete default workflow
-   * Resets the default workflow for a workflow scheme. That is, the default workflow is set to Jira&#39;s system workflow (the *jira* workflow).  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the default workflow reset. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> deleteDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteDefaultWorkflowRequestBuilder(id, updateDraftIfNeeded, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteDefaultWorkflow", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowScheme>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<WorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteDefaultWorkflowRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteDefaultWorkflow");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/default"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "updateDraftIfNeeded";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("updateDraftIfNeeded", updateDraftIfNeeded));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete issue types for workflow in workflow scheme
-   * Deletes the workflow-issue type mapping for a workflow in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the workflow-issue type mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of the workflow. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteWorkflowMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
-    deleteWorkflowMapping(id, workflowName, updateDraftIfNeeded, null);
-  }
-
-  /**
-   * Delete issue types for workflow in workflow scheme
-   * Deletes the workflow-issue type mapping for a workflow in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the workflow-issue type mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of the workflow. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteWorkflowMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    deleteWorkflowMappingWithHttpInfo(id, workflowName, updateDraftIfNeeded, headers);
-  }
-
-  /**
-   * Delete issue types for workflow in workflow scheme
-   * Deletes the workflow-issue type mapping for a workflow in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the workflow-issue type mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of the workflow. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteWorkflowMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
-    return deleteWorkflowMappingWithHttpInfo(id, workflowName, updateDraftIfNeeded, null);
-  }
-
-  /**
-   * Delete issue types for workflow in workflow scheme
-   * Deletes the workflow-issue type mapping for a workflow in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the workflow-issue type mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of the workflow. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteWorkflowMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteWorkflowMappingRequestBuilder(id, workflowName, updateDraftIfNeeded, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteWorkflowMapping", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteWorkflowMappingRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteWorkflowMapping");
-    }
-    // verify the required parameter 'workflowName' is set
-    if (workflowName == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowName' when calling deleteWorkflowMapping");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/workflow"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "workflowName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowName", workflowName));
-    localVarQueryParameterBaseName = "updateDraftIfNeeded";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("updateDraftIfNeeded", updateDraftIfNeeded));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete workflow scheme
-   * Deletes a workflow scheme. Note that a workflow scheme cannot be deleted if it is active (that is, being used by at least one project).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteWorkflowScheme(@javax.annotation.Nonnull Long id) throws ApiException {
-    return deleteWorkflowScheme(id, null);
-  }
-
-  /**
-   * Delete workflow scheme
-   * Deletes a workflow scheme. Note that a workflow scheme cannot be deleted if it is active (that is, being used by at least one project).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object deleteWorkflowScheme(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = deleteWorkflowSchemeWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete workflow scheme
-   * Deletes a workflow scheme. Note that a workflow scheme cannot be deleted if it is active (that is, being used by at least one project).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
-    return deleteWorkflowSchemeWithHttpInfo(id, null);
-  }
-
-  /**
-   * Delete workflow scheme
-   * Deletes a workflow scheme. Note that a workflow scheme cannot be deleted if it is active (that is, being used by at least one project).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> deleteWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteWorkflowSchemeRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteWorkflowScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteWorkflowSchemeRequestBuilder(@javax.annotation.Nonnull Long id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteWorkflowScheme");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete workflow for issue type in workflow scheme
-   * Deletes the issue type-workflow mapping for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the issue type-workflow mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and update the mapping in the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme deleteWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
-    return deleteWorkflowSchemeIssueType(id, issueType, updateDraftIfNeeded, null);
-  }
-
-  /**
-   * Delete workflow for issue type in workflow scheme
-   * Deletes the issue type-workflow mapping for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the issue type-workflow mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and update the mapping in the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme deleteWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowScheme> localVarResponse = deleteWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, updateDraftIfNeeded, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Delete workflow for issue type in workflow scheme
-   * Deletes the issue type-workflow mapping for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the issue type-workflow mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and update the mapping in the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> deleteWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
-    return deleteWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, updateDraftIfNeeded, null);
-  }
-
-  /**
-   * Delete workflow for issue type in workflow scheme
-   * Deletes the issue type-workflow mapping for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the issue type-workflow mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and update the mapping in the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> deleteWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteWorkflowSchemeIssueTypeRequestBuilder(id, issueType, updateDraftIfNeeded, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteWorkflowSchemeIssueType", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createWorkflowSchemeValidateBeforeCall(@javax.annotation.Nonnull WorkflowScheme workflowScheme, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'workflowScheme' is set
+        if (workflowScheme == null) {
+            throw new ApiException("Missing the required parameter 'workflowScheme' when calling createWorkflowScheme(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowScheme>() {});
-        
-        localVarResponse.body().close();
+        return createWorkflowSchemeCall(workflowScheme, _callback);
 
-        return new ApiResponse<WorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteWorkflowSchemeIssueTypeRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteWorkflowSchemeIssueType");
-    }
-    // verify the required parameter 'issueType' is set
-    if (issueType == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueType' when calling deleteWorkflowSchemeIssueType");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()))
-        .replace("{issueType}", ApiClient.urlEncode(issueType.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "updateDraftIfNeeded";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("updateDraftIfNeeded", updateDraftIfNeeded));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Create workflow scheme
+     * Creates a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param workflowScheme  (required)
+     * @return WorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowScheme createWorkflowScheme(@javax.annotation.Nonnull WorkflowScheme workflowScheme) throws ApiException {
+        ApiResponse<WorkflowScheme> localVarResp = createWorkflowSchemeWithHttpInfo(workflowScheme);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Create workflow scheme
+     * Creates a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param workflowScheme  (required)
+     * @return ApiResponse&lt;WorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowScheme> createWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull WorkflowScheme workflowScheme) throws ApiException {
+        okhttp3.Call localVarCall = createWorkflowSchemeValidateBeforeCall(workflowScheme, null);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Create workflow scheme (asynchronously)
+     * Creates a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param workflowScheme  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createWorkflowSchemeAsync(@javax.annotation.Nonnull WorkflowScheme workflowScheme, final ApiCallback<WorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createWorkflowSchemeValidateBeforeCall(workflowScheme, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for deleteDefaultWorkflow
+     * @param id The ID of the workflow scheme. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow scheme cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not &#x60;true&#x60;. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteDefaultWorkflowCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get all workflow schemes
-   * Returns a [paginated](#pagination) list of all workflow schemes, not including draft workflow schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return PageBeanWorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanWorkflowScheme getAllWorkflowSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getAllWorkflowSchemes(startAt, maxResults, null);
-  }
-
-  /**
-   * Get all workflow schemes
-   * Returns a [paginated](#pagination) list of all workflow schemes, not including draft workflow schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanWorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanWorkflowScheme getAllWorkflowSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanWorkflowScheme> localVarResponse = getAllWorkflowSchemesWithHttpInfo(startAt, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get all workflow schemes
-   * Returns a [paginated](#pagination) list of all workflow schemes, not including draft workflow schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @return ApiResponse&lt;PageBeanWorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanWorkflowScheme> getAllWorkflowSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getAllWorkflowSchemesWithHttpInfo(startAt, maxResults, null);
-  }
-
-  /**
-   * Get all workflow schemes
-   * Returns a [paginated](#pagination) list of all workflow schemes, not including draft workflow schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanWorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanWorkflowScheme> getAllWorkflowSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAllWorkflowSchemesRequestBuilder(startAt, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getAllWorkflowSchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanWorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanWorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanWorkflowScheme>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<PageBeanWorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/default"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder getAllWorkflowSchemesRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get default workflow
-   * Returns the default workflow for a workflow scheme. The default workflow is the workflow that is assigned any issue types that have not been mapped to any other workflow. The default workflow has *All Unassigned Issue Types* listed in its issue types for the workflow scheme in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param returnDraftIfExists Set to &#x60;true&#x60; to return the default workflow for the workflow scheme&#39;s draft rather than scheme itself. If the workflow scheme does not have a draft, then the default workflow for the workflow scheme is returned. (optional, default to false)
-   * @return DefaultWorkflow
-   * @throws ApiException if fails to make API call
-   */
-  public DefaultWorkflow getDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
-    return getDefaultWorkflow(id, returnDraftIfExists, null);
-  }
-
-  /**
-   * Get default workflow
-   * Returns the default workflow for a workflow scheme. The default workflow is the workflow that is assigned any issue types that have not been mapped to any other workflow. The default workflow has *All Unassigned Issue Types* listed in its issue types for the workflow scheme in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param returnDraftIfExists Set to &#x60;true&#x60; to return the default workflow for the workflow scheme&#39;s draft rather than scheme itself. If the workflow scheme does not have a draft, then the default workflow for the workflow scheme is returned. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return DefaultWorkflow
-   * @throws ApiException if fails to make API call
-   */
-  public DefaultWorkflow getDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    ApiResponse<DefaultWorkflow> localVarResponse = getDefaultWorkflowWithHttpInfo(id, returnDraftIfExists, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get default workflow
-   * Returns the default workflow for a workflow scheme. The default workflow is the workflow that is assigned any issue types that have not been mapped to any other workflow. The default workflow has *All Unassigned Issue Types* listed in its issue types for the workflow scheme in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param returnDraftIfExists Set to &#x60;true&#x60; to return the default workflow for the workflow scheme&#39;s draft rather than scheme itself. If the workflow scheme does not have a draft, then the default workflow for the workflow scheme is returned. (optional, default to false)
-   * @return ApiResponse&lt;DefaultWorkflow&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<DefaultWorkflow> getDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
-    return getDefaultWorkflowWithHttpInfo(id, returnDraftIfExists, null);
-  }
-
-  /**
-   * Get default workflow
-   * Returns the default workflow for a workflow scheme. The default workflow is the workflow that is assigned any issue types that have not been mapped to any other workflow. The default workflow has *All Unassigned Issue Types* listed in its issue types for the workflow scheme in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param returnDraftIfExists Set to &#x60;true&#x60; to return the default workflow for the workflow scheme&#39;s draft rather than scheme itself. If the workflow scheme does not have a draft, then the default workflow for the workflow scheme is returned. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;DefaultWorkflow&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<DefaultWorkflow> getDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getDefaultWorkflowRequestBuilder(id, returnDraftIfExists, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getDefaultWorkflow", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<DefaultWorkflow>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (updateDraftIfNeeded != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("updateDraftIfNeeded", updateDraftIfNeeded));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        DefaultWorkflow responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<DefaultWorkflow>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<DefaultWorkflow>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getDefaultWorkflowRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getDefaultWorkflow");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/default"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "returnDraftIfExists";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("returnDraftIfExists", returnDraftIfExists));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get projects which are using a given workflow scheme
-   * Returns a page of projects using a given workflow scheme.
-   * @param workflowSchemeId The workflow scheme ID (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @return WorkflowSchemeProjectUsageDTO
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowSchemeProjectUsageDTO getProjectUsagesForWorkflowScheme(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getProjectUsagesForWorkflowScheme(workflowSchemeId, nextPageToken, maxResults, null);
-  }
-
-  /**
-   * Get projects which are using a given workflow scheme
-   * Returns a page of projects using a given workflow scheme.
-   * @param workflowSchemeId The workflow scheme ID (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowSchemeProjectUsageDTO
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowSchemeProjectUsageDTO getProjectUsagesForWorkflowScheme(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowSchemeProjectUsageDTO> localVarResponse = getProjectUsagesForWorkflowSchemeWithHttpInfo(workflowSchemeId, nextPageToken, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get projects which are using a given workflow scheme
-   * Returns a page of projects using a given workflow scheme.
-   * @param workflowSchemeId The workflow scheme ID (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @return ApiResponse&lt;WorkflowSchemeProjectUsageDTO&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowSchemeProjectUsageDTO> getProjectUsagesForWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getProjectUsagesForWorkflowSchemeWithHttpInfo(workflowSchemeId, nextPageToken, maxResults, null);
-  }
-
-  /**
-   * Get projects which are using a given workflow scheme
-   * Returns a page of projects using a given workflow scheme.
-   * @param workflowSchemeId The workflow scheme ID (required)
-   * @param nextPageToken The cursor for pagination (optional)
-   * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowSchemeProjectUsageDTO&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowSchemeProjectUsageDTO> getProjectUsagesForWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getProjectUsagesForWorkflowSchemeRequestBuilder(workflowSchemeId, nextPageToken, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getProjectUsagesForWorkflowScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowSchemeProjectUsageDTO>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowSchemeProjectUsageDTO responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowSchemeProjectUsageDTO>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<WorkflowSchemeProjectUsageDTO>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getProjectUsagesForWorkflowSchemeRequestBuilder(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'workflowSchemeId' is set
-    if (workflowSchemeId == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowSchemeId' when calling getProjectUsagesForWorkflowScheme");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{workflowSchemeId}/projectUsages"
-        .replace("{workflowSchemeId}", ApiClient.urlEncode(workflowSchemeId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "nextPageToken";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("nextPageToken", nextPageToken));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get required status mappings for workflow scheme update
-   * Gets the required status mappings for the desired changes to a workflow scheme. The results are provided per issue type and workflow. When updating a workflow scheme, status mappings can be provided per issue type, per workflow, or both.  **[Permissions](#permissions) required:**   *  *Administer Jira* permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
-   * @param workflowSchemeUpdateRequiredMappingsRequest  (required)
-   * @return WorkflowSchemeUpdateRequiredMappingsResponse
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowSchemeUpdateRequiredMappingsResponse getRequiredWorkflowSchemeMappings(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest) throws ApiException {
-    return getRequiredWorkflowSchemeMappings(workflowSchemeUpdateRequiredMappingsRequest, null);
-  }
-
-  /**
-   * Get required status mappings for workflow scheme update
-   * Gets the required status mappings for the desired changes to a workflow scheme. The results are provided per issue type and workflow. When updating a workflow scheme, status mappings can be provided per issue type, per workflow, or both.  **[Permissions](#permissions) required:**   *  *Administer Jira* permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
-   * @param workflowSchemeUpdateRequiredMappingsRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowSchemeUpdateRequiredMappingsResponse
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowSchemeUpdateRequiredMappingsResponse getRequiredWorkflowSchemeMappings(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowSchemeUpdateRequiredMappingsResponse> localVarResponse = getRequiredWorkflowSchemeMappingsWithHttpInfo(workflowSchemeUpdateRequiredMappingsRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get required status mappings for workflow scheme update
-   * Gets the required status mappings for the desired changes to a workflow scheme. The results are provided per issue type and workflow. When updating a workflow scheme, status mappings can be provided per issue type, per workflow, or both.  **[Permissions](#permissions) required:**   *  *Administer Jira* permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
-   * @param workflowSchemeUpdateRequiredMappingsRequest  (required)
-   * @return ApiResponse&lt;WorkflowSchemeUpdateRequiredMappingsResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowSchemeUpdateRequiredMappingsResponse> getRequiredWorkflowSchemeMappingsWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest) throws ApiException {
-    return getRequiredWorkflowSchemeMappingsWithHttpInfo(workflowSchemeUpdateRequiredMappingsRequest, null);
-  }
-
-  /**
-   * Get required status mappings for workflow scheme update
-   * Gets the required status mappings for the desired changes to a workflow scheme. The results are provided per issue type and workflow. When updating a workflow scheme, status mappings can be provided per issue type, per workflow, or both.  **[Permissions](#permissions) required:**   *  *Administer Jira* permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
-   * @param workflowSchemeUpdateRequiredMappingsRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowSchemeUpdateRequiredMappingsResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowSchemeUpdateRequiredMappingsResponse> getRequiredWorkflowSchemeMappingsWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getRequiredWorkflowSchemeMappingsRequestBuilder(workflowSchemeUpdateRequiredMappingsRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getRequiredWorkflowSchemeMappings", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowSchemeUpdateRequiredMappingsResponse>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowSchemeUpdateRequiredMappingsResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowSchemeUpdateRequiredMappingsResponse>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<WorkflowSchemeUpdateRequiredMappingsResponse>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getRequiredWorkflowSchemeMappingsRequestBuilder(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'workflowSchemeUpdateRequiredMappingsRequest' is set
-    if (workflowSchemeUpdateRequiredMappingsRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowSchemeUpdateRequiredMappingsRequest' when calling getRequiredWorkflowSchemeMappings");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/update/mappings";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowSchemeUpdateRequiredMappingsRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get issue types for workflows in workflow scheme
-   * Returns the workflow-issue type mappings for a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of a workflow in the scheme. Limits the results to the workflow-issue type mapping for the specified workflow. (optional)
-   * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
-   * @return IssueTypesWorkflowMapping
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypesWorkflowMapping getWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
-    return getWorkflow(id, workflowName, returnDraftIfExists, null);
-  }
-
-  /**
-   * Get issue types for workflows in workflow scheme
-   * Returns the workflow-issue type mappings for a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of a workflow in the scheme. Limits the results to the workflow-issue type mapping for the specified workflow. (optional)
-   * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return IssueTypesWorkflowMapping
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypesWorkflowMapping getWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    ApiResponse<IssueTypesWorkflowMapping> localVarResponse = getWorkflowWithHttpInfo(id, workflowName, returnDraftIfExists, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get issue types for workflows in workflow scheme
-   * Returns the workflow-issue type mappings for a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of a workflow in the scheme. Limits the results to the workflow-issue type mapping for the specified workflow. (optional)
-   * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
-   * @return ApiResponse&lt;IssueTypesWorkflowMapping&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypesWorkflowMapping> getWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
-    return getWorkflowWithHttpInfo(id, workflowName, returnDraftIfExists, null);
-  }
-
-  /**
-   * Get issue types for workflows in workflow scheme
-   * Returns the workflow-issue type mappings for a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of a workflow in the scheme. Limits the results to the workflow-issue type mapping for the specified workflow. (optional)
-   * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;IssueTypesWorkflowMapping&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypesWorkflowMapping> getWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getWorkflowRequestBuilder(id, workflowName, returnDraftIfExists, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getWorkflow", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<IssueTypesWorkflowMapping>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteDefaultWorkflowValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteDefaultWorkflow(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        IssueTypesWorkflowMapping responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<IssueTypesWorkflowMapping>() {});
-        
-        localVarResponse.body().close();
+        return deleteDefaultWorkflowCall(id, updateDraftIfNeeded, _callback);
 
-        return new ApiResponse<IssueTypesWorkflowMapping>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getWorkflowRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getWorkflow");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/workflow"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "workflowName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowName", workflowName));
-    localVarQueryParameterBaseName = "returnDraftIfExists";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("returnDraftIfExists", returnDraftIfExists));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Delete default workflow
+     * Resets the default workflow for a workflow scheme. That is, the default workflow is set to Jira&#39;s system workflow (the *jira* workflow).  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the default workflow reset. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional)
+     * @return WorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow scheme cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not &#x60;true&#x60;. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowScheme deleteDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
+        ApiResponse<WorkflowScheme> localVarResp = deleteDefaultWorkflowWithHttpInfo(id, updateDraftIfNeeded);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Delete default workflow
+     * Resets the default workflow for a workflow scheme. That is, the default workflow is set to Jira&#39;s system workflow (the *jira* workflow).  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the default workflow reset. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional)
+     * @return ApiResponse&lt;WorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow scheme cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not &#x60;true&#x60;. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowScheme> deleteDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
+        okhttp3.Call localVarCall = deleteDefaultWorkflowValidateBeforeCall(id, updateDraftIfNeeded, null);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Delete default workflow (asynchronously)
+     * Resets the default workflow for a workflow scheme. That is, the default workflow is set to Jira&#39;s system workflow (the *jira* workflow).  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the default workflow reset. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow scheme cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not &#x60;true&#x60;. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteDefaultWorkflowAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback<WorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteDefaultWorkflowValidateBeforeCall(id, updateDraftIfNeeded, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
     }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for deleteWorkflowMapping
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of the workflow. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not true. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any of the following is true:   *  The workflow scheme is not found.  *  The workflow is not found.  *  The workflow is not specified. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorkflowMappingCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Get workflow scheme
-   * Returns a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param returnDraftIfExists Returns the workflow scheme&#39;s draft rather than scheme itself, if set to true. If the workflow scheme does not have a draft, then the workflow scheme is returned. (optional, default to false)
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme getWorkflowScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
-    return getWorkflowScheme(id, returnDraftIfExists, null);
-  }
-
-  /**
-   * Get workflow scheme
-   * Returns a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param returnDraftIfExists Returns the workflow scheme&#39;s draft rather than scheme itself, if set to true. If the workflow scheme does not have a draft, then the workflow scheme is returned. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme getWorkflowScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowScheme> localVarResponse = getWorkflowSchemeWithHttpInfo(id, returnDraftIfExists, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get workflow scheme
-   * Returns a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param returnDraftIfExists Returns the workflow scheme&#39;s draft rather than scheme itself, if set to true. If the workflow scheme does not have a draft, then the workflow scheme is returned. (optional, default to false)
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> getWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
-    return getWorkflowSchemeWithHttpInfo(id, returnDraftIfExists, null);
-  }
-
-  /**
-   * Get workflow scheme
-   * Returns a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param returnDraftIfExists Returns the workflow scheme&#39;s draft rather than scheme itself, if set to true. If the workflow scheme does not have a draft, then the workflow scheme is returned. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> getWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getWorkflowSchemeRequestBuilder(id, returnDraftIfExists, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getWorkflowScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowScheme>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<WorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/workflow"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder getWorkflowSchemeRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getWorkflowScheme");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "returnDraftIfExists";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("returnDraftIfExists", returnDraftIfExists));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get workflow for issue type in workflow scheme
-   * Returns the issue type-workflow mapping for an issue type in a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
-   * @return IssueTypeWorkflowMapping
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeWorkflowMapping getWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
-    return getWorkflowSchemeIssueType(id, issueType, returnDraftIfExists, null);
-  }
-
-  /**
-   * Get workflow for issue type in workflow scheme
-   * Returns the issue type-workflow mapping for an issue type in a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return IssueTypeWorkflowMapping
-   * @throws ApiException if fails to make API call
-   */
-  public IssueTypeWorkflowMapping getWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    ApiResponse<IssueTypeWorkflowMapping> localVarResponse = getWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, returnDraftIfExists, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get workflow for issue type in workflow scheme
-   * Returns the issue type-workflow mapping for an issue type in a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
-   * @return ApiResponse&lt;IssueTypeWorkflowMapping&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeWorkflowMapping> getWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
-    return getWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, returnDraftIfExists, null);
-  }
-
-  /**
-   * Get workflow for issue type in workflow scheme
-   * Returns the issue type-workflow mapping for an issue type in a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;IssueTypeWorkflowMapping&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<IssueTypeWorkflowMapping> getWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getWorkflowSchemeIssueTypeRequestBuilder(id, issueType, returnDraftIfExists, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getWorkflowSchemeIssueType", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<IssueTypeWorkflowMapping>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (workflowName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowName", workflowName));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        IssueTypeWorkflowMapping responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<IssueTypeWorkflowMapping>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<IssueTypeWorkflowMapping>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getWorkflowSchemeIssueTypeRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getWorkflowSchemeIssueType");
-    }
-    // verify the required parameter 'issueType' is set
-    if (issueType == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueType' when calling getWorkflowSchemeIssueType");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()))
-        .replace("{issueType}", ApiClient.urlEncode(issueType.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "returnDraftIfExists";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("returnDraftIfExists", returnDraftIfExists));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk get workflow schemes
-   * Returns a list of workflow schemes by providing workflow scheme IDs or project IDs.  **[Permissions](#permissions) required:**   *  *Administer Jira* global permission to access all, including project-scoped, workflow schemes  *  *Administer projects* project permissions to access project-scoped workflow schemes
-   * @param workflowSchemeReadRequest  (required)
-   * @return List&lt;WorkflowSchemeReadResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<WorkflowSchemeReadResponse> readWorkflowSchemes(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest) throws ApiException {
-    return readWorkflowSchemes(workflowSchemeReadRequest, null);
-  }
-
-  /**
-   * Bulk get workflow schemes
-   * Returns a list of workflow schemes by providing workflow scheme IDs or project IDs.  **[Permissions](#permissions) required:**   *  *Administer Jira* global permission to access all, including project-scoped, workflow schemes  *  *Administer projects* project permissions to access project-scoped workflow schemes
-   * @param workflowSchemeReadRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return List&lt;WorkflowSchemeReadResponse&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<WorkflowSchemeReadResponse> readWorkflowSchemes(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<List<WorkflowSchemeReadResponse>> localVarResponse = readWorkflowSchemesWithHttpInfo(workflowSchemeReadRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk get workflow schemes
-   * Returns a list of workflow schemes by providing workflow scheme IDs or project IDs.  **[Permissions](#permissions) required:**   *  *Administer Jira* global permission to access all, including project-scoped, workflow schemes  *  *Administer projects* project permissions to access project-scoped workflow schemes
-   * @param workflowSchemeReadRequest  (required)
-   * @return ApiResponse&lt;List&lt;WorkflowSchemeReadResponse&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<WorkflowSchemeReadResponse>> readWorkflowSchemesWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest) throws ApiException {
-    return readWorkflowSchemesWithHttpInfo(workflowSchemeReadRequest, null);
-  }
-
-  /**
-   * Bulk get workflow schemes
-   * Returns a list of workflow schemes by providing workflow scheme IDs or project IDs.  **[Permissions](#permissions) required:**   *  *Administer Jira* global permission to access all, including project-scoped, workflow schemes  *  *Administer projects* project permissions to access project-scoped workflow schemes
-   * @param workflowSchemeReadRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;List&lt;WorkflowSchemeReadResponse&gt;&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<List<WorkflowSchemeReadResponse>> readWorkflowSchemesWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = readWorkflowSchemesRequestBuilder(workflowSchemeReadRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("readWorkflowSchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<List<WorkflowSchemeReadResponse>>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (updateDraftIfNeeded != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("updateDraftIfNeeded", updateDraftIfNeeded));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        List<WorkflowSchemeReadResponse> responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<List<WorkflowSchemeReadResponse>>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<List<WorkflowSchemeReadResponse>>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder readWorkflowSchemesRequestBuilder(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'workflowSchemeReadRequest' is set
-    if (workflowSchemeReadRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowSchemeReadRequest' when calling readWorkflowSchemes");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/read";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowSchemeReadRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Set workflow for issue type in workflow scheme
-   * Sets the workflow for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new issue type-workflow mapping. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param issueTypeWorkflowMapping The issue type-project mapping. (required)
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme setWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping) throws ApiException {
-    return setWorkflowSchemeIssueType(id, issueType, issueTypeWorkflowMapping, null);
-  }
-
-  /**
-   * Set workflow for issue type in workflow scheme
-   * Sets the workflow for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new issue type-workflow mapping. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param issueTypeWorkflowMapping The issue type-project mapping. (required)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme setWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowScheme> localVarResponse = setWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, issueTypeWorkflowMapping, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set workflow for issue type in workflow scheme
-   * Sets the workflow for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new issue type-workflow mapping. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param issueTypeWorkflowMapping The issue type-project mapping. (required)
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> setWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping) throws ApiException {
-    return setWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, issueTypeWorkflowMapping, null);
-  }
-
-  /**
-   * Set workflow for issue type in workflow scheme
-   * Sets the workflow for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new issue type-workflow mapping. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param issueType The ID of the issue type. (required)
-   * @param issueTypeWorkflowMapping The issue type-project mapping. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> setWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = setWorkflowSchemeIssueTypeRequestBuilder(id, issueType, issueTypeWorkflowMapping, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("setWorkflowSchemeIssueType", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowScheme>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<WorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder setWorkflowSchemeIssueTypeRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling setWorkflowSchemeIssueType");
-    }
-    // verify the required parameter 'issueType' is set
-    if (issueType == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueType' when calling setWorkflowSchemeIssueType");
-    }
-    // verify the required parameter 'issueTypeWorkflowMapping' is set
-    if (issueTypeWorkflowMapping == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypeWorkflowMapping' when calling setWorkflowSchemeIssueType");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()))
-        .replace("{issueType}", ApiClient.urlEncode(issueType.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypeWorkflowMapping);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update default workflow
-   * Sets the default workflow for a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request object and a draft workflow scheme is created or updated with the new default workflow. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param defaultWorkflow The new default workflow. (required)
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme updateDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow) throws ApiException {
-    return updateDefaultWorkflow(id, defaultWorkflow, null);
-  }
-
-  /**
-   * Update default workflow
-   * Sets the default workflow for a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request object and a draft workflow scheme is created or updated with the new default workflow. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param defaultWorkflow The new default workflow. (required)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme updateDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowScheme> localVarResponse = updateDefaultWorkflowWithHttpInfo(id, defaultWorkflow, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update default workflow
-   * Sets the default workflow for a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request object and a draft workflow scheme is created or updated with the new default workflow. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param defaultWorkflow The new default workflow. (required)
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> updateDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow) throws ApiException {
-    return updateDefaultWorkflowWithHttpInfo(id, defaultWorkflow, null);
-  }
-
-  /**
-   * Update default workflow
-   * Sets the default workflow for a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request object and a draft workflow scheme is created or updated with the new default workflow. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param defaultWorkflow The new default workflow. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> updateDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateDefaultWorkflowRequestBuilder(id, defaultWorkflow, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateDefaultWorkflow", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowScheme>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<WorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateDefaultWorkflowRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateDefaultWorkflow");
-    }
-    // verify the required parameter 'defaultWorkflow' is set
-    if (defaultWorkflow == null) {
-      throw new ApiException(400, "Missing the required parameter 'defaultWorkflow' when calling updateDefaultWorkflow");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/default"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(defaultWorkflow);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update workflow scheme
-   * Updates company-managed and team-managed project workflow schemes. This API doesn&#39;t have a concept of draft, so any changes made to a workflow scheme are immediately available. When changing the available statuses for issue types, an [asynchronous task](#async) migrates the issues as defined in the provided mappings.  **[Permissions](#permissions) required:**   *  *Administer Jira* project permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
-   * @param workflowSchemeUpdateRequest  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateSchemes(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest) throws ApiException {
-    return updateSchemes(workflowSchemeUpdateRequest, null);
-  }
-
-  /**
-   * Update workflow scheme
-   * Updates company-managed and team-managed project workflow schemes. This API doesn&#39;t have a concept of draft, so any changes made to a workflow scheme are immediately available. When changing the available statuses for issue types, an [asynchronous task](#async) migrates the issues as defined in the provided mappings.  **[Permissions](#permissions) required:**   *  *Administer Jira* project permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
-   * @param workflowSchemeUpdateRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object updateSchemes(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = updateSchemesWithHttpInfo(workflowSchemeUpdateRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update workflow scheme
-   * Updates company-managed and team-managed project workflow schemes. This API doesn&#39;t have a concept of draft, so any changes made to a workflow scheme are immediately available. When changing the available statuses for issue types, an [asynchronous task](#async) migrates the issues as defined in the provided mappings.  **[Permissions](#permissions) required:**   *  *Administer Jira* project permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
-   * @param workflowSchemeUpdateRequest  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateSchemesWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest) throws ApiException {
-    return updateSchemesWithHttpInfo(workflowSchemeUpdateRequest, null);
-  }
-
-  /**
-   * Update workflow scheme
-   * Updates company-managed and team-managed project workflow schemes. This API doesn&#39;t have a concept of draft, so any changes made to a workflow scheme are immediately available. When changing the available statuses for issue types, an [asynchronous task](#async) migrates the issues as defined in the provided mappings.  **[Permissions](#permissions) required:**   *  *Administer Jira* project permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
-   * @param workflowSchemeUpdateRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> updateSchemesWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateSchemesRequestBuilder(workflowSchemeUpdateRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateSchemes", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteWorkflowMappingValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteWorkflowMapping(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateSchemesRequestBuilder(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'workflowSchemeUpdateRequest' is set
-    if (workflowSchemeUpdateRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowSchemeUpdateRequest' when calling updateSchemes");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/update";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowSchemeUpdateRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Set issue types for workflow in workflow scheme
-   * Sets the issue types for a workflow in a workflow scheme. The workflow can also be set as the default workflow for the workflow scheme. Unmapped issues types are mapped to the default workflow.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new workflow-issue types mappings. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of the workflow. (required)
-   * @param issueTypesWorkflowMapping  (required)
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme updateWorkflowMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping) throws ApiException {
-    return updateWorkflowMapping(id, workflowName, issueTypesWorkflowMapping, null);
-  }
-
-  /**
-   * Set issue types for workflow in workflow scheme
-   * Sets the issue types for a workflow in a workflow scheme. The workflow can also be set as the default workflow for the workflow scheme. Unmapped issues types are mapped to the default workflow.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new workflow-issue types mappings. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of the workflow. (required)
-   * @param issueTypesWorkflowMapping  (required)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme updateWorkflowMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowScheme> localVarResponse = updateWorkflowMappingWithHttpInfo(id, workflowName, issueTypesWorkflowMapping, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Set issue types for workflow in workflow scheme
-   * Sets the issue types for a workflow in a workflow scheme. The workflow can also be set as the default workflow for the workflow scheme. Unmapped issues types are mapped to the default workflow.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new workflow-issue types mappings. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of the workflow. (required)
-   * @param issueTypesWorkflowMapping  (required)
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> updateWorkflowMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping) throws ApiException {
-    return updateWorkflowMappingWithHttpInfo(id, workflowName, issueTypesWorkflowMapping, null);
-  }
-
-  /**
-   * Set issue types for workflow in workflow scheme
-   * Sets the issue types for a workflow in a workflow scheme. The workflow can also be set as the default workflow for the workflow scheme. Unmapped issues types are mapped to the default workflow.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new workflow-issue types mappings. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. (required)
-   * @param workflowName The name of the workflow. (required)
-   * @param issueTypesWorkflowMapping  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> updateWorkflowMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateWorkflowMappingRequestBuilder(id, workflowName, issueTypesWorkflowMapping, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateWorkflowMapping", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'workflowName' is set
+        if (workflowName == null) {
+            throw new ApiException("Missing the required parameter 'workflowName' when calling deleteWorkflowMapping(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowScheme>() {});
-        
-        localVarResponse.body().close();
+        return deleteWorkflowMappingCall(id, workflowName, updateDraftIfNeeded, _callback);
 
-        return new ApiResponse<WorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder updateWorkflowMappingRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateWorkflowMapping");
-    }
-    // verify the required parameter 'workflowName' is set
-    if (workflowName == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowName' when calling updateWorkflowMapping");
-    }
-    // verify the required parameter 'issueTypesWorkflowMapping' is set
-    if (issueTypesWorkflowMapping == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueTypesWorkflowMapping' when calling updateWorkflowMapping");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/workflowscheme/{id}/workflow"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "workflowName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("workflowName", workflowName));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Delete issue types for workflow in workflow scheme
+     * Deletes the workflow-issue type mapping for a workflow in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the workflow-issue type mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of the workflow. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not true. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any of the following is true:   *  The workflow scheme is not found.  *  The workflow is not found.  *  The workflow is not specified. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteWorkflowMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
+        deleteWorkflowMappingWithHttpInfo(id, workflowName, updateDraftIfNeeded);
     }
 
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueTypesWorkflowMapping);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Delete issue types for workflow in workflow scheme
+     * Deletes the workflow-issue type mapping for a workflow in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the workflow-issue type mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of the workflow. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not true. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any of the following is true:   *  The workflow scheme is not found.  *  The workflow is not found.  *  The workflow is not specified. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteWorkflowMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
+        okhttp3.Call localVarCall = deleteWorkflowMappingValidateBeforeCall(id, workflowName, updateDraftIfNeeded, null);
+        return localVarApiClient.execute(localVarCall);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+
+    /**
+     * Delete issue types for workflow in workflow scheme (asynchronously)
+     * Deletes the workflow-issue type mapping for a workflow in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the workflow-issue type mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of the workflow. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and delete the mapping from the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not true. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any of the following is true:   *  The workflow scheme is not found.  *  The workflow is not found.  *  The workflow is not specified. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorkflowMappingAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteWorkflowMappingValidateBeforeCall(id, workflowName, updateDraftIfNeeded, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Build call for deleteWorkflowScheme
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the scheme is active. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorkflowSchemeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Classic update workflow scheme
-   * Updates a company-manged project workflow scheme, including the name, default workflow, issue type to project mappings, and more. If the workflow scheme is active (that is, being used by at least one project), then a draft workflow scheme is created or updated instead, provided that &#x60;updateDraftIfNeeded&#x60; is set to &#x60;true&#x60;.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param workflowScheme  (required)
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme updateWorkflowScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme) throws ApiException {
-    return updateWorkflowScheme(id, workflowScheme, null);
-  }
-
-  /**
-   * Classic update workflow scheme
-   * Updates a company-manged project workflow scheme, including the name, default workflow, issue type to project mappings, and more. If the workflow scheme is active (that is, being used by at least one project), then a draft workflow scheme is created or updated instead, provided that &#x60;updateDraftIfNeeded&#x60; is set to &#x60;true&#x60;.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param workflowScheme  (required)
-   * @param headers Optional headers to include in the request
-   * @return WorkflowScheme
-   * @throws ApiException if fails to make API call
-   */
-  public WorkflowScheme updateWorkflowScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme, Map<String, String> headers) throws ApiException {
-    ApiResponse<WorkflowScheme> localVarResponse = updateWorkflowSchemeWithHttpInfo(id, workflowScheme, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Classic update workflow scheme
-   * Updates a company-manged project workflow scheme, including the name, default workflow, issue type to project mappings, and more. If the workflow scheme is active (that is, being used by at least one project), then a draft workflow scheme is created or updated instead, provided that &#x60;updateDraftIfNeeded&#x60; is set to &#x60;true&#x60;.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param workflowScheme  (required)
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> updateWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme) throws ApiException {
-    return updateWorkflowSchemeWithHttpInfo(id, workflowScheme, null);
-  }
-
-  /**
-   * Classic update workflow scheme
-   * Updates a company-manged project workflow scheme, including the name, default workflow, issue type to project mappings, and more. If the workflow scheme is active (that is, being used by at least one project), then a draft workflow scheme is created or updated instead, provided that &#x60;updateDraftIfNeeded&#x60; is set to &#x60;true&#x60;.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
-   * @param workflowScheme  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;WorkflowScheme&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<WorkflowScheme> updateWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateWorkflowSchemeRequestBuilder(id, workflowScheme, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateWorkflowScheme", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<WorkflowScheme>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        WorkflowScheme responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<WorkflowScheme>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = null;
 
-        return new ApiResponse<WorkflowScheme>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
 
-  private HttpRequest.Builder updateWorkflowSchemeRequestBuilder(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateWorkflowScheme");
-    }
-    // verify the required parameter 'workflowScheme' is set
-    if (workflowScheme == null) {
-      throw new ApiException(400, "Missing the required parameter 'workflowScheme' when calling updateWorkflowScheme");
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteWorkflowSchemeValidateBeforeCall(@javax.annotation.Nonnull Long id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteWorkflowScheme(Async)");
+        }
 
-    String localVarPath = "/rest/api/3/workflowscheme/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
+        return deleteWorkflowSchemeCall(id, _callback);
 
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(workflowScheme);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Delete workflow scheme
+     * Deletes a workflow scheme. Note that a workflow scheme cannot be deleted if it is active (that is, being used by at least one project).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the scheme is active. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object deleteWorkflowScheme(@javax.annotation.Nonnull Long id) throws ApiException {
+        ApiResponse<Object> localVarResp = deleteWorkflowSchemeWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Delete workflow scheme
+     * Deletes a workflow scheme. Note that a workflow scheme cannot be deleted if it is active (that is, being used by at least one project).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the scheme is active. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> deleteWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id) throws ApiException {
+        okhttp3.Call localVarCall = deleteWorkflowSchemeValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete workflow scheme (asynchronously)
+     * Deletes a workflow scheme. Note that a workflow scheme cannot be deleted if it is active (that is, being used by at least one project).  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the scheme is active. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorkflowSchemeAsync(@javax.annotation.Nonnull Long id, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteWorkflowSchemeValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteWorkflowSchemeIssueType
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and update the mapping in the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is false. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorkflowSchemeIssueTypeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()))
+            .replace("{" + "issueType" + "}", localVarApiClient.escapeString(issueType.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (updateDraftIfNeeded != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("updateDraftIfNeeded", updateDraftIfNeeded));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteWorkflowSchemeIssueTypeValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteWorkflowSchemeIssueType(Async)");
+        }
+
+        // verify the required parameter 'issueType' is set
+        if (issueType == null) {
+            throw new ApiException("Missing the required parameter 'issueType' when calling deleteWorkflowSchemeIssueType(Async)");
+        }
+
+        return deleteWorkflowSchemeIssueTypeCall(id, issueType, updateDraftIfNeeded, _callback);
+
+    }
+
+    /**
+     * Delete workflow for issue type in workflow scheme
+     * Deletes the issue type-workflow mapping for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the issue type-workflow mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and update the mapping in the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
+     * @return WorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is false. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowScheme deleteWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
+        ApiResponse<WorkflowScheme> localVarResp = deleteWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, updateDraftIfNeeded);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Delete workflow for issue type in workflow scheme
+     * Deletes the issue type-workflow mapping for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the issue type-workflow mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and update the mapping in the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
+     * @return ApiResponse&lt;WorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is false. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowScheme> deleteWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded) throws ApiException {
+        okhttp3.Call localVarCall = deleteWorkflowSchemeIssueTypeValidateBeforeCall(id, issueType, updateDraftIfNeeded, null);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Delete workflow for issue type in workflow scheme (asynchronously)
+     * Deletes the issue type-workflow mapping for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; and a draft workflow scheme is created or updated with the issue type-workflow mapping deleted. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param updateDraftIfNeeded Set to true to create or update the draft of a workflow scheme and update the mapping in the draft, when the workflow scheme cannot be edited. Defaults to &#x60;false&#x60;. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is false. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteWorkflowSchemeIssueTypeAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean updateDraftIfNeeded, final ApiCallback<WorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteWorkflowSchemeIssueTypeValidateBeforeCall(id, issueType, updateDraftIfNeeded, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getAllWorkflowSchemes
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllWorkflowSchemesCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getAllWorkflowSchemesValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        return getAllWorkflowSchemesCall(startAt, maxResults, _callback);
+
+    }
+
+    /**
+     * Get all workflow schemes
+     * Returns a [paginated](#pagination) list of all workflow schemes, not including draft workflow schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return PageBeanWorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanWorkflowScheme getAllWorkflowSchemes(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageBeanWorkflowScheme> localVarResp = getAllWorkflowSchemesWithHttpInfo(startAt, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get all workflow schemes
+     * Returns a [paginated](#pagination) list of all workflow schemes, not including draft workflow schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @return ApiResponse&lt;PageBeanWorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanWorkflowScheme> getAllWorkflowSchemesWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getAllWorkflowSchemesValidateBeforeCall(startAt, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageBeanWorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get all workflow schemes (asynchronously)
+     * Returns a [paginated](#pagination) list of all workflow schemes, not including draft workflow schemes.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getAllWorkflowSchemesAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageBeanWorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getAllWorkflowSchemesValidateBeforeCall(startAt, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanWorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getDefaultWorkflow
+     * @param id The ID of the workflow scheme. (required)
+     * @param returnDraftIfExists Set to &#x60;true&#x60; to return the default workflow for the workflow scheme&#39;s draft rather than scheme itself. If the workflow scheme does not have a draft, then the default workflow for the workflow scheme is returned. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getDefaultWorkflowCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/default"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (returnDraftIfExists != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("returnDraftIfExists", returnDraftIfExists));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getDefaultWorkflowValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getDefaultWorkflow(Async)");
+        }
+
+        return getDefaultWorkflowCall(id, returnDraftIfExists, _callback);
+
+    }
+
+    /**
+     * Get default workflow
+     * Returns the default workflow for a workflow scheme. The default workflow is the workflow that is assigned any issue types that have not been mapped to any other workflow. The default workflow has *All Unassigned Issue Types* listed in its issue types for the workflow scheme in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param returnDraftIfExists Set to &#x60;true&#x60; to return the default workflow for the workflow scheme&#39;s draft rather than scheme itself. If the workflow scheme does not have a draft, then the default workflow for the workflow scheme is returned. (optional, default to false)
+     * @return DefaultWorkflow
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public DefaultWorkflow getDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
+        ApiResponse<DefaultWorkflow> localVarResp = getDefaultWorkflowWithHttpInfo(id, returnDraftIfExists);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get default workflow
+     * Returns the default workflow for a workflow scheme. The default workflow is the workflow that is assigned any issue types that have not been mapped to any other workflow. The default workflow has *All Unassigned Issue Types* listed in its issue types for the workflow scheme in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param returnDraftIfExists Set to &#x60;true&#x60; to return the default workflow for the workflow scheme&#39;s draft rather than scheme itself. If the workflow scheme does not have a draft, then the default workflow for the workflow scheme is returned. (optional, default to false)
+     * @return ApiResponse&lt;DefaultWorkflow&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<DefaultWorkflow> getDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
+        okhttp3.Call localVarCall = getDefaultWorkflowValidateBeforeCall(id, returnDraftIfExists, null);
+        Type localVarReturnType = new TypeToken<DefaultWorkflow>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get default workflow (asynchronously)
+     * Returns the default workflow for a workflow scheme. The default workflow is the workflow that is assigned any issue types that have not been mapped to any other workflow. The default workflow has *All Unassigned Issue Types* listed in its issue types for the workflow scheme in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param returnDraftIfExists Set to &#x60;true&#x60; to return the default workflow for the workflow scheme&#39;s draft rather than scheme itself. If the workflow scheme does not have a draft, then the default workflow for the workflow scheme is returned. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getDefaultWorkflowAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback<DefaultWorkflow> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getDefaultWorkflowValidateBeforeCall(id, returnDraftIfExists, _callback);
+        Type localVarReturnType = new TypeToken<DefaultWorkflow>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getProjectUsagesForWorkflowScheme
+     * @param workflowSchemeId The workflow scheme ID (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectUsagesForWorkflowSchemeCall(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{workflowSchemeId}/projectUsages"
+            .replace("{" + "workflowSchemeId" + "}", localVarApiClient.escapeString(workflowSchemeId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (nextPageToken != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("nextPageToken", nextPageToken));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getProjectUsagesForWorkflowSchemeValidateBeforeCall(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'workflowSchemeId' is set
+        if (workflowSchemeId == null) {
+            throw new ApiException("Missing the required parameter 'workflowSchemeId' when calling getProjectUsagesForWorkflowScheme(Async)");
+        }
+
+        return getProjectUsagesForWorkflowSchemeCall(workflowSchemeId, nextPageToken, maxResults, _callback);
+
+    }
+
+    /**
+     * Get projects which are using a given workflow scheme
+     * Returns a page of projects using a given workflow scheme.
+     * @param workflowSchemeId The workflow scheme ID (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @return WorkflowSchemeProjectUsageDTO
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowSchemeProjectUsageDTO getProjectUsagesForWorkflowScheme(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<WorkflowSchemeProjectUsageDTO> localVarResp = getProjectUsagesForWorkflowSchemeWithHttpInfo(workflowSchemeId, nextPageToken, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get projects which are using a given workflow scheme
+     * Returns a page of projects using a given workflow scheme.
+     * @param workflowSchemeId The workflow scheme ID (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @return ApiResponse&lt;WorkflowSchemeProjectUsageDTO&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowSchemeProjectUsageDTO> getProjectUsagesForWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getProjectUsagesForWorkflowSchemeValidateBeforeCall(workflowSchemeId, nextPageToken, maxResults, null);
+        Type localVarReturnType = new TypeToken<WorkflowSchemeProjectUsageDTO>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get projects which are using a given workflow scheme (asynchronously)
+     * Returns a page of projects using a given workflow scheme.
+     * @param workflowSchemeId The workflow scheme ID (required)
+     * @param nextPageToken The cursor for pagination (optional)
+     * @param maxResults The maximum number of results to return. Must be an integer between 1 and 200. (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme with the given ID does not exist. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getProjectUsagesForWorkflowSchemeAsync(@javax.annotation.Nonnull String workflowSchemeId, @javax.annotation.Nullable String nextPageToken, @javax.annotation.Nullable Integer maxResults, final ApiCallback<WorkflowSchemeProjectUsageDTO> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getProjectUsagesForWorkflowSchemeValidateBeforeCall(workflowSchemeId, nextPageToken, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowSchemeProjectUsageDTO>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getRequiredWorkflowSchemeMappings
+     * @param workflowSchemeUpdateRequiredMappingsRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRequiredWorkflowSchemeMappingsCall(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = workflowSchemeUpdateRequiredMappingsRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/update/mappings";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getRequiredWorkflowSchemeMappingsValidateBeforeCall(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'workflowSchemeUpdateRequiredMappingsRequest' is set
+        if (workflowSchemeUpdateRequiredMappingsRequest == null) {
+            throw new ApiException("Missing the required parameter 'workflowSchemeUpdateRequiredMappingsRequest' when calling getRequiredWorkflowSchemeMappings(Async)");
+        }
+
+        return getRequiredWorkflowSchemeMappingsCall(workflowSchemeUpdateRequiredMappingsRequest, _callback);
+
+    }
+
+    /**
+     * Get required status mappings for workflow scheme update
+     * Gets the required status mappings for the desired changes to a workflow scheme. The results are provided per issue type and workflow. When updating a workflow scheme, status mappings can be provided per issue type, per workflow, or both.  **[Permissions](#permissions) required:**   *  *Administer Jira* permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
+     * @param workflowSchemeUpdateRequiredMappingsRequest  (required)
+     * @return WorkflowSchemeUpdateRequiredMappingsResponse
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowSchemeUpdateRequiredMappingsResponse getRequiredWorkflowSchemeMappings(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest) throws ApiException {
+        ApiResponse<WorkflowSchemeUpdateRequiredMappingsResponse> localVarResp = getRequiredWorkflowSchemeMappingsWithHttpInfo(workflowSchemeUpdateRequiredMappingsRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get required status mappings for workflow scheme update
+     * Gets the required status mappings for the desired changes to a workflow scheme. The results are provided per issue type and workflow. When updating a workflow scheme, status mappings can be provided per issue type, per workflow, or both.  **[Permissions](#permissions) required:**   *  *Administer Jira* permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
+     * @param workflowSchemeUpdateRequiredMappingsRequest  (required)
+     * @return ApiResponse&lt;WorkflowSchemeUpdateRequiredMappingsResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowSchemeUpdateRequiredMappingsResponse> getRequiredWorkflowSchemeMappingsWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest) throws ApiException {
+        okhttp3.Call localVarCall = getRequiredWorkflowSchemeMappingsValidateBeforeCall(workflowSchemeUpdateRequiredMappingsRequest, null);
+        Type localVarReturnType = new TypeToken<WorkflowSchemeUpdateRequiredMappingsResponse>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get required status mappings for workflow scheme update (asynchronously)
+     * Gets the required status mappings for the desired changes to a workflow scheme. The results are provided per issue type and workflow. When updating a workflow scheme, status mappings can be provided per issue type, per workflow, or both.  **[Permissions](#permissions) required:**   *  *Administer Jira* permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
+     * @param workflowSchemeUpdateRequiredMappingsRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getRequiredWorkflowSchemeMappingsAsync(@javax.annotation.Nonnull WorkflowSchemeUpdateRequiredMappingsRequest workflowSchemeUpdateRequiredMappingsRequest, final ApiCallback<WorkflowSchemeUpdateRequiredMappingsResponse> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getRequiredWorkflowSchemeMappingsValidateBeforeCall(workflowSchemeUpdateRequiredMappingsRequest, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowSchemeUpdateRequiredMappingsResponse>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getWorkflow
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of a workflow in the scheme. Limits the results to the workflow-issue type mapping for the specified workflow. (optional)
+     * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if either the workflow scheme or workflow is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/workflow"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (workflowName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowName", workflowName));
+        }
+
+        if (returnDraftIfExists != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("returnDraftIfExists", returnDraftIfExists));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getWorkflowValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getWorkflow(Async)");
+        }
+
+        return getWorkflowCall(id, workflowName, returnDraftIfExists, _callback);
+
+    }
+
+    /**
+     * Get issue types for workflows in workflow scheme
+     * Returns the workflow-issue type mappings for a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of a workflow in the scheme. Limits the results to the workflow-issue type mapping for the specified workflow. (optional)
+     * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
+     * @return IssueTypesWorkflowMapping
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if either the workflow scheme or workflow is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public IssueTypesWorkflowMapping getWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
+        ApiResponse<IssueTypesWorkflowMapping> localVarResp = getWorkflowWithHttpInfo(id, workflowName, returnDraftIfExists);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get issue types for workflows in workflow scheme
+     * Returns the workflow-issue type mappings for a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of a workflow in the scheme. Limits the results to the workflow-issue type mapping for the specified workflow. (optional)
+     * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
+     * @return ApiResponse&lt;IssueTypesWorkflowMapping&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if either the workflow scheme or workflow is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<IssueTypesWorkflowMapping> getWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
+        okhttp3.Call localVarCall = getWorkflowValidateBeforeCall(id, workflowName, returnDraftIfExists, null);
+        Type localVarReturnType = new TypeToken<IssueTypesWorkflowMapping>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get issue types for workflows in workflow scheme (asynchronously)
+     * Returns the workflow-issue type mappings for a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of a workflow in the scheme. Limits the results to the workflow-issue type mapping for the specified workflow. (optional)
+     * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if either the workflow scheme or workflow is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable String workflowName, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback<IssueTypesWorkflowMapping> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getWorkflowValidateBeforeCall(id, workflowName, returnDraftIfExists, _callback);
+        Type localVarReturnType = new TypeToken<IssueTypesWorkflowMapping>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getWorkflowScheme
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param returnDraftIfExists Returns the workflow scheme&#39;s draft rather than scheme itself, if set to true. If the workflow scheme does not have a draft, then the workflow scheme is returned. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowSchemeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (returnDraftIfExists != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("returnDraftIfExists", returnDraftIfExists));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getWorkflowSchemeValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getWorkflowScheme(Async)");
+        }
+
+        return getWorkflowSchemeCall(id, returnDraftIfExists, _callback);
+
+    }
+
+    /**
+     * Get workflow scheme
+     * Returns a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param returnDraftIfExists Returns the workflow scheme&#39;s draft rather than scheme itself, if set to true. If the workflow scheme does not have a draft, then the workflow scheme is returned. (optional, default to false)
+     * @return WorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowScheme getWorkflowScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
+        ApiResponse<WorkflowScheme> localVarResp = getWorkflowSchemeWithHttpInfo(id, returnDraftIfExists);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get workflow scheme
+     * Returns a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param returnDraftIfExists Returns the workflow scheme&#39;s draft rather than scheme itself, if set to true. If the workflow scheme does not have a draft, then the workflow scheme is returned. (optional, default to false)
+     * @return ApiResponse&lt;WorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowScheme> getWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
+        okhttp3.Call localVarCall = getWorkflowSchemeValidateBeforeCall(id, returnDraftIfExists, null);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get workflow scheme (asynchronously)
+     * Returns a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param returnDraftIfExists Returns the workflow scheme&#39;s draft rather than scheme itself, if set to true. If the workflow scheme does not have a draft, then the workflow scheme is returned. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowSchemeAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback<WorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getWorkflowSchemeValidateBeforeCall(id, returnDraftIfExists, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getWorkflowSchemeIssueType
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowSchemeIssueTypeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()))
+            .replace("{" + "issueType" + "}", localVarApiClient.escapeString(issueType.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (returnDraftIfExists != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("returnDraftIfExists", returnDraftIfExists));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getWorkflowSchemeIssueTypeValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getWorkflowSchemeIssueType(Async)");
+        }
+
+        // verify the required parameter 'issueType' is set
+        if (issueType == null) {
+            throw new ApiException("Missing the required parameter 'issueType' when calling getWorkflowSchemeIssueType(Async)");
+        }
+
+        return getWorkflowSchemeIssueTypeCall(id, issueType, returnDraftIfExists, _callback);
+
+    }
+
+    /**
+     * Get workflow for issue type in workflow scheme
+     * Returns the issue type-workflow mapping for an issue type in a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
+     * @return IssueTypeWorkflowMapping
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public IssueTypeWorkflowMapping getWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
+        ApiResponse<IssueTypeWorkflowMapping> localVarResp = getWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, returnDraftIfExists);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get workflow for issue type in workflow scheme
+     * Returns the issue type-workflow mapping for an issue type in a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
+     * @return ApiResponse&lt;IssueTypeWorkflowMapping&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<IssueTypeWorkflowMapping> getWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists) throws ApiException {
+        okhttp3.Call localVarCall = getWorkflowSchemeIssueTypeValidateBeforeCall(id, issueType, returnDraftIfExists, null);
+        Type localVarReturnType = new TypeToken<IssueTypeWorkflowMapping>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get workflow for issue type in workflow scheme (asynchronously)
+     * Returns the issue type-workflow mapping for an issue type in a workflow scheme.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param returnDraftIfExists Returns the mapping from the workflow scheme&#39;s draft rather than the workflow scheme, if set to true. If no draft exists, the mapping from the workflow scheme is returned. (optional, default to false)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getWorkflowSchemeIssueTypeAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nullable Boolean returnDraftIfExists, final ApiCallback<IssueTypeWorkflowMapping> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getWorkflowSchemeIssueTypeValidateBeforeCall(id, issueType, returnDraftIfExists, _callback);
+        Type localVarReturnType = new TypeToken<IssueTypeWorkflowMapping>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for readWorkflowSchemes
+     * @param workflowSchemeReadRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call readWorkflowSchemesCall(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = workflowSchemeReadRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/read";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call readWorkflowSchemesValidateBeforeCall(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'workflowSchemeReadRequest' is set
+        if (workflowSchemeReadRequest == null) {
+            throw new ApiException("Missing the required parameter 'workflowSchemeReadRequest' when calling readWorkflowSchemes(Async)");
+        }
+
+        return readWorkflowSchemesCall(workflowSchemeReadRequest, _callback);
+
+    }
+
+    /**
+     * Bulk get workflow schemes
+     * Returns a list of workflow schemes by providing workflow scheme IDs or project IDs.  **[Permissions](#permissions) required:**   *  *Administer Jira* global permission to access all, including project-scoped, workflow schemes  *  *Administer projects* project permissions to access project-scoped workflow schemes
+     * @param workflowSchemeReadRequest  (required)
+     * @return List&lt;WorkflowSchemeReadResponse&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public List<WorkflowSchemeReadResponse> readWorkflowSchemes(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest) throws ApiException {
+        ApiResponse<List<WorkflowSchemeReadResponse>> localVarResp = readWorkflowSchemesWithHttpInfo(workflowSchemeReadRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk get workflow schemes
+     * Returns a list of workflow schemes by providing workflow scheme IDs or project IDs.  **[Permissions](#permissions) required:**   *  *Administer Jira* global permission to access all, including project-scoped, workflow schemes  *  *Administer projects* project permissions to access project-scoped workflow schemes
+     * @param workflowSchemeReadRequest  (required)
+     * @return ApiResponse&lt;List&lt;WorkflowSchemeReadResponse&gt;&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<List<WorkflowSchemeReadResponse>> readWorkflowSchemesWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest) throws ApiException {
+        okhttp3.Call localVarCall = readWorkflowSchemesValidateBeforeCall(workflowSchemeReadRequest, null);
+        Type localVarReturnType = new TypeToken<List<WorkflowSchemeReadResponse>>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk get workflow schemes (asynchronously)
+     * Returns a list of workflow schemes by providing workflow scheme IDs or project IDs.  **[Permissions](#permissions) required:**   *  *Administer Jira* global permission to access all, including project-scoped, workflow schemes  *  *Administer projects* project permissions to access project-scoped workflow schemes
+     * @param workflowSchemeReadRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call readWorkflowSchemesAsync(@javax.annotation.Nonnull WorkflowSchemeReadRequest workflowSchemeReadRequest, final ApiCallback<List<WorkflowSchemeReadResponse>> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = readWorkflowSchemesValidateBeforeCall(workflowSchemeReadRequest, _callback);
+        Type localVarReturnType = new TypeToken<List<WorkflowSchemeReadResponse>>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for setWorkflowSchemeIssueType
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param issueTypeWorkflowMapping The issue type-project mapping. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is false. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setWorkflowSchemeIssueTypeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueTypeWorkflowMapping;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()))
+            .replace("{" + "issueType" + "}", localVarApiClient.escapeString(issueType.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call setWorkflowSchemeIssueTypeValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling setWorkflowSchemeIssueType(Async)");
+        }
+
+        // verify the required parameter 'issueType' is set
+        if (issueType == null) {
+            throw new ApiException("Missing the required parameter 'issueType' when calling setWorkflowSchemeIssueType(Async)");
+        }
+
+        // verify the required parameter 'issueTypeWorkflowMapping' is set
+        if (issueTypeWorkflowMapping == null) {
+            throw new ApiException("Missing the required parameter 'issueTypeWorkflowMapping' when calling setWorkflowSchemeIssueType(Async)");
+        }
+
+        return setWorkflowSchemeIssueTypeCall(id, issueType, issueTypeWorkflowMapping, _callback);
+
+    }
+
+    /**
+     * Set workflow for issue type in workflow scheme
+     * Sets the workflow for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new issue type-workflow mapping. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param issueTypeWorkflowMapping The issue type-project mapping. (required)
+     * @return WorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is false. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowScheme setWorkflowSchemeIssueType(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping) throws ApiException {
+        ApiResponse<WorkflowScheme> localVarResp = setWorkflowSchemeIssueTypeWithHttpInfo(id, issueType, issueTypeWorkflowMapping);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set workflow for issue type in workflow scheme
+     * Sets the workflow for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new issue type-workflow mapping. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param issueTypeWorkflowMapping The issue type-project mapping. (required)
+     * @return ApiResponse&lt;WorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is false. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowScheme> setWorkflowSchemeIssueTypeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping) throws ApiException {
+        okhttp3.Call localVarCall = setWorkflowSchemeIssueTypeValidateBeforeCall(id, issueType, issueTypeWorkflowMapping, null);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set workflow for issue type in workflow scheme (asynchronously)
+     * Sets the workflow for an issue type in a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new issue type-workflow mapping. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param issueType The ID of the issue type. (required)
+     * @param issueTypeWorkflowMapping The issue type-project mapping. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow cannot be edited and &#x60;updateDraftIfNeeded&#x60; is false. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme or issue type is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call setWorkflowSchemeIssueTypeAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String issueType, @javax.annotation.Nonnull IssueTypeWorkflowMapping issueTypeWorkflowMapping, final ApiCallback<WorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = setWorkflowSchemeIssueTypeValidateBeforeCall(id, issueType, issueTypeWorkflowMapping, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateDefaultWorkflow
+     * @param id The ID of the workflow scheme. (required)
+     * @param defaultWorkflow The new default workflow. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow scheme cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not &#x60;true&#x60;. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateDefaultWorkflowCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = defaultWorkflow;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/default"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateDefaultWorkflowValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateDefaultWorkflow(Async)");
+        }
+
+        // verify the required parameter 'defaultWorkflow' is set
+        if (defaultWorkflow == null) {
+            throw new ApiException("Missing the required parameter 'defaultWorkflow' when calling updateDefaultWorkflow(Async)");
+        }
+
+        return updateDefaultWorkflowCall(id, defaultWorkflow, _callback);
+
+    }
+
+    /**
+     * Update default workflow
+     * Sets the default workflow for a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request object and a draft workflow scheme is created or updated with the new default workflow. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param defaultWorkflow The new default workflow. (required)
+     * @return WorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow scheme cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not &#x60;true&#x60;. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowScheme updateDefaultWorkflow(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow) throws ApiException {
+        ApiResponse<WorkflowScheme> localVarResp = updateDefaultWorkflowWithHttpInfo(id, defaultWorkflow);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update default workflow
+     * Sets the default workflow for a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request object and a draft workflow scheme is created or updated with the new default workflow. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param defaultWorkflow The new default workflow. (required)
+     * @return ApiResponse&lt;WorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow scheme cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not &#x60;true&#x60;. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowScheme> updateDefaultWorkflowWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow) throws ApiException {
+        okhttp3.Call localVarCall = updateDefaultWorkflowValidateBeforeCall(id, defaultWorkflow, null);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update default workflow (asynchronously)
+     * Sets the default workflow for a workflow scheme.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request object and a draft workflow scheme is created or updated with the new default workflow. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param defaultWorkflow The new default workflow. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the workflow scheme cannot be edited and &#x60;updateDraftIfNeeded&#x60; is not &#x60;true&#x60;. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateDefaultWorkflowAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull DefaultWorkflow defaultWorkflow, final ApiCallback<WorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateDefaultWorkflowValidateBeforeCall(id, defaultWorkflow, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateSchemes
+     * @param workflowSchemeUpdateRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful and there is no asynchronous task. </td><td>  -  </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful and there is an asynchronous task for the migrations. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateSchemesCall(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = workflowSchemeUpdateRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/update";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateSchemesValidateBeforeCall(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'workflowSchemeUpdateRequest' is set
+        if (workflowSchemeUpdateRequest == null) {
+            throw new ApiException("Missing the required parameter 'workflowSchemeUpdateRequest' when calling updateSchemes(Async)");
+        }
+
+        return updateSchemesCall(workflowSchemeUpdateRequest, _callback);
+
+    }
+
+    /**
+     * Update workflow scheme
+     * Updates company-managed and team-managed project workflow schemes. This API doesn&#39;t have a concept of draft, so any changes made to a workflow scheme are immediately available. When changing the available statuses for issue types, an [asynchronous task](#async) migrates the issues as defined in the provided mappings.  **[Permissions](#permissions) required:**   *  *Administer Jira* project permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
+     * @param workflowSchemeUpdateRequest  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful and there is no asynchronous task. </td><td>  -  </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful and there is an asynchronous task for the migrations. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object updateSchemes(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest) throws ApiException {
+        ApiResponse<Object> localVarResp = updateSchemesWithHttpInfo(workflowSchemeUpdateRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update workflow scheme
+     * Updates company-managed and team-managed project workflow schemes. This API doesn&#39;t have a concept of draft, so any changes made to a workflow scheme are immediately available. When changing the available statuses for issue types, an [asynchronous task](#async) migrates the issues as defined in the provided mappings.  **[Permissions](#permissions) required:**   *  *Administer Jira* project permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
+     * @param workflowSchemeUpdateRequest  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful and there is no asynchronous task. </td><td>  -  </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful and there is an asynchronous task for the migrations. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> updateSchemesWithHttpInfo(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest) throws ApiException {
+        okhttp3.Call localVarCall = updateSchemesValidateBeforeCall(workflowSchemeUpdateRequest, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update workflow scheme (asynchronously)
+     * Updates company-managed and team-managed project workflow schemes. This API doesn&#39;t have a concept of draft, so any changes made to a workflow scheme are immediately available. When changing the available statuses for issue types, an [asynchronous task](#async) migrates the issues as defined in the provided mappings.  **[Permissions](#permissions) required:**   *  *Administer Jira* project permission to update all, including global-scoped, workflow schemes.  *  *Administer projects* project permission to update project-scoped workflow schemes.
+     * @param workflowSchemeUpdateRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful and there is no asynchronous task. </td><td>  -  </td></tr>
+        <tr><td> 303 </td><td> Returned if the request is successful and there is an asynchronous task for the migrations. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing, or the caller doesn&#39;t have permissions to perform the operation. </td><td>  -  </td></tr>
+        <tr><td> 409 </td><td> Returned if another workflow configuration update task is ongoing. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateSchemesAsync(@javax.annotation.Nonnull WorkflowSchemeUpdateRequest workflowSchemeUpdateRequest, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateSchemesValidateBeforeCall(workflowSchemeUpdateRequest, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateWorkflowMapping
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of the workflow. (required)
+     * @param issueTypesWorkflowMapping  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any of the following is true:   *  The workflow scheme is not found.  *  The workflow is not found.  *  The workflow is not specified. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateWorkflowMappingCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueTypesWorkflowMapping;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}/workflow"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (workflowName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("workflowName", workflowName));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateWorkflowMappingValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateWorkflowMapping(Async)");
+        }
+
+        // verify the required parameter 'workflowName' is set
+        if (workflowName == null) {
+            throw new ApiException("Missing the required parameter 'workflowName' when calling updateWorkflowMapping(Async)");
+        }
+
+        // verify the required parameter 'issueTypesWorkflowMapping' is set
+        if (issueTypesWorkflowMapping == null) {
+            throw new ApiException("Missing the required parameter 'issueTypesWorkflowMapping' when calling updateWorkflowMapping(Async)");
+        }
+
+        return updateWorkflowMappingCall(id, workflowName, issueTypesWorkflowMapping, _callback);
+
+    }
+
+    /**
+     * Set issue types for workflow in workflow scheme
+     * Sets the issue types for a workflow in a workflow scheme. The workflow can also be set as the default workflow for the workflow scheme. Unmapped issues types are mapped to the default workflow.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new workflow-issue types mappings. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of the workflow. (required)
+     * @param issueTypesWorkflowMapping  (required)
+     * @return WorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any of the following is true:   *  The workflow scheme is not found.  *  The workflow is not found.  *  The workflow is not specified. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowScheme updateWorkflowMapping(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping) throws ApiException {
+        ApiResponse<WorkflowScheme> localVarResp = updateWorkflowMappingWithHttpInfo(id, workflowName, issueTypesWorkflowMapping);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Set issue types for workflow in workflow scheme
+     * Sets the issue types for a workflow in a workflow scheme. The workflow can also be set as the default workflow for the workflow scheme. Unmapped issues types are mapped to the default workflow.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new workflow-issue types mappings. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of the workflow. (required)
+     * @param issueTypesWorkflowMapping  (required)
+     * @return ApiResponse&lt;WorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any of the following is true:   *  The workflow scheme is not found.  *  The workflow is not found.  *  The workflow is not specified. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowScheme> updateWorkflowMappingWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping) throws ApiException {
+        okhttp3.Call localVarCall = updateWorkflowMappingValidateBeforeCall(id, workflowName, issueTypesWorkflowMapping, null);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Set issue types for workflow in workflow scheme (asynchronously)
+     * Sets the issue types for a workflow in a workflow scheme. The workflow can also be set as the default workflow for the workflow scheme. Unmapped issues types are mapped to the default workflow.  Note that active workflow schemes cannot be edited. If the workflow scheme is active, set &#x60;updateDraftIfNeeded&#x60; to &#x60;true&#x60; in the request body and a draft workflow scheme is created or updated with the new workflow-issue types mappings. The draft workflow scheme can be published in Jira.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. (required)
+     * @param workflowName The name of the workflow. (required)
+     * @param issueTypesWorkflowMapping  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if any of the following is true:   *  The workflow scheme is not found.  *  The workflow is not found.  *  The workflow is not specified. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateWorkflowMappingAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull String workflowName, @javax.annotation.Nonnull IssueTypesWorkflowMapping issueTypesWorkflowMapping, final ApiCallback<WorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateWorkflowMappingValidateBeforeCall(id, workflowName, issueTypesWorkflowMapping, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateWorkflowScheme
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param workflowScheme  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateWorkflowSchemeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = workflowScheme;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/workflowscheme/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateWorkflowSchemeValidateBeforeCall(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateWorkflowScheme(Async)");
+        }
+
+        // verify the required parameter 'workflowScheme' is set
+        if (workflowScheme == null) {
+            throw new ApiException("Missing the required parameter 'workflowScheme' when calling updateWorkflowScheme(Async)");
+        }
+
+        return updateWorkflowSchemeCall(id, workflowScheme, _callback);
+
+    }
+
+    /**
+     * Classic update workflow scheme
+     * Updates a company-manged project workflow scheme, including the name, default workflow, issue type to project mappings, and more. If the workflow scheme is active (that is, being used by at least one project), then a draft workflow scheme is created or updated instead, provided that &#x60;updateDraftIfNeeded&#x60; is set to &#x60;true&#x60;.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param workflowScheme  (required)
+     * @return WorkflowScheme
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public WorkflowScheme updateWorkflowScheme(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme) throws ApiException {
+        ApiResponse<WorkflowScheme> localVarResp = updateWorkflowSchemeWithHttpInfo(id, workflowScheme);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Classic update workflow scheme
+     * Updates a company-manged project workflow scheme, including the name, default workflow, issue type to project mappings, and more. If the workflow scheme is active (that is, being used by at least one project), then a draft workflow scheme is created or updated instead, provided that &#x60;updateDraftIfNeeded&#x60; is set to &#x60;true&#x60;.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param workflowScheme  (required)
+     * @return ApiResponse&lt;WorkflowScheme&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<WorkflowScheme> updateWorkflowSchemeWithHttpInfo(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme) throws ApiException {
+        okhttp3.Call localVarCall = updateWorkflowSchemeValidateBeforeCall(id, workflowScheme, null);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Classic update workflow scheme (asynchronously)
+     * Updates a company-manged project workflow scheme, including the name, default workflow, issue type to project mappings, and more. If the workflow scheme is active (that is, being used by at least one project), then a draft workflow scheme is created or updated instead, provided that &#x60;updateDraftIfNeeded&#x60; is set to &#x60;true&#x60;.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param id The ID of the workflow scheme. Find this ID by editing the desired workflow scheme in Jira. The ID is shown in the URL as &#x60;schemeId&#x60;. For example, *schemeId&#x3D;10301*. (required)
+     * @param workflowScheme  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the workflow scheme is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateWorkflowSchemeAsync(@javax.annotation.Nonnull Long id, @javax.annotation.Nonnull WorkflowScheme workflowScheme, final ApiCallback<WorkflowScheme> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateWorkflowSchemeValidateBeforeCall(id, workflowScheme, _callback);
+        Type localVarReturnType = new TypeToken<WorkflowScheme>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

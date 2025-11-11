@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.AddGroupBean;
 import io.kestra.plugin.jira.client.model.FoundGroups;
@@ -26,1267 +35,1367 @@ import io.kestra.plugin.jira.client.model.PageBeanUserDetails;
 import java.util.Set;
 import io.kestra.plugin.jira.client.model.UpdateUserToGroupBean;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class GroupsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public GroupsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public GroupsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addUserToGroup
+     * @param updateUserToGroupBean The user to add to the group. (required)
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;groupname&#x60; is not provided.  *  &#x60;accountId&#x60; is missing. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group or user are not found. </td><td>  -  </td></tr>
+        <tr><td> 429 </td><td> Returned if rate limiting is being enforced. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addUserToGroupCall(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public GroupsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public GroupsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Add user to group
-   * Adds a user to a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param updateUserToGroupBean The user to add to the group. (required)
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @return Group
-   * @throws ApiException if fails to make API call
-   */
-  public Group addUserToGroup(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId) throws ApiException {
-    return addUserToGroup(updateUserToGroupBean, groupname, groupId, null);
-  }
-
-  /**
-   * Add user to group
-   * Adds a user to a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param updateUserToGroupBean The user to add to the group. (required)
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param headers Optional headers to include in the request
-   * @return Group
-   * @throws ApiException if fails to make API call
-   */
-  public Group addUserToGroup(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, Map<String, String> headers) throws ApiException {
-    ApiResponse<Group> localVarResponse = addUserToGroupWithHttpInfo(updateUserToGroupBean, groupname, groupId, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add user to group
-   * Adds a user to a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param updateUserToGroupBean The user to add to the group. (required)
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @return ApiResponse&lt;Group&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Group> addUserToGroupWithHttpInfo(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId) throws ApiException {
-    return addUserToGroupWithHttpInfo(updateUserToGroupBean, groupname, groupId, null);
-  }
-
-  /**
-   * Add user to group
-   * Adds a user to a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param updateUserToGroupBean The user to add to the group. (required)
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Group&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Group> addUserToGroupWithHttpInfo(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addUserToGroupRequestBuilder(updateUserToGroupBean, groupname, groupId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addUserToGroup", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Group>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Group responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Group>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = updateUserToGroupBean;
 
-        return new ApiResponse<Group>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/group/user";
 
-  private HttpRequest.Builder addUserToGroupRequestBuilder(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'updateUserToGroupBean' is set
-    if (updateUserToGroupBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'updateUserToGroupBean' when calling addUserToGroup");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/group/user";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "groupname";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupname", groupname));
-    localVarQueryParameterBaseName = "groupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupId", groupId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(updateUserToGroupBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Bulk get groups
-   * Returns a [paginated](#pagination) list of groups.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param groupId The ID of a group. To specify multiple IDs, pass multiple &#x60;groupId&#x60; parameters. For example, &#x60;groupId&#x3D;5b10a2844c20165700ede21g&amp;groupId&#x3D;5b10ac8d82e05b22cc7d4ef5&#x60;. (optional)
-   * @param groupName The name of a group. To specify multiple names, pass multiple &#x60;groupName&#x60; parameters. For example, &#x60;groupName&#x3D;administrators&amp;groupName&#x3D;jira-software-users&#x60;. (optional)
-   * @param accessType The access level of a group. Valid values: &#39;site-admin&#39;, &#39;admin&#39;, &#39;user&#39;. (optional)
-   * @param applicationKey The application key of the product user groups to search for. Valid values: &#39;jira-servicedesk&#39;, &#39;jira-software&#39;, &#39;jira-product-discovery&#39;, &#39;jira-core&#39;. (optional)
-   * @return PageBeanGroupDetails
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanGroupDetails bulkGetGroups(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey) throws ApiException {
-    return bulkGetGroups(startAt, maxResults, groupId, groupName, accessType, applicationKey, null);
-  }
-
-  /**
-   * Bulk get groups
-   * Returns a [paginated](#pagination) list of groups.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param groupId The ID of a group. To specify multiple IDs, pass multiple &#x60;groupId&#x60; parameters. For example, &#x60;groupId&#x3D;5b10a2844c20165700ede21g&amp;groupId&#x3D;5b10ac8d82e05b22cc7d4ef5&#x60;. (optional)
-   * @param groupName The name of a group. To specify multiple names, pass multiple &#x60;groupName&#x60; parameters. For example, &#x60;groupName&#x3D;administrators&amp;groupName&#x3D;jira-software-users&#x60;. (optional)
-   * @param accessType The access level of a group. Valid values: &#39;site-admin&#39;, &#39;admin&#39;, &#39;user&#39;. (optional)
-   * @param applicationKey The application key of the product user groups to search for. Valid values: &#39;jira-servicedesk&#39;, &#39;jira-software&#39;, &#39;jira-product-discovery&#39;, &#39;jira-core&#39;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanGroupDetails
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanGroupDetails bulkGetGroups(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanGroupDetails> localVarResponse = bulkGetGroupsWithHttpInfo(startAt, maxResults, groupId, groupName, accessType, applicationKey, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Bulk get groups
-   * Returns a [paginated](#pagination) list of groups.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param groupId The ID of a group. To specify multiple IDs, pass multiple &#x60;groupId&#x60; parameters. For example, &#x60;groupId&#x3D;5b10a2844c20165700ede21g&amp;groupId&#x3D;5b10ac8d82e05b22cc7d4ef5&#x60;. (optional)
-   * @param groupName The name of a group. To specify multiple names, pass multiple &#x60;groupName&#x60; parameters. For example, &#x60;groupName&#x3D;administrators&amp;groupName&#x3D;jira-software-users&#x60;. (optional)
-   * @param accessType The access level of a group. Valid values: &#39;site-admin&#39;, &#39;admin&#39;, &#39;user&#39;. (optional)
-   * @param applicationKey The application key of the product user groups to search for. Valid values: &#39;jira-servicedesk&#39;, &#39;jira-software&#39;, &#39;jira-product-discovery&#39;, &#39;jira-core&#39;. (optional)
-   * @return ApiResponse&lt;PageBeanGroupDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanGroupDetails> bulkGetGroupsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey) throws ApiException {
-    return bulkGetGroupsWithHttpInfo(startAt, maxResults, groupId, groupName, accessType, applicationKey, null);
-  }
-
-  /**
-   * Bulk get groups
-   * Returns a [paginated](#pagination) list of groups.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 50)
-   * @param groupId The ID of a group. To specify multiple IDs, pass multiple &#x60;groupId&#x60; parameters. For example, &#x60;groupId&#x3D;5b10a2844c20165700ede21g&amp;groupId&#x3D;5b10ac8d82e05b22cc7d4ef5&#x60;. (optional)
-   * @param groupName The name of a group. To specify multiple names, pass multiple &#x60;groupName&#x60; parameters. For example, &#x60;groupName&#x3D;administrators&amp;groupName&#x3D;jira-software-users&#x60;. (optional)
-   * @param accessType The access level of a group. Valid values: &#39;site-admin&#39;, &#39;admin&#39;, &#39;user&#39;. (optional)
-   * @param applicationKey The application key of the product user groups to search for. Valid values: &#39;jira-servicedesk&#39;, &#39;jira-software&#39;, &#39;jira-product-discovery&#39;, &#39;jira-core&#39;. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanGroupDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanGroupDetails> bulkGetGroupsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = bulkGetGroupsRequestBuilder(startAt, maxResults, groupId, groupName, accessType, applicationKey, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("bulkGetGroups", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanGroupDetails>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (groupname != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupname", groupname));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanGroupDetails responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanGroupDetails>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanGroupDetails>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder bulkGetGroupsRequestBuilder(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/group/bulk";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "groupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "groupId", groupId));
-    localVarQueryParameterBaseName = "groupName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "groupName", groupName));
-    localVarQueryParameterBaseName = "accessType";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("accessType", accessType));
-    localVarQueryParameterBaseName = "applicationKey";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("applicationKey", applicationKey));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Create group
-   * Creates a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param addGroupBean The name of the group. (required)
-   * @return Group
-   * @throws ApiException if fails to make API call
-   */
-  public Group createGroup(@javax.annotation.Nonnull AddGroupBean addGroupBean) throws ApiException {
-    return createGroup(addGroupBean, null);
-  }
-
-  /**
-   * Create group
-   * Creates a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param addGroupBean The name of the group. (required)
-   * @param headers Optional headers to include in the request
-   * @return Group
-   * @throws ApiException if fails to make API call
-   */
-  public Group createGroup(@javax.annotation.Nonnull AddGroupBean addGroupBean, Map<String, String> headers) throws ApiException {
-    ApiResponse<Group> localVarResponse = createGroupWithHttpInfo(addGroupBean, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create group
-   * Creates a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param addGroupBean The name of the group. (required)
-   * @return ApiResponse&lt;Group&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Group> createGroupWithHttpInfo(@javax.annotation.Nonnull AddGroupBean addGroupBean) throws ApiException {
-    return createGroupWithHttpInfo(addGroupBean, null);
-  }
-
-  /**
-   * Create group
-   * Creates a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param addGroupBean The name of the group. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Group&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Group> createGroupWithHttpInfo(@javax.annotation.Nonnull AddGroupBean addGroupBean, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createGroupRequestBuilder(addGroupBean, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createGroup", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Group>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (groupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupId", groupId));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Group responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Group>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Group>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder createGroupRequestBuilder(@javax.annotation.Nonnull AddGroupBean addGroupBean, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'addGroupBean' is set
-    if (addGroupBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'addGroupBean' when calling createGroup");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/group";
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(addGroupBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Find groups
-   * Returns a list of groups whose names contain a query string. A list of group names can be provided to exclude groups from the results.  The primary use case for this resource is to populate a group picker suggestions list. To this end, the returned object includes the &#x60;html&#x60; field where the matched query term is highlighted in the group name with the HTML strong tag. Also, the groups list is wrapped in a response object that contains a header for use in the picker, specifically *Showing X of Y matching groups*.  The list returns with the groups sorted. If no groups match the list criteria, an empty list is returned.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg). Anonymous calls and calls by users without the required permission return an empty list.  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg). Without this permission, calls where query is not an exact match to an existing group will return an empty list.
-   * @param accountId This parameter is deprecated, setting it does not affect the results. To find groups containing a particular user, use [Get user groups](#api-rest-api-3-user-groups-get). (optional)
-   * @param query The string to find in group names. (optional)
-   * @param exclude As a group&#39;s name can change, use of &#x60;excludeGroupIds&#x60; is recommended to identify a group.   A group to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;exclude&#x3D;group1&amp;exclude&#x3D;group2&#x60;. This parameter cannot be used with the &#x60;excludeGroupIds&#x60; parameter. (optional)
-   * @param excludeId A group ID to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;excludeId&#x3D;group1-id&amp;excludeId&#x3D;group2-id&#x60;. This parameter cannot be used with the &#x60;excludeGroups&#x60; parameter. (optional)
-   * @param maxResults The maximum number of groups to return. The maximum number of groups that can be returned is limited by the system property &#x60;jira.ajax.autocomplete.limit&#x60;. (optional)
-   * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
-   * @param userName This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
-   * @return FoundGroups
-   * @throws ApiException if fails to make API call
-   */
-  public FoundGroups findGroups(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName) throws ApiException {
-    return findGroups(accountId, query, exclude, excludeId, maxResults, caseInsensitive, userName, null);
-  }
-
-  /**
-   * Find groups
-   * Returns a list of groups whose names contain a query string. A list of group names can be provided to exclude groups from the results.  The primary use case for this resource is to populate a group picker suggestions list. To this end, the returned object includes the &#x60;html&#x60; field where the matched query term is highlighted in the group name with the HTML strong tag. Also, the groups list is wrapped in a response object that contains a header for use in the picker, specifically *Showing X of Y matching groups*.  The list returns with the groups sorted. If no groups match the list criteria, an empty list is returned.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg). Anonymous calls and calls by users without the required permission return an empty list.  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg). Without this permission, calls where query is not an exact match to an existing group will return an empty list.
-   * @param accountId This parameter is deprecated, setting it does not affect the results. To find groups containing a particular user, use [Get user groups](#api-rest-api-3-user-groups-get). (optional)
-   * @param query The string to find in group names. (optional)
-   * @param exclude As a group&#39;s name can change, use of &#x60;excludeGroupIds&#x60; is recommended to identify a group.   A group to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;exclude&#x3D;group1&amp;exclude&#x3D;group2&#x60;. This parameter cannot be used with the &#x60;excludeGroupIds&#x60; parameter. (optional)
-   * @param excludeId A group ID to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;excludeId&#x3D;group1-id&amp;excludeId&#x3D;group2-id&#x60;. This parameter cannot be used with the &#x60;excludeGroups&#x60; parameter. (optional)
-   * @param maxResults The maximum number of groups to return. The maximum number of groups that can be returned is limited by the system property &#x60;jira.ajax.autocomplete.limit&#x60;. (optional)
-   * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
-   * @param userName This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
-   * @param headers Optional headers to include in the request
-   * @return FoundGroups
-   * @throws ApiException if fails to make API call
-   */
-  public FoundGroups findGroups(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName, Map<String, String> headers) throws ApiException {
-    ApiResponse<FoundGroups> localVarResponse = findGroupsWithHttpInfo(accountId, query, exclude, excludeId, maxResults, caseInsensitive, userName, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Find groups
-   * Returns a list of groups whose names contain a query string. A list of group names can be provided to exclude groups from the results.  The primary use case for this resource is to populate a group picker suggestions list. To this end, the returned object includes the &#x60;html&#x60; field where the matched query term is highlighted in the group name with the HTML strong tag. Also, the groups list is wrapped in a response object that contains a header for use in the picker, specifically *Showing X of Y matching groups*.  The list returns with the groups sorted. If no groups match the list criteria, an empty list is returned.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg). Anonymous calls and calls by users without the required permission return an empty list.  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg). Without this permission, calls where query is not an exact match to an existing group will return an empty list.
-   * @param accountId This parameter is deprecated, setting it does not affect the results. To find groups containing a particular user, use [Get user groups](#api-rest-api-3-user-groups-get). (optional)
-   * @param query The string to find in group names. (optional)
-   * @param exclude As a group&#39;s name can change, use of &#x60;excludeGroupIds&#x60; is recommended to identify a group.   A group to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;exclude&#x3D;group1&amp;exclude&#x3D;group2&#x60;. This parameter cannot be used with the &#x60;excludeGroupIds&#x60; parameter. (optional)
-   * @param excludeId A group ID to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;excludeId&#x3D;group1-id&amp;excludeId&#x3D;group2-id&#x60;. This parameter cannot be used with the &#x60;excludeGroups&#x60; parameter. (optional)
-   * @param maxResults The maximum number of groups to return. The maximum number of groups that can be returned is limited by the system property &#x60;jira.ajax.autocomplete.limit&#x60;. (optional)
-   * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
-   * @param userName This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
-   * @return ApiResponse&lt;FoundGroups&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FoundGroups> findGroupsWithHttpInfo(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName) throws ApiException {
-    return findGroupsWithHttpInfo(accountId, query, exclude, excludeId, maxResults, caseInsensitive, userName, null);
-  }
-
-  /**
-   * Find groups
-   * Returns a list of groups whose names contain a query string. A list of group names can be provided to exclude groups from the results.  The primary use case for this resource is to populate a group picker suggestions list. To this end, the returned object includes the &#x60;html&#x60; field where the matched query term is highlighted in the group name with the HTML strong tag. Also, the groups list is wrapped in a response object that contains a header for use in the picker, specifically *Showing X of Y matching groups*.  The list returns with the groups sorted. If no groups match the list criteria, an empty list is returned.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg). Anonymous calls and calls by users without the required permission return an empty list.  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg). Without this permission, calls where query is not an exact match to an existing group will return an empty list.
-   * @param accountId This parameter is deprecated, setting it does not affect the results. To find groups containing a particular user, use [Get user groups](#api-rest-api-3-user-groups-get). (optional)
-   * @param query The string to find in group names. (optional)
-   * @param exclude As a group&#39;s name can change, use of &#x60;excludeGroupIds&#x60; is recommended to identify a group.   A group to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;exclude&#x3D;group1&amp;exclude&#x3D;group2&#x60;. This parameter cannot be used with the &#x60;excludeGroupIds&#x60; parameter. (optional)
-   * @param excludeId A group ID to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;excludeId&#x3D;group1-id&amp;excludeId&#x3D;group2-id&#x60;. This parameter cannot be used with the &#x60;excludeGroups&#x60; parameter. (optional)
-   * @param maxResults The maximum number of groups to return. The maximum number of groups that can be returned is limited by the system property &#x60;jira.ajax.autocomplete.limit&#x60;. (optional)
-   * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
-   * @param userName This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;FoundGroups&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<FoundGroups> findGroupsWithHttpInfo(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = findGroupsRequestBuilder(accountId, query, exclude, excludeId, maxResults, caseInsensitive, userName, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("findGroups", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<FoundGroups>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        FoundGroups responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<FoundGroups>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<FoundGroups>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder findGroupsRequestBuilder(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/groups/picker";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "accountId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("accountId", accountId));
-    localVarQueryParameterBaseName = "query";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("query", query));
-    localVarQueryParameterBaseName = "exclude";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "exclude", exclude));
-    localVarQueryParameterBaseName = "excludeId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("multi", "excludeId", excludeId));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "caseInsensitive";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("caseInsensitive", caseInsensitive));
-    localVarQueryParameterBaseName = "userName";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("userName", userName));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get group
-   * This operation is deprecated, use [&#x60;group/member&#x60;](#api-rest-api-3-group-member-get).  Returns all users in a group.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param expand List of fields to expand. (optional)
-   * @return Group
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public Group getGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand) throws ApiException {
-    return getGroup(groupname, groupId, expand, null);
-  }
-
-  /**
-   * Get group
-   * This operation is deprecated, use [&#x60;group/member&#x60;](#api-rest-api-3-group-member-get).  Returns all users in a group.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param expand List of fields to expand. (optional)
-   * @param headers Optional headers to include in the request
-   * @return Group
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public Group getGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<Group> localVarResponse = getGroupWithHttpInfo(groupname, groupId, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get group
-   * This operation is deprecated, use [&#x60;group/member&#x60;](#api-rest-api-3-group-member-get).  Returns all users in a group.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param expand List of fields to expand. (optional)
-   * @return ApiResponse&lt;Group&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<Group> getGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand) throws ApiException {
-    return getGroupWithHttpInfo(groupname, groupId, expand, null);
-  }
-
-  /**
-   * Get group
-   * This operation is deprecated, use [&#x60;group/member&#x60;](#api-rest-api-3-group-member-get).  Returns all users in a group.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param expand List of fields to expand. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Group&gt;
-   * @throws ApiException if fails to make API call
-   * @deprecated
-   */
-  @Deprecated
-  public ApiResponse<Group> getGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getGroupRequestBuilder(groupname, groupId, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getGroup", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Group>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Group responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Group>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Group>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getGroupRequestBuilder(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/group";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "groupname";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupname", groupname));
-    localVarQueryParameterBaseName = "groupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupId", groupId));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get users from group
-   * Returns a [paginated](#pagination) list of all users in a group.  Note that users are ordered by username, however the username is not returned in the results due to privacy reasons.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param includeInactiveUsers Include inactive users. (optional, default to false)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page (number should be between 1 and 50). (optional, default to 50)
-   * @return PageBeanUserDetails
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanUserDetails getUsersFromGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getUsersFromGroup(groupname, groupId, includeInactiveUsers, startAt, maxResults, null);
-  }
-
-  /**
-   * Get users from group
-   * Returns a [paginated](#pagination) list of all users in a group.  Note that users are ordered by username, however the username is not returned in the results due to privacy reasons.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param includeInactiveUsers Include inactive users. (optional, default to false)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page (number should be between 1 and 50). (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanUserDetails
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanUserDetails getUsersFromGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanUserDetails> localVarResponse = getUsersFromGroupWithHttpInfo(groupname, groupId, includeInactiveUsers, startAt, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get users from group
-   * Returns a [paginated](#pagination) list of all users in a group.  Note that users are ordered by username, however the username is not returned in the results due to privacy reasons.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param includeInactiveUsers Include inactive users. (optional, default to false)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page (number should be between 1 and 50). (optional, default to 50)
-   * @return ApiResponse&lt;PageBeanUserDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanUserDetails> getUsersFromGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getUsersFromGroupWithHttpInfo(groupname, groupId, includeInactiveUsers, startAt, maxResults, null);
-  }
-
-  /**
-   * Get users from group
-   * Returns a [paginated](#pagination) list of all users in a group.  Note that users are ordered by username, however the username is not returned in the results due to privacy reasons.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param includeInactiveUsers Include inactive users. (optional, default to false)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page (number should be between 1 and 50). (optional, default to 50)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanUserDetails&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanUserDetails> getUsersFromGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getUsersFromGroupRequestBuilder(groupname, groupId, includeInactiveUsers, startAt, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getUsersFromGroup", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanUserDetails>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addUserToGroupValidateBeforeCall(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'updateUserToGroupBean' is set
+        if (updateUserToGroupBean == null) {
+            throw new ApiException("Missing the required parameter 'updateUserToGroupBean' when calling addUserToGroup(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanUserDetails responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanUserDetails>() {});
-        
-        localVarResponse.body().close();
+        return addUserToGroupCall(updateUserToGroupBean, groupname, groupId, _callback);
 
-        return new ApiResponse<PageBeanUserDetails>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getUsersFromGroupRequestBuilder(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/group/member";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "groupname";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupname", groupname));
-    localVarQueryParameterBaseName = "groupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupId", groupId));
-    localVarQueryParameterBaseName = "includeInactiveUsers";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("includeInactiveUsers", includeInactiveUsers));
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    /**
+     * Add user to group
+     * Adds a user to a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param updateUserToGroupBean The user to add to the group. (required)
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @return Group
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;groupname&#x60; is not provided.  *  &#x60;accountId&#x60; is missing. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group or user are not found. </td><td>  -  </td></tr>
+        <tr><td> 429 </td><td> Returned if rate limiting is being enforced. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Group addUserToGroup(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId) throws ApiException {
+        ApiResponse<Group> localVarResp = addUserToGroupWithHttpInfo(updateUserToGroupBean, groupname, groupId);
+        return localVarResp.getData();
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
+
+    /**
+     * Add user to group
+     * Adds a user to a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param updateUserToGroupBean The user to add to the group. (required)
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @return ApiResponse&lt;Group&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;groupname&#x60; is not provided.  *  &#x60;accountId&#x60; is missing. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group or user are not found. </td><td>  -  </td></tr>
+        <tr><td> 429 </td><td> Returned if rate limiting is being enforced. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Group> addUserToGroupWithHttpInfo(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId) throws ApiException {
+        okhttp3.Call localVarCall = addUserToGroupValidateBeforeCall(updateUserToGroupBean, groupname, groupId, null);
+        Type localVarReturnType = new TypeToken<Group>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
     }
-    return localVarRequestBuilder;
-  }
 
-  /**
-   * Remove group
-   * Deletes a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* strategic [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param groupname  (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupname&#x60; parameter. (optional)
-   * @param swapGroup As a group&#39;s name can change, use of &#x60;swapGroupId&#x60; is recommended to identify a group.   The group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroupId&#x60; parameter. (optional)
-   * @param swapGroupId The ID of the group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroup&#x60; parameter. (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void removeGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId) throws ApiException {
-    removeGroup(groupname, groupId, swapGroup, swapGroupId, null);
-  }
+    /**
+     * Add user to group (asynchronously)
+     * Adds a user to a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param updateUserToGroupBean The user to add to the group. (required)
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;groupname&#x60; is not provided.  *  &#x60;accountId&#x60; is missing. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group or user are not found. </td><td>  -  </td></tr>
+        <tr><td> 429 </td><td> Returned if rate limiting is being enforced. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addUserToGroupAsync(@javax.annotation.Nonnull UpdateUserToGroupBean updateUserToGroupBean, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, final ApiCallback<Group> _callback) throws ApiException {
 
-  /**
-   * Remove group
-   * Deletes a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* strategic [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param groupname  (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupname&#x60; parameter. (optional)
-   * @param swapGroup As a group&#39;s name can change, use of &#x60;swapGroupId&#x60; is recommended to identify a group.   The group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroupId&#x60; parameter. (optional)
-   * @param swapGroupId The ID of the group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroup&#x60; parameter. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void removeGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId, Map<String, String> headers) throws ApiException {
-    removeGroupWithHttpInfo(groupname, groupId, swapGroup, swapGroupId, headers);
-  }
+        okhttp3.Call localVarCall = addUserToGroupValidateBeforeCall(updateUserToGroupBean, groupname, groupId, _callback);
+        Type localVarReturnType = new TypeToken<Group>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for bulkGetGroups
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param groupId The ID of a group. To specify multiple IDs, pass multiple &#x60;groupId&#x60; parameters. For example, &#x60;groupId&#x3D;5b10a2844c20165700ede21g&amp;groupId&#x3D;5b10ac8d82e05b22cc7d4ef5&#x60;. (optional)
+     * @param groupName The name of a group. To specify multiple names, pass multiple &#x60;groupName&#x60; parameters. For example, &#x60;groupName&#x3D;administrators&amp;groupName&#x3D;jira-software-users&#x60;. (optional)
+     * @param accessType The access level of a group. Valid values: &#39;site-admin&#39;, &#39;admin&#39;, &#39;user&#39;. (optional)
+     * @param applicationKey The application key of the product user groups to search for. Valid values: &#39;jira-servicedesk&#39;, &#39;jira-software&#39;, &#39;jira-product-discovery&#39;, &#39;jira-core&#39;. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 500 </td><td> Returned if the group with the given access level can&#39;t be retrieved. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call bulkGetGroupsCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  /**
-   * Remove group
-   * Deletes a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* strategic [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param groupname  (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupname&#x60; parameter. (optional)
-   * @param swapGroup As a group&#39;s name can change, use of &#x60;swapGroupId&#x60; is recommended to identify a group.   The group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroupId&#x60; parameter. (optional)
-   * @param swapGroupId The ID of the group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroup&#x60; parameter. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId) throws ApiException {
-    return removeGroupWithHttpInfo(groupname, groupId, swapGroup, swapGroupId, null);
-  }
-
-  /**
-   * Remove group
-   * Deletes a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* strategic [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param groupname  (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupname&#x60; parameter. (optional)
-   * @param swapGroup As a group&#39;s name can change, use of &#x60;swapGroupId&#x60; is recommended to identify a group.   The group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroupId&#x60; parameter. (optional)
-   * @param swapGroupId The ID of the group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroup&#x60; parameter. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeGroupRequestBuilder(groupname, groupId, swapGroup, swapGroupId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeGroup", localVarResponse);
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/group/bulk";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
         }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
 
-  private HttpRequest.Builder removeGroupRequestBuilder(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId, Map<String, String> headers) throws ApiException {
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/group";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "groupname";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupname", groupname));
-    localVarQueryParameterBaseName = "groupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupId", groupId));
-    localVarQueryParameterBaseName = "swapGroup";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("swapGroup", swapGroup));
-    localVarQueryParameterBaseName = "swapGroupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("swapGroupId", swapGroupId));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Remove user from group
-   * Removes a user from a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param accountId The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, *5b10ac8d82e05b22cc7d4ef5*. (required)
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param username This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void removeUserFromGroup(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username) throws ApiException {
-    removeUserFromGroup(accountId, groupname, groupId, username, null);
-  }
-
-  /**
-   * Remove user from group
-   * Removes a user from a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param accountId The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, *5b10ac8d82e05b22cc7d4ef5*. (required)
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param username This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void removeUserFromGroup(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username, Map<String, String> headers) throws ApiException {
-    removeUserFromGroupWithHttpInfo(accountId, groupname, groupId, username, headers);
-  }
-
-  /**
-   * Remove user from group
-   * Removes a user from a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param accountId The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, *5b10ac8d82e05b22cc7d4ef5*. (required)
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param username This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeUserFromGroupWithHttpInfo(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username) throws ApiException {
-    return removeUserFromGroupWithHttpInfo(accountId, groupname, groupId, username, null);
-  }
-
-  /**
-   * Remove user from group
-   * Removes a user from a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
-   * @param accountId The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, *5b10ac8d82e05b22cc7d4ef5*. (required)
-   * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
-   * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
-   * @param username This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> removeUserFromGroupWithHttpInfo(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = removeUserFromGroupRequestBuilder(accountId, groupname, groupId, username, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("removeUserFromGroup", localVarResponse);
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
         }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
+
+        if (groupId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "groupId", groupId));
         }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
 
-  private HttpRequest.Builder removeUserFromGroupRequestBuilder(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'accountId' is set
-    if (accountId == null) {
-      throw new ApiException(400, "Missing the required parameter 'accountId' when calling removeUserFromGroup");
-    }
+        if (groupName != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "groupName", groupName));
+        }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+        if (accessType != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("accessType", accessType));
+        }
 
-    String localVarPath = "/rest/api/3/group/user";
+        if (applicationKey != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("applicationKey", applicationKey));
+        }
 
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "groupname";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupname", groupname));
-    localVarQueryParameterBaseName = "groupId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("groupId", groupId));
-    localVarQueryParameterBaseName = "username";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("username", username));
-    localVarQueryParameterBaseName = "accountId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("accountId", accountId));
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
 
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    localVarRequestBuilder.header("Accept", "application/json");
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call bulkGetGroupsValidateBeforeCall(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey, final ApiCallback _callback) throws ApiException {
+        return bulkGetGroupsCall(startAt, maxResults, groupId, groupName, accessType, applicationKey, _callback);
 
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Bulk get groups
+     * Returns a [paginated](#pagination) list of groups.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param groupId The ID of a group. To specify multiple IDs, pass multiple &#x60;groupId&#x60; parameters. For example, &#x60;groupId&#x3D;5b10a2844c20165700ede21g&amp;groupId&#x3D;5b10ac8d82e05b22cc7d4ef5&#x60;. (optional)
+     * @param groupName The name of a group. To specify multiple names, pass multiple &#x60;groupName&#x60; parameters. For example, &#x60;groupName&#x3D;administrators&amp;groupName&#x3D;jira-software-users&#x60;. (optional)
+     * @param accessType The access level of a group. Valid values: &#39;site-admin&#39;, &#39;admin&#39;, &#39;user&#39;. (optional)
+     * @param applicationKey The application key of the product user groups to search for. Valid values: &#39;jira-servicedesk&#39;, &#39;jira-software&#39;, &#39;jira-product-discovery&#39;, &#39;jira-core&#39;. (optional)
+     * @return PageBeanGroupDetails
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 500 </td><td> Returned if the group with the given access level can&#39;t be retrieved. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanGroupDetails bulkGetGroups(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey) throws ApiException {
+        ApiResponse<PageBeanGroupDetails> localVarResp = bulkGetGroupsWithHttpInfo(startAt, maxResults, groupId, groupName, accessType, applicationKey);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Bulk get groups
+     * Returns a [paginated](#pagination) list of groups.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param groupId The ID of a group. To specify multiple IDs, pass multiple &#x60;groupId&#x60; parameters. For example, &#x60;groupId&#x3D;5b10a2844c20165700ede21g&amp;groupId&#x3D;5b10ac8d82e05b22cc7d4ef5&#x60;. (optional)
+     * @param groupName The name of a group. To specify multiple names, pass multiple &#x60;groupName&#x60; parameters. For example, &#x60;groupName&#x3D;administrators&amp;groupName&#x3D;jira-software-users&#x60;. (optional)
+     * @param accessType The access level of a group. Valid values: &#39;site-admin&#39;, &#39;admin&#39;, &#39;user&#39;. (optional)
+     * @param applicationKey The application key of the product user groups to search for. Valid values: &#39;jira-servicedesk&#39;, &#39;jira-software&#39;, &#39;jira-product-discovery&#39;, &#39;jira-core&#39;. (optional)
+     * @return ApiResponse&lt;PageBeanGroupDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 500 </td><td> Returned if the group with the given access level can&#39;t be retrieved. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanGroupDetails> bulkGetGroupsWithHttpInfo(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey) throws ApiException {
+        okhttp3.Call localVarCall = bulkGetGroupsValidateBeforeCall(startAt, maxResults, groupId, groupName, accessType, applicationKey, null);
+        Type localVarReturnType = new TypeToken<PageBeanGroupDetails>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Bulk get groups (asynchronously)
+     * Returns a [paginated](#pagination) list of groups.  **[Permissions](#permissions) required:** *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 50)
+     * @param groupId The ID of a group. To specify multiple IDs, pass multiple &#x60;groupId&#x60; parameters. For example, &#x60;groupId&#x3D;5b10a2844c20165700ede21g&amp;groupId&#x3D;5b10ac8d82e05b22cc7d4ef5&#x60;. (optional)
+     * @param groupName The name of a group. To specify multiple names, pass multiple &#x60;groupName&#x60; parameters. For example, &#x60;groupName&#x3D;administrators&amp;groupName&#x3D;jira-software-users&#x60;. (optional)
+     * @param accessType The access level of a group. Valid values: &#39;site-admin&#39;, &#39;admin&#39;, &#39;user&#39;. (optional)
+     * @param applicationKey The application key of the product user groups to search for. Valid values: &#39;jira-servicedesk&#39;, &#39;jira-software&#39;, &#39;jira-product-discovery&#39;, &#39;jira-core&#39;. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 500 </td><td> Returned if the group with the given access level can&#39;t be retrieved. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call bulkGetGroupsAsync(@javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Set<String> groupId, @javax.annotation.Nullable Set<String> groupName, @javax.annotation.Nullable String accessType, @javax.annotation.Nullable String applicationKey, final ApiCallback<PageBeanGroupDetails> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = bulkGetGroupsValidateBeforeCall(startAt, maxResults, groupId, groupName, accessType, applicationKey, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanGroupDetails>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for createGroup
+     * @param addGroupBean The name of the group. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if group name is not specified or the group name is in use. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createGroupCall(@javax.annotation.Nonnull AddGroupBean addGroupBean, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = addGroupBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/group";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createGroupValidateBeforeCall(@javax.annotation.Nonnull AddGroupBean addGroupBean, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'addGroupBean' is set
+        if (addGroupBean == null) {
+            throw new ApiException("Missing the required parameter 'addGroupBean' when calling createGroup(Async)");
+        }
+
+        return createGroupCall(addGroupBean, _callback);
+
+    }
+
+    /**
+     * Create group
+     * Creates a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param addGroupBean The name of the group. (required)
+     * @return Group
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if group name is not specified or the group name is in use. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Group createGroup(@javax.annotation.Nonnull AddGroupBean addGroupBean) throws ApiException {
+        ApiResponse<Group> localVarResp = createGroupWithHttpInfo(addGroupBean);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Create group
+     * Creates a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param addGroupBean The name of the group. (required)
+     * @return ApiResponse&lt;Group&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if group name is not specified or the group name is in use. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Group> createGroupWithHttpInfo(@javax.annotation.Nonnull AddGroupBean addGroupBean) throws ApiException {
+        okhttp3.Call localVarCall = createGroupValidateBeforeCall(addGroupBean, null);
+        Type localVarReturnType = new TypeToken<Group>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create group (asynchronously)
+     * Creates a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param addGroupBean The name of the group. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if group name is not specified or the group name is in use. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createGroupAsync(@javax.annotation.Nonnull AddGroupBean addGroupBean, final ApiCallback<Group> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createGroupValidateBeforeCall(addGroupBean, _callback);
+        Type localVarReturnType = new TypeToken<Group>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for findGroups
+     * @param accountId This parameter is deprecated, setting it does not affect the results. To find groups containing a particular user, use [Get user groups](#api-rest-api-3-user-groups-get). (optional)
+     * @param query The string to find in group names. (optional)
+     * @param exclude As a group&#39;s name can change, use of &#x60;excludeGroupIds&#x60; is recommended to identify a group.   A group to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;exclude&#x3D;group1&amp;exclude&#x3D;group2&#x60;. This parameter cannot be used with the &#x60;excludeGroupIds&#x60; parameter. (optional)
+     * @param excludeId A group ID to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;excludeId&#x3D;group1-id&amp;excludeId&#x3D;group2-id&#x60;. This parameter cannot be used with the &#x60;excludeGroups&#x60; parameter. (optional)
+     * @param maxResults The maximum number of groups to return. The maximum number of groups that can be returned is limited by the system property &#x60;jira.ajax.autocomplete.limit&#x60;. (optional)
+     * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
+     * @param userName This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call findGroupsCall(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/groups/picker";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (accountId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("accountId", accountId));
+        }
+
+        if (query != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("query", query));
+        }
+
+        if (exclude != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "exclude", exclude));
+        }
+
+        if (excludeId != null) {
+            localVarCollectionQueryParams.addAll(localVarApiClient.parameterToPairs("multi", "excludeId", excludeId));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (caseInsensitive != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("caseInsensitive", caseInsensitive));
+        }
+
+        if (userName != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("userName", userName));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call findGroupsValidateBeforeCall(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName, final ApiCallback _callback) throws ApiException {
+        return findGroupsCall(accountId, query, exclude, excludeId, maxResults, caseInsensitive, userName, _callback);
+
+    }
+
+    /**
+     * Find groups
+     * Returns a list of groups whose names contain a query string. A list of group names can be provided to exclude groups from the results.  The primary use case for this resource is to populate a group picker suggestions list. To this end, the returned object includes the &#x60;html&#x60; field where the matched query term is highlighted in the group name with the HTML strong tag. Also, the groups list is wrapped in a response object that contains a header for use in the picker, specifically *Showing X of Y matching groups*.  The list returns with the groups sorted. If no groups match the list criteria, an empty list is returned.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg). Anonymous calls and calls by users without the required permission return an empty list.  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg). Without this permission, calls where query is not an exact match to an existing group will return an empty list.
+     * @param accountId This parameter is deprecated, setting it does not affect the results. To find groups containing a particular user, use [Get user groups](#api-rest-api-3-user-groups-get). (optional)
+     * @param query The string to find in group names. (optional)
+     * @param exclude As a group&#39;s name can change, use of &#x60;excludeGroupIds&#x60; is recommended to identify a group.   A group to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;exclude&#x3D;group1&amp;exclude&#x3D;group2&#x60;. This parameter cannot be used with the &#x60;excludeGroupIds&#x60; parameter. (optional)
+     * @param excludeId A group ID to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;excludeId&#x3D;group1-id&amp;excludeId&#x3D;group2-id&#x60;. This parameter cannot be used with the &#x60;excludeGroups&#x60; parameter. (optional)
+     * @param maxResults The maximum number of groups to return. The maximum number of groups that can be returned is limited by the system property &#x60;jira.ajax.autocomplete.limit&#x60;. (optional)
+     * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
+     * @param userName This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
+     * @return FoundGroups
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+     </table>
+     */
+    public FoundGroups findGroups(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName) throws ApiException {
+        ApiResponse<FoundGroups> localVarResp = findGroupsWithHttpInfo(accountId, query, exclude, excludeId, maxResults, caseInsensitive, userName);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Find groups
+     * Returns a list of groups whose names contain a query string. A list of group names can be provided to exclude groups from the results.  The primary use case for this resource is to populate a group picker suggestions list. To this end, the returned object includes the &#x60;html&#x60; field where the matched query term is highlighted in the group name with the HTML strong tag. Also, the groups list is wrapped in a response object that contains a header for use in the picker, specifically *Showing X of Y matching groups*.  The list returns with the groups sorted. If no groups match the list criteria, an empty list is returned.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg). Anonymous calls and calls by users without the required permission return an empty list.  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg). Without this permission, calls where query is not an exact match to an existing group will return an empty list.
+     * @param accountId This parameter is deprecated, setting it does not affect the results. To find groups containing a particular user, use [Get user groups](#api-rest-api-3-user-groups-get). (optional)
+     * @param query The string to find in group names. (optional)
+     * @param exclude As a group&#39;s name can change, use of &#x60;excludeGroupIds&#x60; is recommended to identify a group.   A group to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;exclude&#x3D;group1&amp;exclude&#x3D;group2&#x60;. This parameter cannot be used with the &#x60;excludeGroupIds&#x60; parameter. (optional)
+     * @param excludeId A group ID to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;excludeId&#x3D;group1-id&amp;excludeId&#x3D;group2-id&#x60;. This parameter cannot be used with the &#x60;excludeGroups&#x60; parameter. (optional)
+     * @param maxResults The maximum number of groups to return. The maximum number of groups that can be returned is limited by the system property &#x60;jira.ajax.autocomplete.limit&#x60;. (optional)
+     * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
+     * @param userName This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
+     * @return ApiResponse&lt;FoundGroups&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<FoundGroups> findGroupsWithHttpInfo(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName) throws ApiException {
+        okhttp3.Call localVarCall = findGroupsValidateBeforeCall(accountId, query, exclude, excludeId, maxResults, caseInsensitive, userName, null);
+        Type localVarReturnType = new TypeToken<FoundGroups>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Find groups (asynchronously)
+     * Returns a list of groups whose names contain a query string. A list of group names can be provided to exclude groups from the results.  The primary use case for this resource is to populate a group picker suggestions list. To this end, the returned object includes the &#x60;html&#x60; field where the matched query term is highlighted in the group name with the HTML strong tag. Also, the groups list is wrapped in a response object that contains a header for use in the picker, specifically *Showing X of Y matching groups*.  The list returns with the groups sorted. If no groups match the list criteria, an empty list is returned.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg). Anonymous calls and calls by users without the required permission return an empty list.  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg). Without this permission, calls where query is not an exact match to an existing group will return an empty list.
+     * @param accountId This parameter is deprecated, setting it does not affect the results. To find groups containing a particular user, use [Get user groups](#api-rest-api-3-user-groups-get). (optional)
+     * @param query The string to find in group names. (optional)
+     * @param exclude As a group&#39;s name can change, use of &#x60;excludeGroupIds&#x60; is recommended to identify a group.   A group to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;exclude&#x3D;group1&amp;exclude&#x3D;group2&#x60;. This parameter cannot be used with the &#x60;excludeGroupIds&#x60; parameter. (optional)
+     * @param excludeId A group ID to exclude from the result. To exclude multiple groups, provide an ampersand-separated list. For example, &#x60;excludeId&#x3D;group1-id&amp;excludeId&#x3D;group2-id&#x60;. This parameter cannot be used with the &#x60;excludeGroups&#x60; parameter. (optional)
+     * @param maxResults The maximum number of groups to return. The maximum number of groups that can be returned is limited by the system property &#x60;jira.ajax.autocomplete.limit&#x60;. (optional)
+     * @param caseInsensitive Whether the search for groups should be case insensitive. (optional, default to false)
+     * @param userName This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call findGroupsAsync(@javax.annotation.Nullable String accountId, @javax.annotation.Nullable String query, @javax.annotation.Nullable List<String> exclude, @javax.annotation.Nullable List<String> excludeId, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable Boolean caseInsensitive, @javax.annotation.Nullable String userName, final ApiCallback<FoundGroups> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = findGroupsValidateBeforeCall(accountId, query, exclude, excludeId, maxResults, caseInsensitive, userName, _callback);
+        Type localVarReturnType = new TypeToken<FoundGroups>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getGroup
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param expand List of fields to expand. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call getGroupCall(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/group";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (groupname != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupname", groupname));
+        }
+
+        if (groupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupId", groupId));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @Deprecated
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getGroupValidateBeforeCall(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        return getGroupCall(groupname, groupId, expand, _callback);
+
+    }
+
+    /**
+     * Get group
+     * This operation is deprecated, use [&#x60;group/member&#x60;](#api-rest-api-3-group-member-get).  Returns all users in a group.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param expand List of fields to expand. (optional)
+     * @return Group
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public Group getGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<Group> localVarResp = getGroupWithHttpInfo(groupname, groupId, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get group
+     * This operation is deprecated, use [&#x60;group/member&#x60;](#api-rest-api-3-group-member-get).  Returns all users in a group.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param expand List of fields to expand. (optional)
+     * @return ApiResponse&lt;Group&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<Group> getGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getGroupValidateBeforeCall(groupname, groupId, expand, null);
+        Type localVarReturnType = new TypeToken<Group>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get group (asynchronously)
+     * This operation is deprecated, use [&#x60;group/member&#x60;](#api-rest-api-3-group-member-get).  Returns all users in a group.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param expand List of fields to expand. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     * @deprecated
+     */
+    @Deprecated
+    public okhttp3.Call getGroupAsync(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String expand, final ApiCallback<Group> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getGroupValidateBeforeCall(groupname, groupId, expand, _callback);
+        Type localVarReturnType = new TypeToken<Group>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getUsersFromGroup
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param includeInactiveUsers Include inactive users. (optional, default to false)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page (number should be between 1 and 50). (optional, default to 50)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getUsersFromGroupCall(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/group/member";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (groupname != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupname", groupname));
+        }
+
+        if (groupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupId", groupId));
+        }
+
+        if (includeInactiveUsers != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("includeInactiveUsers", includeInactiveUsers));
+        }
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getUsersFromGroupValidateBeforeCall(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        return getUsersFromGroupCall(groupname, groupId, includeInactiveUsers, startAt, maxResults, _callback);
+
+    }
+
+    /**
+     * Get users from group
+     * Returns a [paginated](#pagination) list of all users in a group.  Note that users are ordered by username, however the username is not returned in the results due to privacy reasons.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param includeInactiveUsers Include inactive users. (optional, default to false)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page (number should be between 1 and 50). (optional, default to 50)
+     * @return PageBeanUserDetails
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanUserDetails getUsersFromGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageBeanUserDetails> localVarResp = getUsersFromGroupWithHttpInfo(groupname, groupId, includeInactiveUsers, startAt, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get users from group
+     * Returns a [paginated](#pagination) list of all users in a group.  Note that users are ordered by username, however the username is not returned in the results due to privacy reasons.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param includeInactiveUsers Include inactive users. (optional, default to false)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page (number should be between 1 and 50). (optional, default to 50)
+     * @return ApiResponse&lt;PageBeanUserDetails&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanUserDetails> getUsersFromGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getUsersFromGroupValidateBeforeCall(groupname, groupId, includeInactiveUsers, startAt, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageBeanUserDetails>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get users from group (asynchronously)
+     * Returns a [paginated](#pagination) list of all users in a group.  Note that users are ordered by username, however the username is not returned in the results due to privacy reasons.  **[Permissions](#permissions) required:** either of:   *  *Browse users and groups* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param includeInactiveUsers Include inactive users. (optional, default to false)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page (number should be between 1 and 50). (optional, default to 50)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the calling user does not have the Administer Jira global permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getUsersFromGroupAsync(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable Boolean includeInactiveUsers, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageBeanUserDetails> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getUsersFromGroupValidateBeforeCall(groupname, groupId, includeInactiveUsers, startAt, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanUserDetails>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeGroup
+     * @param groupname  (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupname&#x60; parameter. (optional)
+     * @param swapGroup As a group&#39;s name can change, use of &#x60;swapGroupId&#x60; is recommended to identify a group.   The group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroupId&#x60; parameter. (optional)
+     * @param swapGroupId The ID of the group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroup&#x60; parameter. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeGroupCall(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/group";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (groupname != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupname", groupname));
+        }
+
+        if (groupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupId", groupId));
+        }
+
+        if (swapGroup != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("swapGroup", swapGroup));
+        }
+
+        if (swapGroupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("swapGroupId", swapGroupId));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeGroupValidateBeforeCall(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId, final ApiCallback _callback) throws ApiException {
+        return removeGroupCall(groupname, groupId, swapGroup, swapGroupId, _callback);
+
+    }
+
+    /**
+     * Remove group
+     * Deletes a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* strategic [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param groupname  (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupname&#x60; parameter. (optional)
+     * @param swapGroup As a group&#39;s name can change, use of &#x60;swapGroupId&#x60; is recommended to identify a group.   The group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroupId&#x60; parameter. (optional)
+     * @param swapGroupId The ID of the group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroup&#x60; parameter. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void removeGroup(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId) throws ApiException {
+        removeGroupWithHttpInfo(groupname, groupId, swapGroup, swapGroupId);
+    }
+
+    /**
+     * Remove group
+     * Deletes a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* strategic [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param groupname  (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupname&#x60; parameter. (optional)
+     * @param swapGroup As a group&#39;s name can change, use of &#x60;swapGroupId&#x60; is recommended to identify a group.   The group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroupId&#x60; parameter. (optional)
+     * @param swapGroupId The ID of the group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroup&#x60; parameter. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> removeGroupWithHttpInfo(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId) throws ApiException {
+        okhttp3.Call localVarCall = removeGroupValidateBeforeCall(groupname, groupId, swapGroup, swapGroupId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Remove group (asynchronously)
+     * Deletes a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* strategic [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param groupname  (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupname&#x60; parameter. (optional)
+     * @param swapGroup As a group&#39;s name can change, use of &#x60;swapGroupId&#x60; is recommended to identify a group.   The group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroupId&#x60; parameter. (optional)
+     * @param swapGroupId The ID of the group to transfer restrictions to. Only comments and worklogs are transferred. If restrictions are not transferred, comments and worklogs are inaccessible after the deletion. This parameter cannot be used with the &#x60;swapGroup&#x60; parameter. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the group name is not specified. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeGroupAsync(@javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String swapGroup, @javax.annotation.Nullable String swapGroupId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeGroupValidateBeforeCall(groupname, groupId, swapGroup, swapGroupId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for removeUserFromGroup
+     * @param accountId The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, *5b10ac8d82e05b22cc7d4ef5*. (required)
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param username This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;groupName&#x60; is missing.  *  &#x60;accountId&#x60; is missing. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group or user are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeUserFromGroupCall(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/group/user";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (groupname != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupname", groupname));
+        }
+
+        if (groupId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("groupId", groupId));
+        }
+
+        if (username != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("username", username));
+        }
+
+        if (accountId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("accountId", accountId));
+        }
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call removeUserFromGroupValidateBeforeCall(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'accountId' is set
+        if (accountId == null) {
+            throw new ApiException("Missing the required parameter 'accountId' when calling removeUserFromGroup(Async)");
+        }
+
+        return removeUserFromGroupCall(accountId, groupname, groupId, username, _callback);
+
+    }
+
+    /**
+     * Remove user from group
+     * Removes a user from a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param accountId The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, *5b10ac8d82e05b22cc7d4ef5*. (required)
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param username This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;groupName&#x60; is missing.  *  &#x60;accountId&#x60; is missing. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group or user are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void removeUserFromGroup(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username) throws ApiException {
+        removeUserFromGroupWithHttpInfo(accountId, groupname, groupId, username);
+    }
+
+    /**
+     * Remove user from group
+     * Removes a user from a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param accountId The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, *5b10ac8d82e05b22cc7d4ef5*. (required)
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param username This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;groupName&#x60; is missing.  *  &#x60;accountId&#x60; is missing. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group or user are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> removeUserFromGroupWithHttpInfo(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username) throws ApiException {
+        okhttp3.Call localVarCall = removeUserFromGroupValidateBeforeCall(accountId, groupname, groupId, username, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Remove user from group (asynchronously)
+     * Removes a user from a group.  **[Permissions](#permissions) required:** Site administration (that is, member of the *site-admin* [group](https://confluence.atlassian.com/x/24xjL)).
+     * @param accountId The account ID of the user, which uniquely identifies the user across all Atlassian products. For example, *5b10ac8d82e05b22cc7d4ef5*. (required)
+     * @param groupname As a group&#39;s name can change, use of &#x60;groupId&#x60; is recommended to identify a group.   The name of the group. This parameter cannot be used with the &#x60;groupId&#x60; parameter. (optional)
+     * @param groupId The ID of the group. This parameter cannot be used with the &#x60;groupName&#x60; parameter. (optional)
+     * @param username This parameter is no longer available. See the [deprecation notice](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-user-privacy-api-migration-guide/) for details. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if:   *  &#x60;groupName&#x60; is missing.  *  &#x60;accountId&#x60; is missing. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing from the request. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the group or user are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call removeUserFromGroupAsync(@javax.annotation.Nonnull String accountId, @javax.annotation.Nullable String groupname, @javax.annotation.Nullable String groupId, @javax.annotation.Nullable String username, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = removeUserFromGroupValidateBeforeCall(accountId, groupname, groupId, username, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
 }

@@ -13,99 +13,113 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.Scope;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about an issue type.
  */
-@JsonPropertyOrder({
-  IssueTypeDetails.JSON_PROPERTY_AVATAR_ID,
-  IssueTypeDetails.JSON_PROPERTY_DESCRIPTION,
-  IssueTypeDetails.JSON_PROPERTY_ENTITY_ID,
-  IssueTypeDetails.JSON_PROPERTY_HIERARCHY_LEVEL,
-  IssueTypeDetails.JSON_PROPERTY_ICON_URL,
-  IssueTypeDetails.JSON_PROPERTY_ID,
-  IssueTypeDetails.JSON_PROPERTY_NAME,
-  IssueTypeDetails.JSON_PROPERTY_SCOPE,
-  IssueTypeDetails.JSON_PROPERTY_SELF,
-  IssueTypeDetails.JSON_PROPERTY_SUBTASK
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueTypeDetails {
-  public static final String JSON_PROPERTY_AVATAR_ID = "avatarId";
+  public static final String SERIALIZED_NAME_AVATAR_ID = "avatarId";
+  @SerializedName(SERIALIZED_NAME_AVATAR_ID)
   @javax.annotation.Nullable
   private Long avatarId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ENTITY_ID = "entityId";
+  public static final String SERIALIZED_NAME_ENTITY_ID = "entityId";
+  @SerializedName(SERIALIZED_NAME_ENTITY_ID)
   @javax.annotation.Nullable
   private UUID entityId;
 
-  public static final String JSON_PROPERTY_HIERARCHY_LEVEL = "hierarchyLevel";
+  public static final String SERIALIZED_NAME_HIERARCHY_LEVEL = "hierarchyLevel";
+  @SerializedName(SERIALIZED_NAME_HIERARCHY_LEVEL)
   @javax.annotation.Nullable
   private Integer hierarchyLevel;
 
-  public static final String JSON_PROPERTY_ICON_URL = "iconUrl";
+  public static final String SERIALIZED_NAME_ICON_URL = "iconUrl";
+  @SerializedName(SERIALIZED_NAME_ICON_URL)
   @javax.annotation.Nullable
   private String iconUrl;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_SCOPE = "scope";
+  public static final String SERIALIZED_NAME_SCOPE = "scope";
+  @SerializedName(SERIALIZED_NAME_SCOPE)
   @javax.annotation.Nullable
   private Scope scope;
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private String self;
 
-  public static final String JSON_PROPERTY_SUBTASK = "subtask";
+  public static final String SERIALIZED_NAME_SUBTASK = "subtask";
+  @SerializedName(SERIALIZED_NAME_SUBTASK)
   @javax.annotation.Nullable
   private Boolean subtask;
 
-  public IssueTypeDetails() { 
+  public IssueTypeDetails() {
   }
 
-  @JsonCreator
   public IssueTypeDetails(
-    @JsonProperty(JSON_PROPERTY_AVATAR_ID) Long avatarId, 
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION) String description, 
-    @JsonProperty(JSON_PROPERTY_ENTITY_ID) UUID entityId, 
-    @JsonProperty(JSON_PROPERTY_HIERARCHY_LEVEL) Integer hierarchyLevel, 
-    @JsonProperty(JSON_PROPERTY_ICON_URL) String iconUrl, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_NAME) String name, 
-    @JsonProperty(JSON_PROPERTY_SCOPE) Scope scope, 
-    @JsonProperty(JSON_PROPERTY_SELF) String self, 
-    @JsonProperty(JSON_PROPERTY_SUBTASK) Boolean subtask
+     Long avatarId, 
+     String description, 
+     UUID entityId, 
+     Integer hierarchyLevel, 
+     String iconUrl, 
+     String id, 
+     String name, 
+     Scope scope, 
+     String self, 
+     Boolean subtask
   ) {
-  this();
+    this();
     this.avatarId = avatarId;
     this.description = description;
     this.entityId = entityId;
@@ -123,12 +137,9 @@ public class IssueTypeDetails {
    * @return avatarId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getAvatarId() {
     return avatarId;
   }
-
 
 
 
@@ -137,12 +148,9 @@ public class IssueTypeDetails {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
-
 
 
 
@@ -151,12 +159,9 @@ public class IssueTypeDetails {
    * @return entityId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ENTITY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getEntityId() {
     return entityId;
   }
-
 
 
 
@@ -165,12 +170,9 @@ public class IssueTypeDetails {
    * @return hierarchyLevel
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HIERARCHY_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getHierarchyLevel() {
     return hierarchyLevel;
   }
-
 
 
 
@@ -179,12 +181,9 @@ public class IssueTypeDetails {
    * @return iconUrl
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIconUrl() {
     return iconUrl;
   }
-
 
 
 
@@ -193,12 +192,9 @@ public class IssueTypeDetails {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -207,12 +203,9 @@ public class IssueTypeDetails {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
-
 
 
 
@@ -221,12 +214,9 @@ public class IssueTypeDetails {
    * @return scope
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Scope getScope() {
     return scope;
   }
-
 
 
 
@@ -235,12 +225,9 @@ public class IssueTypeDetails {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSelf() {
     return self;
   }
-
 
 
 
@@ -249,8 +236,6 @@ public class IssueTypeDetails {
    * @return subtask
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUBTASK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSubtask() {
     return subtask;
   }
@@ -258,9 +243,6 @@ public class IssueTypeDetails {
 
 
 
-  /**
-   * Return true if this IssueTypeDetails object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -316,89 +298,106 @@ public class IssueTypeDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("avatarId", "description", "entityId", "hierarchyLevel", "iconUrl", "id", "name", "scope", "self", "subtask"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueTypeDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueTypeDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueTypeDetails is not found in the empty JSON string", IssueTypeDetails.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueTypeDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueTypeDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("entityId") != null && !jsonObj.get("entityId").isJsonNull()) && !jsonObj.get("entityId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `entityId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("entityId").toString()));
+      }
+      if ((jsonObj.get("iconUrl") != null && !jsonObj.get("iconUrl").isJsonNull()) && !jsonObj.get("iconUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `iconUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("iconUrl").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueTypeDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueTypeDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueTypeDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueTypeDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueTypeDetails>() {
+           @Override
+           public void write(JsonWriter out, IssueTypeDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueTypeDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of IssueTypeDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueTypeDetails
+   * @throws IOException if the JSON string is invalid with respect to IssueTypeDetails
+   */
+  public static IssueTypeDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueTypeDetails.class);
+  }
 
-    // add `avatarId` to the URL query string
-    if (getAvatarId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%savatarId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvatarId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `entityId` to the URL query string
-    if (getEntityId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sentityId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEntityId()))));
-    }
-
-    // add `hierarchyLevel` to the URL query string
-    if (getHierarchyLevel() != null) {
-      joiner.add(String.format(Locale.ROOT, "%shierarchyLevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHierarchyLevel()))));
-    }
-
-    // add `iconUrl` to the URL query string
-    if (getIconUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%siconUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `scope` to the URL query string
-    if (getScope() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sscope%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getScope()))));
-    }
-
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
-
-    // add `subtask` to the URL query string
-    if (getSubtask() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssubtask%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSubtask()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of IssueTypeDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

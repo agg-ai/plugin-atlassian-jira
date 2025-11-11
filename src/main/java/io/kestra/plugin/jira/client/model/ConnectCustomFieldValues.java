@@ -13,39 +13,54 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ConnectCustomFieldValue;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of updates for a custom field.
  */
-@JsonPropertyOrder({
-  ConnectCustomFieldValues.JSON_PROPERTY_UPDATE_VALUE_LIST
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ConnectCustomFieldValues {
-  public static final String JSON_PROPERTY_UPDATE_VALUE_LIST = "updateValueList";
+  public static final String SERIALIZED_NAME_UPDATE_VALUE_LIST = "updateValueList";
+  @SerializedName(SERIALIZED_NAME_UPDATE_VALUE_LIST)
   @javax.annotation.Nullable
   private List<ConnectCustomFieldValue> updateValueList = new ArrayList<>();
 
-  public ConnectCustomFieldValues() { 
+  public ConnectCustomFieldValues() {
   }
 
   public ConnectCustomFieldValues updateValueList(@javax.annotation.Nullable List<ConnectCustomFieldValue> updateValueList) {
@@ -66,23 +81,16 @@ public class ConnectCustomFieldValues {
    * @return updateValueList
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_VALUE_LIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ConnectCustomFieldValue> getUpdateValueList() {
     return updateValueList;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_VALUE_LIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUpdateValueList(@javax.annotation.Nullable List<ConnectCustomFieldValue> updateValueList) {
     this.updateValueList = updateValueList;
   }
 
 
-  /**
-   * Return true if this ConnectCustomFieldValues object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -120,49 +128,102 @@ public class ConnectCustomFieldValues {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("updateValueList"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ConnectCustomFieldValues
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `updateValueList` to the URL query string
-    if (getUpdateValueList() != null) {
-      for (int i = 0; i < getUpdateValueList().size(); i++) {
-        if (getUpdateValueList().get(i) != null) {
-          joiner.add(getUpdateValueList().get(i).toUrlQueryString(String.format(Locale.ROOT, "%supdateValueList%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ConnectCustomFieldValues.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ConnectCustomFieldValues is not found in the empty JSON string", ConnectCustomFieldValues.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ConnectCustomFieldValues.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ConnectCustomFieldValues` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("updateValueList") != null && !jsonObj.get("updateValueList").isJsonNull()) {
+        JsonArray jsonArrayupdateValueList = jsonObj.getAsJsonArray("updateValueList");
+        if (jsonArrayupdateValueList != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("updateValueList").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `updateValueList` to be an array in the JSON string but got `%s`", jsonObj.get("updateValueList").toString()));
+          }
+
+          // validate the optional field `updateValueList` (array)
+          for (int i = 0; i < jsonArrayupdateValueList.size(); i++) {
+            ConnectCustomFieldValue.validateJsonElement(jsonArrayupdateValueList.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ConnectCustomFieldValues.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ConnectCustomFieldValues' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ConnectCustomFieldValues> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ConnectCustomFieldValues.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ConnectCustomFieldValues>() {
+           @Override
+           public void write(JsonWriter out, ConnectCustomFieldValues value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ConnectCustomFieldValues read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ConnectCustomFieldValues given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ConnectCustomFieldValues
+   * @throws IOException if the JSON string is invalid with respect to ConnectCustomFieldValues
+   */
+  public static ConnectCustomFieldValues fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ConnectCustomFieldValues.class);
+  }
+
+  /**
+   * Convert an instance of ConnectCustomFieldValues to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

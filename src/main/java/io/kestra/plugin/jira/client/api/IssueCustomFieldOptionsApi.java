@@ -10,13 +10,22 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.BulkCustomFieldOptionCreateRequest;
 import io.kestra.plugin.jira.client.model.BulkCustomFieldOptionUpdateRequest;
@@ -27,1084 +36,1186 @@ import io.kestra.plugin.jira.client.model.OrderOfCustomFieldOptions;
 import io.kestra.plugin.jira.client.model.PageBeanCustomFieldContextOption;
 import io.kestra.plugin.jira.client.model.TaskProgressBeanRemoveOptionFromIssuesResult;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueCustomFieldOptionsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueCustomFieldOptionsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueCustomFieldOptionsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for createCustomFieldOption
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param bulkCustomFieldOptionCreateRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the custom field is not found or the context doesn&#39;t match the custom field. </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call createCustomFieldOptionCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueCustomFieldOptionsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueCustomFieldOptionsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Create custom field options (context)
-   * Creates options and, where the custom select field is of the type Select List (cascading), cascading options for a custom select field. The options are added to a context of the field.  The maximum number of options that can be created per request is 1000 and each field can have a maximum of 10000 options.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param bulkCustomFieldOptionCreateRequest  (required)
-   * @return CustomFieldCreatedContextOptionsList
-   * @throws ApiException if fails to make API call
-   */
-  public CustomFieldCreatedContextOptionsList createCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest) throws ApiException {
-    return createCustomFieldOption(fieldId, contextId, bulkCustomFieldOptionCreateRequest, null);
-  }
-
-  /**
-   * Create custom field options (context)
-   * Creates options and, where the custom select field is of the type Select List (cascading), cascading options for a custom select field. The options are added to a context of the field.  The maximum number of options that can be created per request is 1000 and each field can have a maximum of 10000 options.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param bulkCustomFieldOptionCreateRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return CustomFieldCreatedContextOptionsList
-   * @throws ApiException if fails to make API call
-   */
-  public CustomFieldCreatedContextOptionsList createCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<CustomFieldCreatedContextOptionsList> localVarResponse = createCustomFieldOptionWithHttpInfo(fieldId, contextId, bulkCustomFieldOptionCreateRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Create custom field options (context)
-   * Creates options and, where the custom select field is of the type Select List (cascading), cascading options for a custom select field. The options are added to a context of the field.  The maximum number of options that can be created per request is 1000 and each field can have a maximum of 10000 options.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param bulkCustomFieldOptionCreateRequest  (required)
-   * @return ApiResponse&lt;CustomFieldCreatedContextOptionsList&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<CustomFieldCreatedContextOptionsList> createCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest) throws ApiException {
-    return createCustomFieldOptionWithHttpInfo(fieldId, contextId, bulkCustomFieldOptionCreateRequest, null);
-  }
-
-  /**
-   * Create custom field options (context)
-   * Creates options and, where the custom select field is of the type Select List (cascading), cascading options for a custom select field. The options are added to a context of the field.  The maximum number of options that can be created per request is 1000 and each field can have a maximum of 10000 options.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param bulkCustomFieldOptionCreateRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;CustomFieldCreatedContextOptionsList&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<CustomFieldCreatedContextOptionsList> createCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createCustomFieldOptionRequestBuilder(fieldId, contextId, bulkCustomFieldOptionCreateRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("createCustomFieldOption", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<CustomFieldCreatedContextOptionsList>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        CustomFieldCreatedContextOptionsList responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<CustomFieldCreatedContextOptionsList>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = bulkCustomFieldOptionCreateRequest;
 
-        return new ApiResponse<CustomFieldCreatedContextOptionsList>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option"
+            .replace("{" + "fieldId" + "}", localVarApiClient.escapeString(fieldId.toString()))
+            .replace("{" + "contextId" + "}", localVarApiClient.escapeString(contextId.toString()));
 
-  private HttpRequest.Builder createCustomFieldOptionRequestBuilder(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'fieldId' is set
-    if (fieldId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldId' when calling createCustomFieldOption");
-    }
-    // verify the required parameter 'contextId' is set
-    if (contextId == null) {
-      throw new ApiException(400, "Missing the required parameter 'contextId' when calling createCustomFieldOption");
-    }
-    // verify the required parameter 'bulkCustomFieldOptionCreateRequest' is set
-    if (bulkCustomFieldOptionCreateRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'bulkCustomFieldOptionCreateRequest' when calling createCustomFieldOption");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option"
-        .replace("{fieldId}", ApiClient.urlEncode(fieldId.toString()))
-        .replace("{contextId}", ApiClient.urlEncode(contextId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(bulkCustomFieldOptionCreateRequest);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete custom field options (context)
-   * Deletes a custom field option.  Options with cascading options cannot be deleted without deleting the cascading options first.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context from which an option should be deleted. (required)
-   * @param optionId The ID of the option to delete. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId) throws ApiException {
-    deleteCustomFieldOption(fieldId, contextId, optionId, null);
-  }
-
-  /**
-   * Delete custom field options (context)
-   * Deletes a custom field option.  Options with cascading options cannot be deleted without deleting the cascading options first.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context from which an option should be deleted. (required)
-   * @param optionId The ID of the option to delete. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId, Map<String, String> headers) throws ApiException {
-    deleteCustomFieldOptionWithHttpInfo(fieldId, contextId, optionId, headers);
-  }
-
-  /**
-   * Delete custom field options (context)
-   * Deletes a custom field option.  Options with cascading options cannot be deleted without deleting the cascading options first.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context from which an option should be deleted. (required)
-   * @param optionId The ID of the option to delete. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId) throws ApiException {
-    return deleteCustomFieldOptionWithHttpInfo(fieldId, contextId, optionId, null);
-  }
-
-  /**
-   * Delete custom field options (context)
-   * Deletes a custom field option.  Options with cascading options cannot be deleted without deleting the cascading options first.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context from which an option should be deleted. (required)
-   * @param optionId The ID of the option to delete. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteCustomFieldOptionRequestBuilder(fieldId, contextId, optionId, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteCustomFieldOption", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteCustomFieldOptionRequestBuilder(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'fieldId' is set
-    if (fieldId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldId' when calling deleteCustomFieldOption");
-    }
-    // verify the required parameter 'contextId' is set
-    if (contextId == null) {
-      throw new ApiException(400, "Missing the required parameter 'contextId' when calling deleteCustomFieldOption");
-    }
-    // verify the required parameter 'optionId' is set
-    if (optionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'optionId' when calling deleteCustomFieldOption");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}"
-        .replace("{fieldId}", ApiClient.urlEncode(fieldId.toString()))
-        .replace("{contextId}", ApiClient.urlEncode(contextId.toString()))
-        .replace("{optionId}", ApiClient.urlEncode(optionId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get custom field option
-   * Returns a custom field option. For example, an option in a select list.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** The custom field option is returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one project the custom field is used in, and the field is visible in at least one layout the user has permission to view.
-   * @param id The ID of the custom field option. (required)
-   * @return CustomFieldOption
-   * @throws ApiException if fails to make API call
-   */
-  public CustomFieldOption getCustomFieldOption(@javax.annotation.Nonnull String id) throws ApiException {
-    return getCustomFieldOption(id, null);
-  }
-
-  /**
-   * Get custom field option
-   * Returns a custom field option. For example, an option in a select list.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** The custom field option is returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one project the custom field is used in, and the field is visible in at least one layout the user has permission to view.
-   * @param id The ID of the custom field option. (required)
-   * @param headers Optional headers to include in the request
-   * @return CustomFieldOption
-   * @throws ApiException if fails to make API call
-   */
-  public CustomFieldOption getCustomFieldOption(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    ApiResponse<CustomFieldOption> localVarResponse = getCustomFieldOptionWithHttpInfo(id, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get custom field option
-   * Returns a custom field option. For example, an option in a select list.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** The custom field option is returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one project the custom field is used in, and the field is visible in at least one layout the user has permission to view.
-   * @param id The ID of the custom field option. (required)
-   * @return ApiResponse&lt;CustomFieldOption&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<CustomFieldOption> getCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
-    return getCustomFieldOptionWithHttpInfo(id, null);
-  }
-
-  /**
-   * Get custom field option
-   * Returns a custom field option. For example, an option in a select list.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** The custom field option is returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one project the custom field is used in, and the field is visible in at least one layout the user has permission to view.
-   * @param id The ID of the custom field option. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;CustomFieldOption&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<CustomFieldOption> getCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getCustomFieldOptionRequestBuilder(id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getCustomFieldOption", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<CustomFieldOption>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        CustomFieldOption responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<CustomFieldOption>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<CustomFieldOption>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getCustomFieldOptionRequestBuilder(@javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getCustomFieldOption");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/customFieldOption/{id}"
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get custom field options (context)
-   * Returns a [paginated](#pagination) list of all custom field option for a context. Options are returned first then cascading options, in the order they display in Jira.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). *Edit Workflow* [edit workflow permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Edit-Workflows)
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param optionId The ID of the option. (optional)
-   * @param onlyOptions Whether only options are returned. (optional, default to false)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @return PageBeanCustomFieldContextOption
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanCustomFieldContextOption getOptionsForContext(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getOptionsForContext(fieldId, contextId, optionId, onlyOptions, startAt, maxResults, null);
-  }
-
-  /**
-   * Get custom field options (context)
-   * Returns a [paginated](#pagination) list of all custom field option for a context. Options are returned first then cascading options, in the order they display in Jira.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). *Edit Workflow* [edit workflow permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Edit-Workflows)
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param optionId The ID of the option. (optional)
-   * @param onlyOptions Whether only options are returned. (optional, default to false)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanCustomFieldContextOption
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanCustomFieldContextOption getOptionsForContext(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanCustomFieldContextOption> localVarResponse = getOptionsForContextWithHttpInfo(fieldId, contextId, optionId, onlyOptions, startAt, maxResults, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get custom field options (context)
-   * Returns a [paginated](#pagination) list of all custom field option for a context. Options are returned first then cascading options, in the order they display in Jira.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). *Edit Workflow* [edit workflow permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Edit-Workflows)
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param optionId The ID of the option. (optional)
-   * @param onlyOptions Whether only options are returned. (optional, default to false)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @return ApiResponse&lt;PageBeanCustomFieldContextOption&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanCustomFieldContextOption> getOptionsForContextWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
-    return getOptionsForContextWithHttpInfo(fieldId, contextId, optionId, onlyOptions, startAt, maxResults, null);
-  }
-
-  /**
-   * Get custom field options (context)
-   * Returns a [paginated](#pagination) list of all custom field option for a context. Options are returned first then cascading options, in the order they display in Jira.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). *Edit Workflow* [edit workflow permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Edit-Workflows)
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param optionId The ID of the option. (optional)
-   * @param onlyOptions Whether only options are returned. (optional, default to false)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanCustomFieldContextOption&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanCustomFieldContextOption> getOptionsForContextWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getOptionsForContextRequestBuilder(fieldId, contextId, optionId, onlyOptions, startAt, maxResults, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getOptionsForContext", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanCustomFieldContextOption>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanCustomFieldContextOption responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanCustomFieldContextOption>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanCustomFieldContextOption>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getOptionsForContextRequestBuilder(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'fieldId' is set
-    if (fieldId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldId' when calling getOptionsForContext");
-    }
-    // verify the required parameter 'contextId' is set
-    if (contextId == null) {
-      throw new ApiException(400, "Missing the required parameter 'contextId' when calling getOptionsForContext");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option"
-        .replace("{fieldId}", ApiClient.urlEncode(fieldId.toString()))
-        .replace("{contextId}", ApiClient.urlEncode(contextId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "optionId";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("optionId", optionId));
-    localVarQueryParameterBaseName = "onlyOptions";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("onlyOptions", onlyOptions));
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Reorder custom field options (context)
-   * Changes the order of custom field options or cascading options in a context.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param orderOfCustomFieldOptions  (required)
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object reorderCustomFieldOptions(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions) throws ApiException {
-    return reorderCustomFieldOptions(fieldId, contextId, orderOfCustomFieldOptions, null);
-  }
-
-  /**
-   * Reorder custom field options (context)
-   * Changes the order of custom field options or cascading options in a context.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param orderOfCustomFieldOptions  (required)
-   * @param headers Optional headers to include in the request
-   * @return Object
-   * @throws ApiException if fails to make API call
-   */
-  public Object reorderCustomFieldOptions(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions, Map<String, String> headers) throws ApiException {
-    ApiResponse<Object> localVarResponse = reorderCustomFieldOptionsWithHttpInfo(fieldId, contextId, orderOfCustomFieldOptions, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Reorder custom field options (context)
-   * Changes the order of custom field options or cascading options in a context.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param orderOfCustomFieldOptions  (required)
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> reorderCustomFieldOptionsWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions) throws ApiException {
-    return reorderCustomFieldOptionsWithHttpInfo(fieldId, contextId, orderOfCustomFieldOptions, null);
-  }
-
-  /**
-   * Reorder custom field options (context)
-   * Changes the order of custom field options or cascading options in a context.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param orderOfCustomFieldOptions  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Object&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Object> reorderCustomFieldOptionsWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = reorderCustomFieldOptionsRequestBuilder(fieldId, contextId, orderOfCustomFieldOptions, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("reorderCustomFieldOptions", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Object>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call createCustomFieldOptionValidateBeforeCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'fieldId' is set
+        if (fieldId == null) {
+            throw new ApiException("Missing the required parameter 'fieldId' when calling createCustomFieldOption(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Object responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Object>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder reorderCustomFieldOptionsRequestBuilder(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'fieldId' is set
-    if (fieldId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldId' when calling reorderCustomFieldOptions");
-    }
-    // verify the required parameter 'contextId' is set
-    if (contextId == null) {
-      throw new ApiException(400, "Missing the required parameter 'contextId' when calling reorderCustomFieldOptions");
-    }
-    // verify the required parameter 'orderOfCustomFieldOptions' is set
-    if (orderOfCustomFieldOptions == null) {
-      throw new ApiException(400, "Missing the required parameter 'orderOfCustomFieldOptions' when calling reorderCustomFieldOptions");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option/move"
-        .replace("{fieldId}", ApiClient.urlEncode(fieldId.toString()))
-        .replace("{contextId}", ApiClient.urlEncode(contextId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(orderOfCustomFieldOptions);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Replace custom field options
-   * Replaces the options of a custom field.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect or Forge apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param optionId The ID of the option to be deselected. (required)
-   * @param contextId The ID of the context. (required)
-   * @param replaceWith The ID of the option that will replace the currently selected option. (optional)
-   * @param jql A JQL query that specifies the issues to be updated. For example, *project&#x3D;10000*. (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void replaceCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql) throws ApiException {
-    replaceCustomFieldOption(fieldId, optionId, contextId, replaceWith, jql, null);
-  }
-
-  /**
-   * Replace custom field options
-   * Replaces the options of a custom field.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect or Forge apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param optionId The ID of the option to be deselected. (required)
-   * @param contextId The ID of the context. (required)
-   * @param replaceWith The ID of the option that will replace the currently selected option. (optional)
-   * @param jql A JQL query that specifies the issues to be updated. For example, *project&#x3D;10000*. (optional)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void replaceCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql, Map<String, String> headers) throws ApiException {
-    replaceCustomFieldOptionWithHttpInfo(fieldId, optionId, contextId, replaceWith, jql, headers);
-  }
-
-  /**
-   * Replace custom field options
-   * Replaces the options of a custom field.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect or Forge apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param optionId The ID of the option to be deselected. (required)
-   * @param contextId The ID of the context. (required)
-   * @param replaceWith The ID of the option that will replace the currently selected option. (optional)
-   * @param jql A JQL query that specifies the issues to be updated. For example, *project&#x3D;10000*. (optional)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> replaceCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql) throws ApiException {
-    return replaceCustomFieldOptionWithHttpInfo(fieldId, optionId, contextId, replaceWith, jql, null);
-  }
-
-  /**
-   * Replace custom field options
-   * Replaces the options of a custom field.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect or Forge apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param optionId The ID of the option to be deselected. (required)
-   * @param contextId The ID of the context. (required)
-   * @param replaceWith The ID of the option that will replace the currently selected option. (optional)
-   * @param jql A JQL query that specifies the issues to be updated. For example, *project&#x3D;10000*. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> replaceCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = replaceCustomFieldOptionRequestBuilder(fieldId, optionId, contextId, replaceWith, jql, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("replaceCustomFieldOption", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder replaceCustomFieldOptionRequestBuilder(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'fieldId' is set
-    if (fieldId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldId' when calling replaceCustomFieldOption");
-    }
-    // verify the required parameter 'optionId' is set
-    if (optionId == null) {
-      throw new ApiException(400, "Missing the required parameter 'optionId' when calling replaceCustomFieldOption");
-    }
-    // verify the required parameter 'contextId' is set
-    if (contextId == null) {
-      throw new ApiException(400, "Missing the required parameter 'contextId' when calling replaceCustomFieldOption");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}/issue"
-        .replace("{fieldId}", ApiClient.urlEncode(fieldId.toString()))
-        .replace("{optionId}", ApiClient.urlEncode(optionId.toString()))
-        .replace("{contextId}", ApiClient.urlEncode(contextId.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "replaceWith";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("replaceWith", replaceWith));
-    localVarQueryParameterBaseName = "jql";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("jql", jql));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update custom field options (context)
-   * Updates the options of a custom field.  If any of the options are not found, no options are updated. Options where the values in the request match the current values aren&#39;t updated and aren&#39;t reported in the response.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param bulkCustomFieldOptionUpdateRequest  (required)
-   * @return CustomFieldUpdatedContextOptionsList
-   * @throws ApiException if fails to make API call
-   */
-  public CustomFieldUpdatedContextOptionsList updateCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest) throws ApiException {
-    return updateCustomFieldOption(fieldId, contextId, bulkCustomFieldOptionUpdateRequest, null);
-  }
-
-  /**
-   * Update custom field options (context)
-   * Updates the options of a custom field.  If any of the options are not found, no options are updated. Options where the values in the request match the current values aren&#39;t updated and aren&#39;t reported in the response.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param bulkCustomFieldOptionUpdateRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return CustomFieldUpdatedContextOptionsList
-   * @throws ApiException if fails to make API call
-   */
-  public CustomFieldUpdatedContextOptionsList updateCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<CustomFieldUpdatedContextOptionsList> localVarResponse = updateCustomFieldOptionWithHttpInfo(fieldId, contextId, bulkCustomFieldOptionUpdateRequest, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update custom field options (context)
-   * Updates the options of a custom field.  If any of the options are not found, no options are updated. Options where the values in the request match the current values aren&#39;t updated and aren&#39;t reported in the response.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param bulkCustomFieldOptionUpdateRequest  (required)
-   * @return ApiResponse&lt;CustomFieldUpdatedContextOptionsList&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<CustomFieldUpdatedContextOptionsList> updateCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest) throws ApiException {
-    return updateCustomFieldOptionWithHttpInfo(fieldId, contextId, bulkCustomFieldOptionUpdateRequest, null);
-  }
-
-  /**
-   * Update custom field options (context)
-   * Updates the options of a custom field.  If any of the options are not found, no options are updated. Options where the values in the request match the current values aren&#39;t updated and aren&#39;t reported in the response.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
-   * @param fieldId The ID of the custom field. (required)
-   * @param contextId The ID of the context. (required)
-   * @param bulkCustomFieldOptionUpdateRequest  (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;CustomFieldUpdatedContextOptionsList&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<CustomFieldUpdatedContextOptionsList> updateCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateCustomFieldOptionRequestBuilder(fieldId, contextId, bulkCustomFieldOptionUpdateRequest, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateCustomFieldOption", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<CustomFieldUpdatedContextOptionsList>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // verify the required parameter 'contextId' is set
+        if (contextId == null) {
+            throw new ApiException("Missing the required parameter 'contextId' when calling createCustomFieldOption(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        CustomFieldUpdatedContextOptionsList responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<CustomFieldUpdatedContextOptionsList>() {});
-        
-        localVarResponse.body().close();
+        // verify the required parameter 'bulkCustomFieldOptionCreateRequest' is set
+        if (bulkCustomFieldOptionCreateRequest == null) {
+            throw new ApiException("Missing the required parameter 'bulkCustomFieldOptionCreateRequest' when calling createCustomFieldOption(Async)");
+        }
 
-        return new ApiResponse<CustomFieldUpdatedContextOptionsList>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        return createCustomFieldOptionCall(fieldId, contextId, bulkCustomFieldOptionCreateRequest, _callback);
 
-  private HttpRequest.Builder updateCustomFieldOptionRequestBuilder(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'fieldId' is set
-    if (fieldId == null) {
-      throw new ApiException(400, "Missing the required parameter 'fieldId' when calling updateCustomFieldOption");
-    }
-    // verify the required parameter 'contextId' is set
-    if (contextId == null) {
-      throw new ApiException(400, "Missing the required parameter 'contextId' when calling updateCustomFieldOption");
-    }
-    // verify the required parameter 'bulkCustomFieldOptionUpdateRequest' is set
-    if (bulkCustomFieldOptionUpdateRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'bulkCustomFieldOptionUpdateRequest' when calling updateCustomFieldOption");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option"
-        .replace("{fieldId}", ApiClient.urlEncode(fieldId.toString()))
-        .replace("{contextId}", ApiClient.urlEncode(contextId.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(bulkCustomFieldOptionUpdateRequest);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
+    /**
+     * Create custom field options (context)
+     * Creates options and, where the custom select field is of the type Select List (cascading), cascading options for a custom select field. The options are added to a context of the field.  The maximum number of options that can be created per request is 1000 and each field can have a maximum of 10000 options.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param bulkCustomFieldOptionCreateRequest  (required)
+     * @return CustomFieldCreatedContextOptionsList
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the custom field is not found or the context doesn&#39;t match the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public CustomFieldCreatedContextOptionsList createCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest) throws ApiException {
+        ApiResponse<CustomFieldCreatedContextOptionsList> localVarResp = createCustomFieldOptionWithHttpInfo(fieldId, contextId, bulkCustomFieldOptionCreateRequest);
+        return localVarResp.getData();
     }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
 
+    /**
+     * Create custom field options (context)
+     * Creates options and, where the custom select field is of the type Select List (cascading), cascading options for a custom select field. The options are added to a context of the field.  The maximum number of options that can be created per request is 1000 and each field can have a maximum of 10000 options.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param bulkCustomFieldOptionCreateRequest  (required)
+     * @return ApiResponse&lt;CustomFieldCreatedContextOptionsList&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the custom field is not found or the context doesn&#39;t match the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<CustomFieldCreatedContextOptionsList> createCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest) throws ApiException {
+        okhttp3.Call localVarCall = createCustomFieldOptionValidateBeforeCall(fieldId, contextId, bulkCustomFieldOptionCreateRequest, null);
+        Type localVarReturnType = new TypeToken<CustomFieldCreatedContextOptionsList>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Create custom field options (context) (asynchronously)
+     * Creates options and, where the custom select field is of the type Select List (cascading), cascading options for a custom select field. The options are added to a context of the field.  The maximum number of options that can be created per request is 1000 and each field can have a maximum of 10000 options.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param bulkCustomFieldOptionCreateRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the custom field is not found or the context doesn&#39;t match the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call createCustomFieldOptionAsync(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionCreateRequest bulkCustomFieldOptionCreateRequest, final ApiCallback<CustomFieldCreatedContextOptionsList> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = createCustomFieldOptionValidateBeforeCall(fieldId, contextId, bulkCustomFieldOptionCreateRequest, _callback);
+        Type localVarReturnType = new TypeToken<CustomFieldCreatedContextOptionsList>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteCustomFieldOption
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context from which an option should be deleted. (required)
+     * @param optionId The ID of the option to delete. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the option is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, the context, or the option is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteCustomFieldOptionCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}"
+            .replace("{" + "fieldId" + "}", localVarApiClient.escapeString(fieldId.toString()))
+            .replace("{" + "contextId" + "}", localVarApiClient.escapeString(contextId.toString()))
+            .replace("{" + "optionId" + "}", localVarApiClient.escapeString(optionId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteCustomFieldOptionValidateBeforeCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'fieldId' is set
+        if (fieldId == null) {
+            throw new ApiException("Missing the required parameter 'fieldId' when calling deleteCustomFieldOption(Async)");
+        }
+
+        // verify the required parameter 'contextId' is set
+        if (contextId == null) {
+            throw new ApiException("Missing the required parameter 'contextId' when calling deleteCustomFieldOption(Async)");
+        }
+
+        // verify the required parameter 'optionId' is set
+        if (optionId == null) {
+            throw new ApiException("Missing the required parameter 'optionId' when calling deleteCustomFieldOption(Async)");
+        }
+
+        return deleteCustomFieldOptionCall(fieldId, contextId, optionId, _callback);
+
+    }
+
+    /**
+     * Delete custom field options (context)
+     * Deletes a custom field option.  Options with cascading options cannot be deleted without deleting the cascading options first.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context from which an option should be deleted. (required)
+     * @param optionId The ID of the option to delete. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the option is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, the context, or the option is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId) throws ApiException {
+        deleteCustomFieldOptionWithHttpInfo(fieldId, contextId, optionId);
+    }
+
+    /**
+     * Delete custom field options (context)
+     * Deletes a custom field option.  Options with cascading options cannot be deleted without deleting the cascading options first.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context from which an option should be deleted. (required)
+     * @param optionId The ID of the option to delete. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the option is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, the context, or the option is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId) throws ApiException {
+        okhttp3.Call localVarCall = deleteCustomFieldOptionValidateBeforeCall(fieldId, contextId, optionId, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete custom field options (context) (asynchronously)
+     * Deletes a custom field option.  Options with cascading options cannot be deleted without deleting the cascading options first.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context from which an option should be deleted. (required)
+     * @param optionId The ID of the option to delete. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the option is deleted. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, the context, or the option is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteCustomFieldOptionAsync(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull Long optionId, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteCustomFieldOptionValidateBeforeCall(fieldId, contextId, optionId, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getCustomFieldOption
+     * @param id The ID of the custom field option. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the custom field option is not found.  *  the user does not have permission to view the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getCustomFieldOptionCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/customFieldOption/{id}"
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getCustomFieldOptionValidateBeforeCall(@javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getCustomFieldOption(Async)");
+        }
+
+        return getCustomFieldOptionCall(id, _callback);
+
+    }
+
+    /**
+     * Get custom field option
+     * Returns a custom field option. For example, an option in a select list.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** The custom field option is returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one project the custom field is used in, and the field is visible in at least one layout the user has permission to view.
+     * @param id The ID of the custom field option. (required)
+     * @return CustomFieldOption
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the custom field option is not found.  *  the user does not have permission to view the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public CustomFieldOption getCustomFieldOption(@javax.annotation.Nonnull String id) throws ApiException {
+        ApiResponse<CustomFieldOption> localVarResp = getCustomFieldOptionWithHttpInfo(id);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get custom field option
+     * Returns a custom field option. For example, an option in a select list.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** The custom field option is returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one project the custom field is used in, and the field is visible in at least one layout the user has permission to view.
+     * @param id The ID of the custom field option. (required)
+     * @return ApiResponse&lt;CustomFieldOption&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the custom field option is not found.  *  the user does not have permission to view the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<CustomFieldOption> getCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = getCustomFieldOptionValidateBeforeCall(id, null);
+        Type localVarReturnType = new TypeToken<CustomFieldOption>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get custom field option (asynchronously)
+     * Returns a custom field option. For example, an option in a select list.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** The custom field option is returned as follows:   *  if the user has the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).  *  if the user has the *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for at least one project the custom field is used in, and the field is visible in at least one layout the user has permission to view.
+     * @param id The ID of the custom field option. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if:   *  the custom field option is not found.  *  the user does not have permission to view the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getCustomFieldOptionAsync(@javax.annotation.Nonnull String id, final ApiCallback<CustomFieldOption> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getCustomFieldOptionValidateBeforeCall(id, _callback);
+        Type localVarReturnType = new TypeToken<CustomFieldOption>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getOptionsForContext
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param optionId The ID of the option. (optional)
+     * @param onlyOptions Whether only options are returned. (optional, default to false)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the custom field is not found or the context doesn&#39;t match the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getOptionsForContextCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option"
+            .replace("{" + "fieldId" + "}", localVarApiClient.escapeString(fieldId.toString()))
+            .replace("{" + "contextId" + "}", localVarApiClient.escapeString(contextId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (optionId != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("optionId", optionId));
+        }
+
+        if (onlyOptions != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("onlyOptions", onlyOptions));
+        }
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getOptionsForContextValidateBeforeCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'fieldId' is set
+        if (fieldId == null) {
+            throw new ApiException("Missing the required parameter 'fieldId' when calling getOptionsForContext(Async)");
+        }
+
+        // verify the required parameter 'contextId' is set
+        if (contextId == null) {
+            throw new ApiException("Missing the required parameter 'contextId' when calling getOptionsForContext(Async)");
+        }
+
+        return getOptionsForContextCall(fieldId, contextId, optionId, onlyOptions, startAt, maxResults, _callback);
+
+    }
+
+    /**
+     * Get custom field options (context)
+     * Returns a [paginated](#pagination) list of all custom field option for a context. Options are returned first then cascading options, in the order they display in Jira.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). *Edit Workflow* [edit workflow permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Edit-Workflows)
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param optionId The ID of the option. (optional)
+     * @param onlyOptions Whether only options are returned. (optional, default to false)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @return PageBeanCustomFieldContextOption
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the custom field is not found or the context doesn&#39;t match the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanCustomFieldContextOption getOptionsForContext(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        ApiResponse<PageBeanCustomFieldContextOption> localVarResp = getOptionsForContextWithHttpInfo(fieldId, contextId, optionId, onlyOptions, startAt, maxResults);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get custom field options (context)
+     * Returns a [paginated](#pagination) list of all custom field option for a context. Options are returned first then cascading options, in the order they display in Jira.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). *Edit Workflow* [edit workflow permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Edit-Workflows)
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param optionId The ID of the option. (optional)
+     * @param onlyOptions Whether only options are returned. (optional, default to false)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @return ApiResponse&lt;PageBeanCustomFieldContextOption&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the custom field is not found or the context doesn&#39;t match the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanCustomFieldContextOption> getOptionsForContextWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults) throws ApiException {
+        okhttp3.Call localVarCall = getOptionsForContextValidateBeforeCall(fieldId, contextId, optionId, onlyOptions, startAt, maxResults, null);
+        Type localVarReturnType = new TypeToken<PageBeanCustomFieldContextOption>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get custom field options (context) (asynchronously)
+     * Returns a [paginated](#pagination) list of all custom field option for a context. Options are returned first then cascading options, in the order they display in Jira.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). *Edit Workflow* [edit workflow permission](https://support.atlassian.com/jira-cloud-administration/docs/permissions-for-company-managed-projects/#Edit-Workflows)
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param optionId The ID of the option. (optional)
+     * @param onlyOptions Whether only options are returned. (optional, default to false)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the custom field is not found or the context doesn&#39;t match the custom field. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getOptionsForContextAsync(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long optionId, @javax.annotation.Nullable Boolean onlyOptions, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, final ApiCallback<PageBeanCustomFieldContextOption> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getOptionsForContextValidateBeforeCall(fieldId, contextId, optionId, onlyOptions, startAt, maxResults, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanCustomFieldContextOption>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for reorderCustomFieldOptions
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param orderOfCustomFieldOptions  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if options are reordered. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, the context, or one or more of the options is not found.. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call reorderCustomFieldOptionsCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = orderOfCustomFieldOptions;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option/move"
+            .replace("{" + "fieldId" + "}", localVarApiClient.escapeString(fieldId.toString()))
+            .replace("{" + "contextId" + "}", localVarApiClient.escapeString(contextId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call reorderCustomFieldOptionsValidateBeforeCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'fieldId' is set
+        if (fieldId == null) {
+            throw new ApiException("Missing the required parameter 'fieldId' when calling reorderCustomFieldOptions(Async)");
+        }
+
+        // verify the required parameter 'contextId' is set
+        if (contextId == null) {
+            throw new ApiException("Missing the required parameter 'contextId' when calling reorderCustomFieldOptions(Async)");
+        }
+
+        // verify the required parameter 'orderOfCustomFieldOptions' is set
+        if (orderOfCustomFieldOptions == null) {
+            throw new ApiException("Missing the required parameter 'orderOfCustomFieldOptions' when calling reorderCustomFieldOptions(Async)");
+        }
+
+        return reorderCustomFieldOptionsCall(fieldId, contextId, orderOfCustomFieldOptions, _callback);
+
+    }
+
+    /**
+     * Reorder custom field options (context)
+     * Changes the order of custom field options or cascading options in a context.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param orderOfCustomFieldOptions  (required)
+     * @return Object
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if options are reordered. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, the context, or one or more of the options is not found.. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Object reorderCustomFieldOptions(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions) throws ApiException {
+        ApiResponse<Object> localVarResp = reorderCustomFieldOptionsWithHttpInfo(fieldId, contextId, orderOfCustomFieldOptions);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Reorder custom field options (context)
+     * Changes the order of custom field options or cascading options in a context.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param orderOfCustomFieldOptions  (required)
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if options are reordered. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, the context, or one or more of the options is not found.. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Object> reorderCustomFieldOptionsWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions) throws ApiException {
+        okhttp3.Call localVarCall = reorderCustomFieldOptionsValidateBeforeCall(fieldId, contextId, orderOfCustomFieldOptions, null);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Reorder custom field options (context) (asynchronously)
+     * Changes the order of custom field options or cascading options in a context.  This operation works for custom field options created in Jira or the operations from this resource. **To work with issue field select list options created for Connect apps use the [Issue custom field options (apps)](#api-group-issue-custom-field-options--apps-) operations.**  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param orderOfCustomFieldOptions  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if options are reordered. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, the context, or one or more of the options is not found.. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call reorderCustomFieldOptionsAsync(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull OrderOfCustomFieldOptions orderOfCustomFieldOptions, final ApiCallback<Object> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = reorderCustomFieldOptionsValidateBeforeCall(fieldId, contextId, orderOfCustomFieldOptions, _callback);
+        Type localVarReturnType = new TypeToken<Object>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for replaceCustomFieldOption
+     * @param fieldId The ID of the custom field. (required)
+     * @param optionId The ID of the option to be deselected. (required)
+     * @param contextId The ID of the context. (required)
+     * @param replaceWith The ID of the option that will replace the currently selected option. (optional)
+     * @param jql A JQL query that specifies the issues to be updated. For example, *project&#x3D;10000*. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the long-running task to deselect the option is started. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field is not found or does not support options, or the options to be replaced are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call replaceCustomFieldOptionCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}/issue"
+            .replace("{" + "fieldId" + "}", localVarApiClient.escapeString(fieldId.toString()))
+            .replace("{" + "optionId" + "}", localVarApiClient.escapeString(optionId.toString()))
+            .replace("{" + "contextId" + "}", localVarApiClient.escapeString(contextId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (replaceWith != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("replaceWith", replaceWith));
+        }
+
+        if (jql != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("jql", jql));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call replaceCustomFieldOptionValidateBeforeCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'fieldId' is set
+        if (fieldId == null) {
+            throw new ApiException("Missing the required parameter 'fieldId' when calling replaceCustomFieldOption(Async)");
+        }
+
+        // verify the required parameter 'optionId' is set
+        if (optionId == null) {
+            throw new ApiException("Missing the required parameter 'optionId' when calling replaceCustomFieldOption(Async)");
+        }
+
+        // verify the required parameter 'contextId' is set
+        if (contextId == null) {
+            throw new ApiException("Missing the required parameter 'contextId' when calling replaceCustomFieldOption(Async)");
+        }
+
+        return replaceCustomFieldOptionCall(fieldId, optionId, contextId, replaceWith, jql, _callback);
+
+    }
+
+    /**
+     * Replace custom field options
+     * Replaces the options of a custom field.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect or Forge apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param optionId The ID of the option to be deselected. (required)
+     * @param contextId The ID of the context. (required)
+     * @param replaceWith The ID of the option that will replace the currently selected option. (optional)
+     * @param jql A JQL query that specifies the issues to be updated. For example, *project&#x3D;10000*. (optional)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the long-running task to deselect the option is started. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field is not found or does not support options, or the options to be replaced are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void replaceCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql) throws ApiException {
+        replaceCustomFieldOptionWithHttpInfo(fieldId, optionId, contextId, replaceWith, jql);
+    }
+
+    /**
+     * Replace custom field options
+     * Replaces the options of a custom field.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect or Forge apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param optionId The ID of the option to be deselected. (required)
+     * @param contextId The ID of the context. (required)
+     * @param replaceWith The ID of the option that will replace the currently selected option. (optional)
+     * @param jql A JQL query that specifies the issues to be updated. For example, *project&#x3D;10000*. (optional)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the long-running task to deselect the option is started. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field is not found or does not support options, or the options to be replaced are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> replaceCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql) throws ApiException {
+        okhttp3.Call localVarCall = replaceCustomFieldOptionValidateBeforeCall(fieldId, optionId, contextId, replaceWith, jql, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Replace custom field options (asynchronously)
+     * Replaces the options of a custom field.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect or Forge apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param optionId The ID of the option to be deselected. (required)
+     * @param contextId The ID of the context. (required)
+     * @param replaceWith The ID of the option that will replace the currently selected option. (optional)
+     * @param jql A JQL query that specifies the issues to be updated. For example, *project&#x3D;10000*. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 303 </td><td> Returned if the long-running task to deselect the option is started. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field is not found or does not support options, or the options to be replaced are not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call replaceCustomFieldOptionAsync(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long optionId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nullable Long replaceWith, @javax.annotation.Nullable String jql, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = replaceCustomFieldOptionValidateBeforeCall(fieldId, optionId, contextId, replaceWith, jql, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateCustomFieldOption
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param bulkCustomFieldOptionUpdateRequest  (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, context, or one or more options is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateCustomFieldOptionCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = bulkCustomFieldOptionUpdateRequest;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/field/{fieldId}/context/{contextId}/option"
+            .replace("{" + "fieldId" + "}", localVarApiClient.escapeString(fieldId.toString()))
+            .replace("{" + "contextId" + "}", localVarApiClient.escapeString(contextId.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateCustomFieldOptionValidateBeforeCall(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'fieldId' is set
+        if (fieldId == null) {
+            throw new ApiException("Missing the required parameter 'fieldId' when calling updateCustomFieldOption(Async)");
+        }
+
+        // verify the required parameter 'contextId' is set
+        if (contextId == null) {
+            throw new ApiException("Missing the required parameter 'contextId' when calling updateCustomFieldOption(Async)");
+        }
+
+        // verify the required parameter 'bulkCustomFieldOptionUpdateRequest' is set
+        if (bulkCustomFieldOptionUpdateRequest == null) {
+            throw new ApiException("Missing the required parameter 'bulkCustomFieldOptionUpdateRequest' when calling updateCustomFieldOption(Async)");
+        }
+
+        return updateCustomFieldOptionCall(fieldId, contextId, bulkCustomFieldOptionUpdateRequest, _callback);
+
+    }
+
+    /**
+     * Update custom field options (context)
+     * Updates the options of a custom field.  If any of the options are not found, no options are updated. Options where the values in the request match the current values aren&#39;t updated and aren&#39;t reported in the response.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param bulkCustomFieldOptionUpdateRequest  (required)
+     * @return CustomFieldUpdatedContextOptionsList
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, context, or one or more options is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public CustomFieldUpdatedContextOptionsList updateCustomFieldOption(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest) throws ApiException {
+        ApiResponse<CustomFieldUpdatedContextOptionsList> localVarResp = updateCustomFieldOptionWithHttpInfo(fieldId, contextId, bulkCustomFieldOptionUpdateRequest);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update custom field options (context)
+     * Updates the options of a custom field.  If any of the options are not found, no options are updated. Options where the values in the request match the current values aren&#39;t updated and aren&#39;t reported in the response.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param bulkCustomFieldOptionUpdateRequest  (required)
+     * @return ApiResponse&lt;CustomFieldUpdatedContextOptionsList&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, context, or one or more options is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<CustomFieldUpdatedContextOptionsList> updateCustomFieldOptionWithHttpInfo(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest) throws ApiException {
+        okhttp3.Call localVarCall = updateCustomFieldOptionValidateBeforeCall(fieldId, contextId, bulkCustomFieldOptionUpdateRequest, null);
+        Type localVarReturnType = new TypeToken<CustomFieldUpdatedContextOptionsList>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update custom field options (context) (asynchronously)
+     * Updates the options of a custom field.  If any of the options are not found, no options are updated. Options where the values in the request match the current values aren&#39;t updated and aren&#39;t reported in the response.  Note that this operation **only works for issue field select list options created in Jira or using operations from the [Issue custom field options](#api-group-Issue-custom-field-options) resource**, it cannot be used with issue field select list options created by Connect apps.  **[Permissions](#permissions) required:** *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg).
+     * @param fieldId The ID of the custom field. (required)
+     * @param contextId The ID of the context. (required)
+     * @param bulkCustomFieldOptionUpdateRequest  (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is not valid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 403 </td><td> Returned if the user does not have the necessary permission. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the field, context, or one or more options is not found. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateCustomFieldOptionAsync(@javax.annotation.Nonnull String fieldId, @javax.annotation.Nonnull Long contextId, @javax.annotation.Nonnull BulkCustomFieldOptionUpdateRequest bulkCustomFieldOptionUpdateRequest, final ApiCallback<CustomFieldUpdatedContextOptionsList> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateCustomFieldOptionValidateBeforeCall(fieldId, contextId, bulkCustomFieldOptionUpdateRequest, _callback);
+        Type localVarReturnType = new TypeToken<CustomFieldUpdatedContextOptionsList>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

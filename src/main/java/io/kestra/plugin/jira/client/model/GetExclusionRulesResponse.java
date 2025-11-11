@@ -13,64 +13,78 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * GetExclusionRulesResponse
  */
-@JsonPropertyOrder({
-  GetExclusionRulesResponse.JSON_PROPERTY_ISSUE_IDS,
-  GetExclusionRulesResponse.JSON_PROPERTY_ISSUE_TYPE_IDS,
-  GetExclusionRulesResponse.JSON_PROPERTY_NUMBER_OF_DAYS_TO_SHOW_COMPLETED_ISSUES,
-  GetExclusionRulesResponse.JSON_PROPERTY_RELEASE_IDS,
-  GetExclusionRulesResponse.JSON_PROPERTY_WORK_STATUS_CATEGORY_IDS,
-  GetExclusionRulesResponse.JSON_PROPERTY_WORK_STATUS_IDS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class GetExclusionRulesResponse {
-  public static final String JSON_PROPERTY_ISSUE_IDS = "issueIds";
+  public static final String SERIALIZED_NAME_ISSUE_IDS = "issueIds";
+  @SerializedName(SERIALIZED_NAME_ISSUE_IDS)
   @javax.annotation.Nullable
   private Set<Long> issueIds = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_IDS = "issueTypeIds";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_IDS = "issueTypeIds";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_IDS)
   @javax.annotation.Nullable
   private Set<Long> issueTypeIds = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_NUMBER_OF_DAYS_TO_SHOW_COMPLETED_ISSUES = "numberOfDaysToShowCompletedIssues";
+  public static final String SERIALIZED_NAME_NUMBER_OF_DAYS_TO_SHOW_COMPLETED_ISSUES = "numberOfDaysToShowCompletedIssues";
+  @SerializedName(SERIALIZED_NAME_NUMBER_OF_DAYS_TO_SHOW_COMPLETED_ISSUES)
   @javax.annotation.Nonnull
   private Integer numberOfDaysToShowCompletedIssues;
 
-  public static final String JSON_PROPERTY_RELEASE_IDS = "releaseIds";
+  public static final String SERIALIZED_NAME_RELEASE_IDS = "releaseIds";
+  @SerializedName(SERIALIZED_NAME_RELEASE_IDS)
   @javax.annotation.Nullable
   private Set<Long> releaseIds = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_WORK_STATUS_CATEGORY_IDS = "workStatusCategoryIds";
+  public static final String SERIALIZED_NAME_WORK_STATUS_CATEGORY_IDS = "workStatusCategoryIds";
+  @SerializedName(SERIALIZED_NAME_WORK_STATUS_CATEGORY_IDS)
   @javax.annotation.Nullable
   private Set<Long> workStatusCategoryIds = new LinkedHashSet<>();
 
-  public static final String JSON_PROPERTY_WORK_STATUS_IDS = "workStatusIds";
+  public static final String SERIALIZED_NAME_WORK_STATUS_IDS = "workStatusIds";
+  @SerializedName(SERIALIZED_NAME_WORK_STATUS_IDS)
   @javax.annotation.Nullable
   private Set<Long> workStatusIds = new LinkedHashSet<>();
 
-  public GetExclusionRulesResponse() { 
+  public GetExclusionRulesResponse() {
   }
 
   public GetExclusionRulesResponse issueIds(@javax.annotation.Nullable Set<Long> issueIds) {
@@ -91,16 +105,10 @@ public class GetExclusionRulesResponse {
    * @return issueIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<Long> getIssueIds() {
     return issueIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueIds(@javax.annotation.Nullable Set<Long> issueIds) {
     this.issueIds = issueIds;
   }
@@ -124,16 +132,10 @@ public class GetExclusionRulesResponse {
    * @return issueTypeIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<Long> getIssueTypeIds() {
     return issueTypeIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeIds(@javax.annotation.Nullable Set<Long> issueTypeIds) {
     this.issueTypeIds = issueTypeIds;
   }
@@ -149,15 +151,10 @@ public class GetExclusionRulesResponse {
    * @return numberOfDaysToShowCompletedIssues
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NUMBER_OF_DAYS_TO_SHOW_COMPLETED_ISSUES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getNumberOfDaysToShowCompletedIssues() {
     return numberOfDaysToShowCompletedIssues;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NUMBER_OF_DAYS_TO_SHOW_COMPLETED_ISSUES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setNumberOfDaysToShowCompletedIssues(@javax.annotation.Nonnull Integer numberOfDaysToShowCompletedIssues) {
     this.numberOfDaysToShowCompletedIssues = numberOfDaysToShowCompletedIssues;
   }
@@ -181,16 +178,10 @@ public class GetExclusionRulesResponse {
    * @return releaseIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RELEASE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<Long> getReleaseIds() {
     return releaseIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_RELEASE_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReleaseIds(@javax.annotation.Nullable Set<Long> releaseIds) {
     this.releaseIds = releaseIds;
   }
@@ -214,16 +205,10 @@ public class GetExclusionRulesResponse {
    * @return workStatusCategoryIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORK_STATUS_CATEGORY_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<Long> getWorkStatusCategoryIds() {
     return workStatusCategoryIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_WORK_STATUS_CATEGORY_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkStatusCategoryIds(@javax.annotation.Nullable Set<Long> workStatusCategoryIds) {
     this.workStatusCategoryIds = workStatusCategoryIds;
   }
@@ -247,24 +232,16 @@ public class GetExclusionRulesResponse {
    * @return workStatusIds
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORK_STATUS_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Set<Long> getWorkStatusIds() {
     return workStatusIds;
   }
 
-
-  @JsonDeserialize(as = LinkedHashSet.class)
-  @JsonProperty(value = JSON_PROPERTY_WORK_STATUS_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkStatusIds(@javax.annotation.Nullable Set<Long> workStatusIds) {
     this.workStatusIds = workStatusIds;
   }
 
 
-  /**
-   * Return true if this GetExclusionRulesResponse object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -312,99 +289,115 @@ public class GetExclusionRulesResponse {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueIds", "issueTypeIds", "numberOfDaysToShowCompletedIssues", "releaseIds", "workStatusCategoryIds", "workStatusIds"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("numberOfDaysToShowCompletedIssues"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to GetExclusionRulesResponse
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `issueIds` to the URL query string
-    if (getIssueIds() != null) {
-      int i = 0;
-      for (Long _item : getIssueIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sissueIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!GetExclusionRulesResponse.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in GetExclusionRulesResponse is not found in the empty JSON string", GetExclusionRulesResponse.openapiRequiredFields.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `issueTypeIds` to the URL query string
-    if (getIssueTypeIds() != null) {
-      int i = 0;
-      for (Long _item : getIssueTypeIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sissueTypeIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!GetExclusionRulesResponse.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `GetExclusionRulesResponse` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
       }
-      i++;
-    }
 
-    // add `numberOfDaysToShowCompletedIssues` to the URL query string
-    if (getNumberOfDaysToShowCompletedIssues() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snumberOfDaysToShowCompletedIssues%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNumberOfDaysToShowCompletedIssues()))));
-    }
-
-    // add `releaseIds` to the URL query string
-    if (getReleaseIds() != null) {
-      int i = 0;
-      for (Long _item : getReleaseIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sreleaseIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : GetExclusionRulesResponse.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
       }
-      i++;
-    }
-
-    // add `workStatusCategoryIds` to the URL query string
-    if (getWorkStatusCategoryIds() != null) {
-      int i = 0;
-      for (Long _item : getWorkStatusCategoryIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sworkStatusCategoryIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("issueIds") != null && !jsonObj.get("issueIds").isJsonNull() && !jsonObj.get("issueIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueIds` to be an array in the JSON string but got `%s`", jsonObj.get("issueIds").toString()));
       }
-      i++;
-    }
-
-    // add `workStatusIds` to the URL query string
-    if (getWorkStatusIds() != null) {
-      int i = 0;
-      for (Long _item : getWorkStatusIds()) {
-        joiner.add(String.format(Locale.ROOT, "%sworkStatusIds%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(_item))));
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("issueTypeIds") != null && !jsonObj.get("issueTypeIds").isJsonNull() && !jsonObj.get("issueTypeIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueTypeIds` to be an array in the JSON string but got `%s`", jsonObj.get("issueTypeIds").toString()));
       }
-      i++;
-    }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("releaseIds") != null && !jsonObj.get("releaseIds").isJsonNull() && !jsonObj.get("releaseIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `releaseIds` to be an array in the JSON string but got `%s`", jsonObj.get("releaseIds").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("workStatusCategoryIds") != null && !jsonObj.get("workStatusCategoryIds").isJsonNull() && !jsonObj.get("workStatusCategoryIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `workStatusCategoryIds` to be an array in the JSON string but got `%s`", jsonObj.get("workStatusCategoryIds").toString()));
+      }
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("workStatusIds") != null && !jsonObj.get("workStatusIds").isJsonNull() && !jsonObj.get("workStatusIds").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `workStatusIds` to be an array in the JSON string but got `%s`", jsonObj.get("workStatusIds").toString()));
+      }
+  }
 
-    return joiner.toString();
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!GetExclusionRulesResponse.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'GetExclusionRulesResponse' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<GetExclusionRulesResponse> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(GetExclusionRulesResponse.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<GetExclusionRulesResponse>() {
+           @Override
+           public void write(JsonWriter out, GetExclusionRulesResponse value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public GetExclusionRulesResponse read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of GetExclusionRulesResponse given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of GetExclusionRulesResponse
+   * @throws IOException if the JSON string is invalid with respect to GetExclusionRulesResponse
+   */
+  public static GetExclusionRulesResponse fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, GetExclusionRulesResponse.class);
+  }
+
+  /**
+   * Convert an instance of GetExclusionRulesResponse to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,47 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The x and y location of the status in the workflow.
  */
-@JsonPropertyOrder({
-  WorkflowStatusLayout.JSON_PROPERTY_X,
-  WorkflowStatusLayout.JSON_PROPERTY_Y
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowStatusLayout {
-  public static final String JSON_PROPERTY_X = "x";
-  private JsonNullable<Double> x = JsonNullable.<Double>undefined();
+  public static final String SERIALIZED_NAME_X = "x";
+  @SerializedName(SERIALIZED_NAME_X)
+  @javax.annotation.Nullable
+  private Double x;
 
-  public static final String JSON_PROPERTY_Y = "y";
-  private JsonNullable<Double> y = JsonNullable.<Double>undefined();
+  public static final String SERIALIZED_NAME_Y = "y";
+  @SerializedName(SERIALIZED_NAME_Y)
+  @javax.annotation.Nullable
+  private Double y;
 
-  public WorkflowStatusLayout() { 
+  public WorkflowStatusLayout() {
   }
 
   public WorkflowStatusLayout x(@javax.annotation.Nullable Double x) {
-    this.x = JsonNullable.<Double>of(x);
+    this.x = x;
     return this;
   }
 
@@ -62,30 +76,17 @@ public class WorkflowStatusLayout {
    * @return x
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Double getX() {
-        return x.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_X, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Double> getX_JsonNullable() {
     return x;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_X)
-  public void setX_JsonNullable(JsonNullable<Double> x) {
-    this.x = x;
   }
 
   public void setX(@javax.annotation.Nullable Double x) {
-    this.x = JsonNullable.<Double>of(x);
+    this.x = x;
   }
 
 
   public WorkflowStatusLayout y(@javax.annotation.Nullable Double y) {
-    this.y = JsonNullable.<Double>of(y);
+    this.y = y;
     return this;
   }
 
@@ -94,31 +95,16 @@ public class WorkflowStatusLayout {
    * @return y
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public Double getY() {
-        return y.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_Y, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<Double> getY_JsonNullable() {
     return y;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_Y)
-  public void setY_JsonNullable(JsonNullable<Double> y) {
-    this.y = y;
   }
 
   public void setY(@javax.annotation.Nullable Double y) {
-    this.y = JsonNullable.<Double>of(y);
+    this.y = y;
   }
 
 
-  /**
-   * Return true if this WorkflowStatusLayout object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -128,8 +114,8 @@ public class WorkflowStatusLayout {
       return false;
     }
     WorkflowStatusLayout workflowStatusLayout = (WorkflowStatusLayout) o;
-    return equalsNullable(this.x, workflowStatusLayout.x) &&
-        equalsNullable(this.y, workflowStatusLayout.y);
+    return Objects.equals(this.x, workflowStatusLayout.x) &&
+        Objects.equals(this.y, workflowStatusLayout.y);
   }
 
   private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -138,7 +124,7 @@ public class WorkflowStatusLayout {
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCodeNullable(x), hashCodeNullable(y));
+    return Objects.hash(x, y);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -169,49 +155,88 @@ public class WorkflowStatusLayout {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("x", "y"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowStatusLayout
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowStatusLayout.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowStatusLayout is not found in the empty JSON string", WorkflowStatusLayout.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowStatusLayout.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowStatusLayout` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowStatusLayout.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowStatusLayout' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowStatusLayout> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowStatusLayout.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowStatusLayout>() {
+           @Override
+           public void write(JsonWriter out, WorkflowStatusLayout value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowStatusLayout read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of WorkflowStatusLayout given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowStatusLayout
+   * @throws IOException if the JSON string is invalid with respect to WorkflowStatusLayout
+   */
+  public static WorkflowStatusLayout fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowStatusLayout.class);
+  }
 
-    // add `x` to the URL query string
-    if (getX() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sx%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getX()))));
-    }
-
-    // add `y` to the URL query string
-    if (getY() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sy%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getY()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of WorkflowStatusLayout to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

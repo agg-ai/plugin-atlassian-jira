@@ -13,39 +13,54 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.SecuritySchemeLevelMemberBean;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of issue security scheme level new members.
  */
-@JsonPropertyOrder({
-  SecuritySchemeMembersRequest.JSON_PROPERTY_MEMBERS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class SecuritySchemeMembersRequest {
-  public static final String JSON_PROPERTY_MEMBERS = "members";
+  public static final String SERIALIZED_NAME_MEMBERS = "members";
+  @SerializedName(SERIALIZED_NAME_MEMBERS)
   @javax.annotation.Nullable
   private List<SecuritySchemeLevelMemberBean> members = new ArrayList<>();
 
-  public SecuritySchemeMembersRequest() { 
+  public SecuritySchemeMembersRequest() {
   }
 
   public SecuritySchemeMembersRequest members(@javax.annotation.Nullable List<SecuritySchemeLevelMemberBean> members) {
@@ -66,23 +81,16 @@ public class SecuritySchemeMembersRequest {
    * @return members
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MEMBERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<SecuritySchemeLevelMemberBean> getMembers() {
     return members;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MEMBERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMembers(@javax.annotation.Nullable List<SecuritySchemeLevelMemberBean> members) {
     this.members = members;
   }
 
 
-  /**
-   * Return true if this SecuritySchemeMembersRequest object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -120,49 +128,102 @@ public class SecuritySchemeMembersRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("members"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to SecuritySchemeMembersRequest
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `members` to the URL query string
-    if (getMembers() != null) {
-      for (int i = 0; i < getMembers().size(); i++) {
-        if (getMembers().get(i) != null) {
-          joiner.add(getMembers().get(i).toUrlQueryString(String.format(Locale.ROOT, "%smembers%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!SecuritySchemeMembersRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in SecuritySchemeMembersRequest is not found in the empty JSON string", SecuritySchemeMembersRequest.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!SecuritySchemeMembersRequest.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `SecuritySchemeMembersRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("members") != null && !jsonObj.get("members").isJsonNull()) {
+        JsonArray jsonArraymembers = jsonObj.getAsJsonArray("members");
+        if (jsonArraymembers != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("members").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `members` to be an array in the JSON string but got `%s`", jsonObj.get("members").toString()));
+          }
+
+          // validate the optional field `members` (array)
+          for (int i = 0; i < jsonArraymembers.size(); i++) {
+            SecuritySchemeLevelMemberBean.validateJsonElement(jsonArraymembers.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!SecuritySchemeMembersRequest.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'SecuritySchemeMembersRequest' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<SecuritySchemeMembersRequest> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(SecuritySchemeMembersRequest.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<SecuritySchemeMembersRequest>() {
+           @Override
+           public void write(JsonWriter out, SecuritySchemeMembersRequest value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public SecuritySchemeMembersRequest read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of SecuritySchemeMembersRequest given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of SecuritySchemeMembersRequest
+   * @throws IOException if the JSON string is invalid with respect to SecuritySchemeMembersRequest
+   */
+  public static SecuritySchemeMembersRequest fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, SecuritySchemeMembersRequest.class);
+  }
+
+  /**
+   * Convert an instance of SecuritySchemeMembersRequest to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

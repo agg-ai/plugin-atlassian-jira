@@ -13,46 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Approval configuration.
  */
-@JsonPropertyOrder({
-  ApprovalConfigurationPreview.JSON_PROPERTY_ACTIVE,
-  ApprovalConfigurationPreview.JSON_PROPERTY_TRANSITION_APPROVED,
-  ApprovalConfigurationPreview.JSON_PROPERTY_TRANSITION_REJECTED
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ApprovalConfigurationPreview {
-  public static final String JSON_PROPERTY_ACTIVE = "active";
+  public static final String SERIALIZED_NAME_ACTIVE = "active";
+  @SerializedName(SERIALIZED_NAME_ACTIVE)
   @javax.annotation.Nullable
   private String active;
 
-  public static final String JSON_PROPERTY_TRANSITION_APPROVED = "transitionApproved";
+  public static final String SERIALIZED_NAME_TRANSITION_APPROVED = "transitionApproved";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_APPROVED)
   @javax.annotation.Nullable
   private String transitionApproved;
 
-  public static final String JSON_PROPERTY_TRANSITION_REJECTED = "transitionRejected";
+  public static final String SERIALIZED_NAME_TRANSITION_REJECTED = "transitionRejected";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_REJECTED)
   @javax.annotation.Nullable
   private String transitionRejected;
 
-  public ApprovalConfigurationPreview() { 
+  public ApprovalConfigurationPreview() {
   }
 
   public ApprovalConfigurationPreview active(@javax.annotation.Nullable String active) {
@@ -65,15 +80,10 @@ public class ApprovalConfigurationPreview {
    * @return active
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTIVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getActive() {
     return active;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTIVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setActive(@javax.annotation.Nullable String active) {
     this.active = active;
   }
@@ -89,15 +99,10 @@ public class ApprovalConfigurationPreview {
    * @return transitionApproved
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_APPROVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTransitionApproved() {
     return transitionApproved;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_APPROVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTransitionApproved(@javax.annotation.Nullable String transitionApproved) {
     this.transitionApproved = transitionApproved;
   }
@@ -113,23 +118,16 @@ public class ApprovalConfigurationPreview {
    * @return transitionRejected
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_REJECTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTransitionRejected() {
     return transitionRejected;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_REJECTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTransitionRejected(@javax.annotation.Nullable String transitionRejected) {
     this.transitionRejected = transitionRejected;
   }
 
 
-  /**
-   * Return true if this ApprovalConfigurationPreview object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -171,54 +169,97 @@ public class ApprovalConfigurationPreview {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("active", "transitionApproved", "transitionRejected"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ApprovalConfigurationPreview
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ApprovalConfigurationPreview.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ApprovalConfigurationPreview is not found in the empty JSON string", ApprovalConfigurationPreview.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ApprovalConfigurationPreview.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ApprovalConfigurationPreview` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("active") != null && !jsonObj.get("active").isJsonNull()) && !jsonObj.get("active").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `active` to be a primitive type in the JSON string but got `%s`", jsonObj.get("active").toString()));
+      }
+      if ((jsonObj.get("transitionApproved") != null && !jsonObj.get("transitionApproved").isJsonNull()) && !jsonObj.get("transitionApproved").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `transitionApproved` to be a primitive type in the JSON string but got `%s`", jsonObj.get("transitionApproved").toString()));
+      }
+      if ((jsonObj.get("transitionRejected") != null && !jsonObj.get("transitionRejected").isJsonNull()) && !jsonObj.get("transitionRejected").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `transitionRejected` to be a primitive type in the JSON string but got `%s`", jsonObj.get("transitionRejected").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ApprovalConfigurationPreview.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ApprovalConfigurationPreview' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ApprovalConfigurationPreview> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ApprovalConfigurationPreview.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ApprovalConfigurationPreview>() {
+           @Override
+           public void write(JsonWriter out, ApprovalConfigurationPreview value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ApprovalConfigurationPreview read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of ApprovalConfigurationPreview given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ApprovalConfigurationPreview
+   * @throws IOException if the JSON string is invalid with respect to ApprovalConfigurationPreview
+   */
+  public static ApprovalConfigurationPreview fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ApprovalConfigurationPreview.class);
+  }
 
-    // add `active` to the URL query string
-    if (getActive() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sactive%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getActive()))));
-    }
-
-    // add `transitionApproved` to the URL query string
-    if (getTransitionApproved() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stransitionApproved%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransitionApproved()))));
-    }
-
-    // add `transitionRejected` to the URL query string
-    if (getTransitionRejected() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stransitionRejected%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransitionRejected()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ApprovalConfigurationPreview to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

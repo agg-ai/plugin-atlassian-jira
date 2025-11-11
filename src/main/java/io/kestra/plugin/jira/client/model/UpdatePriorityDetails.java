@@ -13,93 +13,100 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of an issue priority.
  */
-@JsonPropertyOrder({
-  UpdatePriorityDetails.JSON_PROPERTY_AVATAR_ID,
-  UpdatePriorityDetails.JSON_PROPERTY_DESCRIPTION,
-  UpdatePriorityDetails.JSON_PROPERTY_ICON_URL,
-  UpdatePriorityDetails.JSON_PROPERTY_NAME,
-  UpdatePriorityDetails.JSON_PROPERTY_STATUS_COLOR
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class UpdatePriorityDetails {
-  public static final String JSON_PROPERTY_AVATAR_ID = "avatarId";
+  public static final String SERIALIZED_NAME_AVATAR_ID = "avatarId";
+  @SerializedName(SERIALIZED_NAME_AVATAR_ID)
   @javax.annotation.Nullable
   private Long avatarId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
-  private JsonNullable<String> description = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
+  @javax.annotation.Nullable
+  private String description;
 
   /**
    * The URL of an icon for the priority. Accepted protocols are HTTP and HTTPS. Built in icons can also be used. Both iconUrl and avatarId cannot be defined.
    */
+  @JsonAdapter(IconUrlEnum.Adapter.class)
   public enum IconUrlEnum {
-    _IMAGES_ICONS_PRIORITIES_BLOCKER_PNG(String.valueOf("/images/icons/priorities/blocker.png")),
+    _IMAGES_ICONS_PRIORITIES_BLOCKER_PNG("/images/icons/priorities/blocker.png"),
     
-    _IMAGES_ICONS_PRIORITIES_CRITICAL_PNG(String.valueOf("/images/icons/priorities/critical.png")),
+    _IMAGES_ICONS_PRIORITIES_CRITICAL_PNG("/images/icons/priorities/critical.png"),
     
-    _IMAGES_ICONS_PRIORITIES_HIGH_PNG(String.valueOf("/images/icons/priorities/high.png")),
+    _IMAGES_ICONS_PRIORITIES_HIGH_PNG("/images/icons/priorities/high.png"),
     
-    _IMAGES_ICONS_PRIORITIES_HIGHEST_PNG(String.valueOf("/images/icons/priorities/highest.png")),
+    _IMAGES_ICONS_PRIORITIES_HIGHEST_PNG("/images/icons/priorities/highest.png"),
     
-    _IMAGES_ICONS_PRIORITIES_LOW_PNG(String.valueOf("/images/icons/priorities/low.png")),
+    _IMAGES_ICONS_PRIORITIES_LOW_PNG("/images/icons/priorities/low.png"),
     
-    _IMAGES_ICONS_PRIORITIES_LOWEST_PNG(String.valueOf("/images/icons/priorities/lowest.png")),
+    _IMAGES_ICONS_PRIORITIES_LOWEST_PNG("/images/icons/priorities/lowest.png"),
     
-    _IMAGES_ICONS_PRIORITIES_MAJOR_PNG(String.valueOf("/images/icons/priorities/major.png")),
+    _IMAGES_ICONS_PRIORITIES_MAJOR_PNG("/images/icons/priorities/major.png"),
     
-    _IMAGES_ICONS_PRIORITIES_MEDIUM_PNG(String.valueOf("/images/icons/priorities/medium.png")),
+    _IMAGES_ICONS_PRIORITIES_MEDIUM_PNG("/images/icons/priorities/medium.png"),
     
-    _IMAGES_ICONS_PRIORITIES_MINOR_PNG(String.valueOf("/images/icons/priorities/minor.png")),
+    _IMAGES_ICONS_PRIORITIES_MINOR_PNG("/images/icons/priorities/minor.png"),
     
-    _IMAGES_ICONS_PRIORITIES_TRIVIAL_PNG(String.valueOf("/images/icons/priorities/trivial.png")),
+    _IMAGES_ICONS_PRIORITIES_TRIVIAL_PNG("/images/icons/priorities/trivial.png"),
     
-    _IMAGES_ICONS_PRIORITIES_BLOCKER_NEW_PNG(String.valueOf("/images/icons/priorities/blocker_new.png")),
+    _IMAGES_ICONS_PRIORITIES_BLOCKER_NEW_PNG("/images/icons/priorities/blocker_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_CRITICAL_NEW_PNG(String.valueOf("/images/icons/priorities/critical_new.png")),
+    _IMAGES_ICONS_PRIORITIES_CRITICAL_NEW_PNG("/images/icons/priorities/critical_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_HIGH_NEW_PNG(String.valueOf("/images/icons/priorities/high_new.png")),
+    _IMAGES_ICONS_PRIORITIES_HIGH_NEW_PNG("/images/icons/priorities/high_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_HIGHEST_NEW_PNG(String.valueOf("/images/icons/priorities/highest_new.png")),
+    _IMAGES_ICONS_PRIORITIES_HIGHEST_NEW_PNG("/images/icons/priorities/highest_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_LOW_NEW_PNG(String.valueOf("/images/icons/priorities/low_new.png")),
+    _IMAGES_ICONS_PRIORITIES_LOW_NEW_PNG("/images/icons/priorities/low_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_LOWEST_NEW_PNG(String.valueOf("/images/icons/priorities/lowest_new.png")),
+    _IMAGES_ICONS_PRIORITIES_LOWEST_NEW_PNG("/images/icons/priorities/lowest_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_MAJOR_NEW_PNG(String.valueOf("/images/icons/priorities/major_new.png")),
+    _IMAGES_ICONS_PRIORITIES_MAJOR_NEW_PNG("/images/icons/priorities/major_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_MEDIUM_NEW_PNG(String.valueOf("/images/icons/priorities/medium_new.png")),
+    _IMAGES_ICONS_PRIORITIES_MEDIUM_NEW_PNG("/images/icons/priorities/medium_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_MINOR_NEW_PNG(String.valueOf("/images/icons/priorities/minor_new.png")),
+    _IMAGES_ICONS_PRIORITIES_MINOR_NEW_PNG("/images/icons/priorities/minor_new.png"),
     
-    _IMAGES_ICONS_PRIORITIES_TRIVIAL_NEW_PNG(String.valueOf("/images/icons/priorities/trivial_new.png"));
+    _IMAGES_ICONS_PRIORITIES_TRIVIAL_NEW_PNG("/images/icons/priorities/trivial_new.png");
 
     private String value;
 
@@ -107,7 +114,6 @@ public class UpdatePriorityDetails {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -117,7 +123,6 @@ public class UpdatePriorityDetails {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static IconUrlEnum fromValue(String value) {
       for (IconUrlEnum b : IconUrlEnum.values()) {
         if (b.value.equals(value)) {
@@ -126,18 +131,42 @@ public class UpdatePriorityDetails {
       }
       return null;
     }
+
+    public static class Adapter extends TypeAdapter<IconUrlEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final IconUrlEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public IconUrlEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return IconUrlEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      IconUrlEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ICON_URL = "iconUrl";
-  private JsonNullable<IconUrlEnum> iconUrl = JsonNullable.<IconUrlEnum>undefined();
+  public static final String SERIALIZED_NAME_ICON_URL = "iconUrl";
+  @SerializedName(SERIALIZED_NAME_ICON_URL)
+  @javax.annotation.Nullable
+  private IconUrlEnum iconUrl;
 
-  public static final String JSON_PROPERTY_NAME = "name";
-  private JsonNullable<String> name = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
+  @javax.annotation.Nullable
+  private String name;
 
-  public static final String JSON_PROPERTY_STATUS_COLOR = "statusColor";
-  private JsonNullable<String> statusColor = JsonNullable.<String>undefined();
+  public static final String SERIALIZED_NAME_STATUS_COLOR = "statusColor";
+  @SerializedName(SERIALIZED_NAME_STATUS_COLOR)
+  @javax.annotation.Nullable
+  private String statusColor;
 
-  public UpdatePriorityDetails() { 
+  public UpdatePriorityDetails() {
   }
 
   public UpdatePriorityDetails avatarId(@javax.annotation.Nullable Long avatarId) {
@@ -150,22 +179,17 @@ public class UpdatePriorityDetails {
    * @return avatarId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getAvatarId() {
     return avatarId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAvatarId(@javax.annotation.Nullable Long avatarId) {
     this.avatarId = avatarId;
   }
 
 
   public UpdatePriorityDetails description(@javax.annotation.Nullable String description) {
-    this.description = JsonNullable.<String>of(description);
+    this.description = description;
     return this;
   }
 
@@ -174,30 +198,17 @@ public class UpdatePriorityDetails {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getDescription() {
-        return description.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getDescription_JsonNullable() {
     return description;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-  public void setDescription_JsonNullable(JsonNullable<String> description) {
-    this.description = description;
   }
 
   public void setDescription(@javax.annotation.Nullable String description) {
-    this.description = JsonNullable.<String>of(description);
+    this.description = description;
   }
 
 
   public UpdatePriorityDetails iconUrl(@javax.annotation.Nullable IconUrlEnum iconUrl) {
-    this.iconUrl = JsonNullable.<IconUrlEnum>of(iconUrl);
+    this.iconUrl = iconUrl;
     return this;
   }
 
@@ -206,30 +217,17 @@ public class UpdatePriorityDetails {
    * @return iconUrl
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public IconUrlEnum getIconUrl() {
-        return iconUrl.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<IconUrlEnum> getIconUrl_JsonNullable() {
     return iconUrl;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_ICON_URL)
-  public void setIconUrl_JsonNullable(JsonNullable<IconUrlEnum> iconUrl) {
-    this.iconUrl = iconUrl;
   }
 
   public void setIconUrl(@javax.annotation.Nullable IconUrlEnum iconUrl) {
-    this.iconUrl = JsonNullable.<IconUrlEnum>of(iconUrl);
+    this.iconUrl = iconUrl;
   }
 
 
   public UpdatePriorityDetails name(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
+    this.name = name;
     return this;
   }
 
@@ -238,30 +236,17 @@ public class UpdatePriorityDetails {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getName() {
-        return name.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getName_JsonNullable() {
     return name;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_NAME)
-  public void setName_JsonNullable(JsonNullable<String> name) {
-    this.name = name;
   }
 
   public void setName(@javax.annotation.Nullable String name) {
-    this.name = JsonNullable.<String>of(name);
+    this.name = name;
   }
 
 
   public UpdatePriorityDetails statusColor(@javax.annotation.Nullable String statusColor) {
-    this.statusColor = JsonNullable.<String>of(statusColor);
+    this.statusColor = statusColor;
     return this;
   }
 
@@ -270,25 +255,12 @@ public class UpdatePriorityDetails {
    * @return statusColor
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public String getStatusColor() {
-        return statusColor.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_COLOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<String> getStatusColor_JsonNullable() {
     return statusColor;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_STATUS_COLOR)
-  public void setStatusColor_JsonNullable(JsonNullable<String> statusColor) {
-    this.statusColor = statusColor;
   }
 
   public void setStatusColor(@javax.annotation.Nullable String statusColor) {
-    this.statusColor = JsonNullable.<String>of(statusColor);
+    this.statusColor = statusColor;
   }
 
   /**
@@ -301,11 +273,11 @@ public class UpdatePriorityDetails {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the UpdatePriorityDetails instance itself
    */
-  @JsonAnySetter
   public UpdatePriorityDetails putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -315,18 +287,19 @@ public class UpdatePriorityDetails {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -335,9 +308,7 @@ public class UpdatePriorityDetails {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this UpdatePriorityDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -348,10 +319,10 @@ public class UpdatePriorityDetails {
     }
     UpdatePriorityDetails updatePriorityDetails = (UpdatePriorityDetails) o;
     return Objects.equals(this.avatarId, updatePriorityDetails.avatarId) &&
-        equalsNullable(this.description, updatePriorityDetails.description) &&
-        equalsNullable(this.iconUrl, updatePriorityDetails.iconUrl) &&
-        equalsNullable(this.name, updatePriorityDetails.name) &&
-        equalsNullable(this.statusColor, updatePriorityDetails.statusColor)&&
+        Objects.equals(this.description, updatePriorityDetails.description) &&
+        Objects.equals(this.iconUrl, updatePriorityDetails.iconUrl) &&
+        Objects.equals(this.name, updatePriorityDetails.name) &&
+        Objects.equals(this.statusColor, updatePriorityDetails.statusColor)&&
         Objects.equals(this.additionalProperties, updatePriorityDetails.additionalProperties);
   }
 
@@ -361,7 +332,7 @@ public class UpdatePriorityDetails {
 
   @Override
   public int hashCode() {
-    return Objects.hash(avatarId, hashCodeNullable(description), hashCodeNullable(iconUrl), hashCodeNullable(name), hashCodeNullable(statusColor), additionalProperties);
+    return Objects.hash(avatarId, description, iconUrl, name, statusColor, additionalProperties);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -396,64 +367,139 @@ public class UpdatePriorityDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("avatarId", "description", "iconUrl", "name", "statusColor"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to UpdatePriorityDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!UpdatePriorityDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in UpdatePriorityDetails is not found in the empty JSON string", UpdatePriorityDetails.openapiRequiredFields.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("iconUrl") != null && !jsonObj.get("iconUrl").isJsonNull()) && !jsonObj.get("iconUrl").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `iconUrl` to be a primitive type in the JSON string but got `%s`", jsonObj.get("iconUrl").toString()));
+      }
+      // validate the optional field `iconUrl`
+      if (jsonObj.get("iconUrl") != null && !jsonObj.get("iconUrl").isJsonNull()) {
+        IconUrlEnum.validateJsonElement(jsonObj.get("iconUrl"));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("statusColor") != null && !jsonObj.get("statusColor").isJsonNull()) && !jsonObj.get("statusColor").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusColor` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusColor").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!UpdatePriorityDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'UpdatePriorityDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<UpdatePriorityDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(UpdatePriorityDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<UpdatePriorityDetails>() {
+           @Override
+           public void write(JsonWriter out, UpdatePriorityDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public UpdatePriorityDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             UpdatePriorityDetails instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of UpdatePriorityDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of UpdatePriorityDetails
+   * @throws IOException if the JSON string is invalid with respect to UpdatePriorityDetails
+   */
+  public static UpdatePriorityDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, UpdatePriorityDetails.class);
+  }
 
-    // add `avatarId` to the URL query string
-    if (getAvatarId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%savatarId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvatarId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `iconUrl` to the URL query string
-    if (getIconUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%siconUrl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `statusColor` to the URL query string
-    if (getStatusColor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusColor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusColor()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of UpdatePriorityDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

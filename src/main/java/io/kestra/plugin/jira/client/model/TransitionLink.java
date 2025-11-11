@@ -13,46 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Link information for workflow transitions.
  */
-@JsonPropertyOrder({
-  TransitionLink.JSON_PROPERTY_FROM_PORT,
-  TransitionLink.JSON_PROPERTY_FROM_STATUS_REFERENCE,
-  TransitionLink.JSON_PROPERTY_TO_PORT
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TransitionLink {
-  public static final String JSON_PROPERTY_FROM_PORT = "fromPort";
+  public static final String SERIALIZED_NAME_FROM_PORT = "fromPort";
+  @SerializedName(SERIALIZED_NAME_FROM_PORT)
   @javax.annotation.Nullable
   private Integer fromPort;
 
-  public static final String JSON_PROPERTY_FROM_STATUS_REFERENCE = "fromStatusReference";
+  public static final String SERIALIZED_NAME_FROM_STATUS_REFERENCE = "fromStatusReference";
+  @SerializedName(SERIALIZED_NAME_FROM_STATUS_REFERENCE)
   @javax.annotation.Nullable
   private String fromStatusReference;
 
-  public static final String JSON_PROPERTY_TO_PORT = "toPort";
+  public static final String SERIALIZED_NAME_TO_PORT = "toPort";
+  @SerializedName(SERIALIZED_NAME_TO_PORT)
   @javax.annotation.Nullable
   private Integer toPort;
 
-  public TransitionLink() { 
+  public TransitionLink() {
   }
 
   public TransitionLink fromPort(@javax.annotation.Nullable Integer fromPort) {
@@ -65,15 +80,10 @@ public class TransitionLink {
    * @return fromPort
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FROM_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getFromPort() {
     return fromPort;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FROM_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFromPort(@javax.annotation.Nullable Integer fromPort) {
     this.fromPort = fromPort;
   }
@@ -89,15 +99,10 @@ public class TransitionLink {
    * @return fromStatusReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FROM_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFromStatusReference() {
     return fromStatusReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FROM_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFromStatusReference(@javax.annotation.Nullable String fromStatusReference) {
     this.fromStatusReference = fromStatusReference;
   }
@@ -113,23 +118,16 @@ public class TransitionLink {
    * @return toPort
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TO_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getToPort() {
     return toPort;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TO_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setToPort(@javax.annotation.Nullable Integer toPort) {
     this.toPort = toPort;
   }
 
 
-  /**
-   * Return true if this TransitionLink object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -171,54 +169,91 @@ public class TransitionLink {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("fromPort", "fromStatusReference", "toPort"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TransitionLink
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TransitionLink.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TransitionLink is not found in the empty JSON string", TransitionLink.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!TransitionLink.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `TransitionLink` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("fromStatusReference") != null && !jsonObj.get("fromStatusReference").isJsonNull()) && !jsonObj.get("fromStatusReference").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fromStatusReference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fromStatusReference").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TransitionLink.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TransitionLink' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TransitionLink> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TransitionLink.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TransitionLink>() {
+           @Override
+           public void write(JsonWriter out, TransitionLink value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TransitionLink read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of TransitionLink given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TransitionLink
+   * @throws IOException if the JSON string is invalid with respect to TransitionLink
+   */
+  public static TransitionLink fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TransitionLink.class);
+  }
 
-    // add `fromPort` to the URL query string
-    if (getFromPort() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfromPort%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFromPort()))));
-    }
-
-    // add `fromStatusReference` to the URL query string
-    if (getFromStatusReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfromStatusReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFromStatusReference()))));
-    }
-
-    // add `toPort` to the URL query string
-    if (getToPort() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stoPort%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getToPort()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of TransitionLink to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

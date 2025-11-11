@@ -13,102 +13,116 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.User;
+import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Metadata for an issue attachment.
  */
-@JsonPropertyOrder({
-  AttachmentMetadata.JSON_PROPERTY_AUTHOR,
-  AttachmentMetadata.JSON_PROPERTY_CONTENT,
-  AttachmentMetadata.JSON_PROPERTY_CREATED,
-  AttachmentMetadata.JSON_PROPERTY_FILENAME,
-  AttachmentMetadata.JSON_PROPERTY_ID,
-  AttachmentMetadata.JSON_PROPERTY_MIME_TYPE,
-  AttachmentMetadata.JSON_PROPERTY_PROPERTIES,
-  AttachmentMetadata.JSON_PROPERTY_SELF,
-  AttachmentMetadata.JSON_PROPERTY_SIZE,
-  AttachmentMetadata.JSON_PROPERTY_THUMBNAIL
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AttachmentMetadata {
-  public static final String JSON_PROPERTY_AUTHOR = "author";
+  public static final String SERIALIZED_NAME_AUTHOR = "author";
+  @SerializedName(SERIALIZED_NAME_AUTHOR)
   @javax.annotation.Nullable
   private User author;
 
-  public static final String JSON_PROPERTY_CONTENT = "content";
+  public static final String SERIALIZED_NAME_CONTENT = "content";
+  @SerializedName(SERIALIZED_NAME_CONTENT)
   @javax.annotation.Nullable
   private String content;
 
-  public static final String JSON_PROPERTY_CREATED = "created";
+  public static final String SERIALIZED_NAME_CREATED = "created";
+  @SerializedName(SERIALIZED_NAME_CREATED)
   @javax.annotation.Nullable
   private OffsetDateTime created;
 
-  public static final String JSON_PROPERTY_FILENAME = "filename";
+  public static final String SERIALIZED_NAME_FILENAME = "filename";
+  @SerializedName(SERIALIZED_NAME_FILENAME)
   @javax.annotation.Nullable
   private String filename;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_MIME_TYPE = "mimeType";
+  public static final String SERIALIZED_NAME_MIME_TYPE = "mimeType";
+  @SerializedName(SERIALIZED_NAME_MIME_TYPE)
   @javax.annotation.Nullable
   private String mimeType;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private Map<String, Object> properties = new HashMap<>();
 
-  public static final String JSON_PROPERTY_SELF = "self";
+  public static final String SERIALIZED_NAME_SELF = "self";
+  @SerializedName(SERIALIZED_NAME_SELF)
   @javax.annotation.Nullable
   private URI self;
 
-  public static final String JSON_PROPERTY_SIZE = "size";
+  public static final String SERIALIZED_NAME_SIZE = "size";
+  @SerializedName(SERIALIZED_NAME_SIZE)
   @javax.annotation.Nullable
   private Long size;
 
-  public static final String JSON_PROPERTY_THUMBNAIL = "thumbnail";
+  public static final String SERIALIZED_NAME_THUMBNAIL = "thumbnail";
+  @SerializedName(SERIALIZED_NAME_THUMBNAIL)
   @javax.annotation.Nullable
   private String thumbnail;
 
-  public AttachmentMetadata() { 
+  public AttachmentMetadata() {
   }
 
-  @JsonCreator
   public AttachmentMetadata(
-    @JsonProperty(JSON_PROPERTY_AUTHOR) User author, 
-    @JsonProperty(JSON_PROPERTY_CONTENT) String content, 
-    @JsonProperty(JSON_PROPERTY_CREATED) OffsetDateTime created, 
-    @JsonProperty(JSON_PROPERTY_FILENAME) String filename, 
-    @JsonProperty(JSON_PROPERTY_ID) Long id, 
-    @JsonProperty(JSON_PROPERTY_MIME_TYPE) String mimeType, 
-    @JsonProperty(JSON_PROPERTY_PROPERTIES) Map<String, Object> properties, 
-    @JsonProperty(JSON_PROPERTY_SELF) URI self, 
-    @JsonProperty(JSON_PROPERTY_SIZE) Long size, 
-    @JsonProperty(JSON_PROPERTY_THUMBNAIL) String thumbnail
+     User author, 
+     String content, 
+     OffsetDateTime created, 
+     String filename, 
+     Long id, 
+     String mimeType, 
+     Map<String, Object> properties, 
+     URI self, 
+     Long size, 
+     String thumbnail
   ) {
-  this();
+    this();
     this.author = author;
     this.content = content;
     this.created = created;
@@ -126,12 +140,9 @@ public class AttachmentMetadata {
    * @return author
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public User getAuthor() {
     return author;
   }
-
 
 
 
@@ -140,12 +151,9 @@ public class AttachmentMetadata {
    * @return content
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONTENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getContent() {
     return content;
   }
-
 
 
 
@@ -154,12 +162,9 @@ public class AttachmentMetadata {
    * @return created
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getCreated() {
     return created;
   }
-
 
 
 
@@ -168,12 +173,9 @@ public class AttachmentMetadata {
    * @return filename
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FILENAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFilename() {
     return filename;
   }
-
 
 
 
@@ -182,12 +184,9 @@ public class AttachmentMetadata {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
-
 
 
 
@@ -196,12 +195,9 @@ public class AttachmentMetadata {
    * @return mimeType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MIME_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMimeType() {
     return mimeType;
   }
-
 
 
 
@@ -210,12 +206,9 @@ public class AttachmentMetadata {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getProperties() {
     return properties;
   }
-
 
 
 
@@ -224,12 +217,9 @@ public class AttachmentMetadata {
    * @return self
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SELF, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public URI getSelf() {
     return self;
   }
-
 
 
 
@@ -238,12 +228,9 @@ public class AttachmentMetadata {
    * @return size
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSize() {
     return size;
   }
-
 
 
 
@@ -252,8 +239,6 @@ public class AttachmentMetadata {
    * @return thumbnail
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_THUMBNAIL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getThumbnail() {
     return thumbnail;
   }
@@ -261,9 +246,6 @@ public class AttachmentMetadata {
 
 
 
-  /**
-   * Return true if this AttachmentMetadata object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -319,93 +301,107 @@ public class AttachmentMetadata {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("author", "content", "created", "filename", "id", "mimeType", "properties", "self", "size", "thumbnail"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AttachmentMetadata
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `author` to the URL query string
-    if (getAuthor() != null) {
-      joiner.add(getAuthor().toUrlQueryString(prefix + "author" + suffix));
-    }
-
-    // add `content` to the URL query string
-    if (getContent() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContent()))));
-    }
-
-    // add `created` to the URL query string
-    if (getCreated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreated()))));
-    }
-
-    // add `filename` to the URL query string
-    if (getFilename() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfilename%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFilename()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `mimeType` to the URL query string
-    if (getMimeType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smimeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMimeType()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AttachmentMetadata.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AttachmentMetadata is not found in the empty JSON string", AttachmentMetadata.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `self` to the URL query string
-    if (getSelf() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sself%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSelf()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AttachmentMetadata.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AttachmentMetadata` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `author`
+      if (jsonObj.get("author") != null && !jsonObj.get("author").isJsonNull()) {
+        User.validateJsonElement(jsonObj.get("author"));
+      }
+      if ((jsonObj.get("content") != null && !jsonObj.get("content").isJsonNull()) && !jsonObj.get("content").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `content` to be a primitive type in the JSON string but got `%s`", jsonObj.get("content").toString()));
+      }
+      if ((jsonObj.get("filename") != null && !jsonObj.get("filename").isJsonNull()) && !jsonObj.get("filename").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `filename` to be a primitive type in the JSON string but got `%s`", jsonObj.get("filename").toString()));
+      }
+      if ((jsonObj.get("mimeType") != null && !jsonObj.get("mimeType").isJsonNull()) && !jsonObj.get("mimeType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `mimeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("mimeType").toString()));
+      }
+      if ((jsonObj.get("self") != null && !jsonObj.get("self").isJsonNull()) && !jsonObj.get("self").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `self` to be a primitive type in the JSON string but got `%s`", jsonObj.get("self").toString()));
+      }
+      if ((jsonObj.get("thumbnail") != null && !jsonObj.get("thumbnail").isJsonNull()) && !jsonObj.get("thumbnail").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `thumbnail` to be a primitive type in the JSON string but got `%s`", jsonObj.get("thumbnail").toString()));
+      }
+  }
 
-    // add `size` to the URL query string
-    if (getSize() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssize%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AttachmentMetadata.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AttachmentMetadata' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AttachmentMetadata> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AttachmentMetadata.class));
 
-    // add `thumbnail` to the URL query string
-    if (getThumbnail() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sthumbnail%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getThumbnail()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<AttachmentMetadata>() {
+           @Override
+           public void write(JsonWriter out, AttachmentMetadata value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public AttachmentMetadata read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of AttachmentMetadata given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AttachmentMetadata
+   * @throws IOException if the JSON string is invalid with respect to AttachmentMetadata
+   */
+  public static AttachmentMetadata fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AttachmentMetadata.class);
+  }
+
+  /**
+   * Convert an instance of AttachmentMetadata to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

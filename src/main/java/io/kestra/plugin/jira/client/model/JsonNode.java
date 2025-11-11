@@ -13,180 +13,184 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JsonNode
  */
-@JsonPropertyOrder({
-  JsonNode.JSON_PROPERTY_ARRAY,
-  JsonNode.JSON_PROPERTY_BIG_DECIMAL,
-  JsonNode.JSON_PROPERTY_BIG_INTEGER,
-  JsonNode.JSON_PROPERTY_BIG_INTEGER_VALUE,
-  JsonNode.JSON_PROPERTY_BINARY,
-  JsonNode.JSON_PROPERTY_BINARY_VALUE,
-  JsonNode.JSON_PROPERTY_BOOLEAN,
-  JsonNode.JSON_PROPERTY_BOOLEAN_VALUE,
-  JsonNode.JSON_PROPERTY_CONTAINER_NODE,
-  JsonNode.JSON_PROPERTY_DECIMAL_VALUE,
-  JsonNode.JSON_PROPERTY_DOUBLE,
-  JsonNode.JSON_PROPERTY_DOUBLE_VALUE,
-  JsonNode.JSON_PROPERTY_ELEMENTS,
-  JsonNode.JSON_PROPERTY_FIELD_NAMES,
-  JsonNode.JSON_PROPERTY_FIELDS,
-  JsonNode.JSON_PROPERTY_FLOATING_POINT_NUMBER,
-  JsonNode.JSON_PROPERTY_INT,
-  JsonNode.JSON_PROPERTY_INT_VALUE,
-  JsonNode.JSON_PROPERTY_INTEGRAL_NUMBER,
-  JsonNode.JSON_PROPERTY_LONG,
-  JsonNode.JSON_PROPERTY_LONG_VALUE,
-  JsonNode.JSON_PROPERTY_MISSING_NODE,
-  JsonNode.JSON_PROPERTY_NULL,
-  JsonNode.JSON_PROPERTY_NUMBER,
-  JsonNode.JSON_PROPERTY_NUMBER_TYPE,
-  JsonNode.JSON_PROPERTY_NUMBER_VALUE,
-  JsonNode.JSON_PROPERTY_OBJECT,
-  JsonNode.JSON_PROPERTY_POJO,
-  JsonNode.JSON_PROPERTY_TEXT_VALUE,
-  JsonNode.JSON_PROPERTY_TEXTUAL,
-  JsonNode.JSON_PROPERTY_VALUE_AS_BOOLEAN,
-  JsonNode.JSON_PROPERTY_VALUE_AS_DOUBLE,
-  JsonNode.JSON_PROPERTY_VALUE_AS_INT,
-  JsonNode.JSON_PROPERTY_VALUE_AS_LONG,
-  JsonNode.JSON_PROPERTY_VALUE_AS_TEXT,
-  JsonNode.JSON_PROPERTY_VALUE_NODE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JsonNode {
-  public static final String JSON_PROPERTY_ARRAY = "array";
+  public static final String SERIALIZED_NAME_ARRAY = "array";
+  @SerializedName(SERIALIZED_NAME_ARRAY)
   @javax.annotation.Nullable
   private Boolean array;
 
-  public static final String JSON_PROPERTY_BIG_DECIMAL = "bigDecimal";
+  public static final String SERIALIZED_NAME_BIG_DECIMAL = "bigDecimal";
+  @SerializedName(SERIALIZED_NAME_BIG_DECIMAL)
   @javax.annotation.Nullable
   private Boolean bigDecimal;
 
-  public static final String JSON_PROPERTY_BIG_INTEGER = "bigInteger";
+  public static final String SERIALIZED_NAME_BIG_INTEGER = "bigInteger";
+  @SerializedName(SERIALIZED_NAME_BIG_INTEGER)
   @javax.annotation.Nullable
   private Boolean bigInteger;
 
-  public static final String JSON_PROPERTY_BIG_INTEGER_VALUE = "bigIntegerValue";
+  public static final String SERIALIZED_NAME_BIG_INTEGER_VALUE = "bigIntegerValue";
+  @SerializedName(SERIALIZED_NAME_BIG_INTEGER_VALUE)
   @javax.annotation.Nullable
   private Integer bigIntegerValue;
 
-  public static final String JSON_PROPERTY_BINARY = "binary";
+  public static final String SERIALIZED_NAME_BINARY = "binary";
+  @SerializedName(SERIALIZED_NAME_BINARY)
   @javax.annotation.Nullable
   private Boolean binary;
 
-  public static final String JSON_PROPERTY_BINARY_VALUE = "binaryValue";
+  public static final String SERIALIZED_NAME_BINARY_VALUE = "binaryValue";
+  @SerializedName(SERIALIZED_NAME_BINARY_VALUE)
   @javax.annotation.Nullable
   private List<byte[]> binaryValue = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_BOOLEAN = "boolean";
+  public static final String SERIALIZED_NAME_BOOLEAN = "boolean";
+  @SerializedName(SERIALIZED_NAME_BOOLEAN)
   @javax.annotation.Nullable
   private Boolean _boolean;
 
-  public static final String JSON_PROPERTY_BOOLEAN_VALUE = "booleanValue";
+  public static final String SERIALIZED_NAME_BOOLEAN_VALUE = "booleanValue";
+  @SerializedName(SERIALIZED_NAME_BOOLEAN_VALUE)
   @javax.annotation.Nullable
   private Boolean booleanValue;
 
-  public static final String JSON_PROPERTY_CONTAINER_NODE = "containerNode";
+  public static final String SERIALIZED_NAME_CONTAINER_NODE = "containerNode";
+  @SerializedName(SERIALIZED_NAME_CONTAINER_NODE)
   @javax.annotation.Nullable
   private Boolean containerNode;
 
-  public static final String JSON_PROPERTY_DECIMAL_VALUE = "decimalValue";
+  public static final String SERIALIZED_NAME_DECIMAL_VALUE = "decimalValue";
+  @SerializedName(SERIALIZED_NAME_DECIMAL_VALUE)
   @javax.annotation.Nullable
   private BigDecimal decimalValue;
 
-  public static final String JSON_PROPERTY_DOUBLE = "double";
+  public static final String SERIALIZED_NAME_DOUBLE = "double";
+  @SerializedName(SERIALIZED_NAME_DOUBLE)
   @javax.annotation.Nullable
   private Boolean _double;
 
-  public static final String JSON_PROPERTY_DOUBLE_VALUE = "doubleValue";
+  public static final String SERIALIZED_NAME_DOUBLE_VALUE = "doubleValue";
+  @SerializedName(SERIALIZED_NAME_DOUBLE_VALUE)
   @javax.annotation.Nullable
   private Double doubleValue;
 
-  public static final String JSON_PROPERTY_ELEMENTS = "elements";
+  public static final String SERIALIZED_NAME_ELEMENTS = "elements";
+  @SerializedName(SERIALIZED_NAME_ELEMENTS)
   @javax.annotation.Nullable
   private Object elements;
 
-  public static final String JSON_PROPERTY_FIELD_NAMES = "fieldNames";
+  public static final String SERIALIZED_NAME_FIELD_NAMES = "fieldNames";
+  @SerializedName(SERIALIZED_NAME_FIELD_NAMES)
   @javax.annotation.Nullable
   private Object fieldNames;
 
-  public static final String JSON_PROPERTY_FIELDS = "fields";
+  public static final String SERIALIZED_NAME_FIELDS = "fields";
+  @SerializedName(SERIALIZED_NAME_FIELDS)
   @javax.annotation.Nullable
   private Object fields;
 
-  public static final String JSON_PROPERTY_FLOATING_POINT_NUMBER = "floatingPointNumber";
+  public static final String SERIALIZED_NAME_FLOATING_POINT_NUMBER = "floatingPointNumber";
+  @SerializedName(SERIALIZED_NAME_FLOATING_POINT_NUMBER)
   @javax.annotation.Nullable
   private Boolean floatingPointNumber;
 
-  public static final String JSON_PROPERTY_INT = "int";
+  public static final String SERIALIZED_NAME_INT = "int";
+  @SerializedName(SERIALIZED_NAME_INT)
   @javax.annotation.Nullable
   private Boolean _int;
 
-  public static final String JSON_PROPERTY_INT_VALUE = "intValue";
+  public static final String SERIALIZED_NAME_INT_VALUE = "intValue";
+  @SerializedName(SERIALIZED_NAME_INT_VALUE)
   @javax.annotation.Nullable
   private Integer intValue;
 
-  public static final String JSON_PROPERTY_INTEGRAL_NUMBER = "integralNumber";
+  public static final String SERIALIZED_NAME_INTEGRAL_NUMBER = "integralNumber";
+  @SerializedName(SERIALIZED_NAME_INTEGRAL_NUMBER)
   @javax.annotation.Nullable
   private Boolean integralNumber;
 
-  public static final String JSON_PROPERTY_LONG = "long";
+  public static final String SERIALIZED_NAME_LONG = "long";
+  @SerializedName(SERIALIZED_NAME_LONG)
   @javax.annotation.Nullable
   private Boolean _long;
 
-  public static final String JSON_PROPERTY_LONG_VALUE = "longValue";
+  public static final String SERIALIZED_NAME_LONG_VALUE = "longValue";
+  @SerializedName(SERIALIZED_NAME_LONG_VALUE)
   @javax.annotation.Nullable
   private Long longValue;
 
-  public static final String JSON_PROPERTY_MISSING_NODE = "missingNode";
+  public static final String SERIALIZED_NAME_MISSING_NODE = "missingNode";
+  @SerializedName(SERIALIZED_NAME_MISSING_NODE)
   @javax.annotation.Nullable
   private Boolean missingNode;
 
-  public static final String JSON_PROPERTY_NULL = "null";
+  public static final String SERIALIZED_NAME_NULL = "null";
+  @SerializedName(SERIALIZED_NAME_NULL)
   @javax.annotation.Nullable
   private Boolean _null;
 
-  public static final String JSON_PROPERTY_NUMBER = "number";
+  public static final String SERIALIZED_NAME_NUMBER = "number";
+  @SerializedName(SERIALIZED_NAME_NUMBER)
   @javax.annotation.Nullable
   private Boolean number;
 
   /**
    * Gets or Sets numberType
    */
+  @JsonAdapter(NumberTypeEnum.Adapter.class)
   public enum NumberTypeEnum {
-    INT(String.valueOf("INT")),
+    INT("INT"),
     
-    LONG(String.valueOf("LONG")),
+    LONG("LONG"),
     
-    BIG_INTEGER(String.valueOf("BIG_INTEGER")),
+    BIG_INTEGER("BIG_INTEGER"),
     
-    FLOAT(String.valueOf("FLOAT")),
+    FLOAT("FLOAT"),
     
-    DOUBLE(String.valueOf("DOUBLE")),
+    DOUBLE("DOUBLE"),
     
-    BIG_DECIMAL(String.valueOf("BIG_DECIMAL"));
+    BIG_DECIMAL("BIG_DECIMAL");
 
     private String value;
 
@@ -194,7 +198,6 @@ public class JsonNode {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -204,7 +207,6 @@ public class JsonNode {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static NumberTypeEnum fromValue(String value) {
       for (NumberTypeEnum b : NumberTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -213,57 +215,87 @@ public class JsonNode {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<NumberTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final NumberTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public NumberTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return NumberTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      NumberTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_NUMBER_TYPE = "numberType";
+  public static final String SERIALIZED_NAME_NUMBER_TYPE = "numberType";
+  @SerializedName(SERIALIZED_NAME_NUMBER_TYPE)
   @javax.annotation.Nullable
   private NumberTypeEnum numberType;
 
-  public static final String JSON_PROPERTY_NUMBER_VALUE = "numberValue";
+  public static final String SERIALIZED_NAME_NUMBER_VALUE = "numberValue";
+  @SerializedName(SERIALIZED_NAME_NUMBER_VALUE)
   @javax.annotation.Nullable
   private BigDecimal numberValue;
 
-  public static final String JSON_PROPERTY_OBJECT = "object";
+  public static final String SERIALIZED_NAME_OBJECT = "object";
+  @SerializedName(SERIALIZED_NAME_OBJECT)
   @javax.annotation.Nullable
   private Boolean _object;
 
-  public static final String JSON_PROPERTY_POJO = "pojo";
+  public static final String SERIALIZED_NAME_POJO = "pojo";
+  @SerializedName(SERIALIZED_NAME_POJO)
   @javax.annotation.Nullable
   private Boolean pojo;
 
-  public static final String JSON_PROPERTY_TEXT_VALUE = "textValue";
+  public static final String SERIALIZED_NAME_TEXT_VALUE = "textValue";
+  @SerializedName(SERIALIZED_NAME_TEXT_VALUE)
   @javax.annotation.Nullable
   private String textValue;
 
-  public static final String JSON_PROPERTY_TEXTUAL = "textual";
+  public static final String SERIALIZED_NAME_TEXTUAL = "textual";
+  @SerializedName(SERIALIZED_NAME_TEXTUAL)
   @javax.annotation.Nullable
   private Boolean textual;
 
-  public static final String JSON_PROPERTY_VALUE_AS_BOOLEAN = "valueAsBoolean";
+  public static final String SERIALIZED_NAME_VALUE_AS_BOOLEAN = "valueAsBoolean";
+  @SerializedName(SERIALIZED_NAME_VALUE_AS_BOOLEAN)
   @javax.annotation.Nullable
   private Boolean valueAsBoolean;
 
-  public static final String JSON_PROPERTY_VALUE_AS_DOUBLE = "valueAsDouble";
+  public static final String SERIALIZED_NAME_VALUE_AS_DOUBLE = "valueAsDouble";
+  @SerializedName(SERIALIZED_NAME_VALUE_AS_DOUBLE)
   @javax.annotation.Nullable
   private Double valueAsDouble;
 
-  public static final String JSON_PROPERTY_VALUE_AS_INT = "valueAsInt";
+  public static final String SERIALIZED_NAME_VALUE_AS_INT = "valueAsInt";
+  @SerializedName(SERIALIZED_NAME_VALUE_AS_INT)
   @javax.annotation.Nullable
   private Integer valueAsInt;
 
-  public static final String JSON_PROPERTY_VALUE_AS_LONG = "valueAsLong";
+  public static final String SERIALIZED_NAME_VALUE_AS_LONG = "valueAsLong";
+  @SerializedName(SERIALIZED_NAME_VALUE_AS_LONG)
   @javax.annotation.Nullable
   private Long valueAsLong;
 
-  public static final String JSON_PROPERTY_VALUE_AS_TEXT = "valueAsText";
+  public static final String SERIALIZED_NAME_VALUE_AS_TEXT = "valueAsText";
+  @SerializedName(SERIALIZED_NAME_VALUE_AS_TEXT)
   @javax.annotation.Nullable
   private String valueAsText;
 
-  public static final String JSON_PROPERTY_VALUE_NODE = "valueNode";
+  public static final String SERIALIZED_NAME_VALUE_NODE = "valueNode";
+  @SerializedName(SERIALIZED_NAME_VALUE_NODE)
   @javax.annotation.Nullable
   private Boolean valueNode;
 
-  public JsonNode() { 
+  public JsonNode() {
   }
 
   public JsonNode array(@javax.annotation.Nullable Boolean array) {
@@ -276,15 +308,10 @@ public class JsonNode {
    * @return array
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ARRAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getArray() {
     return array;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ARRAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setArray(@javax.annotation.Nullable Boolean array) {
     this.array = array;
   }
@@ -300,15 +327,10 @@ public class JsonNode {
    * @return bigDecimal
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BIG_DECIMAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getBigDecimal() {
     return bigDecimal;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BIG_DECIMAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBigDecimal(@javax.annotation.Nullable Boolean bigDecimal) {
     this.bigDecimal = bigDecimal;
   }
@@ -324,15 +346,10 @@ public class JsonNode {
    * @return bigInteger
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BIG_INTEGER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getBigInteger() {
     return bigInteger;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BIG_INTEGER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBigInteger(@javax.annotation.Nullable Boolean bigInteger) {
     this.bigInteger = bigInteger;
   }
@@ -348,15 +365,10 @@ public class JsonNode {
    * @return bigIntegerValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BIG_INTEGER_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBigIntegerValue() {
     return bigIntegerValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BIG_INTEGER_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBigIntegerValue(@javax.annotation.Nullable Integer bigIntegerValue) {
     this.bigIntegerValue = bigIntegerValue;
   }
@@ -372,15 +384,10 @@ public class JsonNode {
    * @return binary
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BINARY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getBinary() {
     return binary;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BINARY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBinary(@javax.annotation.Nullable Boolean binary) {
     this.binary = binary;
   }
@@ -404,15 +411,10 @@ public class JsonNode {
    * @return binaryValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BINARY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<byte[]> getBinaryValue() {
     return binaryValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BINARY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBinaryValue(@javax.annotation.Nullable List<byte[]> binaryValue) {
     this.binaryValue = binaryValue;
   }
@@ -428,15 +430,10 @@ public class JsonNode {
    * @return _boolean
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BOOLEAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getBoolean() {
     return _boolean;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BOOLEAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBoolean(@javax.annotation.Nullable Boolean _boolean) {
     this._boolean = _boolean;
   }
@@ -452,15 +449,10 @@ public class JsonNode {
    * @return booleanValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BOOLEAN_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getBooleanValue() {
     return booleanValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BOOLEAN_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBooleanValue(@javax.annotation.Nullable Boolean booleanValue) {
     this.booleanValue = booleanValue;
   }
@@ -476,15 +468,10 @@ public class JsonNode {
    * @return containerNode
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER_NODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getContainerNode() {
     return containerNode;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER_NODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainerNode(@javax.annotation.Nullable Boolean containerNode) {
     this.containerNode = containerNode;
   }
@@ -500,15 +487,10 @@ public class JsonNode {
    * @return decimalValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DECIMAL_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BigDecimal getDecimalValue() {
     return decimalValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DECIMAL_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDecimalValue(@javax.annotation.Nullable BigDecimal decimalValue) {
     this.decimalValue = decimalValue;
   }
@@ -524,15 +506,10 @@ public class JsonNode {
    * @return _double
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DOUBLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDouble() {
     return _double;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DOUBLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDouble(@javax.annotation.Nullable Boolean _double) {
     this._double = _double;
   }
@@ -548,15 +525,10 @@ public class JsonNode {
    * @return doubleValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DOUBLE_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getDoubleValue() {
     return doubleValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DOUBLE_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDoubleValue(@javax.annotation.Nullable Double doubleValue) {
     this.doubleValue = doubleValue;
   }
@@ -572,15 +544,10 @@ public class JsonNode {
    * @return elements
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ELEMENTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Object getElements() {
     return elements;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ELEMENTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setElements(@javax.annotation.Nullable Object elements) {
     this.elements = elements;
   }
@@ -596,15 +563,10 @@ public class JsonNode {
    * @return fieldNames
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Object getFieldNames() {
     return fieldNames;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldNames(@javax.annotation.Nullable Object fieldNames) {
     this.fieldNames = fieldNames;
   }
@@ -620,15 +582,10 @@ public class JsonNode {
    * @return fields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Object getFields() {
     return fields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFields(@javax.annotation.Nullable Object fields) {
     this.fields = fields;
   }
@@ -644,15 +601,10 @@ public class JsonNode {
    * @return floatingPointNumber
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FLOATING_POINT_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getFloatingPointNumber() {
     return floatingPointNumber;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FLOATING_POINT_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFloatingPointNumber(@javax.annotation.Nullable Boolean floatingPointNumber) {
     this.floatingPointNumber = floatingPointNumber;
   }
@@ -668,15 +620,10 @@ public class JsonNode {
    * @return _int
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getInt() {
     return _int;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInt(@javax.annotation.Nullable Boolean _int) {
     this._int = _int;
   }
@@ -692,15 +639,10 @@ public class JsonNode {
    * @return intValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INT_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getIntValue() {
     return intValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INT_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIntValue(@javax.annotation.Nullable Integer intValue) {
     this.intValue = intValue;
   }
@@ -716,15 +658,10 @@ public class JsonNode {
    * @return integralNumber
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INTEGRAL_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIntegralNumber() {
     return integralNumber;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INTEGRAL_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIntegralNumber(@javax.annotation.Nullable Boolean integralNumber) {
     this.integralNumber = integralNumber;
   }
@@ -740,15 +677,10 @@ public class JsonNode {
    * @return _long
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LONG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getLong() {
     return _long;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LONG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLong(@javax.annotation.Nullable Boolean _long) {
     this._long = _long;
   }
@@ -764,15 +696,10 @@ public class JsonNode {
    * @return longValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LONG_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getLongValue() {
     return longValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LONG_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLongValue(@javax.annotation.Nullable Long longValue) {
     this.longValue = longValue;
   }
@@ -788,15 +715,10 @@ public class JsonNode {
    * @return missingNode
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MISSING_NODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getMissingNode() {
     return missingNode;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MISSING_NODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMissingNode(@javax.annotation.Nullable Boolean missingNode) {
     this.missingNode = missingNode;
   }
@@ -812,15 +734,10 @@ public class JsonNode {
    * @return _null
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NULL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getNull() {
     return _null;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NULL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNull(@javax.annotation.Nullable Boolean _null) {
     this._null = _null;
   }
@@ -836,15 +753,10 @@ public class JsonNode {
    * @return number
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getNumber() {
     return number;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNumber(@javax.annotation.Nullable Boolean number) {
     this.number = number;
   }
@@ -860,15 +772,10 @@ public class JsonNode {
    * @return numberType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NUMBER_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public NumberTypeEnum getNumberType() {
     return numberType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NUMBER_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNumberType(@javax.annotation.Nullable NumberTypeEnum numberType) {
     this.numberType = numberType;
   }
@@ -884,15 +791,10 @@ public class JsonNode {
    * @return numberValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NUMBER_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BigDecimal getNumberValue() {
     return numberValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NUMBER_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNumberValue(@javax.annotation.Nullable BigDecimal numberValue) {
     this.numberValue = numberValue;
   }
@@ -908,15 +810,10 @@ public class JsonNode {
    * @return _object
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OBJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getObject() {
     return _object;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OBJECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setObject(@javax.annotation.Nullable Boolean _object) {
     this._object = _object;
   }
@@ -932,15 +829,10 @@ public class JsonNode {
    * @return pojo
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_POJO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getPojo() {
     return pojo;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_POJO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPojo(@javax.annotation.Nullable Boolean pojo) {
     this.pojo = pojo;
   }
@@ -956,15 +848,10 @@ public class JsonNode {
    * @return textValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TEXT_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTextValue() {
     return textValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TEXT_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTextValue(@javax.annotation.Nullable String textValue) {
     this.textValue = textValue;
   }
@@ -980,15 +867,10 @@ public class JsonNode {
    * @return textual
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TEXTUAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getTextual() {
     return textual;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TEXTUAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTextual(@javax.annotation.Nullable Boolean textual) {
     this.textual = textual;
   }
@@ -1004,15 +886,10 @@ public class JsonNode {
    * @return valueAsBoolean
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_BOOLEAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getValueAsBoolean() {
     return valueAsBoolean;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_BOOLEAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValueAsBoolean(@javax.annotation.Nullable Boolean valueAsBoolean) {
     this.valueAsBoolean = valueAsBoolean;
   }
@@ -1028,15 +905,10 @@ public class JsonNode {
    * @return valueAsDouble
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_DOUBLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getValueAsDouble() {
     return valueAsDouble;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_DOUBLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValueAsDouble(@javax.annotation.Nullable Double valueAsDouble) {
     this.valueAsDouble = valueAsDouble;
   }
@@ -1052,15 +924,10 @@ public class JsonNode {
    * @return valueAsInt
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_INT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getValueAsInt() {
     return valueAsInt;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_INT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValueAsInt(@javax.annotation.Nullable Integer valueAsInt) {
     this.valueAsInt = valueAsInt;
   }
@@ -1076,15 +943,10 @@ public class JsonNode {
    * @return valueAsLong
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_LONG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getValueAsLong() {
     return valueAsLong;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_LONG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValueAsLong(@javax.annotation.Nullable Long valueAsLong) {
     this.valueAsLong = valueAsLong;
   }
@@ -1100,15 +962,10 @@ public class JsonNode {
    * @return valueAsText
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_TEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getValueAsText() {
     return valueAsText;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE_AS_TEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValueAsText(@javax.annotation.Nullable String valueAsText) {
     this.valueAsText = valueAsText;
   }
@@ -1124,23 +981,16 @@ public class JsonNode {
    * @return valueNode
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE_NODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getValueNode() {
     return valueNode;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE_NODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValueNode(@javax.annotation.Nullable Boolean valueNode) {
     this.valueNode = valueNode;
   }
 
 
-  /**
-   * Return true if this JsonNode object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -1248,223 +1098,105 @@ public class JsonNode {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("array", "bigDecimal", "bigInteger", "bigIntegerValue", "binary", "binaryValue", "boolean", "booleanValue", "containerNode", "decimalValue", "double", "doubleValue", "elements", "fieldNames", "fields", "floatingPointNumber", "int", "intValue", "integralNumber", "long", "longValue", "missingNode", "null", "number", "numberType", "numberValue", "object", "pojo", "textValue", "textual", "valueAsBoolean", "valueAsDouble", "valueAsInt", "valueAsLong", "valueAsText", "valueNode"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JsonNode
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `array` to the URL query string
-    if (getArray() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sarray%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getArray()))));
-    }
-
-    // add `bigDecimal` to the URL query string
-    if (getBigDecimal() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbigDecimal%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBigDecimal()))));
-    }
-
-    // add `bigInteger` to the URL query string
-    if (getBigInteger() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbigInteger%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBigInteger()))));
-    }
-
-    // add `bigIntegerValue` to the URL query string
-    if (getBigIntegerValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbigIntegerValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBigIntegerValue()))));
-    }
-
-    // add `binary` to the URL query string
-    if (getBinary() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbinary%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBinary()))));
-    }
-
-    // add `binaryValue` to the URL query string
-    if (getBinaryValue() != null) {
-      for (int i = 0; i < getBinaryValue().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sbinaryValue%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getBinaryValue().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JsonNode.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JsonNode is not found in the empty JSON string", JsonNode.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `boolean` to the URL query string
-    if (getBoolean() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sboolean%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBoolean()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JsonNode.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JsonNode` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("binaryValue") != null && !jsonObj.get("binaryValue").isJsonNull() && !jsonObj.get("binaryValue").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `binaryValue` to be an array in the JSON string but got `%s`", jsonObj.get("binaryValue").toString()));
+      }
+      if ((jsonObj.get("numberType") != null && !jsonObj.get("numberType").isJsonNull()) && !jsonObj.get("numberType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `numberType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("numberType").toString()));
+      }
+      // validate the optional field `numberType`
+      if (jsonObj.get("numberType") != null && !jsonObj.get("numberType").isJsonNull()) {
+        NumberTypeEnum.validateJsonElement(jsonObj.get("numberType"));
+      }
+      if ((jsonObj.get("textValue") != null && !jsonObj.get("textValue").isJsonNull()) && !jsonObj.get("textValue").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `textValue` to be a primitive type in the JSON string but got `%s`", jsonObj.get("textValue").toString()));
+      }
+      if ((jsonObj.get("valueAsText") != null && !jsonObj.get("valueAsText").isJsonNull()) && !jsonObj.get("valueAsText").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `valueAsText` to be a primitive type in the JSON string but got `%s`", jsonObj.get("valueAsText").toString()));
+      }
+  }
 
-    // add `booleanValue` to the URL query string
-    if (getBooleanValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbooleanValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBooleanValue()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JsonNode.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JsonNode' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JsonNode> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JsonNode.class));
 
-    // add `containerNode` to the URL query string
-    if (getContainerNode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontainerNode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContainerNode()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<JsonNode>() {
+           @Override
+           public void write(JsonWriter out, JsonNode value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `decimalValue` to the URL query string
-    if (getDecimalValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdecimalValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDecimalValue()))));
-    }
+           @Override
+           public JsonNode read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `double` to the URL query string
-    if (getDouble() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdouble%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDouble()))));
+       }.nullSafe();
     }
+  }
 
-    // add `doubleValue` to the URL query string
-    if (getDoubleValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdoubleValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDoubleValue()))));
-    }
+  /**
+   * Create an instance of JsonNode given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JsonNode
+   * @throws IOException if the JSON string is invalid with respect to JsonNode
+   */
+  public static JsonNode fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JsonNode.class);
+  }
 
-    // add `elements` to the URL query string
-    if (getElements() != null) {
-      joiner.add(String.format(Locale.ROOT, "%selements%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getElements()))));
-    }
-
-    // add `fieldNames` to the URL query string
-    if (getFieldNames() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldNames%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldNames()))));
-    }
-
-    // add `fields` to the URL query string
-    if (getFields() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfields%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFields()))));
-    }
-
-    // add `floatingPointNumber` to the URL query string
-    if (getFloatingPointNumber() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfloatingPointNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFloatingPointNumber()))));
-    }
-
-    // add `int` to the URL query string
-    if (getInt() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sint%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInt()))));
-    }
-
-    // add `intValue` to the URL query string
-    if (getIntValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sintValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntValue()))));
-    }
-
-    // add `integralNumber` to the URL query string
-    if (getIntegralNumber() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sintegralNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntegralNumber()))));
-    }
-
-    // add `long` to the URL query string
-    if (getLong() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slong%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLong()))));
-    }
-
-    // add `longValue` to the URL query string
-    if (getLongValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slongValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLongValue()))));
-    }
-
-    // add `missingNode` to the URL query string
-    if (getMissingNode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smissingNode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMissingNode()))));
-    }
-
-    // add `null` to the URL query string
-    if (getNull() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snull%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNull()))));
-    }
-
-    // add `number` to the URL query string
-    if (getNumber() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNumber()))));
-    }
-
-    // add `numberType` to the URL query string
-    if (getNumberType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snumberType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNumberType()))));
-    }
-
-    // add `numberValue` to the URL query string
-    if (getNumberValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snumberValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNumberValue()))));
-    }
-
-    // add `object` to the URL query string
-    if (getObject() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sobject%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getObject()))));
-    }
-
-    // add `pojo` to the URL query string
-    if (getPojo() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spojo%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPojo()))));
-    }
-
-    // add `textValue` to the URL query string
-    if (getTextValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stextValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTextValue()))));
-    }
-
-    // add `textual` to the URL query string
-    if (getTextual() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stextual%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTextual()))));
-    }
-
-    // add `valueAsBoolean` to the URL query string
-    if (getValueAsBoolean() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalueAsBoolean%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValueAsBoolean()))));
-    }
-
-    // add `valueAsDouble` to the URL query string
-    if (getValueAsDouble() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalueAsDouble%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValueAsDouble()))));
-    }
-
-    // add `valueAsInt` to the URL query string
-    if (getValueAsInt() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalueAsInt%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValueAsInt()))));
-    }
-
-    // add `valueAsLong` to the URL query string
-    if (getValueAsLong() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalueAsLong%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValueAsLong()))));
-    }
-
-    // add `valueAsText` to the URL query string
-    if (getValueAsText() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalueAsText%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValueAsText()))));
-    }
-
-    // add `valueNode` to the URL query string
-    if (getValueNode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalueNode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValueNode()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JsonNode to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

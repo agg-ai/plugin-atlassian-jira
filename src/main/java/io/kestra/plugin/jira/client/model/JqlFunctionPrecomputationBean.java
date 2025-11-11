@@ -13,106 +13,120 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Jql function precomputation.
  */
-@JsonPropertyOrder({
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_ARGUMENTS,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_CREATED,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_ERROR,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_FIELD,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_FUNCTION_KEY,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_FUNCTION_NAME,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_ID,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_OPERATOR,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_UPDATED,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_USED,
-  JqlFunctionPrecomputationBean.JSON_PROPERTY_VALUE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JqlFunctionPrecomputationBean {
-  public static final String JSON_PROPERTY_ARGUMENTS = "arguments";
+  public static final String SERIALIZED_NAME_ARGUMENTS = "arguments";
+  @SerializedName(SERIALIZED_NAME_ARGUMENTS)
   @javax.annotation.Nullable
   private List<String> arguments = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CREATED = "created";
+  public static final String SERIALIZED_NAME_CREATED = "created";
+  @SerializedName(SERIALIZED_NAME_CREATED)
   @javax.annotation.Nullable
   private OffsetDateTime created;
 
-  public static final String JSON_PROPERTY_ERROR = "error";
+  public static final String SERIALIZED_NAME_ERROR = "error";
+  @SerializedName(SERIALIZED_NAME_ERROR)
   @javax.annotation.Nullable
   private String error;
 
-  public static final String JSON_PROPERTY_FIELD = "field";
+  public static final String SERIALIZED_NAME_FIELD = "field";
+  @SerializedName(SERIALIZED_NAME_FIELD)
   @javax.annotation.Nullable
   private String field;
 
-  public static final String JSON_PROPERTY_FUNCTION_KEY = "functionKey";
+  public static final String SERIALIZED_NAME_FUNCTION_KEY = "functionKey";
+  @SerializedName(SERIALIZED_NAME_FUNCTION_KEY)
   @javax.annotation.Nullable
   private String functionKey;
 
-  public static final String JSON_PROPERTY_FUNCTION_NAME = "functionName";
+  public static final String SERIALIZED_NAME_FUNCTION_NAME = "functionName";
+  @SerializedName(SERIALIZED_NAME_FUNCTION_NAME)
   @javax.annotation.Nullable
   private String functionName;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_OPERATOR = "operator";
+  public static final String SERIALIZED_NAME_OPERATOR = "operator";
+  @SerializedName(SERIALIZED_NAME_OPERATOR)
   @javax.annotation.Nullable
   private String operator;
 
-  public static final String JSON_PROPERTY_UPDATED = "updated";
+  public static final String SERIALIZED_NAME_UPDATED = "updated";
+  @SerializedName(SERIALIZED_NAME_UPDATED)
   @javax.annotation.Nullable
   private OffsetDateTime updated;
 
-  public static final String JSON_PROPERTY_USED = "used";
+  public static final String SERIALIZED_NAME_USED = "used";
+  @SerializedName(SERIALIZED_NAME_USED)
   @javax.annotation.Nullable
   private OffsetDateTime used;
 
-  public static final String JSON_PROPERTY_VALUE = "value";
+  public static final String SERIALIZED_NAME_VALUE = "value";
+  @SerializedName(SERIALIZED_NAME_VALUE)
   @javax.annotation.Nullable
   private String value;
 
-  public JqlFunctionPrecomputationBean() { 
+  public JqlFunctionPrecomputationBean() {
   }
 
-  @JsonCreator
   public JqlFunctionPrecomputationBean(
-    @JsonProperty(JSON_PROPERTY_ARGUMENTS) List<String> arguments, 
-    @JsonProperty(JSON_PROPERTY_CREATED) OffsetDateTime created, 
-    @JsonProperty(JSON_PROPERTY_ERROR) String error, 
-    @JsonProperty(JSON_PROPERTY_FIELD) String field, 
-    @JsonProperty(JSON_PROPERTY_FUNCTION_KEY) String functionKey, 
-    @JsonProperty(JSON_PROPERTY_FUNCTION_NAME) String functionName, 
-    @JsonProperty(JSON_PROPERTY_ID) String id, 
-    @JsonProperty(JSON_PROPERTY_OPERATOR) String operator, 
-    @JsonProperty(JSON_PROPERTY_UPDATED) OffsetDateTime updated, 
-    @JsonProperty(JSON_PROPERTY_USED) OffsetDateTime used, 
-    @JsonProperty(JSON_PROPERTY_VALUE) String value
+     List<String> arguments, 
+     OffsetDateTime created, 
+     String error, 
+     String field, 
+     String functionKey, 
+     String functionName, 
+     String id, 
+     String operator, 
+     OffsetDateTime updated, 
+     OffsetDateTime used, 
+     String value
   ) {
-  this();
+    this();
     this.arguments = arguments;
     this.created = created;
     this.error = error;
@@ -131,12 +145,9 @@ public class JqlFunctionPrecomputationBean {
    * @return arguments
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ARGUMENTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getArguments() {
     return arguments;
   }
-
 
 
 
@@ -145,12 +156,9 @@ public class JqlFunctionPrecomputationBean {
    * @return created
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getCreated() {
     return created;
   }
-
 
 
 
@@ -159,12 +167,9 @@ public class JqlFunctionPrecomputationBean {
    * @return error
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ERROR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getError() {
     return error;
   }
-
 
 
 
@@ -173,12 +178,9 @@ public class JqlFunctionPrecomputationBean {
    * @return field
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getField() {
     return field;
   }
-
 
 
 
@@ -187,12 +189,9 @@ public class JqlFunctionPrecomputationBean {
    * @return functionKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FUNCTION_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFunctionKey() {
     return functionKey;
   }
-
 
 
 
@@ -201,12 +200,9 @@ public class JqlFunctionPrecomputationBean {
    * @return functionName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FUNCTION_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFunctionName() {
     return functionName;
   }
-
 
 
 
@@ -215,12 +211,9 @@ public class JqlFunctionPrecomputationBean {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
-
 
 
 
@@ -229,12 +222,9 @@ public class JqlFunctionPrecomputationBean {
    * @return operator
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOperator() {
     return operator;
   }
-
 
 
 
@@ -243,12 +233,9 @@ public class JqlFunctionPrecomputationBean {
    * @return updated
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_UPDATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getUpdated() {
     return updated;
   }
-
 
 
 
@@ -257,12 +244,9 @@ public class JqlFunctionPrecomputationBean {
    * @return used
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getUsed() {
     return used;
   }
-
 
 
 
@@ -271,8 +255,6 @@ public class JqlFunctionPrecomputationBean {
    * @return value
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getValue() {
     return value;
   }
@@ -280,9 +262,6 @@ public class JqlFunctionPrecomputationBean {
 
 
 
-  /**
-   * Return true if this JqlFunctionPrecomputationBean object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -340,98 +319,113 @@ public class JqlFunctionPrecomputationBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("arguments", "created", "error", "field", "functionKey", "functionName", "id", "operator", "updated", "used", "value"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JqlFunctionPrecomputationBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `arguments` to the URL query string
-    if (getArguments() != null) {
-      for (int i = 0; i < getArguments().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sarguments%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getArguments().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JqlFunctionPrecomputationBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JqlFunctionPrecomputationBean is not found in the empty JSON string", JqlFunctionPrecomputationBean.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `created` to the URL query string
-    if (getCreated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreated()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JqlFunctionPrecomputationBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JqlFunctionPrecomputationBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("arguments") != null && !jsonObj.get("arguments").isJsonNull() && !jsonObj.get("arguments").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `arguments` to be an array in the JSON string but got `%s`", jsonObj.get("arguments").toString()));
+      }
+      if ((jsonObj.get("error") != null && !jsonObj.get("error").isJsonNull()) && !jsonObj.get("error").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `error` to be a primitive type in the JSON string but got `%s`", jsonObj.get("error").toString()));
+      }
+      if ((jsonObj.get("field") != null && !jsonObj.get("field").isJsonNull()) && !jsonObj.get("field").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `field` to be a primitive type in the JSON string but got `%s`", jsonObj.get("field").toString()));
+      }
+      if ((jsonObj.get("functionKey") != null && !jsonObj.get("functionKey").isJsonNull()) && !jsonObj.get("functionKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `functionKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("functionKey").toString()));
+      }
+      if ((jsonObj.get("functionName") != null && !jsonObj.get("functionName").isJsonNull()) && !jsonObj.get("functionName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `functionName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("functionName").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("operator") != null && !jsonObj.get("operator").isJsonNull()) && !jsonObj.get("operator").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `operator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("operator").toString()));
+      }
+      if ((jsonObj.get("value") != null && !jsonObj.get("value").isJsonNull()) && !jsonObj.get("value").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `value` to be a primitive type in the JSON string but got `%s`", jsonObj.get("value").toString()));
+      }
+  }
 
-    // add `error` to the URL query string
-    if (getError() != null) {
-      joiner.add(String.format(Locale.ROOT, "%serror%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getError()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JqlFunctionPrecomputationBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JqlFunctionPrecomputationBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JqlFunctionPrecomputationBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JqlFunctionPrecomputationBean.class));
 
-    // add `field` to the URL query string
-    if (getField() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfield%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getField()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<JqlFunctionPrecomputationBean>() {
+           @Override
+           public void write(JsonWriter out, JqlFunctionPrecomputationBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `functionKey` to the URL query string
-    if (getFunctionKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfunctionKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFunctionKey()))));
-    }
+           @Override
+           public JqlFunctionPrecomputationBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `functionName` to the URL query string
-    if (getFunctionName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfunctionName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFunctionName()))));
+       }.nullSafe();
     }
+  }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
+  /**
+   * Create an instance of JqlFunctionPrecomputationBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JqlFunctionPrecomputationBean
+   * @throws IOException if the JSON string is invalid with respect to JqlFunctionPrecomputationBean
+   */
+  public static JqlFunctionPrecomputationBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JqlFunctionPrecomputationBean.class);
+  }
 
-    // add `operator` to the URL query string
-    if (getOperator() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soperator%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperator()))));
-    }
-
-    // add `updated` to the URL query string
-    if (getUpdated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%supdated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUpdated()))));
-    }
-
-    // add `used` to the URL query string
-    if (getUsed() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sused%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUsed()))));
-    }
-
-    // add `value` to the URL query string
-    if (getValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JqlFunctionPrecomputationBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,49 +13,61 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraLabelPropertiesInputJackson1;
 import io.kestra.plugin.jira.client.model.JiraLabelsInput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraLabelsField
  */
-@JsonPropertyOrder({
-  JiraLabelsField.JSON_PROPERTY_BULK_EDIT_MULTI_SELECT_FIELD_OPTION,
-  JiraLabelsField.JSON_PROPERTY_FIELD_ID,
-  JiraLabelsField.JSON_PROPERTY_LABEL_PROPERTIES,
-  JiraLabelsField.JSON_PROPERTY_LABELS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraLabelsField {
   /**
    * Gets or Sets bulkEditMultiSelectFieldOption
    */
+  @JsonAdapter(BulkEditMultiSelectFieldOptionEnum.Adapter.class)
   public enum BulkEditMultiSelectFieldOptionEnum {
-    ADD(String.valueOf("ADD")),
+    ADD("ADD"),
     
-    REMOVE(String.valueOf("REMOVE")),
+    REMOVE("REMOVE"),
     
-    REPLACE(String.valueOf("REPLACE")),
+    REPLACE("REPLACE"),
     
-    REMOVE_ALL(String.valueOf("REMOVE_ALL"));
+    REMOVE_ALL("REMOVE_ALL");
 
     private String value;
 
@@ -63,7 +75,6 @@ public class JiraLabelsField {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -73,7 +84,6 @@ public class JiraLabelsField {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static BulkEditMultiSelectFieldOptionEnum fromValue(String value) {
       for (BulkEditMultiSelectFieldOptionEnum b : BulkEditMultiSelectFieldOptionEnum.values()) {
         if (b.value.equals(value)) {
@@ -82,25 +92,47 @@ public class JiraLabelsField {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<BulkEditMultiSelectFieldOptionEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final BulkEditMultiSelectFieldOptionEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public BulkEditMultiSelectFieldOptionEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return BulkEditMultiSelectFieldOptionEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      BulkEditMultiSelectFieldOptionEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_BULK_EDIT_MULTI_SELECT_FIELD_OPTION = "bulkEditMultiSelectFieldOption";
+  public static final String SERIALIZED_NAME_BULK_EDIT_MULTI_SELECT_FIELD_OPTION = "bulkEditMultiSelectFieldOption";
+  @SerializedName(SERIALIZED_NAME_BULK_EDIT_MULTI_SELECT_FIELD_OPTION)
   @javax.annotation.Nonnull
   private BulkEditMultiSelectFieldOptionEnum bulkEditMultiSelectFieldOption;
 
-  public static final String JSON_PROPERTY_FIELD_ID = "fieldId";
+  public static final String SERIALIZED_NAME_FIELD_ID = "fieldId";
+  @SerializedName(SERIALIZED_NAME_FIELD_ID)
   @javax.annotation.Nonnull
   private String fieldId;
 
-  public static final String JSON_PROPERTY_LABEL_PROPERTIES = "labelProperties";
+  public static final String SERIALIZED_NAME_LABEL_PROPERTIES = "labelProperties";
+  @SerializedName(SERIALIZED_NAME_LABEL_PROPERTIES)
   @javax.annotation.Nullable
   private List<JiraLabelPropertiesInputJackson1> labelProperties = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_LABELS = "labels";
+  public static final String SERIALIZED_NAME_LABELS = "labels";
+  @SerializedName(SERIALIZED_NAME_LABELS)
   @javax.annotation.Nonnull
   private List<JiraLabelsInput> labels = new ArrayList<>();
 
-  public JiraLabelsField() { 
+  public JiraLabelsField() {
   }
 
   public JiraLabelsField bulkEditMultiSelectFieldOption(@javax.annotation.Nonnull BulkEditMultiSelectFieldOptionEnum bulkEditMultiSelectFieldOption) {
@@ -113,15 +145,10 @@ public class JiraLabelsField {
    * @return bulkEditMultiSelectFieldOption
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_BULK_EDIT_MULTI_SELECT_FIELD_OPTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public BulkEditMultiSelectFieldOptionEnum getBulkEditMultiSelectFieldOption() {
     return bulkEditMultiSelectFieldOption;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_BULK_EDIT_MULTI_SELECT_FIELD_OPTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setBulkEditMultiSelectFieldOption(@javax.annotation.Nonnull BulkEditMultiSelectFieldOptionEnum bulkEditMultiSelectFieldOption) {
     this.bulkEditMultiSelectFieldOption = bulkEditMultiSelectFieldOption;
   }
@@ -137,15 +164,10 @@ public class JiraLabelsField {
    * @return fieldId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getFieldId() {
     return fieldId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFieldId(@javax.annotation.Nonnull String fieldId) {
     this.fieldId = fieldId;
   }
@@ -169,15 +191,10 @@ public class JiraLabelsField {
    * @return labelProperties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LABEL_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraLabelPropertiesInputJackson1> getLabelProperties() {
     return labelProperties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LABEL_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLabelProperties(@javax.annotation.Nullable List<JiraLabelPropertiesInputJackson1> labelProperties) {
     this.labelProperties = labelProperties;
   }
@@ -201,23 +218,16 @@ public class JiraLabelsField {
    * @return labels
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_LABELS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<JiraLabelsInput> getLabels() {
     return labels;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LABELS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLabels(@javax.annotation.Nonnull List<JiraLabelsInput> labels) {
     this.labels = labels;
   }
 
 
-  /**
-   * Return true if this JiraLabelsField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -261,69 +271,127 @@ public class JiraLabelsField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("bulkEditMultiSelectFieldOption", "fieldId", "labelProperties", "labels"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("bulkEditMultiSelectFieldOption", "fieldId", "labels"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraLabelsField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `bulkEditMultiSelectFieldOption` to the URL query string
-    if (getBulkEditMultiSelectFieldOption() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbulkEditMultiSelectFieldOption%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBulkEditMultiSelectFieldOption()))));
-    }
-
-    // add `fieldId` to the URL query string
-    if (getFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldId()))));
-    }
-
-    // add `labelProperties` to the URL query string
-    if (getLabelProperties() != null) {
-      for (int i = 0; i < getLabelProperties().size(); i++) {
-        if (getLabelProperties().get(i) != null) {
-          joiner.add(getLabelProperties().get(i).toUrlQueryString(String.format(Locale.ROOT, "%slabelProperties%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraLabelsField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraLabelsField is not found in the empty JSON string", JiraLabelsField.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `labels` to the URL query string
-    if (getLabels() != null) {
-      for (int i = 0; i < getLabels().size(); i++) {
-        if (getLabels().get(i) != null) {
-          joiner.add(getLabels().get(i).toUrlQueryString(String.format(Locale.ROOT, "%slabels%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraLabelsField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraLabelsField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraLabelsField.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("bulkEditMultiSelectFieldOption").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `bulkEditMultiSelectFieldOption` to be a primitive type in the JSON string but got `%s`", jsonObj.get("bulkEditMultiSelectFieldOption").toString()));
+      }
+      // validate the required field `bulkEditMultiSelectFieldOption`
+      BulkEditMultiSelectFieldOptionEnum.validateJsonElement(jsonObj.get("bulkEditMultiSelectFieldOption"));
+      if (!jsonObj.get("fieldId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldId").toString()));
+      }
+      if (jsonObj.get("labelProperties") != null && !jsonObj.get("labelProperties").isJsonNull()) {
+        JsonArray jsonArraylabelProperties = jsonObj.getAsJsonArray("labelProperties");
+        if (jsonArraylabelProperties != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("labelProperties").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `labelProperties` to be an array in the JSON string but got `%s`", jsonObj.get("labelProperties").toString()));
+          }
+
+          // validate the optional field `labelProperties` (array)
+          for (int i = 0; i < jsonArraylabelProperties.size(); i++) {
+            JiraLabelPropertiesInputJackson1.validateJsonElement(jsonArraylabelProperties.get(i));
+          };
+        }
+      }
+      // ensure the json data is an array
+      if (!jsonObj.get("labels").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `labels` to be an array in the JSON string but got `%s`", jsonObj.get("labels").toString()));
+      }
+
+      JsonArray jsonArraylabels = jsonObj.getAsJsonArray("labels");
+      // validate the required field `labels` (array)
+      for (int i = 0; i < jsonArraylabels.size(); i++) {
+        JiraLabelsInput.validateJsonElement(jsonArraylabels.get(i));
+      };
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraLabelsField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraLabelsField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraLabelsField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraLabelsField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraLabelsField>() {
+           @Override
+           public void write(JsonWriter out, JiraLabelsField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraLabelsField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JiraLabelsField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraLabelsField
+   * @throws IOException if the JSON string is invalid with respect to JiraLabelsField
+   */
+  public static JiraLabelsField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraLabelsField.class);
+  }
+
+  /**
+   * Convert an instance of JiraLabelsField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

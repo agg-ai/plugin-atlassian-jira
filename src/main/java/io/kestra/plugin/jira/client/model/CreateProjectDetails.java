@@ -13,55 +13,53 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details about the project.
  */
-@JsonPropertyOrder({
-  CreateProjectDetails.JSON_PROPERTY_ASSIGNEE_TYPE,
-  CreateProjectDetails.JSON_PROPERTY_AVATAR_ID,
-  CreateProjectDetails.JSON_PROPERTY_CATEGORY_ID,
-  CreateProjectDetails.JSON_PROPERTY_DESCRIPTION,
-  CreateProjectDetails.JSON_PROPERTY_FIELD_CONFIGURATION_SCHEME,
-  CreateProjectDetails.JSON_PROPERTY_ISSUE_SECURITY_SCHEME,
-  CreateProjectDetails.JSON_PROPERTY_ISSUE_TYPE_SCHEME,
-  CreateProjectDetails.JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME,
-  CreateProjectDetails.JSON_PROPERTY_KEY,
-  CreateProjectDetails.JSON_PROPERTY_LEAD,
-  CreateProjectDetails.JSON_PROPERTY_LEAD_ACCOUNT_ID,
-  CreateProjectDetails.JSON_PROPERTY_NAME,
-  CreateProjectDetails.JSON_PROPERTY_NOTIFICATION_SCHEME,
-  CreateProjectDetails.JSON_PROPERTY_PERMISSION_SCHEME,
-  CreateProjectDetails.JSON_PROPERTY_PROJECT_TEMPLATE_KEY,
-  CreateProjectDetails.JSON_PROPERTY_PROJECT_TYPE_KEY,
-  CreateProjectDetails.JSON_PROPERTY_URL,
-  CreateProjectDetails.JSON_PROPERTY_WORKFLOW_SCHEME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CreateProjectDetails {
   /**
    * The default assignee when creating issues for this project.
    */
+  @JsonAdapter(AssigneeTypeEnum.Adapter.class)
   public enum AssigneeTypeEnum {
-    PROJECT_LEAD(String.valueOf("PROJECT_LEAD")),
+    PROJECT_LEAD("PROJECT_LEAD"),
     
-    UNASSIGNED(String.valueOf("UNASSIGNED"));
+    UNASSIGNED("UNASSIGNED");
 
     private String value;
 
@@ -69,7 +67,6 @@ public class CreateProjectDetails {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -79,7 +76,6 @@ public class CreateProjectDetails {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static AssigneeTypeEnum fromValue(String value) {
       for (AssigneeTypeEnum b : AssigneeTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -88,159 +84,192 @@ public class CreateProjectDetails {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<AssigneeTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final AssigneeTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public AssigneeTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return AssigneeTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      AssigneeTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_ASSIGNEE_TYPE = "assigneeType";
+  public static final String SERIALIZED_NAME_ASSIGNEE_TYPE = "assigneeType";
+  @SerializedName(SERIALIZED_NAME_ASSIGNEE_TYPE)
   @javax.annotation.Nullable
   private AssigneeTypeEnum assigneeType;
 
-  public static final String JSON_PROPERTY_AVATAR_ID = "avatarId";
+  public static final String SERIALIZED_NAME_AVATAR_ID = "avatarId";
+  @SerializedName(SERIALIZED_NAME_AVATAR_ID)
   @javax.annotation.Nullable
   private Long avatarId;
 
-  public static final String JSON_PROPERTY_CATEGORY_ID = "categoryId";
+  public static final String SERIALIZED_NAME_CATEGORY_ID = "categoryId";
+  @SerializedName(SERIALIZED_NAME_CATEGORY_ID)
   @javax.annotation.Nullable
   private Long categoryId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_FIELD_CONFIGURATION_SCHEME = "fieldConfigurationScheme";
+  public static final String SERIALIZED_NAME_FIELD_CONFIGURATION_SCHEME = "fieldConfigurationScheme";
+  @SerializedName(SERIALIZED_NAME_FIELD_CONFIGURATION_SCHEME)
   @javax.annotation.Nullable
   private Long fieldConfigurationScheme;
 
-  public static final String JSON_PROPERTY_ISSUE_SECURITY_SCHEME = "issueSecurityScheme";
+  public static final String SERIALIZED_NAME_ISSUE_SECURITY_SCHEME = "issueSecurityScheme";
+  @SerializedName(SERIALIZED_NAME_ISSUE_SECURITY_SCHEME)
   @javax.annotation.Nullable
   private Long issueSecurityScheme;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_SCHEME = "issueTypeScheme";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_SCHEME = "issueTypeScheme";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_SCHEME)
   @javax.annotation.Nullable
   private Long issueTypeScheme;
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME = "issueTypeScreenScheme";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE_SCREEN_SCHEME = "issueTypeScreenScheme";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE_SCREEN_SCHEME)
   @javax.annotation.Nullable
   private Long issueTypeScreenScheme;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nonnull
   private String key;
 
-  public static final String JSON_PROPERTY_LEAD = "lead";
+  public static final String SERIALIZED_NAME_LEAD = "lead";
+  @SerializedName(SERIALIZED_NAME_LEAD)
   @javax.annotation.Nullable
   private String lead;
 
-  public static final String JSON_PROPERTY_LEAD_ACCOUNT_ID = "leadAccountId";
+  public static final String SERIALIZED_NAME_LEAD_ACCOUNT_ID = "leadAccountId";
+  @SerializedName(SERIALIZED_NAME_LEAD_ACCOUNT_ID)
   @javax.annotation.Nullable
   private String leadAccountId;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
-  public static final String JSON_PROPERTY_NOTIFICATION_SCHEME = "notificationScheme";
+  public static final String SERIALIZED_NAME_NOTIFICATION_SCHEME = "notificationScheme";
+  @SerializedName(SERIALIZED_NAME_NOTIFICATION_SCHEME)
   @javax.annotation.Nullable
   private Long notificationScheme;
 
-  public static final String JSON_PROPERTY_PERMISSION_SCHEME = "permissionScheme";
+  public static final String SERIALIZED_NAME_PERMISSION_SCHEME = "permissionScheme";
+  @SerializedName(SERIALIZED_NAME_PERMISSION_SCHEME)
   @javax.annotation.Nullable
   private Long permissionScheme;
 
   /**
    * A predefined configuration for a project. The type of the &#x60;projectTemplateKey&#x60; must match with the type of the &#x60;projectTypeKey&#x60;.
    */
+  @JsonAdapter(ProjectTemplateKeyEnum.Adapter.class)
   public enum ProjectTemplateKeyEnum {
-    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_AGILITY_KANBAN(String.valueOf("com.pyxis.greenhopper.jira:gh-simplified-agility-kanban")),
+    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_AGILITY_KANBAN("com.pyxis.greenhopper.jira:gh-simplified-agility-kanban"),
     
-    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_AGILITY_SCRUM(String.valueOf("com.pyxis.greenhopper.jira:gh-simplified-agility-scrum")),
+    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_AGILITY_SCRUM("com.pyxis.greenhopper.jira:gh-simplified-agility-scrum"),
     
-    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_BASIC(String.valueOf("com.pyxis.greenhopper.jira:gh-simplified-basic")),
+    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_BASIC("com.pyxis.greenhopper.jira:gh-simplified-basic"),
     
-    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_KANBAN_CLASSIC(String.valueOf("com.pyxis.greenhopper.jira:gh-simplified-kanban-classic")),
+    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_KANBAN_CLASSIC("com.pyxis.greenhopper.jira:gh-simplified-kanban-classic"),
     
-    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_SCRUM_CLASSIC(String.valueOf("com.pyxis.greenhopper.jira:gh-simplified-scrum-classic")),
+    COM_PYXIS_GREENHOPPER_JIRA_GH_SIMPLIFIED_SCRUM_CLASSIC("com.pyxis.greenhopper.jira:gh-simplified-scrum-classic"),
     
-    COM_PYXIS_GREENHOPPER_JIRA_GH_CROSS_TEAM_TEMPLATE(String.valueOf("com.pyxis.greenhopper.jira:gh-cross-team-template")),
+    COM_PYXIS_GREENHOPPER_JIRA_GH_CROSS_TEAM_TEMPLATE("com.pyxis.greenhopper.jira:gh-cross-team-template"),
     
-    COM_PYXIS_GREENHOPPER_JIRA_GH_CROSS_TEAM_PLANNING_TEMPLATE(String.valueOf("com.pyxis.greenhopper.jira:gh-cross-team-planning-template")),
+    COM_PYXIS_GREENHOPPER_JIRA_GH_CROSS_TEAM_PLANNING_TEMPLATE("com.pyxis.greenhopper.jira:gh-cross-team-planning-template"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_IT_SERVICE_MANAGEMENT(String.valueOf("com.atlassian.servicedesk:simplified-it-service-management")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_IT_SERVICE_MANAGEMENT("com.atlassian.servicedesk:simplified-it-service-management"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_IT_SERVICE_MANAGEMENT_BASIC(String.valueOf("com.atlassian.servicedesk:simplified-it-service-management-basic")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_IT_SERVICE_MANAGEMENT_BASIC("com.atlassian.servicedesk:simplified-it-service-management-basic"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_IT_SERVICE_MANAGEMENT_OPERATIONS(String.valueOf("com.atlassian.servicedesk:simplified-it-service-management-operations")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_IT_SERVICE_MANAGEMENT_OPERATIONS("com.atlassian.servicedesk:simplified-it-service-management-operations"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_GENERAL_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-general-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_GENERAL_SERVICE_DESK("com.atlassian.servicedesk:simplified-general-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_GENERAL_SERVICE_DESK_IT(String.valueOf("com.atlassian.servicedesk:simplified-general-service-desk-it")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_GENERAL_SERVICE_DESK_IT("com.atlassian.servicedesk:simplified-general-service-desk-it"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_GENERAL_SERVICE_DESK_BUSINESS(String.valueOf("com.atlassian.servicedesk:simplified-general-service-desk-business")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_GENERAL_SERVICE_DESK_BUSINESS("com.atlassian.servicedesk:simplified-general-service-desk-business"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_INTERNAL_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-internal-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_INTERNAL_SERVICE_DESK("com.atlassian.servicedesk:simplified-internal-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_EXTERNAL_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-external-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_EXTERNAL_SERVICE_DESK("com.atlassian.servicedesk:simplified-external-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_HR_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-hr-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_HR_SERVICE_DESK("com.atlassian.servicedesk:simplified-hr-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_FACILITIES_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-facilities-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_FACILITIES_SERVICE_DESK("com.atlassian.servicedesk:simplified-facilities-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_LEGAL_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-legal-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_LEGAL_SERVICE_DESK("com.atlassian.servicedesk:simplified-legal-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_MARKETING_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-marketing-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_MARKETING_SERVICE_DESK("com.atlassian.servicedesk:simplified-marketing-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_FINANCE_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-finance-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_FINANCE_SERVICE_DESK("com.atlassian.servicedesk:simplified-finance-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_ANALYTICS_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-analytics-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_ANALYTICS_SERVICE_DESK("com.atlassian.servicedesk:simplified-analytics-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_DESIGN_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-design-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_DESIGN_SERVICE_DESK("com.atlassian.servicedesk:simplified-design-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_SALES_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-sales-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_SALES_SERVICE_DESK("com.atlassian.servicedesk:simplified-sales-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_HALP_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:simplified-halp-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_HALP_SERVICE_DESK("com.atlassian.servicedesk:simplified-halp-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_BLANK_PROJECT_IT(String.valueOf("com.atlassian.servicedesk:simplified-blank-project-it")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_BLANK_PROJECT_IT("com.atlassian.servicedesk:simplified-blank-project-it"),
     
-    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_BLANK_PROJECT_BUSINESS(String.valueOf("com.atlassian.servicedesk:simplified-blank-project-business")),
+    COM_ATLASSIAN_SERVICEDESK_SIMPLIFIED_BLANK_PROJECT_BUSINESS("com.atlassian.servicedesk:simplified-blank-project-business"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_IT_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-it-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_IT_SERVICE_DESK("com.atlassian.servicedesk:next-gen-it-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_HR_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-hr-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_HR_SERVICE_DESK("com.atlassian.servicedesk:next-gen-hr-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_LEGAL_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-legal-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_LEGAL_SERVICE_DESK("com.atlassian.servicedesk:next-gen-legal-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_MARKETING_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-marketing-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_MARKETING_SERVICE_DESK("com.atlassian.servicedesk:next-gen-marketing-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_FACILITIES_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-facilities-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_FACILITIES_SERVICE_DESK("com.atlassian.servicedesk:next-gen-facilities-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_GENERAL_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-general-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_GENERAL_SERVICE_DESK("com.atlassian.servicedesk:next-gen-general-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_GENERAL_IT_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-general-it-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_GENERAL_IT_SERVICE_DESK("com.atlassian.servicedesk:next-gen-general-it-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_GENERAL_BUSINESS_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-general-business-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_GENERAL_BUSINESS_SERVICE_DESK("com.atlassian.servicedesk:next-gen-general-business-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_ANALYTICS_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-analytics-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_ANALYTICS_SERVICE_DESK("com.atlassian.servicedesk:next-gen-analytics-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_FINANCE_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-finance-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_FINANCE_SERVICE_DESK("com.atlassian.servicedesk:next-gen-finance-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_DESIGN_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-design-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_DESIGN_SERVICE_DESK("com.atlassian.servicedesk:next-gen-design-service-desk"),
     
-    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_SALES_SERVICE_DESK(String.valueOf("com.atlassian.servicedesk:next-gen-sales-service-desk")),
+    COM_ATLASSIAN_SERVICEDESK_NEXT_GEN_SALES_SERVICE_DESK("com.atlassian.servicedesk:next-gen-sales-service-desk"),
     
-    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_CONTENT_MANAGEMENT(String.valueOf("com.atlassian.jira-core-project-templates:jira-core-simplified-content-management")),
+    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_CONTENT_MANAGEMENT("com.atlassian.jira-core-project-templates:jira-core-simplified-content-management"),
     
-    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_DOCUMENT_APPROVAL(String.valueOf("com.atlassian.jira-core-project-templates:jira-core-simplified-document-approval")),
+    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_DOCUMENT_APPROVAL("com.atlassian.jira-core-project-templates:jira-core-simplified-document-approval"),
     
-    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_LEAD_TRACKING(String.valueOf("com.atlassian.jira-core-project-templates:jira-core-simplified-lead-tracking")),
+    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_LEAD_TRACKING("com.atlassian.jira-core-project-templates:jira-core-simplified-lead-tracking"),
     
-    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_PROCESS_CONTROL(String.valueOf("com.atlassian.jira-core-project-templates:jira-core-simplified-process-control")),
+    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_PROCESS_CONTROL("com.atlassian.jira-core-project-templates:jira-core-simplified-process-control"),
     
-    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_PROCUREMENT(String.valueOf("com.atlassian.jira-core-project-templates:jira-core-simplified-procurement")),
+    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_PROCUREMENT("com.atlassian.jira-core-project-templates:jira-core-simplified-procurement"),
     
-    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_PROJECT_MANAGEMENT(String.valueOf("com.atlassian.jira-core-project-templates:jira-core-simplified-project-management")),
+    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_PROJECT_MANAGEMENT("com.atlassian.jira-core-project-templates:jira-core-simplified-project-management"),
     
-    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_RECRUITMENT(String.valueOf("com.atlassian.jira-core-project-templates:jira-core-simplified-recruitment")),
+    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_RECRUITMENT("com.atlassian.jira-core-project-templates:jira-core-simplified-recruitment"),
     
-    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_TASK_(String.valueOf("com.atlassian.jira-core-project-templates:jira-core-simplified-task-"));
+    COM_ATLASSIAN_JIRA_CORE_PROJECT_TEMPLATES_JIRA_CORE_SIMPLIFIED_TASK_("com.atlassian.jira-core-project-templates:jira-core-simplified-task-");
 
     private String value;
 
@@ -248,7 +277,6 @@ public class CreateProjectDetails {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -258,7 +286,6 @@ public class CreateProjectDetails {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ProjectTemplateKeyEnum fromValue(String value) {
       for (ProjectTemplateKeyEnum b : ProjectTemplateKeyEnum.values()) {
         if (b.value.equals(value)) {
@@ -267,21 +294,41 @@ public class CreateProjectDetails {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ProjectTemplateKeyEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ProjectTemplateKeyEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ProjectTemplateKeyEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ProjectTemplateKeyEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ProjectTemplateKeyEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_PROJECT_TEMPLATE_KEY = "projectTemplateKey";
+  public static final String SERIALIZED_NAME_PROJECT_TEMPLATE_KEY = "projectTemplateKey";
+  @SerializedName(SERIALIZED_NAME_PROJECT_TEMPLATE_KEY)
   @javax.annotation.Nullable
   private ProjectTemplateKeyEnum projectTemplateKey;
 
   /**
    * The [project type](https://confluence.atlassian.com/x/GwiiLQ#Jiraapplicationsoverview-Productfeaturesandprojecttypes), which defines the application-specific feature set. If you don&#39;t specify the project template you have to specify the project type.
    */
+  @JsonAdapter(ProjectTypeKeyEnum.Adapter.class)
   public enum ProjectTypeKeyEnum {
-    SOFTWARE(String.valueOf("software")),
+    SOFTWARE("software"),
     
-    SERVICE_DESK(String.valueOf("service_desk")),
+    SERVICE_DESK("service_desk"),
     
-    BUSINESS(String.valueOf("business"));
+    BUSINESS("business");
 
     private String value;
 
@@ -289,7 +336,6 @@ public class CreateProjectDetails {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -299,7 +345,6 @@ public class CreateProjectDetails {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static ProjectTypeKeyEnum fromValue(String value) {
       for (ProjectTypeKeyEnum b : ProjectTypeKeyEnum.values()) {
         if (b.value.equals(value)) {
@@ -308,21 +353,42 @@ public class CreateProjectDetails {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<ProjectTypeKeyEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final ProjectTypeKeyEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public ProjectTypeKeyEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return ProjectTypeKeyEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      ProjectTypeKeyEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_PROJECT_TYPE_KEY = "projectTypeKey";
+  public static final String SERIALIZED_NAME_PROJECT_TYPE_KEY = "projectTypeKey";
+  @SerializedName(SERIALIZED_NAME_PROJECT_TYPE_KEY)
   @javax.annotation.Nullable
   private ProjectTypeKeyEnum projectTypeKey;
 
-  public static final String JSON_PROPERTY_URL = "url";
+  public static final String SERIALIZED_NAME_URL = "url";
+  @SerializedName(SERIALIZED_NAME_URL)
   @javax.annotation.Nullable
   private String url;
 
-  public static final String JSON_PROPERTY_WORKFLOW_SCHEME = "workflowScheme";
+  public static final String SERIALIZED_NAME_WORKFLOW_SCHEME = "workflowScheme";
+  @SerializedName(SERIALIZED_NAME_WORKFLOW_SCHEME)
   @javax.annotation.Nullable
   private Long workflowScheme;
 
-  public CreateProjectDetails() { 
+  public CreateProjectDetails() {
   }
 
   public CreateProjectDetails assigneeType(@javax.annotation.Nullable AssigneeTypeEnum assigneeType) {
@@ -335,15 +401,10 @@ public class CreateProjectDetails {
    * @return assigneeType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ASSIGNEE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AssigneeTypeEnum getAssigneeType() {
     return assigneeType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ASSIGNEE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAssigneeType(@javax.annotation.Nullable AssigneeTypeEnum assigneeType) {
     this.assigneeType = assigneeType;
   }
@@ -359,15 +420,10 @@ public class CreateProjectDetails {
    * @return avatarId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getAvatarId() {
     return avatarId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_AVATAR_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAvatarId(@javax.annotation.Nullable Long avatarId) {
     this.avatarId = avatarId;
   }
@@ -383,15 +439,10 @@ public class CreateProjectDetails {
    * @return categoryId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getCategoryId() {
     return categoryId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCategoryId(@javax.annotation.Nullable Long categoryId) {
     this.categoryId = categoryId;
   }
@@ -407,15 +458,10 @@ public class CreateProjectDetails {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -431,15 +477,10 @@ public class CreateProjectDetails {
    * @return fieldConfigurationScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_FIELD_CONFIGURATION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getFieldConfigurationScheme() {
     return fieldConfigurationScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_CONFIGURATION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFieldConfigurationScheme(@javax.annotation.Nullable Long fieldConfigurationScheme) {
     this.fieldConfigurationScheme = fieldConfigurationScheme;
   }
@@ -455,15 +496,10 @@ public class CreateProjectDetails {
    * @return issueSecurityScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SECURITY_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssueSecurityScheme() {
     return issueSecurityScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_SECURITY_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueSecurityScheme(@javax.annotation.Nullable Long issueSecurityScheme) {
     this.issueSecurityScheme = issueSecurityScheme;
   }
@@ -479,15 +515,10 @@ public class CreateProjectDetails {
    * @return issueTypeScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssueTypeScheme() {
     return issueTypeScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeScheme(@javax.annotation.Nullable Long issueTypeScheme) {
     this.issueTypeScheme = issueTypeScheme;
   }
@@ -503,15 +534,10 @@ public class CreateProjectDetails {
    * @return issueTypeScreenScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getIssueTypeScreenScheme() {
     return issueTypeScreenScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE_SCREEN_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueTypeScreenScheme(@javax.annotation.Nullable Long issueTypeScreenScheme) {
     this.issueTypeScreenScheme = issueTypeScreenScheme;
   }
@@ -527,15 +553,10 @@ public class CreateProjectDetails {
    * @return key
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getKey() {
     return key;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setKey(@javax.annotation.Nonnull String key) {
     this.key = key;
   }
@@ -551,15 +572,10 @@ public class CreateProjectDetails {
    * @return lead
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLead() {
     return lead;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEAD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLead(@javax.annotation.Nullable String lead) {
     this.lead = lead;
   }
@@ -575,15 +591,10 @@ public class CreateProjectDetails {
    * @return leadAccountId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLeadAccountId() {
     return leadAccountId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEAD_ACCOUNT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLeadAccountId(@javax.annotation.Nullable String leadAccountId) {
     this.leadAccountId = leadAccountId;
   }
@@ -599,15 +610,10 @@ public class CreateProjectDetails {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -623,15 +629,10 @@ public class CreateProjectDetails {
    * @return notificationScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getNotificationScheme() {
     return notificationScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NOTIFICATION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNotificationScheme(@javax.annotation.Nullable Long notificationScheme) {
     this.notificationScheme = notificationScheme;
   }
@@ -647,15 +648,10 @@ public class CreateProjectDetails {
    * @return permissionScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPermissionScheme() {
     return permissionScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PERMISSION_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPermissionScheme(@javax.annotation.Nullable Long permissionScheme) {
     this.permissionScheme = permissionScheme;
   }
@@ -671,15 +667,10 @@ public class CreateProjectDetails {
    * @return projectTemplateKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TEMPLATE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectTemplateKeyEnum getProjectTemplateKey() {
     return projectTemplateKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TEMPLATE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectTemplateKey(@javax.annotation.Nullable ProjectTemplateKeyEnum projectTemplateKey) {
     this.projectTemplateKey = projectTemplateKey;
   }
@@ -695,15 +686,10 @@ public class CreateProjectDetails {
    * @return projectTypeKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProjectTypeKeyEnum getProjectTypeKey() {
     return projectTypeKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_TYPE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProjectTypeKey(@javax.annotation.Nullable ProjectTypeKeyEnum projectTypeKey) {
     this.projectTypeKey = projectTypeKey;
   }
@@ -719,15 +705,10 @@ public class CreateProjectDetails {
    * @return url
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUrl() {
     return url;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUrl(@javax.annotation.Nullable String url) {
     this.url = url;
   }
@@ -743,23 +724,16 @@ public class CreateProjectDetails {
    * @return workflowScheme
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getWorkflowScheme() {
     return workflowScheme;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_WORKFLOW_SCHEME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWorkflowScheme(@javax.annotation.Nullable Long workflowScheme) {
     this.workflowScheme = workflowScheme;
   }
 
 
-  /**
-   * Return true if this CreateProjectDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -831,129 +805,134 @@ public class CreateProjectDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("assigneeType", "avatarId", "categoryId", "description", "fieldConfigurationScheme", "issueSecurityScheme", "issueTypeScheme", "issueTypeScreenScheme", "key", "lead", "leadAccountId", "name", "notificationScheme", "permissionScheme", "projectTemplateKey", "projectTypeKey", "url", "workflowScheme"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("key", "name"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CreateProjectDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CreateProjectDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CreateProjectDetails is not found in the empty JSON string", CreateProjectDetails.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CreateProjectDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CreateProjectDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CreateProjectDetails.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("assigneeType") != null && !jsonObj.get("assigneeType").isJsonNull()) && !jsonObj.get("assigneeType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `assigneeType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("assigneeType").toString()));
+      }
+      // validate the optional field `assigneeType`
+      if (jsonObj.get("assigneeType") != null && !jsonObj.get("assigneeType").isJsonNull()) {
+        AssigneeTypeEnum.validateJsonElement(jsonObj.get("assigneeType"));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if (!jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("lead") != null && !jsonObj.get("lead").isJsonNull()) && !jsonObj.get("lead").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `lead` to be a primitive type in the JSON string but got `%s`", jsonObj.get("lead").toString()));
+      }
+      if ((jsonObj.get("leadAccountId") != null && !jsonObj.get("leadAccountId").isJsonNull()) && !jsonObj.get("leadAccountId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `leadAccountId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("leadAccountId").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("projectTemplateKey") != null && !jsonObj.get("projectTemplateKey").isJsonNull()) && !jsonObj.get("projectTemplateKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectTemplateKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectTemplateKey").toString()));
+      }
+      // validate the optional field `projectTemplateKey`
+      if (jsonObj.get("projectTemplateKey") != null && !jsonObj.get("projectTemplateKey").isJsonNull()) {
+        ProjectTemplateKeyEnum.validateJsonElement(jsonObj.get("projectTemplateKey"));
+      }
+      if ((jsonObj.get("projectTypeKey") != null && !jsonObj.get("projectTypeKey").isJsonNull()) && !jsonObj.get("projectTypeKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectTypeKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectTypeKey").toString()));
+      }
+      // validate the optional field `projectTypeKey`
+      if (jsonObj.get("projectTypeKey") != null && !jsonObj.get("projectTypeKey").isJsonNull()) {
+        ProjectTypeKeyEnum.validateJsonElement(jsonObj.get("projectTypeKey"));
+      }
+      if ((jsonObj.get("url") != null && !jsonObj.get("url").isJsonNull()) && !jsonObj.get("url").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `url` to be a primitive type in the JSON string but got `%s`", jsonObj.get("url").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CreateProjectDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CreateProjectDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CreateProjectDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CreateProjectDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CreateProjectDetails>() {
+           @Override
+           public void write(JsonWriter out, CreateProjectDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CreateProjectDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of CreateProjectDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CreateProjectDetails
+   * @throws IOException if the JSON string is invalid with respect to CreateProjectDetails
+   */
+  public static CreateProjectDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CreateProjectDetails.class);
+  }
 
-    // add `assigneeType` to the URL query string
-    if (getAssigneeType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sassigneeType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssigneeType()))));
-    }
-
-    // add `avatarId` to the URL query string
-    if (getAvatarId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%savatarId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvatarId()))));
-    }
-
-    // add `categoryId` to the URL query string
-    if (getCategoryId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scategoryId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCategoryId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `fieldConfigurationScheme` to the URL query string
-    if (getFieldConfigurationScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldConfigurationScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldConfigurationScheme()))));
-    }
-
-    // add `issueSecurityScheme` to the URL query string
-    if (getIssueSecurityScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueSecurityScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueSecurityScheme()))));
-    }
-
-    // add `issueTypeScheme` to the URL query string
-    if (getIssueTypeScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueTypeScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueTypeScheme()))));
-    }
-
-    // add `issueTypeScreenScheme` to the URL query string
-    if (getIssueTypeScreenScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissueTypeScreenScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssueTypeScreenScheme()))));
-    }
-
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
-    }
-
-    // add `lead` to the URL query string
-    if (getLead() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slead%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLead()))));
-    }
-
-    // add `leadAccountId` to the URL query string
-    if (getLeadAccountId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sleadAccountId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLeadAccountId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `notificationScheme` to the URL query string
-    if (getNotificationScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snotificationScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNotificationScheme()))));
-    }
-
-    // add `permissionScheme` to the URL query string
-    if (getPermissionScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spermissionScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPermissionScheme()))));
-    }
-
-    // add `projectTemplateKey` to the URL query string
-    if (getProjectTemplateKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectTemplateKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectTemplateKey()))));
-    }
-
-    // add `projectTypeKey` to the URL query string
-    if (getProjectTypeKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectTypeKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectTypeKey()))));
-    }
-
-    // add `url` to the URL query string
-    if (getUrl() != null) {
-      joiner.add(String.format(Locale.ROOT, "%surl%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
-    }
-
-    // add `workflowScheme` to the URL query string
-    if (getWorkflowScheme() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sworkflowScheme%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWorkflowScheme()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of CreateProjectDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

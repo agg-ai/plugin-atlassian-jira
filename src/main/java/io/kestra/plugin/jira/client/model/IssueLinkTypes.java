@@ -13,46 +13,60 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.IssueLinkType;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A list of issue link type beans.
  */
-@JsonPropertyOrder({
-  IssueLinkTypes.JSON_PROPERTY_ISSUE_LINK_TYPES
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueLinkTypes {
-  public static final String JSON_PROPERTY_ISSUE_LINK_TYPES = "issueLinkTypes";
+  public static final String SERIALIZED_NAME_ISSUE_LINK_TYPES = "issueLinkTypes";
+  @SerializedName(SERIALIZED_NAME_ISSUE_LINK_TYPES)
   @javax.annotation.Nullable
   private List<IssueLinkType> issueLinkTypes = new ArrayList<>();
 
-  public IssueLinkTypes() { 
+  public IssueLinkTypes() {
   }
 
-  @JsonCreator
   public IssueLinkTypes(
-    @JsonProperty(JSON_PROPERTY_ISSUE_LINK_TYPES) List<IssueLinkType> issueLinkTypes
+     List<IssueLinkType> issueLinkTypes
   ) {
-  this();
+    this();
     this.issueLinkTypes = issueLinkTypes;
   }
 
@@ -61,8 +75,6 @@ public class IssueLinkTypes {
    * @return issueLinkTypes
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_LINK_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<IssueLinkType> getIssueLinkTypes() {
     return issueLinkTypes;
   }
@@ -70,9 +82,6 @@ public class IssueLinkTypes {
 
 
 
-  /**
-   * Return true if this IssueLinkTypes object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -110,49 +119,102 @@ public class IssueLinkTypes {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("issueLinkTypes"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to IssueLinkTypes
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `issueLinkTypes` to the URL query string
-    if (getIssueLinkTypes() != null) {
-      for (int i = 0; i < getIssueLinkTypes().size(); i++) {
-        if (getIssueLinkTypes().get(i) != null) {
-          joiner.add(getIssueLinkTypes().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sissueLinkTypes%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!IssueLinkTypes.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in IssueLinkTypes is not found in the empty JSON string", IssueLinkTypes.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!IssueLinkTypes.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `IssueLinkTypes` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("issueLinkTypes") != null && !jsonObj.get("issueLinkTypes").isJsonNull()) {
+        JsonArray jsonArrayissueLinkTypes = jsonObj.getAsJsonArray("issueLinkTypes");
+        if (jsonArrayissueLinkTypes != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("issueLinkTypes").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `issueLinkTypes` to be an array in the JSON string but got `%s`", jsonObj.get("issueLinkTypes").toString()));
+          }
+
+          // validate the optional field `issueLinkTypes` (array)
+          for (int i = 0; i < jsonArrayissueLinkTypes.size(); i++) {
+            IssueLinkType.validateJsonElement(jsonArrayissueLinkTypes.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!IssueLinkTypes.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'IssueLinkTypes' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<IssueLinkTypes> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(IssueLinkTypes.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<IssueLinkTypes>() {
+           @Override
+           public void write(JsonWriter out, IssueLinkTypes value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public IssueLinkTypes read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of IssueLinkTypes given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of IssueLinkTypes
+   * @throws IOException if the JSON string is invalid with respect to IssueLinkTypes
+   */
+  public static IssueLinkTypes fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, IssueLinkTypes.class);
+  }
+
+  /**
+   * Convert an instance of IssueLinkTypes to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,78 +13,93 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of an application property.
  */
-@JsonPropertyOrder({
-  ApplicationProperty.JSON_PROPERTY_ALLOWED_VALUES,
-  ApplicationProperty.JSON_PROPERTY_DEFAULT_VALUE,
-  ApplicationProperty.JSON_PROPERTY_DESC,
-  ApplicationProperty.JSON_PROPERTY_EXAMPLE,
-  ApplicationProperty.JSON_PROPERTY_ID,
-  ApplicationProperty.JSON_PROPERTY_KEY,
-  ApplicationProperty.JSON_PROPERTY_NAME,
-  ApplicationProperty.JSON_PROPERTY_TYPE,
-  ApplicationProperty.JSON_PROPERTY_VALUE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ApplicationProperty {
-  public static final String JSON_PROPERTY_ALLOWED_VALUES = "allowedValues";
+  public static final String SERIALIZED_NAME_ALLOWED_VALUES = "allowedValues";
+  @SerializedName(SERIALIZED_NAME_ALLOWED_VALUES)
   @javax.annotation.Nullable
   private List<String> allowedValues = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_DEFAULT_VALUE = "defaultValue";
+  public static final String SERIALIZED_NAME_DEFAULT_VALUE = "defaultValue";
+  @SerializedName(SERIALIZED_NAME_DEFAULT_VALUE)
   @javax.annotation.Nullable
   private String defaultValue;
 
-  public static final String JSON_PROPERTY_DESC = "desc";
+  public static final String SERIALIZED_NAME_DESC = "desc";
+  @SerializedName(SERIALIZED_NAME_DESC)
   @javax.annotation.Nullable
   private String desc;
 
-  public static final String JSON_PROPERTY_EXAMPLE = "example";
+  public static final String SERIALIZED_NAME_EXAMPLE = "example";
+  @SerializedName(SERIALIZED_NAME_EXAMPLE)
   @javax.annotation.Nullable
   private String example;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_KEY = "key";
+  public static final String SERIALIZED_NAME_KEY = "key";
+  @SerializedName(SERIALIZED_NAME_KEY)
   @javax.annotation.Nullable
   private String key;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private String type;
 
-  public static final String JSON_PROPERTY_VALUE = "value";
+  public static final String SERIALIZED_NAME_VALUE = "value";
+  @SerializedName(SERIALIZED_NAME_VALUE)
   @javax.annotation.Nullable
   private String value;
 
-  public ApplicationProperty() { 
+  public ApplicationProperty() {
   }
 
   public ApplicationProperty allowedValues(@javax.annotation.Nullable List<String> allowedValues) {
@@ -105,15 +120,10 @@ public class ApplicationProperty {
    * @return allowedValues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ALLOWED_VALUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getAllowedValues() {
     return allowedValues;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ALLOWED_VALUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAllowedValues(@javax.annotation.Nullable List<String> allowedValues) {
     this.allowedValues = allowedValues;
   }
@@ -129,15 +139,10 @@ public class ApplicationProperty {
    * @return defaultValue
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDefaultValue() {
     return defaultValue;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultValue(@javax.annotation.Nullable String defaultValue) {
     this.defaultValue = defaultValue;
   }
@@ -153,15 +158,10 @@ public class ApplicationProperty {
    * @return desc
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDesc() {
     return desc;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDesc(@javax.annotation.Nullable String desc) {
     this.desc = desc;
   }
@@ -177,15 +177,10 @@ public class ApplicationProperty {
    * @return example
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXAMPLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getExample() {
     return example;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXAMPLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExample(@javax.annotation.Nullable String example) {
     this.example = example;
   }
@@ -201,15 +196,10 @@ public class ApplicationProperty {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -225,15 +215,10 @@ public class ApplicationProperty {
    * @return key
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@javax.annotation.Nullable String key) {
     this.key = key;
   }
@@ -249,15 +234,10 @@ public class ApplicationProperty {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -273,15 +253,10 @@ public class ApplicationProperty {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable String type) {
     this.type = type;
   }
@@ -297,23 +272,16 @@ public class ApplicationProperty {
    * @return value
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getValue() {
     return value;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValue(@javax.annotation.Nullable String value) {
     this.value = value;
   }
 
 
-  /**
-   * Return true if this ApplicationProperty object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -367,88 +335,116 @@ public class ApplicationProperty {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("allowedValues", "defaultValue", "desc", "example", "id", "key", "name", "type", "value"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ApplicationProperty
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `allowedValues` to the URL query string
-    if (getAllowedValues() != null) {
-      for (int i = 0; i < getAllowedValues().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sallowedValues%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getAllowedValues().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ApplicationProperty.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ApplicationProperty is not found in the empty JSON string", ApplicationProperty.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `defaultValue` to the URL query string
-    if (getDefaultValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdefaultValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDefaultValue()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ApplicationProperty.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ApplicationProperty` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the optional json data is an array if present
+      if (jsonObj.get("allowedValues") != null && !jsonObj.get("allowedValues").isJsonNull() && !jsonObj.get("allowedValues").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `allowedValues` to be an array in the JSON string but got `%s`", jsonObj.get("allowedValues").toString()));
+      }
+      if ((jsonObj.get("defaultValue") != null && !jsonObj.get("defaultValue").isJsonNull()) && !jsonObj.get("defaultValue").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `defaultValue` to be a primitive type in the JSON string but got `%s`", jsonObj.get("defaultValue").toString()));
+      }
+      if ((jsonObj.get("desc") != null && !jsonObj.get("desc").isJsonNull()) && !jsonObj.get("desc").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `desc` to be a primitive type in the JSON string but got `%s`", jsonObj.get("desc").toString()));
+      }
+      if ((jsonObj.get("example") != null && !jsonObj.get("example").isJsonNull()) && !jsonObj.get("example").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `example` to be a primitive type in the JSON string but got `%s`", jsonObj.get("example").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("key") != null && !jsonObj.get("key").isJsonNull()) && !jsonObj.get("key").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `key` to be a primitive type in the JSON string but got `%s`", jsonObj.get("key").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      if ((jsonObj.get("value") != null && !jsonObj.get("value").isJsonNull()) && !jsonObj.get("value").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `value` to be a primitive type in the JSON string but got `%s`", jsonObj.get("value").toString()));
+      }
+  }
 
-    // add `desc` to the URL query string
-    if (getDesc() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdesc%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDesc()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ApplicationProperty.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ApplicationProperty' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ApplicationProperty> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ApplicationProperty.class));
 
-    // add `example` to the URL query string
-    if (getExample() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexample%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExample()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<ApplicationProperty>() {
+           @Override
+           public void write(JsonWriter out, ApplicationProperty value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
+           @Override
+           public ApplicationProperty read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `key` to the URL query string
-    if (getKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+       }.nullSafe();
     }
+  }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+  /**
+   * Create an instance of ApplicationProperty given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ApplicationProperty
+   * @throws IOException if the JSON string is invalid with respect to ApplicationProperty
+   */
+  public static ApplicationProperty fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ApplicationProperty.class);
+  }
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    // add `value` to the URL query string
-    if (getValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svalue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of ApplicationProperty to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,52 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectIssueTypesHierarchyLevel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The hierarchy of issue types within a project.
  */
-@JsonPropertyOrder({
-  ProjectIssueTypeHierarchy.JSON_PROPERTY_HIERARCHY,
-  ProjectIssueTypeHierarchy.JSON_PROPERTY_PROJECT_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class ProjectIssueTypeHierarchy {
-  public static final String JSON_PROPERTY_HIERARCHY = "hierarchy";
+  public static final String SERIALIZED_NAME_HIERARCHY = "hierarchy";
+  @SerializedName(SERIALIZED_NAME_HIERARCHY)
   @javax.annotation.Nullable
   private List<ProjectIssueTypesHierarchyLevel> hierarchy = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nullable
   private Long projectId;
 
-  public ProjectIssueTypeHierarchy() { 
+  public ProjectIssueTypeHierarchy() {
   }
 
-  @JsonCreator
   public ProjectIssueTypeHierarchy(
-    @JsonProperty(JSON_PROPERTY_HIERARCHY) List<ProjectIssueTypesHierarchyLevel> hierarchy, 
-    @JsonProperty(JSON_PROPERTY_PROJECT_ID) Long projectId
+     List<ProjectIssueTypesHierarchyLevel> hierarchy, 
+     Long projectId
   ) {
-  this();
+    this();
     this.hierarchy = hierarchy;
     this.projectId = projectId;
   }
@@ -68,12 +82,9 @@ public class ProjectIssueTypeHierarchy {
    * @return hierarchy
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_HIERARCHY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProjectIssueTypesHierarchyLevel> getHierarchy() {
     return hierarchy;
   }
-
 
 
 
@@ -82,8 +93,6 @@ public class ProjectIssueTypeHierarchy {
    * @return projectId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getProjectId() {
     return projectId;
   }
@@ -91,9 +100,6 @@ public class ProjectIssueTypeHierarchy {
 
 
 
-  /**
-   * Return true if this ProjectIssueTypeHierarchy object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -133,54 +139,102 @@ public class ProjectIssueTypeHierarchy {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("hierarchy", "projectId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to ProjectIssueTypeHierarchy
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `hierarchy` to the URL query string
-    if (getHierarchy() != null) {
-      for (int i = 0; i < getHierarchy().size(); i++) {
-        if (getHierarchy().get(i) != null) {
-          joiner.add(getHierarchy().get(i).toUrlQueryString(String.format(Locale.ROOT, "%shierarchy%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!ProjectIssueTypeHierarchy.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in ProjectIssueTypeHierarchy is not found in the empty JSON string", ProjectIssueTypeHierarchy.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!ProjectIssueTypeHierarchy.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `ProjectIssueTypeHierarchy` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("hierarchy") != null && !jsonObj.get("hierarchy").isJsonNull()) {
+        JsonArray jsonArrayhierarchy = jsonObj.getAsJsonArray("hierarchy");
+        if (jsonArrayhierarchy != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("hierarchy").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `hierarchy` to be an array in the JSON string but got `%s`", jsonObj.get("hierarchy").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `hierarchy` (array)
+          for (int i = 0; i < jsonArrayhierarchy.size(); i++) {
+            ProjectIssueTypesHierarchyLevel.validateJsonElement(jsonArrayhierarchy.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!ProjectIssueTypeHierarchy.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'ProjectIssueTypeHierarchy' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<ProjectIssueTypeHierarchy> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(ProjectIssueTypeHierarchy.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<ProjectIssueTypeHierarchy>() {
+           @Override
+           public void write(JsonWriter out, ProjectIssueTypeHierarchy value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public ProjectIssueTypeHierarchy read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of ProjectIssueTypeHierarchy given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of ProjectIssueTypeHierarchy
+   * @throws IOException if the JSON string is invalid with respect to ProjectIssueTypeHierarchy
+   */
+  public static ProjectIssueTypeHierarchy fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, ProjectIssueTypeHierarchy.class);
+  }
+
+  /**
+   * Convert an instance of ProjectIssueTypeHierarchy to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

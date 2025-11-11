@@ -13,89 +13,104 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ProjectIssueTypeQueryContext;
 import io.kestra.plugin.jira.client.model.TransitionPreview;
 import io.kestra.plugin.jira.client.model.WorkflowDocumentVersionBean;
 import io.kestra.plugin.jira.client.model.WorkflowPreviewLayout;
 import io.kestra.plugin.jira.client.model.WorkflowPreviewScope;
 import io.kestra.plugin.jira.client.model.WorkflowPreviewStatus;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a workflow.
  */
-@JsonPropertyOrder({
-  WorkflowPreview.JSON_PROPERTY_DESCRIPTION,
-  WorkflowPreview.JSON_PROPERTY_ID,
-  WorkflowPreview.JSON_PROPERTY_LOOPED_TRANSITION_CONTAINER_LAYOUT,
-  WorkflowPreview.JSON_PROPERTY_NAME,
-  WorkflowPreview.JSON_PROPERTY_QUERY_CONTEXT,
-  WorkflowPreview.JSON_PROPERTY_SCOPE,
-  WorkflowPreview.JSON_PROPERTY_START_POINT_LAYOUT,
-  WorkflowPreview.JSON_PROPERTY_STATUSES,
-  WorkflowPreview.JSON_PROPERTY_TRANSITIONS,
-  WorkflowPreview.JSON_PROPERTY_VERSION
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowPreview {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_LOOPED_TRANSITION_CONTAINER_LAYOUT = "loopedTransitionContainerLayout";
+  public static final String SERIALIZED_NAME_LOOPED_TRANSITION_CONTAINER_LAYOUT = "loopedTransitionContainerLayout";
+  @SerializedName(SERIALIZED_NAME_LOOPED_TRANSITION_CONTAINER_LAYOUT)
   @javax.annotation.Nullable
   private WorkflowPreviewLayout loopedTransitionContainerLayout;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_QUERY_CONTEXT = "queryContext";
+  public static final String SERIALIZED_NAME_QUERY_CONTEXT = "queryContext";
+  @SerializedName(SERIALIZED_NAME_QUERY_CONTEXT)
   @javax.annotation.Nullable
   private List<ProjectIssueTypeQueryContext> queryContext = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SCOPE = "scope";
+  public static final String SERIALIZED_NAME_SCOPE = "scope";
+  @SerializedName(SERIALIZED_NAME_SCOPE)
   @javax.annotation.Nullable
   private WorkflowPreviewScope scope;
 
-  public static final String JSON_PROPERTY_START_POINT_LAYOUT = "startPointLayout";
+  public static final String SERIALIZED_NAME_START_POINT_LAYOUT = "startPointLayout";
+  @SerializedName(SERIALIZED_NAME_START_POINT_LAYOUT)
   @javax.annotation.Nullable
   private WorkflowPreviewLayout startPointLayout;
 
-  public static final String JSON_PROPERTY_STATUSES = "statuses";
+  public static final String SERIALIZED_NAME_STATUSES = "statuses";
+  @SerializedName(SERIALIZED_NAME_STATUSES)
   @javax.annotation.Nullable
   private List<WorkflowPreviewStatus> statuses = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_TRANSITIONS = "transitions";
+  public static final String SERIALIZED_NAME_TRANSITIONS = "transitions";
+  @SerializedName(SERIALIZED_NAME_TRANSITIONS)
   @javax.annotation.Nullable
   private List<TransitionPreview> transitions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_VERSION = "version";
+  public static final String SERIALIZED_NAME_VERSION = "version";
+  @SerializedName(SERIALIZED_NAME_VERSION)
   @javax.annotation.Nullable
   private WorkflowDocumentVersionBean version;
 
-  public WorkflowPreview() { 
+  public WorkflowPreview() {
   }
 
   public WorkflowPreview description(@javax.annotation.Nullable String description) {
@@ -108,15 +123,10 @@ public class WorkflowPreview {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -132,15 +142,10 @@ public class WorkflowPreview {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -156,15 +161,10 @@ public class WorkflowPreview {
    * @return loopedTransitionContainerLayout
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LOOPED_TRANSITION_CONTAINER_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkflowPreviewLayout getLoopedTransitionContainerLayout() {
     return loopedTransitionContainerLayout;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LOOPED_TRANSITION_CONTAINER_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLoopedTransitionContainerLayout(@javax.annotation.Nullable WorkflowPreviewLayout loopedTransitionContainerLayout) {
     this.loopedTransitionContainerLayout = loopedTransitionContainerLayout;
   }
@@ -180,15 +180,10 @@ public class WorkflowPreview {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -212,15 +207,10 @@ public class WorkflowPreview {
    * @return queryContext
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_QUERY_CONTEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProjectIssueTypeQueryContext> getQueryContext() {
     return queryContext;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_QUERY_CONTEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQueryContext(@javax.annotation.Nullable List<ProjectIssueTypeQueryContext> queryContext) {
     this.queryContext = queryContext;
   }
@@ -236,15 +226,10 @@ public class WorkflowPreview {
    * @return scope
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkflowPreviewScope getScope() {
     return scope;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScope(@javax.annotation.Nullable WorkflowPreviewScope scope) {
     this.scope = scope;
   }
@@ -260,15 +245,10 @@ public class WorkflowPreview {
    * @return startPointLayout
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_START_POINT_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkflowPreviewLayout getStartPointLayout() {
     return startPointLayout;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_START_POINT_LAYOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartPointLayout(@javax.annotation.Nullable WorkflowPreviewLayout startPointLayout) {
     this.startPointLayout = startPointLayout;
   }
@@ -292,15 +272,10 @@ public class WorkflowPreview {
    * @return statuses
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUSES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<WorkflowPreviewStatus> getStatuses() {
     return statuses;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUSES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatuses(@javax.annotation.Nullable List<WorkflowPreviewStatus> statuses) {
     this.statuses = statuses;
   }
@@ -324,15 +299,10 @@ public class WorkflowPreview {
    * @return transitions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TransitionPreview> getTransitions() {
     return transitions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTransitions(@javax.annotation.Nullable List<TransitionPreview> transitions) {
     this.transitions = transitions;
   }
@@ -348,23 +318,16 @@ public class WorkflowPreview {
    * @return version
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkflowDocumentVersionBean getVersion() {
     return version;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersion(@javax.annotation.Nullable WorkflowDocumentVersionBean version) {
     this.version = version;
   }
 
 
-  /**
-   * Return true if this WorkflowPreview object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -420,104 +383,155 @@ public class WorkflowPreview {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "id", "loopedTransitionContainerLayout", "name", "queryContext", "scope", "startPointLayout", "statuses", "transitions", "version"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowPreview
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `loopedTransitionContainerLayout` to the URL query string
-    if (getLoopedTransitionContainerLayout() != null) {
-      joiner.add(getLoopedTransitionContainerLayout().toUrlQueryString(prefix + "loopedTransitionContainerLayout" + suffix));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `queryContext` to the URL query string
-    if (getQueryContext() != null) {
-      for (int i = 0; i < getQueryContext().size(); i++) {
-        if (getQueryContext().get(i) != null) {
-          joiner.add(getQueryContext().get(i).toUrlQueryString(String.format(Locale.ROOT, "%squeryContext%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowPreview.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowPreview is not found in the empty JSON string", WorkflowPreview.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `scope` to the URL query string
-    if (getScope() != null) {
-      joiner.add(getScope().toUrlQueryString(prefix + "scope" + suffix));
-    }
-
-    // add `startPointLayout` to the URL query string
-    if (getStartPointLayout() != null) {
-      joiner.add(getStartPointLayout().toUrlQueryString(prefix + "startPointLayout" + suffix));
-    }
-
-    // add `statuses` to the URL query string
-    if (getStatuses() != null) {
-      for (int i = 0; i < getStatuses().size(); i++) {
-        if (getStatuses().get(i) != null) {
-          joiner.add(getStatuses().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sstatuses%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowPreview.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowPreview` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      // validate the optional field `loopedTransitionContainerLayout`
+      if (jsonObj.get("loopedTransitionContainerLayout") != null && !jsonObj.get("loopedTransitionContainerLayout").isJsonNull()) {
+        WorkflowPreviewLayout.validateJsonElement(jsonObj.get("loopedTransitionContainerLayout"));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (jsonObj.get("queryContext") != null && !jsonObj.get("queryContext").isJsonNull()) {
+        JsonArray jsonArrayqueryContext = jsonObj.getAsJsonArray("queryContext");
+        if (jsonArrayqueryContext != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("queryContext").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `queryContext` to be an array in the JSON string but got `%s`", jsonObj.get("queryContext").toString()));
+          }
 
-    // add `transitions` to the URL query string
-    if (getTransitions() != null) {
-      for (int i = 0; i < getTransitions().size(); i++) {
-        if (getTransitions().get(i) != null) {
-          joiner.add(getTransitions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%stransitions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `queryContext` (array)
+          for (int i = 0; i < jsonArrayqueryContext.size(); i++) {
+            ProjectIssueTypeQueryContext.validateJsonElement(jsonArrayqueryContext.get(i));
+          };
         }
       }
-    }
+      // validate the optional field `scope`
+      if (jsonObj.get("scope") != null && !jsonObj.get("scope").isJsonNull()) {
+        WorkflowPreviewScope.validateJsonElement(jsonObj.get("scope"));
+      }
+      // validate the optional field `startPointLayout`
+      if (jsonObj.get("startPointLayout") != null && !jsonObj.get("startPointLayout").isJsonNull()) {
+        WorkflowPreviewLayout.validateJsonElement(jsonObj.get("startPointLayout"));
+      }
+      if (jsonObj.get("statuses") != null && !jsonObj.get("statuses").isJsonNull()) {
+        JsonArray jsonArraystatuses = jsonObj.getAsJsonArray("statuses");
+        if (jsonArraystatuses != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("statuses").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statuses` to be an array in the JSON string but got `%s`", jsonObj.get("statuses").toString()));
+          }
 
-    // add `version` to the URL query string
-    if (getVersion() != null) {
-      joiner.add(getVersion().toUrlQueryString(prefix + "version" + suffix));
-    }
+          // validate the optional field `statuses` (array)
+          for (int i = 0; i < jsonArraystatuses.size(); i++) {
+            WorkflowPreviewStatus.validateJsonElement(jsonArraystatuses.get(i));
+          };
+        }
+      }
+      if (jsonObj.get("transitions") != null && !jsonObj.get("transitions").isJsonNull()) {
+        JsonArray jsonArraytransitions = jsonObj.getAsJsonArray("transitions");
+        if (jsonArraytransitions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("transitions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `transitions` to be an array in the JSON string but got `%s`", jsonObj.get("transitions").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `transitions` (array)
+          for (int i = 0; i < jsonArraytransitions.size(); i++) {
+            TransitionPreview.validateJsonElement(jsonArraytransitions.get(i));
+          };
+        }
+      }
+      // validate the optional field `version`
+      if (jsonObj.get("version") != null && !jsonObj.get("version").isJsonNull()) {
+        WorkflowDocumentVersionBean.validateJsonElement(jsonObj.get("version"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowPreview.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowPreview' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowPreview> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowPreview.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowPreview>() {
+           @Override
+           public void write(JsonWriter out, WorkflowPreview value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowPreview read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of WorkflowPreview given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowPreview
+   * @throws IOException if the JSON string is invalid with respect to WorkflowPreview
+   */
+  public static WorkflowPreview fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowPreview.class);
+  }
+
+  /**
+   * Convert an instance of WorkflowPreview to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Represents the position of the redaction
  */
-@JsonPropertyOrder({
-  RedactionPosition.JSON_PROPERTY_ADF_POINTER,
-  RedactionPosition.JSON_PROPERTY_EXPECTED_TEXT,
-  RedactionPosition.JSON_PROPERTY_FROM,
-  RedactionPosition.JSON_PROPERTY_TO
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class RedactionPosition {
-  public static final String JSON_PROPERTY_ADF_POINTER = "adfPointer";
+  public static final String SERIALIZED_NAME_ADF_POINTER = "adfPointer";
+  @SerializedName(SERIALIZED_NAME_ADF_POINTER)
   @javax.annotation.Nullable
   private String adfPointer;
 
-  public static final String JSON_PROPERTY_EXPECTED_TEXT = "expectedText";
+  public static final String SERIALIZED_NAME_EXPECTED_TEXT = "expectedText";
+  @SerializedName(SERIALIZED_NAME_EXPECTED_TEXT)
   @javax.annotation.Nonnull
   private String expectedText;
 
-  public static final String JSON_PROPERTY_FROM = "from";
+  public static final String SERIALIZED_NAME_FROM = "from";
+  @SerializedName(SERIALIZED_NAME_FROM)
   @javax.annotation.Nonnull
   private Integer from;
 
-  public static final String JSON_PROPERTY_TO = "to";
+  public static final String SERIALIZED_NAME_TO = "to";
+  @SerializedName(SERIALIZED_NAME_TO)
   @javax.annotation.Nonnull
   private Integer to;
 
-  public RedactionPosition() { 
+  public RedactionPosition() {
   }
 
   public RedactionPosition adfPointer(@javax.annotation.Nullable String adfPointer) {
@@ -70,15 +85,10 @@ public class RedactionPosition {
    * @return adfPointer
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ADF_POINTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAdfPointer() {
     return adfPointer;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ADF_POINTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAdfPointer(@javax.annotation.Nullable String adfPointer) {
     this.adfPointer = adfPointer;
   }
@@ -94,15 +104,10 @@ public class RedactionPosition {
    * @return expectedText
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EXPECTED_TEXT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getExpectedText() {
     return expectedText;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXPECTED_TEXT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setExpectedText(@javax.annotation.Nonnull String expectedText) {
     this.expectedText = expectedText;
   }
@@ -118,15 +123,10 @@ public class RedactionPosition {
    * @return from
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FROM, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getFrom() {
     return from;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FROM, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFrom(@javax.annotation.Nonnull Integer from) {
     this.from = from;
   }
@@ -142,23 +142,16 @@ public class RedactionPosition {
    * @return to
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TO, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getTo() {
     return to;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TO, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setTo(@javax.annotation.Nonnull Integer to) {
     this.to = to;
   }
 
 
-  /**
-   * Return true if this RedactionPosition object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,59 +195,101 @@ public class RedactionPosition {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("adfPointer", "expectedText", "from", "to"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("expectedText", "from", "to"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to RedactionPosition
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!RedactionPosition.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in RedactionPosition is not found in the empty JSON string", RedactionPosition.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!RedactionPosition.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `RedactionPosition` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : RedactionPosition.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("adfPointer") != null && !jsonObj.get("adfPointer").isJsonNull()) && !jsonObj.get("adfPointer").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `adfPointer` to be a primitive type in the JSON string but got `%s`", jsonObj.get("adfPointer").toString()));
+      }
+      if (!jsonObj.get("expectedText").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `expectedText` to be a primitive type in the JSON string but got `%s`", jsonObj.get("expectedText").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!RedactionPosition.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'RedactionPosition' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<RedactionPosition> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(RedactionPosition.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<RedactionPosition>() {
+           @Override
+           public void write(JsonWriter out, RedactionPosition value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public RedactionPosition read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of RedactionPosition given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of RedactionPosition
+   * @throws IOException if the JSON string is invalid with respect to RedactionPosition
+   */
+  public static RedactionPosition fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, RedactionPosition.class);
+  }
 
-    // add `adfPointer` to the URL query string
-    if (getAdfPointer() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sadfPointer%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAdfPointer()))));
-    }
-
-    // add `expectedText` to the URL query string
-    if (getExpectedText() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpectedText%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpectedText()))));
-    }
-
-    // add `from` to the URL query string
-    if (getFrom() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfrom%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFrom()))));
-    }
-
-    // add `to` to the URL query string
-    if (getTo() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sto%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTo()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of RedactionPosition to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,67 +13,81 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.WorkflowPreviewScope;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a status.
  */
-@JsonPropertyOrder({
-  JiraWorkflowPreviewStatus.JSON_PROPERTY_DESCRIPTION,
-  JiraWorkflowPreviewStatus.JSON_PROPERTY_ID,
-  JiraWorkflowPreviewStatus.JSON_PROPERTY_NAME,
-  JiraWorkflowPreviewStatus.JSON_PROPERTY_RAW_NAME,
-  JiraWorkflowPreviewStatus.JSON_PROPERTY_SCOPE,
-  JiraWorkflowPreviewStatus.JSON_PROPERTY_STATUS_CATEGORY,
-  JiraWorkflowPreviewStatus.JSON_PROPERTY_STATUS_REFERENCE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraWorkflowPreviewStatus {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_RAW_NAME = "rawName";
+  public static final String SERIALIZED_NAME_RAW_NAME = "rawName";
+  @SerializedName(SERIALIZED_NAME_RAW_NAME)
   @javax.annotation.Nullable
   private String rawName;
 
-  public static final String JSON_PROPERTY_SCOPE = "scope";
+  public static final String SERIALIZED_NAME_SCOPE = "scope";
+  @SerializedName(SERIALIZED_NAME_SCOPE)
   @javax.annotation.Nullable
   private WorkflowPreviewScope scope;
 
   /**
    * The category of the status.
    */
+  @JsonAdapter(StatusCategoryEnum.Adapter.class)
   public enum StatusCategoryEnum {
-    TODO(String.valueOf("TODO")),
+    TODO("TODO"),
     
-    IN_PROGRESS(String.valueOf("IN_PROGRESS")),
+    IN_PROGRESS("IN_PROGRESS"),
     
-    DONE(String.valueOf("DONE"));
+    DONE("DONE");
 
     private String value;
 
@@ -81,7 +95,6 @@ public class JiraWorkflowPreviewStatus {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -91,7 +104,6 @@ public class JiraWorkflowPreviewStatus {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static StatusCategoryEnum fromValue(String value) {
       for (StatusCategoryEnum b : StatusCategoryEnum.values()) {
         if (b.value.equals(value)) {
@@ -100,17 +112,37 @@ public class JiraWorkflowPreviewStatus {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<StatusCategoryEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final StatusCategoryEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public StatusCategoryEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return StatusCategoryEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      StatusCategoryEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_STATUS_CATEGORY = "statusCategory";
+  public static final String SERIALIZED_NAME_STATUS_CATEGORY = "statusCategory";
+  @SerializedName(SERIALIZED_NAME_STATUS_CATEGORY)
   @javax.annotation.Nullable
   private StatusCategoryEnum statusCategory;
 
-  public static final String JSON_PROPERTY_STATUS_REFERENCE = "statusReference";
+  public static final String SERIALIZED_NAME_STATUS_REFERENCE = "statusReference";
+  @SerializedName(SERIALIZED_NAME_STATUS_REFERENCE)
   @javax.annotation.Nullable
   private String statusReference;
 
-  public JiraWorkflowPreviewStatus() { 
+  public JiraWorkflowPreviewStatus() {
   }
 
   public JiraWorkflowPreviewStatus description(@javax.annotation.Nullable String description) {
@@ -123,15 +155,10 @@ public class JiraWorkflowPreviewStatus {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -147,15 +174,10 @@ public class JiraWorkflowPreviewStatus {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -171,15 +193,10 @@ public class JiraWorkflowPreviewStatus {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -195,15 +212,10 @@ public class JiraWorkflowPreviewStatus {
    * @return rawName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RAW_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRawName() {
     return rawName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RAW_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRawName(@javax.annotation.Nullable String rawName) {
     this.rawName = rawName;
   }
@@ -219,15 +231,10 @@ public class JiraWorkflowPreviewStatus {
    * @return scope
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkflowPreviewScope getScope() {
     return scope;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCOPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScope(@javax.annotation.Nullable WorkflowPreviewScope scope) {
     this.scope = scope;
   }
@@ -243,15 +250,10 @@ public class JiraWorkflowPreviewStatus {
    * @return statusCategory
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public StatusCategoryEnum getStatusCategory() {
     return statusCategory;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusCategory(@javax.annotation.Nullable StatusCategoryEnum statusCategory) {
     this.statusCategory = statusCategory;
   }
@@ -267,23 +269,16 @@ public class JiraWorkflowPreviewStatus {
    * @return statusReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStatusReference() {
     return statusReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatusReference(@javax.annotation.Nullable String statusReference) {
     this.statusReference = statusReference;
   }
 
 
-  /**
-   * Return true if this JiraWorkflowPreviewStatus object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -333,74 +328,114 @@ public class JiraWorkflowPreviewStatus {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "id", "name", "rawName", "scope", "statusCategory", "statusReference"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraWorkflowPreviewStatus
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraWorkflowPreviewStatus.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraWorkflowPreviewStatus is not found in the empty JSON string", JiraWorkflowPreviewStatus.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraWorkflowPreviewStatus.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraWorkflowPreviewStatus` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("rawName") != null && !jsonObj.get("rawName").isJsonNull()) && !jsonObj.get("rawName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `rawName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("rawName").toString()));
+      }
+      // validate the optional field `scope`
+      if (jsonObj.get("scope") != null && !jsonObj.get("scope").isJsonNull()) {
+        WorkflowPreviewScope.validateJsonElement(jsonObj.get("scope"));
+      }
+      if ((jsonObj.get("statusCategory") != null && !jsonObj.get("statusCategory").isJsonNull()) && !jsonObj.get("statusCategory").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusCategory` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusCategory").toString()));
+      }
+      // validate the optional field `statusCategory`
+      if (jsonObj.get("statusCategory") != null && !jsonObj.get("statusCategory").isJsonNull()) {
+        StatusCategoryEnum.validateJsonElement(jsonObj.get("statusCategory"));
+      }
+      if ((jsonObj.get("statusReference") != null && !jsonObj.get("statusReference").isJsonNull()) && !jsonObj.get("statusReference").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `statusReference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("statusReference").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraWorkflowPreviewStatus.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraWorkflowPreviewStatus' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraWorkflowPreviewStatus> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraWorkflowPreviewStatus.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraWorkflowPreviewStatus>() {
+           @Override
+           public void write(JsonWriter out, JiraWorkflowPreviewStatus value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraWorkflowPreviewStatus read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of JiraWorkflowPreviewStatus given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraWorkflowPreviewStatus
+   * @throws IOException if the JSON string is invalid with respect to JiraWorkflowPreviewStatus
+   */
+  public static JiraWorkflowPreviewStatus fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraWorkflowPreviewStatus.class);
+  }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `rawName` to the URL query string
-    if (getRawName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srawName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRawName()))));
-    }
-
-    // add `scope` to the URL query string
-    if (getScope() != null) {
-      joiner.add(getScope().toUrlQueryString(prefix + "scope" + suffix));
-    }
-
-    // add `statusCategory` to the URL query string
-    if (getStatusCategory() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusCategory%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusCategory()))));
-    }
-
-    // add `statusReference` to the URL query string
-    if (getStatusReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sstatusReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatusReference()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of JiraWorkflowPreviewStatus to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

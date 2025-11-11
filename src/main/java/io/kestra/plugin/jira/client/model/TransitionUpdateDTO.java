@@ -13,110 +13,119 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.ConditionGroupUpdate;
 import io.kestra.plugin.jira.client.model.WorkflowRuleConfiguration;
 import io.kestra.plugin.jira.client.model.WorkflowTransitionLinks;
 import io.kestra.plugin.jira.client.model.WorkflowTrigger;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openapitools.jackson.nullable.JsonNullable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.openapitools.jackson.nullable.JsonNullable;
-import java.util.NoSuchElementException;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The transition update data.
  */
-@JsonPropertyOrder({
-  TransitionUpdateDTO.JSON_PROPERTY_ACTIONS,
-  TransitionUpdateDTO.JSON_PROPERTY_CONDITIONS,
-  TransitionUpdateDTO.JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID,
-  TransitionUpdateDTO.JSON_PROPERTY_DESCRIPTION,
-  TransitionUpdateDTO.JSON_PROPERTY_ID,
-  TransitionUpdateDTO.JSON_PROPERTY_LINKS,
-  TransitionUpdateDTO.JSON_PROPERTY_NAME,
-  TransitionUpdateDTO.JSON_PROPERTY_PROPERTIES,
-  TransitionUpdateDTO.JSON_PROPERTY_TO_STATUS_REFERENCE,
-  TransitionUpdateDTO.JSON_PROPERTY_TRANSITION_SCREEN,
-  TransitionUpdateDTO.JSON_PROPERTY_TRIGGERS,
-  TransitionUpdateDTO.JSON_PROPERTY_TYPE,
-  TransitionUpdateDTO.JSON_PROPERTY_VALIDATORS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class TransitionUpdateDTO {
-  public static final String JSON_PROPERTY_ACTIONS = "actions";
+  public static final String SERIALIZED_NAME_ACTIONS = "actions";
+  @SerializedName(SERIALIZED_NAME_ACTIONS)
   @javax.annotation.Nullable
   private List<WorkflowRuleConfiguration> actions = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CONDITIONS = "conditions";
-  private JsonNullable<ConditionGroupUpdate> conditions = JsonNullable.<ConditionGroupUpdate>undefined();
+  public static final String SERIALIZED_NAME_CONDITIONS = "conditions";
+  @SerializedName(SERIALIZED_NAME_CONDITIONS)
+  @javax.annotation.Nullable
+  private ConditionGroupUpdate conditions;
 
-  public static final String JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID = "customIssueEventId";
+  public static final String SERIALIZED_NAME_CUSTOM_ISSUE_EVENT_ID = "customIssueEventId";
+  @SerializedName(SERIALIZED_NAME_CUSTOM_ISSUE_EVENT_ID)
   @javax.annotation.Nullable
   private String customIssueEventId;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private String id;
 
-  public static final String JSON_PROPERTY_LINKS = "links";
+  public static final String SERIALIZED_NAME_LINKS = "links";
+  @SerializedName(SERIALIZED_NAME_LINKS)
   @javax.annotation.Nullable
   private List<WorkflowTransitionLinks> links = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nullable
   private String name;
 
-  public static final String JSON_PROPERTY_PROPERTIES = "properties";
+  public static final String SERIALIZED_NAME_PROPERTIES = "properties";
+  @SerializedName(SERIALIZED_NAME_PROPERTIES)
   @javax.annotation.Nullable
   private Map<String, String> properties = new HashMap<>();
 
-  public static final String JSON_PROPERTY_TO_STATUS_REFERENCE = "toStatusReference";
+  public static final String SERIALIZED_NAME_TO_STATUS_REFERENCE = "toStatusReference";
+  @SerializedName(SERIALIZED_NAME_TO_STATUS_REFERENCE)
   @javax.annotation.Nullable
   private String toStatusReference;
 
-  public static final String JSON_PROPERTY_TRANSITION_SCREEN = "transitionScreen";
-  private JsonNullable<WorkflowRuleConfiguration> transitionScreen = JsonNullable.<WorkflowRuleConfiguration>undefined();
+  public static final String SERIALIZED_NAME_TRANSITION_SCREEN = "transitionScreen";
+  @SerializedName(SERIALIZED_NAME_TRANSITION_SCREEN)
+  @javax.annotation.Nullable
+  private WorkflowRuleConfiguration transitionScreen;
 
-  public static final String JSON_PROPERTY_TRIGGERS = "triggers";
+  public static final String SERIALIZED_NAME_TRIGGERS = "triggers";
+  @SerializedName(SERIALIZED_NAME_TRIGGERS)
   @javax.annotation.Nullable
   private List<WorkflowTrigger> triggers = new ArrayList<>();
 
   /**
    * The transition type.
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    INITIAL(String.valueOf("INITIAL")),
+    INITIAL("INITIAL"),
     
-    GLOBAL(String.valueOf("GLOBAL")),
+    GLOBAL("GLOBAL"),
     
-    DIRECTED(String.valueOf("DIRECTED"));
+    DIRECTED("DIRECTED");
 
     private String value;
 
@@ -124,7 +133,6 @@ public class TransitionUpdateDTO {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -134,7 +142,6 @@ public class TransitionUpdateDTO {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -143,17 +150,37 @@ public class TransitionUpdateDTO {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private TypeEnum type;
 
-  public static final String JSON_PROPERTY_VALIDATORS = "validators";
+  public static final String SERIALIZED_NAME_VALIDATORS = "validators";
+  @SerializedName(SERIALIZED_NAME_VALIDATORS)
   @javax.annotation.Nullable
   private List<WorkflowRuleConfiguration> validators = new ArrayList<>();
 
-  public TransitionUpdateDTO() { 
+  public TransitionUpdateDTO() {
   }
 
   public TransitionUpdateDTO actions(@javax.annotation.Nullable List<WorkflowRuleConfiguration> actions) {
@@ -174,22 +201,17 @@ public class TransitionUpdateDTO {
    * @return actions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<WorkflowRuleConfiguration> getActions() {
     return actions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setActions(@javax.annotation.Nullable List<WorkflowRuleConfiguration> actions) {
     this.actions = actions;
   }
 
 
   public TransitionUpdateDTO conditions(@javax.annotation.Nullable ConditionGroupUpdate conditions) {
-    this.conditions = JsonNullable.<ConditionGroupUpdate>of(conditions);
+    this.conditions = conditions;
     return this;
   }
 
@@ -198,25 +220,12 @@ public class TransitionUpdateDTO {
    * @return conditions
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public ConditionGroupUpdate getConditions() {
-        return conditions.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<ConditionGroupUpdate> getConditions_JsonNullable() {
     return conditions;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_CONDITIONS)
-  public void setConditions_JsonNullable(JsonNullable<ConditionGroupUpdate> conditions) {
-    this.conditions = conditions;
   }
 
   public void setConditions(@javax.annotation.Nullable ConditionGroupUpdate conditions) {
-    this.conditions = JsonNullable.<ConditionGroupUpdate>of(conditions);
+    this.conditions = conditions;
   }
 
 
@@ -230,15 +239,10 @@ public class TransitionUpdateDTO {
    * @return customIssueEventId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCustomIssueEventId() {
     return customIssueEventId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_ISSUE_EVENT_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomIssueEventId(@javax.annotation.Nullable String customIssueEventId) {
     this.customIssueEventId = customIssueEventId;
   }
@@ -254,15 +258,10 @@ public class TransitionUpdateDTO {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -278,15 +277,10 @@ public class TransitionUpdateDTO {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@javax.annotation.Nullable String id) {
     this.id = id;
   }
@@ -310,15 +304,10 @@ public class TransitionUpdateDTO {
    * @return links
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LINKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<WorkflowTransitionLinks> getLinks() {
     return links;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LINKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLinks(@javax.annotation.Nullable List<WorkflowTransitionLinks> links) {
     this.links = links;
   }
@@ -334,15 +323,10 @@ public class TransitionUpdateDTO {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
@@ -366,15 +350,10 @@ public class TransitionUpdateDTO {
    * @return properties
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getProperties() {
     return properties;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROPERTIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperties(@javax.annotation.Nullable Map<String, String> properties) {
     this.properties = properties;
   }
@@ -390,22 +369,17 @@ public class TransitionUpdateDTO {
    * @return toStatusReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TO_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getToStatusReference() {
     return toStatusReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TO_STATUS_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setToStatusReference(@javax.annotation.Nullable String toStatusReference) {
     this.toStatusReference = toStatusReference;
   }
 
 
   public TransitionUpdateDTO transitionScreen(@javax.annotation.Nullable WorkflowRuleConfiguration transitionScreen) {
-    this.transitionScreen = JsonNullable.<WorkflowRuleConfiguration>of(transitionScreen);
+    this.transitionScreen = transitionScreen;
     return this;
   }
 
@@ -414,25 +388,12 @@ public class TransitionUpdateDTO {
    * @return transitionScreen
    */
   @javax.annotation.Nullable
-  @JsonIgnore
   public WorkflowRuleConfiguration getTransitionScreen() {
-        return transitionScreen.orElse(null);
-  }
-
-  @JsonProperty(value = JSON_PROPERTY_TRANSITION_SCREEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public JsonNullable<WorkflowRuleConfiguration> getTransitionScreen_JsonNullable() {
     return transitionScreen;
-  }
-  
-  @JsonProperty(JSON_PROPERTY_TRANSITION_SCREEN)
-  public void setTransitionScreen_JsonNullable(JsonNullable<WorkflowRuleConfiguration> transitionScreen) {
-    this.transitionScreen = transitionScreen;
   }
 
   public void setTransitionScreen(@javax.annotation.Nullable WorkflowRuleConfiguration transitionScreen) {
-    this.transitionScreen = JsonNullable.<WorkflowRuleConfiguration>of(transitionScreen);
+    this.transitionScreen = transitionScreen;
   }
 
 
@@ -454,15 +415,10 @@ public class TransitionUpdateDTO {
    * @return triggers
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<WorkflowTrigger> getTriggers() {
     return triggers;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTriggers(@javax.annotation.Nullable List<WorkflowTrigger> triggers) {
     this.triggers = triggers;
   }
@@ -478,15 +434,10 @@ public class TransitionUpdateDTO {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable TypeEnum type) {
     this.type = type;
   }
@@ -510,15 +461,10 @@ public class TransitionUpdateDTO {
    * @return validators
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VALIDATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<WorkflowRuleConfiguration> getValidators() {
     return validators;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VALIDATORS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValidators(@javax.annotation.Nullable List<WorkflowRuleConfiguration> validators) {
     this.validators = validators;
   }
@@ -533,11 +479,11 @@ public class TransitionUpdateDTO {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the TransitionUpdateDTO instance itself
    */
-  @JsonAnySetter
   public TransitionUpdateDTO putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -547,18 +493,19 @@ public class TransitionUpdateDTO {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -567,9 +514,7 @@ public class TransitionUpdateDTO {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this TransitionUpdateDTO object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -580,7 +525,7 @@ public class TransitionUpdateDTO {
     }
     TransitionUpdateDTO transitionUpdateDTO = (TransitionUpdateDTO) o;
     return Objects.equals(this.actions, transitionUpdateDTO.actions) &&
-        equalsNullable(this.conditions, transitionUpdateDTO.conditions) &&
+        Objects.equals(this.conditions, transitionUpdateDTO.conditions) &&
         Objects.equals(this.customIssueEventId, transitionUpdateDTO.customIssueEventId) &&
         Objects.equals(this.description, transitionUpdateDTO.description) &&
         Objects.equals(this.id, transitionUpdateDTO.id) &&
@@ -588,7 +533,7 @@ public class TransitionUpdateDTO {
         Objects.equals(this.name, transitionUpdateDTO.name) &&
         Objects.equals(this.properties, transitionUpdateDTO.properties) &&
         Objects.equals(this.toStatusReference, transitionUpdateDTO.toStatusReference) &&
-        equalsNullable(this.transitionScreen, transitionUpdateDTO.transitionScreen) &&
+        Objects.equals(this.transitionScreen, transitionUpdateDTO.transitionScreen) &&
         Objects.equals(this.triggers, transitionUpdateDTO.triggers) &&
         Objects.equals(this.type, transitionUpdateDTO.type) &&
         Objects.equals(this.validators, transitionUpdateDTO.validators)&&
@@ -601,7 +546,7 @@ public class TransitionUpdateDTO {
 
   @Override
   public int hashCode() {
-    return Objects.hash(actions, hashCodeNullable(conditions), customIssueEventId, description, id, links, name, properties, toStatusReference, hashCodeNullable(transitionScreen), triggers, type, validators, additionalProperties);
+    return Objects.hash(actions, conditions, customIssueEventId, description, id, links, name, properties, toStatusReference, transitionScreen, triggers, type, validators, additionalProperties);
   }
 
   private static <T> int hashCodeNullable(JsonNullable<T> a) {
@@ -644,128 +589,209 @@ public class TransitionUpdateDTO {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("actions", "conditions", "customIssueEventId", "description", "id", "links", "name", "properties", "toStatusReference", "transitionScreen", "triggers", "type", "validators"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to TransitionUpdateDTO
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `actions` to the URL query string
-    if (getActions() != null) {
-      for (int i = 0; i < getActions().size(); i++) {
-        if (getActions().get(i) != null) {
-          joiner.add(getActions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sactions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!TransitionUpdateDTO.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in TransitionUpdateDTO is not found in the empty JSON string", TransitionUpdateDTO.openapiRequiredFields.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("actions") != null && !jsonObj.get("actions").isJsonNull()) {
+        JsonArray jsonArrayactions = jsonObj.getAsJsonArray("actions");
+        if (jsonArrayactions != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("actions").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `actions` to be an array in the JSON string but got `%s`", jsonObj.get("actions").toString()));
+          }
 
-    // add `conditions` to the URL query string
-    if (getConditions() != null) {
-      joiner.add(getConditions().toUrlQueryString(prefix + "conditions" + suffix));
-    }
-
-    // add `customIssueEventId` to the URL query string
-    if (getCustomIssueEventId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scustomIssueEventId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCustomIssueEventId()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `links` to the URL query string
-    if (getLinks() != null) {
-      for (int i = 0; i < getLinks().size(); i++) {
-        if (getLinks().get(i) != null) {
-          joiner.add(getLinks().get(i).toUrlQueryString(String.format(Locale.ROOT, "%slinks%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `actions` (array)
+          for (int i = 0; i < jsonArrayactions.size(); i++) {
+            WorkflowRuleConfiguration.validateJsonElement(jsonArrayactions.get(i));
+          };
         }
       }
-    }
-
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
-
-    // add `properties` to the URL query string
-    if (getProperties() != null) {
-      for (String _key : getProperties().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sproperties%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getProperties().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProperties().get(_key)))));
+      // validate the optional field `conditions`
+      if (jsonObj.get("conditions") != null && !jsonObj.get("conditions").isJsonNull()) {
+        ConditionGroupUpdate.validateJsonElement(jsonObj.get("conditions"));
       }
-    }
+      if ((jsonObj.get("customIssueEventId") != null && !jsonObj.get("customIssueEventId").isJsonNull()) && !jsonObj.get("customIssueEventId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `customIssueEventId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("customIssueEventId").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("id") != null && !jsonObj.get("id").isJsonNull()) && !jsonObj.get("id").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `id` to be a primitive type in the JSON string but got `%s`", jsonObj.get("id").toString()));
+      }
+      if (jsonObj.get("links") != null && !jsonObj.get("links").isJsonNull()) {
+        JsonArray jsonArraylinks = jsonObj.getAsJsonArray("links");
+        if (jsonArraylinks != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("links").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `links` to be an array in the JSON string but got `%s`", jsonObj.get("links").toString()));
+          }
 
-    // add `toStatusReference` to the URL query string
-    if (getToStatusReference() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stoStatusReference%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getToStatusReference()))));
-    }
-
-    // add `transitionScreen` to the URL query string
-    if (getTransitionScreen() != null) {
-      joiner.add(getTransitionScreen().toUrlQueryString(prefix + "transitionScreen" + suffix));
-    }
-
-    // add `triggers` to the URL query string
-    if (getTriggers() != null) {
-      for (int i = 0; i < getTriggers().size(); i++) {
-        if (getTriggers().get(i) != null) {
-          joiner.add(getTriggers().get(i).toUrlQueryString(String.format(Locale.ROOT, "%striggers%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `links` (array)
+          for (int i = 0; i < jsonArraylinks.size(); i++) {
+            WorkflowTransitionLinks.validateJsonElement(jsonArraylinks.get(i));
+          };
         }
       }
-    }
+      if ((jsonObj.get("name") != null && !jsonObj.get("name").isJsonNull()) && !jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if ((jsonObj.get("toStatusReference") != null && !jsonObj.get("toStatusReference").isJsonNull()) && !jsonObj.get("toStatusReference").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `toStatusReference` to be a primitive type in the JSON string but got `%s`", jsonObj.get("toStatusReference").toString()));
+      }
+      // validate the optional field `transitionScreen`
+      if (jsonObj.get("transitionScreen") != null && !jsonObj.get("transitionScreen").isJsonNull()) {
+        WorkflowRuleConfiguration.validateJsonElement(jsonObj.get("transitionScreen"));
+      }
+      if (jsonObj.get("triggers") != null && !jsonObj.get("triggers").isJsonNull()) {
+        JsonArray jsonArraytriggers = jsonObj.getAsJsonArray("triggers");
+        if (jsonArraytriggers != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("triggers").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `triggers` to be an array in the JSON string but got `%s`", jsonObj.get("triggers").toString()));
+          }
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    // add `validators` to the URL query string
-    if (getValidators() != null) {
-      for (int i = 0; i < getValidators().size(); i++) {
-        if (getValidators().get(i) != null) {
-          joiner.add(getValidators().get(i).toUrlQueryString(String.format(Locale.ROOT, "%svalidators%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `triggers` (array)
+          for (int i = 0; i < jsonArraytriggers.size(); i++) {
+            WorkflowTrigger.validateJsonElement(jsonArraytriggers.get(i));
+          };
         }
       }
-    }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the optional field `type`
+      if (jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) {
+        TypeEnum.validateJsonElement(jsonObj.get("type"));
+      }
+      if (jsonObj.get("validators") != null && !jsonObj.get("validators").isJsonNull()) {
+        JsonArray jsonArrayvalidators = jsonObj.getAsJsonArray("validators");
+        if (jsonArrayvalidators != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("validators").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `validators` to be an array in the JSON string but got `%s`", jsonObj.get("validators").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `validators` (array)
+          for (int i = 0; i < jsonArrayvalidators.size(); i++) {
+            WorkflowRuleConfiguration.validateJsonElement(jsonArrayvalidators.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!TransitionUpdateDTO.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'TransitionUpdateDTO' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<TransitionUpdateDTO> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(TransitionUpdateDTO.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<TransitionUpdateDTO>() {
+           @Override
+           public void write(JsonWriter out, TransitionUpdateDTO value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public TransitionUpdateDTO read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             TransitionUpdateDTO instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of TransitionUpdateDTO given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of TransitionUpdateDTO
+   * @throws IOException if the JSON string is invalid with respect to TransitionUpdateDTO
+   */
+  public static TransitionUpdateDTO fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, TransitionUpdateDTO.class);
+  }
+
+  /**
+   * Convert an instance of TransitionUpdateDTO to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

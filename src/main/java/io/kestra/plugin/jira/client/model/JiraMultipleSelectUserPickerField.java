@@ -13,44 +13,59 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraUserField;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraMultipleSelectUserPickerField
  */
-@JsonPropertyOrder({
-  JiraMultipleSelectUserPickerField.JSON_PROPERTY_FIELD_ID,
-  JiraMultipleSelectUserPickerField.JSON_PROPERTY_USERS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraMultipleSelectUserPickerField {
-  public static final String JSON_PROPERTY_FIELD_ID = "fieldId";
+  public static final String SERIALIZED_NAME_FIELD_ID = "fieldId";
+  @SerializedName(SERIALIZED_NAME_FIELD_ID)
   @javax.annotation.Nonnull
   private String fieldId;
 
-  public static final String JSON_PROPERTY_USERS = "users";
+  public static final String SERIALIZED_NAME_USERS = "users";
+  @SerializedName(SERIALIZED_NAME_USERS)
   @javax.annotation.Nullable
   private List<JiraUserField> users = new ArrayList<>();
 
-  public JiraMultipleSelectUserPickerField() { 
+  public JiraMultipleSelectUserPickerField() {
   }
 
   public JiraMultipleSelectUserPickerField fieldId(@javax.annotation.Nonnull String fieldId) {
@@ -63,15 +78,10 @@ public class JiraMultipleSelectUserPickerField {
    * @return fieldId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getFieldId() {
     return fieldId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_FIELD_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setFieldId(@javax.annotation.Nonnull String fieldId) {
     this.fieldId = fieldId;
   }
@@ -95,23 +105,16 @@ public class JiraMultipleSelectUserPickerField {
    * @return users
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraUserField> getUsers() {
     return users;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUsers(@javax.annotation.Nullable List<JiraUserField> users) {
     this.users = users;
   }
 
 
-  /**
-   * Return true if this JiraMultipleSelectUserPickerField object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -151,54 +154,112 @@ public class JiraMultipleSelectUserPickerField {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("fieldId", "users"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("fieldId"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraMultipleSelectUserPickerField
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `fieldId` to the URL query string
-    if (getFieldId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfieldId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFieldId()))));
-    }
-
-    // add `users` to the URL query string
-    if (getUsers() != null) {
-      for (int i = 0; i < getUsers().size(); i++) {
-        if (getUsers().get(i) != null) {
-          joiner.add(getUsers().get(i).toUrlQueryString(String.format(Locale.ROOT, "%susers%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraMultipleSelectUserPickerField.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraMultipleSelectUserPickerField is not found in the empty JSON string", JiraMultipleSelectUserPickerField.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    return joiner.toString();
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraMultipleSelectUserPickerField.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraMultipleSelectUserPickerField` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : JiraMultipleSelectUserPickerField.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("fieldId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `fieldId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("fieldId").toString()));
+      }
+      if (jsonObj.get("users") != null && !jsonObj.get("users").isJsonNull()) {
+        JsonArray jsonArrayusers = jsonObj.getAsJsonArray("users");
+        if (jsonArrayusers != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("users").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `users` to be an array in the JSON string but got `%s`", jsonObj.get("users").toString()));
+          }
+
+          // validate the optional field `users` (array)
+          for (int i = 0; i < jsonArrayusers.size(); i++) {
+            JiraUserField.validateJsonElement(jsonArrayusers.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraMultipleSelectUserPickerField.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraMultipleSelectUserPickerField' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraMultipleSelectUserPickerField> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraMultipleSelectUserPickerField.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraMultipleSelectUserPickerField>() {
+           @Override
+           public void write(JsonWriter out, JiraMultipleSelectUserPickerField value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraMultipleSelectUserPickerField read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JiraMultipleSelectUserPickerField given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraMultipleSelectUserPickerField
+   * @throws IOException if the JSON string is invalid with respect to JiraMultipleSelectUserPickerField
+   */
+  public static JiraMultipleSelectUserPickerField fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraMultipleSelectUserPickerField.class);
+  }
+
+  /**
+   * Convert an instance of JiraMultipleSelectUserPickerField to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

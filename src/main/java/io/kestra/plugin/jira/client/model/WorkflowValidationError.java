@@ -13,51 +13,64 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.WorkflowElementReference;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The details about a workflow validation error.
  */
-@JsonPropertyOrder({
-  WorkflowValidationError.JSON_PROPERTY_CODE,
-  WorkflowValidationError.JSON_PROPERTY_ELEMENT_REFERENCE,
-  WorkflowValidationError.JSON_PROPERTY_LEVEL,
-  WorkflowValidationError.JSON_PROPERTY_MESSAGE,
-  WorkflowValidationError.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class WorkflowValidationError {
-  public static final String JSON_PROPERTY_CODE = "code";
+  public static final String SERIALIZED_NAME_CODE = "code";
+  @SerializedName(SERIALIZED_NAME_CODE)
   @javax.annotation.Nullable
   private String code;
 
-  public static final String JSON_PROPERTY_ELEMENT_REFERENCE = "elementReference";
+  public static final String SERIALIZED_NAME_ELEMENT_REFERENCE = "elementReference";
+  @SerializedName(SERIALIZED_NAME_ELEMENT_REFERENCE)
   @javax.annotation.Nullable
   private WorkflowElementReference elementReference;
 
   /**
    * The validation error level.
    */
+  @JsonAdapter(LevelEnum.Adapter.class)
   public enum LevelEnum {
-    WARNING(String.valueOf("WARNING")),
+    WARNING("WARNING"),
     
-    ERROR(String.valueOf("ERROR"));
+    ERROR("ERROR");
 
     private String value;
 
@@ -65,7 +78,6 @@ public class WorkflowValidationError {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -75,7 +87,6 @@ public class WorkflowValidationError {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static LevelEnum fromValue(String value) {
       for (LevelEnum b : LevelEnum.values()) {
         if (b.value.equals(value)) {
@@ -84,39 +95,60 @@ public class WorkflowValidationError {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<LevelEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final LevelEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public LevelEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return LevelEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      LevelEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_LEVEL = "level";
+  public static final String SERIALIZED_NAME_LEVEL = "level";
+  @SerializedName(SERIALIZED_NAME_LEVEL)
   @javax.annotation.Nullable
   private LevelEnum level;
 
-  public static final String JSON_PROPERTY_MESSAGE = "message";
+  public static final String SERIALIZED_NAME_MESSAGE = "message";
+  @SerializedName(SERIALIZED_NAME_MESSAGE)
   @javax.annotation.Nullable
   private String message;
 
   /**
    * The type of element the error or warning references.
    */
+  @JsonAdapter(TypeEnum.Adapter.class)
   public enum TypeEnum {
-    RULE(String.valueOf("RULE")),
+    RULE("RULE"),
     
-    STATUS(String.valueOf("STATUS")),
+    STATUS("STATUS"),
     
-    STATUS_LAYOUT(String.valueOf("STATUS_LAYOUT")),
+    STATUS_LAYOUT("STATUS_LAYOUT"),
     
-    STATUS_PROPERTY(String.valueOf("STATUS_PROPERTY")),
+    STATUS_PROPERTY("STATUS_PROPERTY"),
     
-    WORKFLOW(String.valueOf("WORKFLOW")),
+    WORKFLOW("WORKFLOW"),
     
-    TRANSITION(String.valueOf("TRANSITION")),
+    TRANSITION("TRANSITION"),
     
-    TRANSITION_PROPERTY(String.valueOf("TRANSITION_PROPERTY")),
+    TRANSITION_PROPERTY("TRANSITION_PROPERTY"),
     
-    SCOPE(String.valueOf("SCOPE")),
+    SCOPE("SCOPE"),
     
-    STATUS_MAPPING(String.valueOf("STATUS_MAPPING")),
+    STATUS_MAPPING("STATUS_MAPPING"),
     
-    TRIGGER(String.valueOf("TRIGGER"));
+    TRIGGER("TRIGGER");
 
     private String value;
 
@@ -124,7 +156,6 @@ public class WorkflowValidationError {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -134,7 +165,6 @@ public class WorkflowValidationError {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static TypeEnum fromValue(String value) {
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -143,13 +173,32 @@ public class WorkflowValidationError {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      TypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private TypeEnum type;
 
-  public WorkflowValidationError() { 
+  public WorkflowValidationError() {
   }
 
   public WorkflowValidationError code(@javax.annotation.Nullable String code) {
@@ -162,15 +211,10 @@ public class WorkflowValidationError {
    * @return code
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCode() {
     return code;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCode(@javax.annotation.Nullable String code) {
     this.code = code;
   }
@@ -186,15 +230,10 @@ public class WorkflowValidationError {
    * @return elementReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ELEMENT_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public WorkflowElementReference getElementReference() {
     return elementReference;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ELEMENT_REFERENCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setElementReference(@javax.annotation.Nullable WorkflowElementReference elementReference) {
     this.elementReference = elementReference;
   }
@@ -210,15 +249,10 @@ public class WorkflowValidationError {
    * @return level
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LevelEnum getLevel() {
     return level;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLevel(@javax.annotation.Nullable LevelEnum level) {
     this.level = level;
   }
@@ -234,15 +268,10 @@ public class WorkflowValidationError {
    * @return message
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMessage() {
     return message;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMessage(@javax.annotation.Nullable String message) {
     this.message = message;
   }
@@ -258,23 +287,16 @@ public class WorkflowValidationError {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TypeEnum getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable TypeEnum type) {
     this.type = type;
   }
 
 
-  /**
-   * Return true if this WorkflowValidationError object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -320,64 +342,112 @@ public class WorkflowValidationError {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("code", "elementReference", "level", "message", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to WorkflowValidationError
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!WorkflowValidationError.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in WorkflowValidationError is not found in the empty JSON string", WorkflowValidationError.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!WorkflowValidationError.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `WorkflowValidationError` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("code") != null && !jsonObj.get("code").isJsonNull()) && !jsonObj.get("code").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `code` to be a primitive type in the JSON string but got `%s`", jsonObj.get("code").toString()));
+      }
+      // validate the optional field `elementReference`
+      if (jsonObj.get("elementReference") != null && !jsonObj.get("elementReference").isJsonNull()) {
+        WorkflowElementReference.validateJsonElement(jsonObj.get("elementReference"));
+      }
+      if ((jsonObj.get("level") != null && !jsonObj.get("level").isJsonNull()) && !jsonObj.get("level").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `level` to be a primitive type in the JSON string but got `%s`", jsonObj.get("level").toString()));
+      }
+      // validate the optional field `level`
+      if (jsonObj.get("level") != null && !jsonObj.get("level").isJsonNull()) {
+        LevelEnum.validateJsonElement(jsonObj.get("level"));
+      }
+      if ((jsonObj.get("message") != null && !jsonObj.get("message").isJsonNull()) && !jsonObj.get("message").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `message` to be a primitive type in the JSON string but got `%s`", jsonObj.get("message").toString()));
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+      // validate the optional field `type`
+      if (jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) {
+        TypeEnum.validateJsonElement(jsonObj.get("type"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!WorkflowValidationError.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'WorkflowValidationError' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<WorkflowValidationError> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(WorkflowValidationError.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<WorkflowValidationError>() {
+           @Override
+           public void write(JsonWriter out, WorkflowValidationError value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public WorkflowValidationError read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of WorkflowValidationError given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of WorkflowValidationError
+   * @throws IOException if the JSON string is invalid with respect to WorkflowValidationError
+   */
+  public static WorkflowValidationError fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, WorkflowValidationError.class);
+  }
 
-    // add `code` to the URL query string
-    if (getCode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
-    }
-
-    // add `elementReference` to the URL query string
-    if (getElementReference() != null) {
-      joiner.add(getElementReference().toUrlQueryString(prefix + "elementReference" + suffix));
-    }
-
-    // add `level` to the URL query string
-    if (getLevel() != null) {
-      joiner.add(String.format(Locale.ROOT, "%slevel%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLevel()))));
-    }
-
-    // add `message` to the URL query string
-    if (getMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
-    }
-
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of WorkflowValidationError to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

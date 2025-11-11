@@ -13,93 +13,104 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.HistoryMetadataParticipant;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of issue history metadata.
  */
-@JsonPropertyOrder({
-  HistoryMetadata.JSON_PROPERTY_ACTIVITY_DESCRIPTION,
-  HistoryMetadata.JSON_PROPERTY_ACTIVITY_DESCRIPTION_KEY,
-  HistoryMetadata.JSON_PROPERTY_ACTOR,
-  HistoryMetadata.JSON_PROPERTY_CAUSE,
-  HistoryMetadata.JSON_PROPERTY_DESCRIPTION,
-  HistoryMetadata.JSON_PROPERTY_DESCRIPTION_KEY,
-  HistoryMetadata.JSON_PROPERTY_EMAIL_DESCRIPTION,
-  HistoryMetadata.JSON_PROPERTY_EMAIL_DESCRIPTION_KEY,
-  HistoryMetadata.JSON_PROPERTY_EXTRA_DATA,
-  HistoryMetadata.JSON_PROPERTY_GENERATOR,
-  HistoryMetadata.JSON_PROPERTY_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class HistoryMetadata {
-  public static final String JSON_PROPERTY_ACTIVITY_DESCRIPTION = "activityDescription";
+  public static final String SERIALIZED_NAME_ACTIVITY_DESCRIPTION = "activityDescription";
+  @SerializedName(SERIALIZED_NAME_ACTIVITY_DESCRIPTION)
   @javax.annotation.Nullable
   private String activityDescription;
 
-  public static final String JSON_PROPERTY_ACTIVITY_DESCRIPTION_KEY = "activityDescriptionKey";
+  public static final String SERIALIZED_NAME_ACTIVITY_DESCRIPTION_KEY = "activityDescriptionKey";
+  @SerializedName(SERIALIZED_NAME_ACTIVITY_DESCRIPTION_KEY)
   @javax.annotation.Nullable
   private String activityDescriptionKey;
 
-  public static final String JSON_PROPERTY_ACTOR = "actor";
+  public static final String SERIALIZED_NAME_ACTOR = "actor";
+  @SerializedName(SERIALIZED_NAME_ACTOR)
   @javax.annotation.Nullable
   private HistoryMetadataParticipant actor;
 
-  public static final String JSON_PROPERTY_CAUSE = "cause";
+  public static final String SERIALIZED_NAME_CAUSE = "cause";
+  @SerializedName(SERIALIZED_NAME_CAUSE)
   @javax.annotation.Nullable
   private HistoryMetadataParticipant cause;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_DESCRIPTION_KEY = "descriptionKey";
+  public static final String SERIALIZED_NAME_DESCRIPTION_KEY = "descriptionKey";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION_KEY)
   @javax.annotation.Nullable
   private String descriptionKey;
 
-  public static final String JSON_PROPERTY_EMAIL_DESCRIPTION = "emailDescription";
+  public static final String SERIALIZED_NAME_EMAIL_DESCRIPTION = "emailDescription";
+  @SerializedName(SERIALIZED_NAME_EMAIL_DESCRIPTION)
   @javax.annotation.Nullable
   private String emailDescription;
 
-  public static final String JSON_PROPERTY_EMAIL_DESCRIPTION_KEY = "emailDescriptionKey";
+  public static final String SERIALIZED_NAME_EMAIL_DESCRIPTION_KEY = "emailDescriptionKey";
+  @SerializedName(SERIALIZED_NAME_EMAIL_DESCRIPTION_KEY)
   @javax.annotation.Nullable
   private String emailDescriptionKey;
 
-  public static final String JSON_PROPERTY_EXTRA_DATA = "extraData";
+  public static final String SERIALIZED_NAME_EXTRA_DATA = "extraData";
+  @SerializedName(SERIALIZED_NAME_EXTRA_DATA)
   @javax.annotation.Nullable
   private Map<String, String> extraData = new HashMap<>();
 
-  public static final String JSON_PROPERTY_GENERATOR = "generator";
+  public static final String SERIALIZED_NAME_GENERATOR = "generator";
+  @SerializedName(SERIALIZED_NAME_GENERATOR)
   @javax.annotation.Nullable
   private HistoryMetadataParticipant generator;
 
-  public static final String JSON_PROPERTY_TYPE = "type";
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
   @javax.annotation.Nullable
   private String type;
 
-  public HistoryMetadata() { 
+  public HistoryMetadata() {
   }
 
   public HistoryMetadata activityDescription(@javax.annotation.Nullable String activityDescription) {
@@ -112,15 +123,10 @@ public class HistoryMetadata {
    * @return activityDescription
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTIVITY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getActivityDescription() {
     return activityDescription;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTIVITY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setActivityDescription(@javax.annotation.Nullable String activityDescription) {
     this.activityDescription = activityDescription;
   }
@@ -136,15 +142,10 @@ public class HistoryMetadata {
    * @return activityDescriptionKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTIVITY_DESCRIPTION_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getActivityDescriptionKey() {
     return activityDescriptionKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTIVITY_DESCRIPTION_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setActivityDescriptionKey(@javax.annotation.Nullable String activityDescriptionKey) {
     this.activityDescriptionKey = activityDescriptionKey;
   }
@@ -160,15 +161,10 @@ public class HistoryMetadata {
    * @return actor
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ACTOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public HistoryMetadataParticipant getActor() {
     return actor;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ACTOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setActor(@javax.annotation.Nullable HistoryMetadataParticipant actor) {
     this.actor = actor;
   }
@@ -184,15 +180,10 @@ public class HistoryMetadata {
    * @return cause
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CAUSE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public HistoryMetadataParticipant getCause() {
     return cause;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CAUSE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCause(@javax.annotation.Nullable HistoryMetadataParticipant cause) {
     this.cause = cause;
   }
@@ -208,15 +199,10 @@ public class HistoryMetadata {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
@@ -232,15 +218,10 @@ public class HistoryMetadata {
    * @return descriptionKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescriptionKey() {
     return descriptionKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescriptionKey(@javax.annotation.Nullable String descriptionKey) {
     this.descriptionKey = descriptionKey;
   }
@@ -256,15 +237,10 @@ public class HistoryMetadata {
    * @return emailDescription
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEmailDescription() {
     return emailDescription;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEmailDescription(@javax.annotation.Nullable String emailDescription) {
     this.emailDescription = emailDescription;
   }
@@ -280,15 +256,10 @@ public class HistoryMetadata {
    * @return emailDescriptionKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_DESCRIPTION_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEmailDescriptionKey() {
     return emailDescriptionKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EMAIL_DESCRIPTION_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEmailDescriptionKey(@javax.annotation.Nullable String emailDescriptionKey) {
     this.emailDescriptionKey = emailDescriptionKey;
   }
@@ -312,15 +283,10 @@ public class HistoryMetadata {
    * @return extraData
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXTRA_DATA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getExtraData() {
     return extraData;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_EXTRA_DATA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExtraData(@javax.annotation.Nullable Map<String, String> extraData) {
     this.extraData = extraData;
   }
@@ -336,15 +302,10 @@ public class HistoryMetadata {
    * @return generator
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GENERATOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public HistoryMetadataParticipant getGenerator() {
     return generator;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GENERATOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGenerator(@javax.annotation.Nullable HistoryMetadataParticipant generator) {
     this.generator = generator;
   }
@@ -360,15 +321,10 @@ public class HistoryMetadata {
    * @return type
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getType() {
     return type;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@javax.annotation.Nullable String type) {
     this.type = type;
   }
@@ -383,11 +339,11 @@ public class HistoryMetadata {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the HistoryMetadata instance itself
    */
-  @JsonAnySetter
   public HistoryMetadata putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -397,18 +353,19 @@ public class HistoryMetadata {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -417,9 +374,7 @@ public class HistoryMetadata {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this HistoryMetadata object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -479,98 +434,144 @@ public class HistoryMetadata {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("activityDescription", "activityDescriptionKey", "actor", "cause", "description", "descriptionKey", "emailDescription", "emailDescriptionKey", "extraData", "generator", "type"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to HistoryMetadata
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `activityDescription` to the URL query string
-    if (getActivityDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sactivityDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getActivityDescription()))));
-    }
-
-    // add `activityDescriptionKey` to the URL query string
-    if (getActivityDescriptionKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sactivityDescriptionKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getActivityDescriptionKey()))));
-    }
-
-    // add `actor` to the URL query string
-    if (getActor() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sactor%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getActor()))));
-    }
-
-    // add `cause` to the URL query string
-    if (getCause() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scause%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCause()))));
-    }
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `descriptionKey` to the URL query string
-    if (getDescriptionKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescriptionKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescriptionKey()))));
-    }
-
-    // add `emailDescription` to the URL query string
-    if (getEmailDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%semailDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmailDescription()))));
-    }
-
-    // add `emailDescriptionKey` to the URL query string
-    if (getEmailDescriptionKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%semailDescriptionKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEmailDescriptionKey()))));
-    }
-
-    // add `extraData` to the URL query string
-    if (getExtraData() != null) {
-      for (String _key : getExtraData().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%sextraData%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getExtraData().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getExtraData().get(_key)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!HistoryMetadata.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in HistoryMetadata is not found in the empty JSON string", HistoryMetadata.openapiRequiredFields.toString()));
+        }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("activityDescription") != null && !jsonObj.get("activityDescription").isJsonNull()) && !jsonObj.get("activityDescription").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `activityDescription` to be a primitive type in the JSON string but got `%s`", jsonObj.get("activityDescription").toString()));
+      }
+      if ((jsonObj.get("activityDescriptionKey") != null && !jsonObj.get("activityDescriptionKey").isJsonNull()) && !jsonObj.get("activityDescriptionKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `activityDescriptionKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("activityDescriptionKey").toString()));
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("descriptionKey") != null && !jsonObj.get("descriptionKey").isJsonNull()) && !jsonObj.get("descriptionKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `descriptionKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("descriptionKey").toString()));
+      }
+      if ((jsonObj.get("emailDescription") != null && !jsonObj.get("emailDescription").isJsonNull()) && !jsonObj.get("emailDescription").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `emailDescription` to be a primitive type in the JSON string but got `%s`", jsonObj.get("emailDescription").toString()));
+      }
+      if ((jsonObj.get("emailDescriptionKey") != null && !jsonObj.get("emailDescriptionKey").isJsonNull()) && !jsonObj.get("emailDescriptionKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `emailDescriptionKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("emailDescriptionKey").toString()));
+      }
+      if ((jsonObj.get("type") != null && !jsonObj.get("type").isJsonNull()) && !jsonObj.get("type").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `type` to be a primitive type in the JSON string but got `%s`", jsonObj.get("type").toString()));
+      }
+  }
 
-    // add `generator` to the URL query string
-    if (getGenerator() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sgenerator%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGenerator()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!HistoryMetadata.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'HistoryMetadata' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<HistoryMetadata> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(HistoryMetadata.class));
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<HistoryMetadata>() {
+           @Override
+           public void write(JsonWriter out, HistoryMetadata value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
 
-    return joiner.toString();
+           @Override
+           public HistoryMetadata read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             HistoryMetadata instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of HistoryMetadata given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of HistoryMetadata
+   * @throws IOException if the JSON string is invalid with respect to HistoryMetadata
+   */
+  public static HistoryMetadata fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, HistoryMetadata.class);
+  }
+
+  /**
+   * Convert an instance of HistoryMetadata to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

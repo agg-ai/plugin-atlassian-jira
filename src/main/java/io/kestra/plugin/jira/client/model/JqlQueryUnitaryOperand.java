@@ -13,126 +13,153 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.FunctionOperand;
 import io.kestra.plugin.jira.client.model.KeywordOperand;
 import io.kestra.plugin.jira.client.model.ValueOperand;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+
 import io.kestra.plugin.jira.client.invoker.JSON;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-@JsonDeserialize(using=JqlQueryUnitaryOperand.JqlQueryUnitaryOperandDeserializer.class)
-@JsonSerialize(using = JqlQueryUnitaryOperand.JqlQueryUnitaryOperandSerializer.class)
 public class JqlQueryUnitaryOperand extends AbstractOpenApiSchema {
     private static final Logger log = Logger.getLogger(JqlQueryUnitaryOperand.class.getName());
 
-    public static class JqlQueryUnitaryOperandSerializer extends StdSerializer<JqlQueryUnitaryOperand> {
-        public JqlQueryUnitaryOperandSerializer(Class<JqlQueryUnitaryOperand> t) {
-            super(t);
-        }
-
-        public JqlQueryUnitaryOperandSerializer() {
-            this(null);
-        }
-
+    public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+        @SuppressWarnings("unchecked")
         @Override
-        public void serialize(JqlQueryUnitaryOperand value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeObject(value.getActualInstance());
-        }
-    }
-
-    public static class JqlQueryUnitaryOperandDeserializer extends StdDeserializer<JqlQueryUnitaryOperand> {
-        public JqlQueryUnitaryOperandDeserializer() {
-            this(JqlQueryUnitaryOperand.class);
-        }
-
-        public JqlQueryUnitaryOperandDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public JqlQueryUnitaryOperand deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode tree = jp.readValueAsTree();
-
-            Object deserialized = null;
-            // deserialize FunctionOperand
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(FunctionOperand.class);
-                JqlQueryUnitaryOperand ret = new JqlQueryUnitaryOperand();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'JqlQueryUnitaryOperand'", e);
+        public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+            if (!JqlQueryUnitaryOperand.class.isAssignableFrom(type.getRawType())) {
+                return null; // this class only serializes 'JqlQueryUnitaryOperand' and its subtypes
             }
+            final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+            final TypeAdapter<ValueOperand> adapterValueOperand = gson.getDelegateAdapter(this, TypeToken.get(ValueOperand.class));
+            final TypeAdapter<FunctionOperand> adapterFunctionOperand = gson.getDelegateAdapter(this, TypeToken.get(FunctionOperand.class));
+            final TypeAdapter<KeywordOperand> adapterKeywordOperand = gson.getDelegateAdapter(this, TypeToken.get(KeywordOperand.class));
 
-            // deserialize KeywordOperand
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(KeywordOperand.class);
-                JqlQueryUnitaryOperand ret = new JqlQueryUnitaryOperand();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'JqlQueryUnitaryOperand'", e);
-            }
+            return (TypeAdapter<T>) new TypeAdapter<JqlQueryUnitaryOperand>() {
+                @Override
+                public void write(JsonWriter out, JqlQueryUnitaryOperand value) throws IOException {
+                    if (value == null || value.getActualInstance() == null) {
+                        elementAdapter.write(out, null);
+                        return;
+                    }
 
-            // deserialize ValueOperand
-            try {
-                deserialized = tree.traverse(jp.getCodec()).readValueAs(ValueOperand.class);
-                JqlQueryUnitaryOperand ret = new JqlQueryUnitaryOperand();
-                ret.setActualInstance(deserialized);
-                return ret;
-            } catch (Exception e) {
-                // deserialization failed, continue, log to help debugging
-                log.log(Level.FINER, "Input data does not match 'JqlQueryUnitaryOperand'", e);
-            }
+                    // check if the actual instance is of the type `ValueOperand`
+                    if (value.getActualInstance() instanceof ValueOperand) {
+                        JsonElement element = adapterValueOperand.toJsonTree((ValueOperand)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    // check if the actual instance is of the type `FunctionOperand`
+                    if (value.getActualInstance() instanceof FunctionOperand) {
+                        JsonElement element = adapterFunctionOperand.toJsonTree((FunctionOperand)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    // check if the actual instance is of the type `KeywordOperand`
+                    if (value.getActualInstance() instanceof KeywordOperand) {
+                        JsonElement element = adapterKeywordOperand.toJsonTree((KeywordOperand)value.getActualInstance());
+                        elementAdapter.write(out, element);
+                        return;
+                    }
+                    throw new IOException("Failed to serialize as the type doesn't match anyOf schemas: FunctionOperand, KeywordOperand, ValueOperand");
+                }
 
-            throw new IOException("Failed deserialization for JqlQueryUnitaryOperand: no match found");
-        }
+                @Override
+                public JqlQueryUnitaryOperand read(JsonReader in) throws IOException {
+                    Object deserialized = null;
+                    JsonElement jsonElement = elementAdapter.read(in);
 
-        /**
-         * Handle deserialization of the 'null' value.
-         */
-        @Override
-        public JqlQueryUnitaryOperand getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "JqlQueryUnitaryOperand cannot be null");
+                    ArrayList<String> errorMessages = new ArrayList<>();
+                    TypeAdapter actualAdapter = elementAdapter;
+
+                    // deserialize ValueOperand
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        ValueOperand.validateJsonElement(jsonElement);
+                        actualAdapter = adapterValueOperand;
+                        JqlQueryUnitaryOperand ret = new JqlQueryUnitaryOperand();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for ValueOperand failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'ValueOperand'", e);
+                    }
+                    // deserialize FunctionOperand
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        FunctionOperand.validateJsonElement(jsonElement);
+                        actualAdapter = adapterFunctionOperand;
+                        JqlQueryUnitaryOperand ret = new JqlQueryUnitaryOperand();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for FunctionOperand failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'FunctionOperand'", e);
+                    }
+                    // deserialize KeywordOperand
+                    try {
+                        // validate the JSON object to see if any exception is thrown
+                        KeywordOperand.validateJsonElement(jsonElement);
+                        actualAdapter = adapterKeywordOperand;
+                        JqlQueryUnitaryOperand ret = new JqlQueryUnitaryOperand();
+                        ret.setActualInstance(actualAdapter.fromJsonTree(jsonElement));
+                        return ret;
+                    } catch (Exception e) {
+                        // deserialization failed, continue
+                        errorMessages.add(String.format(Locale.ROOT, "Deserialization for KeywordOperand failed with `%s`.", e.getMessage()));
+                        log.log(Level.FINER, "Input data does not match schema 'KeywordOperand'", e);
+                    }
+
+                    throw new IOException(String.format(Locale.ROOT, "Failed deserialization for JqlQueryUnitaryOperand: no class matches result, expected at least 1. Detailed failure message for anyOf schemas: %s. JSON: %s", errorMessages, jsonElement.toString()));
+                }
+            }.nullSafe();
         }
     }
 
@@ -143,26 +170,15 @@ public class JqlQueryUnitaryOperand extends AbstractOpenApiSchema {
         super("anyOf", Boolean.FALSE);
     }
 
-    public JqlQueryUnitaryOperand(FunctionOperand o) {
-        super("anyOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public JqlQueryUnitaryOperand(KeywordOperand o) {
-        super("anyOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public JqlQueryUnitaryOperand(ValueOperand o) {
+    public JqlQueryUnitaryOperand(Object o) {
         super("anyOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
     static {
+        schemas.put("ValueOperand", ValueOperand.class);
         schemas.put("FunctionOperand", FunctionOperand.class);
         schemas.put("KeywordOperand", KeywordOperand.class);
-        schemas.put("ValueOperand", ValueOperand.class);
-        JSON.registerDescendants(JqlQueryUnitaryOperand.class, Collections.unmodifiableMap(schemas));
     }
 
     @Override
@@ -176,21 +192,20 @@ public class JqlQueryUnitaryOperand extends AbstractOpenApiSchema {
      * FunctionOperand, KeywordOperand, ValueOperand
      *
      * It could be an instance of the 'anyOf' schemas.
-     * The anyOf child schemas may themselves be a composed schema (allOf, anyOf, anyOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(FunctionOperand.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof ValueOperand) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(KeywordOperand.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof FunctionOperand) {
             super.setActualInstance(instance);
             return;
         }
 
-        if (JSON.isInstanceOf(ValueOperand.class, instance, new HashSet<Class<?>>())) {
+        if (instance instanceof KeywordOperand) {
             super.setActualInstance(instance);
             return;
         }
@@ -204,9 +219,21 @@ public class JqlQueryUnitaryOperand extends AbstractOpenApiSchema {
      *
      * @return The actual instance (FunctionOperand, KeywordOperand, ValueOperand)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `ValueOperand`. If the actual instance is not `ValueOperand`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `ValueOperand`
+     * @throws ClassCastException if the instance is not `ValueOperand`
+     */
+    public ValueOperand getValueOperand() throws ClassCastException {
+        return (ValueOperand)super.getActualInstance();
     }
 
     /**
@@ -232,52 +259,59 @@ public class JqlQueryUnitaryOperand extends AbstractOpenApiSchema {
     }
 
     /**
-     * Get the actual instance of `ValueOperand`. If the actual instance is not `ValueOperand`,
-     * the ClassCastException will be thrown.
+     * Validates the JSON Element and throws an exception if issues found
      *
-     * @return The actual instance of `ValueOperand`
-     * @throws ClassCastException if the instance is not `ValueOperand`
+     * @param jsonElement JSON Element
+     * @throws IOException if the JSON Element is invalid with respect to JqlQueryUnitaryOperand
      */
-    public ValueOperand getValueOperand() throws ClassCastException {
-        return (ValueOperand)super.getActualInstance();
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+        // validate anyOf schemas one by one
+        ArrayList<String> errorMessages = new ArrayList<>();
+        // validate the json string with ValueOperand
+        try {
+            ValueOperand.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for ValueOperand failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with FunctionOperand
+        try {
+            FunctionOperand.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for FunctionOperand failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        // validate the json string with KeywordOperand
+        try {
+            KeywordOperand.validateJsonElement(jsonElement);
+            return;
+        } catch (Exception e) {
+            errorMessages.add(String.format(Locale.ROOT, "Deserialization for KeywordOperand failed with `%s`.", e.getMessage()));
+            // continue to the next one
+        }
+        throw new IOException(String.format(Locale.ROOT, "The JSON string is invalid for JqlQueryUnitaryOperand with anyOf schemas: FunctionOperand, KeywordOperand, ValueOperand. no class match the result, expected at least 1. Detailed failure message for anyOf schemas: %s. JSON: %s", errorMessages, jsonElement.toString()));
     }
 
-
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
-  }
-
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @param prefix prefix of the query string
-   * @return URL query string
-   */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+    /**
+     * Create an instance of JqlQueryUnitaryOperand given an JSON string
+     *
+     * @param jsonString JSON string
+     * @return An instance of JqlQueryUnitaryOperand
+     * @throws IOException if the JSON string is invalid with respect to JqlQueryUnitaryOperand
+     */
+    public static JqlQueryUnitaryOperand fromJson(String jsonString) throws IOException {
+        return JSON.getGson().fromJson(jsonString, JqlQueryUnitaryOperand.class);
     }
 
-    StringJoiner joiner = new StringJoiner("&");
-
-    return null;
-  }
-
+    /**
+     * Convert an instance of JqlQueryUnitaryOperand to an JSON string
+     *
+     * @return JSON string
+     */
+    public String toJson() {
+        return JSON.getGson().toJson(this);
+    }
 }
 

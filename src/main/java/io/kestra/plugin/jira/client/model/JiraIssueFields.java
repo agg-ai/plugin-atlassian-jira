@@ -13,18 +13,13 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JiraCascadingSelectField;
 import io.kestra.plugin.jira.client.model.JiraColorField;
 import io.kestra.plugin.jira.client.model.JiraDateField;
@@ -48,136 +43,156 @@ import io.kestra.plugin.jira.client.model.JiraSingleVersionPickerField;
 import io.kestra.plugin.jira.client.model.JiraStatusInput;
 import io.kestra.plugin.jira.client.model.JiraTimeTrackingField;
 import io.kestra.plugin.jira.client.model.JiraUrlField;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * JiraIssueFields
  */
-@JsonPropertyOrder({
-  JiraIssueFields.JSON_PROPERTY_CASCADING_SELECT_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_CLEARABLE_NUMBER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_COLOR_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_DATE_PICKER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_DATE_TIME_PICKER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_ISSUE_TYPE,
-  JiraIssueFields.JSON_PROPERTY_LABELS_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_MULTIPLE_GROUP_PICKER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_MULTIPLE_SELECT_CLEARABLE_USER_PICKER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_MULTIPLE_SELECT_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_MULTIPLE_VERSION_PICKER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_MULTISELECT_COMPONENTS,
-  JiraIssueFields.JSON_PROPERTY_ORIGINAL_ESTIMATE_FIELD,
-  JiraIssueFields.JSON_PROPERTY_PRIORITY,
-  JiraIssueFields.JSON_PROPERTY_RICH_TEXT_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_SINGLE_GROUP_PICKER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_SINGLE_LINE_TEXT_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_SINGLE_SELECT_CLEARABLE_USER_PICKER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_SINGLE_SELECT_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_SINGLE_VERSION_PICKER_FIELDS,
-  JiraIssueFields.JSON_PROPERTY_STATUS,
-  JiraIssueFields.JSON_PROPERTY_TIME_TRACKING_FIELD,
-  JiraIssueFields.JSON_PROPERTY_URL_FIELDS
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class JiraIssueFields {
-  public static final String JSON_PROPERTY_CASCADING_SELECT_FIELDS = "cascadingSelectFields";
+  public static final String SERIALIZED_NAME_CASCADING_SELECT_FIELDS = "cascadingSelectFields";
+  @SerializedName(SERIALIZED_NAME_CASCADING_SELECT_FIELDS)
   @javax.annotation.Nullable
   private List<JiraCascadingSelectField> cascadingSelectFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CLEARABLE_NUMBER_FIELDS = "clearableNumberFields";
+  public static final String SERIALIZED_NAME_CLEARABLE_NUMBER_FIELDS = "clearableNumberFields";
+  @SerializedName(SERIALIZED_NAME_CLEARABLE_NUMBER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraNumberField> clearableNumberFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_COLOR_FIELDS = "colorFields";
+  public static final String SERIALIZED_NAME_COLOR_FIELDS = "colorFields";
+  @SerializedName(SERIALIZED_NAME_COLOR_FIELDS)
   @javax.annotation.Nullable
   private List<JiraColorField> colorFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_DATE_PICKER_FIELDS = "datePickerFields";
+  public static final String SERIALIZED_NAME_DATE_PICKER_FIELDS = "datePickerFields";
+  @SerializedName(SERIALIZED_NAME_DATE_PICKER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraDateField> datePickerFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_DATE_TIME_PICKER_FIELDS = "dateTimePickerFields";
+  public static final String SERIALIZED_NAME_DATE_TIME_PICKER_FIELDS = "dateTimePickerFields";
+  @SerializedName(SERIALIZED_NAME_DATE_TIME_PICKER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraDateTimeField> dateTimePickerFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_ISSUE_TYPE = "issueType";
+  public static final String SERIALIZED_NAME_ISSUE_TYPE = "issueType";
+  @SerializedName(SERIALIZED_NAME_ISSUE_TYPE)
   @javax.annotation.Nullable
   private JiraIssueTypeField issueType;
 
-  public static final String JSON_PROPERTY_LABELS_FIELDS = "labelsFields";
+  public static final String SERIALIZED_NAME_LABELS_FIELDS = "labelsFields";
+  @SerializedName(SERIALIZED_NAME_LABELS_FIELDS)
   @javax.annotation.Nullable
   private List<JiraLabelsField> labelsFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MULTIPLE_GROUP_PICKER_FIELDS = "multipleGroupPickerFields";
+  public static final String SERIALIZED_NAME_MULTIPLE_GROUP_PICKER_FIELDS = "multipleGroupPickerFields";
+  @SerializedName(SERIALIZED_NAME_MULTIPLE_GROUP_PICKER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraMultipleGroupPickerField> multipleGroupPickerFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MULTIPLE_SELECT_CLEARABLE_USER_PICKER_FIELDS = "multipleSelectClearableUserPickerFields";
+  public static final String SERIALIZED_NAME_MULTIPLE_SELECT_CLEARABLE_USER_PICKER_FIELDS = "multipleSelectClearableUserPickerFields";
+  @SerializedName(SERIALIZED_NAME_MULTIPLE_SELECT_CLEARABLE_USER_PICKER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraMultipleSelectUserPickerField> multipleSelectClearableUserPickerFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MULTIPLE_SELECT_FIELDS = "multipleSelectFields";
+  public static final String SERIALIZED_NAME_MULTIPLE_SELECT_FIELDS = "multipleSelectFields";
+  @SerializedName(SERIALIZED_NAME_MULTIPLE_SELECT_FIELDS)
   @javax.annotation.Nullable
   private List<JiraMultipleSelectField> multipleSelectFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MULTIPLE_VERSION_PICKER_FIELDS = "multipleVersionPickerFields";
+  public static final String SERIALIZED_NAME_MULTIPLE_VERSION_PICKER_FIELDS = "multipleVersionPickerFields";
+  @SerializedName(SERIALIZED_NAME_MULTIPLE_VERSION_PICKER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraMultipleVersionPickerField> multipleVersionPickerFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_MULTISELECT_COMPONENTS = "multiselectComponents";
+  public static final String SERIALIZED_NAME_MULTISELECT_COMPONENTS = "multiselectComponents";
+  @SerializedName(SERIALIZED_NAME_MULTISELECT_COMPONENTS)
   @javax.annotation.Nullable
   private JiraMultiSelectComponentField multiselectComponents;
 
-  public static final String JSON_PROPERTY_ORIGINAL_ESTIMATE_FIELD = "originalEstimateField";
+  public static final String SERIALIZED_NAME_ORIGINAL_ESTIMATE_FIELD = "originalEstimateField";
+  @SerializedName(SERIALIZED_NAME_ORIGINAL_ESTIMATE_FIELD)
   @javax.annotation.Nullable
   private JiraDurationField originalEstimateField;
 
-  public static final String JSON_PROPERTY_PRIORITY = "priority";
+  public static final String SERIALIZED_NAME_PRIORITY = "priority";
+  @SerializedName(SERIALIZED_NAME_PRIORITY)
   @javax.annotation.Nullable
   private JiraPriorityField priority;
 
-  public static final String JSON_PROPERTY_RICH_TEXT_FIELDS = "richTextFields";
+  public static final String SERIALIZED_NAME_RICH_TEXT_FIELDS = "richTextFields";
+  @SerializedName(SERIALIZED_NAME_RICH_TEXT_FIELDS)
   @javax.annotation.Nullable
   private List<JiraRichTextField> richTextFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SINGLE_GROUP_PICKER_FIELDS = "singleGroupPickerFields";
+  public static final String SERIALIZED_NAME_SINGLE_GROUP_PICKER_FIELDS = "singleGroupPickerFields";
+  @SerializedName(SERIALIZED_NAME_SINGLE_GROUP_PICKER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraSingleGroupPickerField> singleGroupPickerFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SINGLE_LINE_TEXT_FIELDS = "singleLineTextFields";
+  public static final String SERIALIZED_NAME_SINGLE_LINE_TEXT_FIELDS = "singleLineTextFields";
+  @SerializedName(SERIALIZED_NAME_SINGLE_LINE_TEXT_FIELDS)
   @javax.annotation.Nullable
   private List<JiraSingleLineTextField> singleLineTextFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SINGLE_SELECT_CLEARABLE_USER_PICKER_FIELDS = "singleSelectClearableUserPickerFields";
+  public static final String SERIALIZED_NAME_SINGLE_SELECT_CLEARABLE_USER_PICKER_FIELDS = "singleSelectClearableUserPickerFields";
+  @SerializedName(SERIALIZED_NAME_SINGLE_SELECT_CLEARABLE_USER_PICKER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraSingleSelectUserPickerField> singleSelectClearableUserPickerFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SINGLE_SELECT_FIELDS = "singleSelectFields";
+  public static final String SERIALIZED_NAME_SINGLE_SELECT_FIELDS = "singleSelectFields";
+  @SerializedName(SERIALIZED_NAME_SINGLE_SELECT_FIELDS)
   @javax.annotation.Nullable
   private List<JiraSingleSelectField> singleSelectFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_SINGLE_VERSION_PICKER_FIELDS = "singleVersionPickerFields";
+  public static final String SERIALIZED_NAME_SINGLE_VERSION_PICKER_FIELDS = "singleVersionPickerFields";
+  @SerializedName(SERIALIZED_NAME_SINGLE_VERSION_PICKER_FIELDS)
   @javax.annotation.Nullable
   private List<JiraSingleVersionPickerField> singleVersionPickerFields = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_STATUS = "status";
+  public static final String SERIALIZED_NAME_STATUS = "status";
+  @SerializedName(SERIALIZED_NAME_STATUS)
   @javax.annotation.Nullable
   private JiraStatusInput status;
 
-  public static final String JSON_PROPERTY_TIME_TRACKING_FIELD = "timeTrackingField";
+  public static final String SERIALIZED_NAME_TIME_TRACKING_FIELD = "timeTrackingField";
+  @SerializedName(SERIALIZED_NAME_TIME_TRACKING_FIELD)
   @javax.annotation.Nullable
   private JiraTimeTrackingField timeTrackingField;
 
-  public static final String JSON_PROPERTY_URL_FIELDS = "urlFields";
+  public static final String SERIALIZED_NAME_URL_FIELDS = "urlFields";
+  @SerializedName(SERIALIZED_NAME_URL_FIELDS)
   @javax.annotation.Nullable
   private List<JiraUrlField> urlFields = new ArrayList<>();
 
-  public JiraIssueFields() { 
+  public JiraIssueFields() {
   }
 
   public JiraIssueFields cascadingSelectFields(@javax.annotation.Nullable List<JiraCascadingSelectField> cascadingSelectFields) {
@@ -198,15 +213,10 @@ public class JiraIssueFields {
    * @return cascadingSelectFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CASCADING_SELECT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraCascadingSelectField> getCascadingSelectFields() {
     return cascadingSelectFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CASCADING_SELECT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCascadingSelectFields(@javax.annotation.Nullable List<JiraCascadingSelectField> cascadingSelectFields) {
     this.cascadingSelectFields = cascadingSelectFields;
   }
@@ -230,15 +240,10 @@ public class JiraIssueFields {
    * @return clearableNumberFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CLEARABLE_NUMBER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraNumberField> getClearableNumberFields() {
     return clearableNumberFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CLEARABLE_NUMBER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setClearableNumberFields(@javax.annotation.Nullable List<JiraNumberField> clearableNumberFields) {
     this.clearableNumberFields = clearableNumberFields;
   }
@@ -262,15 +267,10 @@ public class JiraIssueFields {
    * @return colorFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COLOR_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraColorField> getColorFields() {
     return colorFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_COLOR_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setColorFields(@javax.annotation.Nullable List<JiraColorField> colorFields) {
     this.colorFields = colorFields;
   }
@@ -294,15 +294,10 @@ public class JiraIssueFields {
    * @return datePickerFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DATE_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraDateField> getDatePickerFields() {
     return datePickerFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DATE_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDatePickerFields(@javax.annotation.Nullable List<JiraDateField> datePickerFields) {
     this.datePickerFields = datePickerFields;
   }
@@ -326,15 +321,10 @@ public class JiraIssueFields {
    * @return dateTimePickerFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DATE_TIME_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraDateTimeField> getDateTimePickerFields() {
     return dateTimePickerFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DATE_TIME_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateTimePickerFields(@javax.annotation.Nullable List<JiraDateTimeField> dateTimePickerFields) {
     this.dateTimePickerFields = dateTimePickerFields;
   }
@@ -350,15 +340,10 @@ public class JiraIssueFields {
    * @return issueType
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JiraIssueTypeField getIssueType() {
     return issueType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ISSUE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIssueType(@javax.annotation.Nullable JiraIssueTypeField issueType) {
     this.issueType = issueType;
   }
@@ -382,15 +367,10 @@ public class JiraIssueFields {
    * @return labelsFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LABELS_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraLabelsField> getLabelsFields() {
     return labelsFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_LABELS_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLabelsFields(@javax.annotation.Nullable List<JiraLabelsField> labelsFields) {
     this.labelsFields = labelsFields;
   }
@@ -414,15 +394,10 @@ public class JiraIssueFields {
    * @return multipleGroupPickerFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MULTIPLE_GROUP_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraMultipleGroupPickerField> getMultipleGroupPickerFields() {
     return multipleGroupPickerFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MULTIPLE_GROUP_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMultipleGroupPickerFields(@javax.annotation.Nullable List<JiraMultipleGroupPickerField> multipleGroupPickerFields) {
     this.multipleGroupPickerFields = multipleGroupPickerFields;
   }
@@ -446,15 +421,10 @@ public class JiraIssueFields {
    * @return multipleSelectClearableUserPickerFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MULTIPLE_SELECT_CLEARABLE_USER_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraMultipleSelectUserPickerField> getMultipleSelectClearableUserPickerFields() {
     return multipleSelectClearableUserPickerFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MULTIPLE_SELECT_CLEARABLE_USER_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMultipleSelectClearableUserPickerFields(@javax.annotation.Nullable List<JiraMultipleSelectUserPickerField> multipleSelectClearableUserPickerFields) {
     this.multipleSelectClearableUserPickerFields = multipleSelectClearableUserPickerFields;
   }
@@ -478,15 +448,10 @@ public class JiraIssueFields {
    * @return multipleSelectFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MULTIPLE_SELECT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraMultipleSelectField> getMultipleSelectFields() {
     return multipleSelectFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MULTIPLE_SELECT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMultipleSelectFields(@javax.annotation.Nullable List<JiraMultipleSelectField> multipleSelectFields) {
     this.multipleSelectFields = multipleSelectFields;
   }
@@ -510,15 +475,10 @@ public class JiraIssueFields {
    * @return multipleVersionPickerFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MULTIPLE_VERSION_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraMultipleVersionPickerField> getMultipleVersionPickerFields() {
     return multipleVersionPickerFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MULTIPLE_VERSION_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMultipleVersionPickerFields(@javax.annotation.Nullable List<JiraMultipleVersionPickerField> multipleVersionPickerFields) {
     this.multipleVersionPickerFields = multipleVersionPickerFields;
   }
@@ -534,15 +494,10 @@ public class JiraIssueFields {
    * @return multiselectComponents
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MULTISELECT_COMPONENTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JiraMultiSelectComponentField getMultiselectComponents() {
     return multiselectComponents;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MULTISELECT_COMPONENTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMultiselectComponents(@javax.annotation.Nullable JiraMultiSelectComponentField multiselectComponents) {
     this.multiselectComponents = multiselectComponents;
   }
@@ -558,15 +513,10 @@ public class JiraIssueFields {
    * @return originalEstimateField
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_ESTIMATE_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JiraDurationField getOriginalEstimateField() {
     return originalEstimateField;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_ESTIMATE_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOriginalEstimateField(@javax.annotation.Nullable JiraDurationField originalEstimateField) {
     this.originalEstimateField = originalEstimateField;
   }
@@ -582,15 +532,10 @@ public class JiraIssueFields {
    * @return priority
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JiraPriorityField getPriority() {
     return priority;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPriority(@javax.annotation.Nullable JiraPriorityField priority) {
     this.priority = priority;
   }
@@ -614,15 +559,10 @@ public class JiraIssueFields {
    * @return richTextFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RICH_TEXT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraRichTextField> getRichTextFields() {
     return richTextFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RICH_TEXT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRichTextFields(@javax.annotation.Nullable List<JiraRichTextField> richTextFields) {
     this.richTextFields = richTextFields;
   }
@@ -646,15 +586,10 @@ public class JiraIssueFields {
    * @return singleGroupPickerFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_GROUP_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraSingleGroupPickerField> getSingleGroupPickerFields() {
     return singleGroupPickerFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_GROUP_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSingleGroupPickerFields(@javax.annotation.Nullable List<JiraSingleGroupPickerField> singleGroupPickerFields) {
     this.singleGroupPickerFields = singleGroupPickerFields;
   }
@@ -678,15 +613,10 @@ public class JiraIssueFields {
    * @return singleLineTextFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_LINE_TEXT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraSingleLineTextField> getSingleLineTextFields() {
     return singleLineTextFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_LINE_TEXT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSingleLineTextFields(@javax.annotation.Nullable List<JiraSingleLineTextField> singleLineTextFields) {
     this.singleLineTextFields = singleLineTextFields;
   }
@@ -710,15 +640,10 @@ public class JiraIssueFields {
    * @return singleSelectClearableUserPickerFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_SELECT_CLEARABLE_USER_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraSingleSelectUserPickerField> getSingleSelectClearableUserPickerFields() {
     return singleSelectClearableUserPickerFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_SELECT_CLEARABLE_USER_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSingleSelectClearableUserPickerFields(@javax.annotation.Nullable List<JiraSingleSelectUserPickerField> singleSelectClearableUserPickerFields) {
     this.singleSelectClearableUserPickerFields = singleSelectClearableUserPickerFields;
   }
@@ -742,15 +667,10 @@ public class JiraIssueFields {
    * @return singleSelectFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_SELECT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraSingleSelectField> getSingleSelectFields() {
     return singleSelectFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_SELECT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSingleSelectFields(@javax.annotation.Nullable List<JiraSingleSelectField> singleSelectFields) {
     this.singleSelectFields = singleSelectFields;
   }
@@ -774,15 +694,10 @@ public class JiraIssueFields {
    * @return singleVersionPickerFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_VERSION_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraSingleVersionPickerField> getSingleVersionPickerFields() {
     return singleVersionPickerFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SINGLE_VERSION_PICKER_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSingleVersionPickerFields(@javax.annotation.Nullable List<JiraSingleVersionPickerField> singleVersionPickerFields) {
     this.singleVersionPickerFields = singleVersionPickerFields;
   }
@@ -798,15 +713,10 @@ public class JiraIssueFields {
    * @return status
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JiraStatusInput getStatus() {
     return status;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatus(@javax.annotation.Nullable JiraStatusInput status) {
     this.status = status;
   }
@@ -822,15 +732,10 @@ public class JiraIssueFields {
    * @return timeTrackingField
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TIME_TRACKING_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public JiraTimeTrackingField getTimeTrackingField() {
     return timeTrackingField;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TIME_TRACKING_FIELD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTimeTrackingField(@javax.annotation.Nullable JiraTimeTrackingField timeTrackingField) {
     this.timeTrackingField = timeTrackingField;
   }
@@ -854,23 +759,16 @@ public class JiraIssueFields {
    * @return urlFields
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_URL_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<JiraUrlField> getUrlFields() {
     return urlFields;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_URL_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUrlFields(@javax.annotation.Nullable List<JiraUrlField> urlFields) {
     this.urlFields = urlFields;
   }
 
 
-  /**
-   * Return true if this JiraIssueFields object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -952,239 +850,350 @@ public class JiraIssueFields {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("cascadingSelectFields", "clearableNumberFields", "colorFields", "datePickerFields", "dateTimePickerFields", "issueType", "labelsFields", "multipleGroupPickerFields", "multipleSelectClearableUserPickerFields", "multipleSelectFields", "multipleVersionPickerFields", "multiselectComponents", "originalEstimateField", "priority", "richTextFields", "singleGroupPickerFields", "singleLineTextFields", "singleSelectClearableUserPickerFields", "singleSelectFields", "singleVersionPickerFields", "status", "timeTrackingField", "urlFields"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to JiraIssueFields
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `cascadingSelectFields` to the URL query string
-    if (getCascadingSelectFields() != null) {
-      for (int i = 0; i < getCascadingSelectFields().size(); i++) {
-        if (getCascadingSelectFields().get(i) != null) {
-          joiner.add(getCascadingSelectFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scascadingSelectFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!JiraIssueFields.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in JiraIssueFields is not found in the empty JSON string", JiraIssueFields.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `clearableNumberFields` to the URL query string
-    if (getClearableNumberFields() != null) {
-      for (int i = 0; i < getClearableNumberFields().size(); i++) {
-        if (getClearableNumberFields().get(i) != null) {
-          joiner.add(getClearableNumberFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sclearableNumberFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!JiraIssueFields.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `JiraIssueFields` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("cascadingSelectFields") != null && !jsonObj.get("cascadingSelectFields").isJsonNull()) {
+        JsonArray jsonArraycascadingSelectFields = jsonObj.getAsJsonArray("cascadingSelectFields");
+        if (jsonArraycascadingSelectFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("cascadingSelectFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `cascadingSelectFields` to be an array in the JSON string but got `%s`", jsonObj.get("cascadingSelectFields").toString()));
+          }
 
-    // add `colorFields` to the URL query string
-    if (getColorFields() != null) {
-      for (int i = 0; i < getColorFields().size(); i++) {
-        if (getColorFields().get(i) != null) {
-          joiner.add(getColorFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%scolorFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `cascadingSelectFields` (array)
+          for (int i = 0; i < jsonArraycascadingSelectFields.size(); i++) {
+            JiraCascadingSelectField.validateJsonElement(jsonArraycascadingSelectFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("clearableNumberFields") != null && !jsonObj.get("clearableNumberFields").isJsonNull()) {
+        JsonArray jsonArrayclearableNumberFields = jsonObj.getAsJsonArray("clearableNumberFields");
+        if (jsonArrayclearableNumberFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("clearableNumberFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `clearableNumberFields` to be an array in the JSON string but got `%s`", jsonObj.get("clearableNumberFields").toString()));
+          }
 
-    // add `datePickerFields` to the URL query string
-    if (getDatePickerFields() != null) {
-      for (int i = 0; i < getDatePickerFields().size(); i++) {
-        if (getDatePickerFields().get(i) != null) {
-          joiner.add(getDatePickerFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sdatePickerFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `clearableNumberFields` (array)
+          for (int i = 0; i < jsonArrayclearableNumberFields.size(); i++) {
+            JiraNumberField.validateJsonElement(jsonArrayclearableNumberFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("colorFields") != null && !jsonObj.get("colorFields").isJsonNull()) {
+        JsonArray jsonArraycolorFields = jsonObj.getAsJsonArray("colorFields");
+        if (jsonArraycolorFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("colorFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `colorFields` to be an array in the JSON string but got `%s`", jsonObj.get("colorFields").toString()));
+          }
 
-    // add `dateTimePickerFields` to the URL query string
-    if (getDateTimePickerFields() != null) {
-      for (int i = 0; i < getDateTimePickerFields().size(); i++) {
-        if (getDateTimePickerFields().get(i) != null) {
-          joiner.add(getDateTimePickerFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sdateTimePickerFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `colorFields` (array)
+          for (int i = 0; i < jsonArraycolorFields.size(); i++) {
+            JiraColorField.validateJsonElement(jsonArraycolorFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("datePickerFields") != null && !jsonObj.get("datePickerFields").isJsonNull()) {
+        JsonArray jsonArraydatePickerFields = jsonObj.getAsJsonArray("datePickerFields");
+        if (jsonArraydatePickerFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("datePickerFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `datePickerFields` to be an array in the JSON string but got `%s`", jsonObj.get("datePickerFields").toString()));
+          }
 
-    // add `issueType` to the URL query string
-    if (getIssueType() != null) {
-      joiner.add(getIssueType().toUrlQueryString(prefix + "issueType" + suffix));
-    }
-
-    // add `labelsFields` to the URL query string
-    if (getLabelsFields() != null) {
-      for (int i = 0; i < getLabelsFields().size(); i++) {
-        if (getLabelsFields().get(i) != null) {
-          joiner.add(getLabelsFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%slabelsFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `datePickerFields` (array)
+          for (int i = 0; i < jsonArraydatePickerFields.size(); i++) {
+            JiraDateField.validateJsonElement(jsonArraydatePickerFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("dateTimePickerFields") != null && !jsonObj.get("dateTimePickerFields").isJsonNull()) {
+        JsonArray jsonArraydateTimePickerFields = jsonObj.getAsJsonArray("dateTimePickerFields");
+        if (jsonArraydateTimePickerFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("dateTimePickerFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `dateTimePickerFields` to be an array in the JSON string but got `%s`", jsonObj.get("dateTimePickerFields").toString()));
+          }
 
-    // add `multipleGroupPickerFields` to the URL query string
-    if (getMultipleGroupPickerFields() != null) {
-      for (int i = 0; i < getMultipleGroupPickerFields().size(); i++) {
-        if (getMultipleGroupPickerFields().get(i) != null) {
-          joiner.add(getMultipleGroupPickerFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%smultipleGroupPickerFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `dateTimePickerFields` (array)
+          for (int i = 0; i < jsonArraydateTimePickerFields.size(); i++) {
+            JiraDateTimeField.validateJsonElement(jsonArraydateTimePickerFields.get(i));
+          };
         }
       }
-    }
+      // validate the optional field `issueType`
+      if (jsonObj.get("issueType") != null && !jsonObj.get("issueType").isJsonNull()) {
+        JiraIssueTypeField.validateJsonElement(jsonObj.get("issueType"));
+      }
+      if (jsonObj.get("labelsFields") != null && !jsonObj.get("labelsFields").isJsonNull()) {
+        JsonArray jsonArraylabelsFields = jsonObj.getAsJsonArray("labelsFields");
+        if (jsonArraylabelsFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("labelsFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `labelsFields` to be an array in the JSON string but got `%s`", jsonObj.get("labelsFields").toString()));
+          }
 
-    // add `multipleSelectClearableUserPickerFields` to the URL query string
-    if (getMultipleSelectClearableUserPickerFields() != null) {
-      for (int i = 0; i < getMultipleSelectClearableUserPickerFields().size(); i++) {
-        if (getMultipleSelectClearableUserPickerFields().get(i) != null) {
-          joiner.add(getMultipleSelectClearableUserPickerFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%smultipleSelectClearableUserPickerFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `labelsFields` (array)
+          for (int i = 0; i < jsonArraylabelsFields.size(); i++) {
+            JiraLabelsField.validateJsonElement(jsonArraylabelsFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("multipleGroupPickerFields") != null && !jsonObj.get("multipleGroupPickerFields").isJsonNull()) {
+        JsonArray jsonArraymultipleGroupPickerFields = jsonObj.getAsJsonArray("multipleGroupPickerFields");
+        if (jsonArraymultipleGroupPickerFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("multipleGroupPickerFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `multipleGroupPickerFields` to be an array in the JSON string but got `%s`", jsonObj.get("multipleGroupPickerFields").toString()));
+          }
 
-    // add `multipleSelectFields` to the URL query string
-    if (getMultipleSelectFields() != null) {
-      for (int i = 0; i < getMultipleSelectFields().size(); i++) {
-        if (getMultipleSelectFields().get(i) != null) {
-          joiner.add(getMultipleSelectFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%smultipleSelectFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `multipleGroupPickerFields` (array)
+          for (int i = 0; i < jsonArraymultipleGroupPickerFields.size(); i++) {
+            JiraMultipleGroupPickerField.validateJsonElement(jsonArraymultipleGroupPickerFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("multipleSelectClearableUserPickerFields") != null && !jsonObj.get("multipleSelectClearableUserPickerFields").isJsonNull()) {
+        JsonArray jsonArraymultipleSelectClearableUserPickerFields = jsonObj.getAsJsonArray("multipleSelectClearableUserPickerFields");
+        if (jsonArraymultipleSelectClearableUserPickerFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("multipleSelectClearableUserPickerFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `multipleSelectClearableUserPickerFields` to be an array in the JSON string but got `%s`", jsonObj.get("multipleSelectClearableUserPickerFields").toString()));
+          }
 
-    // add `multipleVersionPickerFields` to the URL query string
-    if (getMultipleVersionPickerFields() != null) {
-      for (int i = 0; i < getMultipleVersionPickerFields().size(); i++) {
-        if (getMultipleVersionPickerFields().get(i) != null) {
-          joiner.add(getMultipleVersionPickerFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%smultipleVersionPickerFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `multipleSelectClearableUserPickerFields` (array)
+          for (int i = 0; i < jsonArraymultipleSelectClearableUserPickerFields.size(); i++) {
+            JiraMultipleSelectUserPickerField.validateJsonElement(jsonArraymultipleSelectClearableUserPickerFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("multipleSelectFields") != null && !jsonObj.get("multipleSelectFields").isJsonNull()) {
+        JsonArray jsonArraymultipleSelectFields = jsonObj.getAsJsonArray("multipleSelectFields");
+        if (jsonArraymultipleSelectFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("multipleSelectFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `multipleSelectFields` to be an array in the JSON string but got `%s`", jsonObj.get("multipleSelectFields").toString()));
+          }
 
-    // add `multiselectComponents` to the URL query string
-    if (getMultiselectComponents() != null) {
-      joiner.add(getMultiselectComponents().toUrlQueryString(prefix + "multiselectComponents" + suffix));
-    }
-
-    // add `originalEstimateField` to the URL query string
-    if (getOriginalEstimateField() != null) {
-      joiner.add(getOriginalEstimateField().toUrlQueryString(prefix + "originalEstimateField" + suffix));
-    }
-
-    // add `priority` to the URL query string
-    if (getPriority() != null) {
-      joiner.add(getPriority().toUrlQueryString(prefix + "priority" + suffix));
-    }
-
-    // add `richTextFields` to the URL query string
-    if (getRichTextFields() != null) {
-      for (int i = 0; i < getRichTextFields().size(); i++) {
-        if (getRichTextFields().get(i) != null) {
-          joiner.add(getRichTextFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%srichTextFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `multipleSelectFields` (array)
+          for (int i = 0; i < jsonArraymultipleSelectFields.size(); i++) {
+            JiraMultipleSelectField.validateJsonElement(jsonArraymultipleSelectFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("multipleVersionPickerFields") != null && !jsonObj.get("multipleVersionPickerFields").isJsonNull()) {
+        JsonArray jsonArraymultipleVersionPickerFields = jsonObj.getAsJsonArray("multipleVersionPickerFields");
+        if (jsonArraymultipleVersionPickerFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("multipleVersionPickerFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `multipleVersionPickerFields` to be an array in the JSON string but got `%s`", jsonObj.get("multipleVersionPickerFields").toString()));
+          }
 
-    // add `singleGroupPickerFields` to the URL query string
-    if (getSingleGroupPickerFields() != null) {
-      for (int i = 0; i < getSingleGroupPickerFields().size(); i++) {
-        if (getSingleGroupPickerFields().get(i) != null) {
-          joiner.add(getSingleGroupPickerFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssingleGroupPickerFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `multipleVersionPickerFields` (array)
+          for (int i = 0; i < jsonArraymultipleVersionPickerFields.size(); i++) {
+            JiraMultipleVersionPickerField.validateJsonElement(jsonArraymultipleVersionPickerFields.get(i));
+          };
         }
       }
-    }
+      // validate the optional field `multiselectComponents`
+      if (jsonObj.get("multiselectComponents") != null && !jsonObj.get("multiselectComponents").isJsonNull()) {
+        JiraMultiSelectComponentField.validateJsonElement(jsonObj.get("multiselectComponents"));
+      }
+      // validate the optional field `originalEstimateField`
+      if (jsonObj.get("originalEstimateField") != null && !jsonObj.get("originalEstimateField").isJsonNull()) {
+        JiraDurationField.validateJsonElement(jsonObj.get("originalEstimateField"));
+      }
+      // validate the optional field `priority`
+      if (jsonObj.get("priority") != null && !jsonObj.get("priority").isJsonNull()) {
+        JiraPriorityField.validateJsonElement(jsonObj.get("priority"));
+      }
+      if (jsonObj.get("richTextFields") != null && !jsonObj.get("richTextFields").isJsonNull()) {
+        JsonArray jsonArrayrichTextFields = jsonObj.getAsJsonArray("richTextFields");
+        if (jsonArrayrichTextFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("richTextFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `richTextFields` to be an array in the JSON string but got `%s`", jsonObj.get("richTextFields").toString()));
+          }
 
-    // add `singleLineTextFields` to the URL query string
-    if (getSingleLineTextFields() != null) {
-      for (int i = 0; i < getSingleLineTextFields().size(); i++) {
-        if (getSingleLineTextFields().get(i) != null) {
-          joiner.add(getSingleLineTextFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssingleLineTextFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `richTextFields` (array)
+          for (int i = 0; i < jsonArrayrichTextFields.size(); i++) {
+            JiraRichTextField.validateJsonElement(jsonArrayrichTextFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("singleGroupPickerFields") != null && !jsonObj.get("singleGroupPickerFields").isJsonNull()) {
+        JsonArray jsonArraysingleGroupPickerFields = jsonObj.getAsJsonArray("singleGroupPickerFields");
+        if (jsonArraysingleGroupPickerFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("singleGroupPickerFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `singleGroupPickerFields` to be an array in the JSON string but got `%s`", jsonObj.get("singleGroupPickerFields").toString()));
+          }
 
-    // add `singleSelectClearableUserPickerFields` to the URL query string
-    if (getSingleSelectClearableUserPickerFields() != null) {
-      for (int i = 0; i < getSingleSelectClearableUserPickerFields().size(); i++) {
-        if (getSingleSelectClearableUserPickerFields().get(i) != null) {
-          joiner.add(getSingleSelectClearableUserPickerFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssingleSelectClearableUserPickerFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `singleGroupPickerFields` (array)
+          for (int i = 0; i < jsonArraysingleGroupPickerFields.size(); i++) {
+            JiraSingleGroupPickerField.validateJsonElement(jsonArraysingleGroupPickerFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("singleLineTextFields") != null && !jsonObj.get("singleLineTextFields").isJsonNull()) {
+        JsonArray jsonArraysingleLineTextFields = jsonObj.getAsJsonArray("singleLineTextFields");
+        if (jsonArraysingleLineTextFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("singleLineTextFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `singleLineTextFields` to be an array in the JSON string but got `%s`", jsonObj.get("singleLineTextFields").toString()));
+          }
 
-    // add `singleSelectFields` to the URL query string
-    if (getSingleSelectFields() != null) {
-      for (int i = 0; i < getSingleSelectFields().size(); i++) {
-        if (getSingleSelectFields().get(i) != null) {
-          joiner.add(getSingleSelectFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssingleSelectFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `singleLineTextFields` (array)
+          for (int i = 0; i < jsonArraysingleLineTextFields.size(); i++) {
+            JiraSingleLineTextField.validateJsonElement(jsonArraysingleLineTextFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("singleSelectClearableUserPickerFields") != null && !jsonObj.get("singleSelectClearableUserPickerFields").isJsonNull()) {
+        JsonArray jsonArraysingleSelectClearableUserPickerFields = jsonObj.getAsJsonArray("singleSelectClearableUserPickerFields");
+        if (jsonArraysingleSelectClearableUserPickerFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("singleSelectClearableUserPickerFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `singleSelectClearableUserPickerFields` to be an array in the JSON string but got `%s`", jsonObj.get("singleSelectClearableUserPickerFields").toString()));
+          }
 
-    // add `singleVersionPickerFields` to the URL query string
-    if (getSingleVersionPickerFields() != null) {
-      for (int i = 0; i < getSingleVersionPickerFields().size(); i++) {
-        if (getSingleVersionPickerFields().get(i) != null) {
-          joiner.add(getSingleVersionPickerFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%ssingleVersionPickerFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `singleSelectClearableUserPickerFields` (array)
+          for (int i = 0; i < jsonArraysingleSelectClearableUserPickerFields.size(); i++) {
+            JiraSingleSelectUserPickerField.validateJsonElement(jsonArraysingleSelectClearableUserPickerFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("singleSelectFields") != null && !jsonObj.get("singleSelectFields").isJsonNull()) {
+        JsonArray jsonArraysingleSelectFields = jsonObj.getAsJsonArray("singleSelectFields");
+        if (jsonArraysingleSelectFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("singleSelectFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `singleSelectFields` to be an array in the JSON string but got `%s`", jsonObj.get("singleSelectFields").toString()));
+          }
 
-    // add `status` to the URL query string
-    if (getStatus() != null) {
-      joiner.add(getStatus().toUrlQueryString(prefix + "status" + suffix));
-    }
-
-    // add `timeTrackingField` to the URL query string
-    if (getTimeTrackingField() != null) {
-      joiner.add(getTimeTrackingField().toUrlQueryString(prefix + "timeTrackingField" + suffix));
-    }
-
-    // add `urlFields` to the URL query string
-    if (getUrlFields() != null) {
-      for (int i = 0; i < getUrlFields().size(); i++) {
-        if (getUrlFields().get(i) != null) {
-          joiner.add(getUrlFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%surlFields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          // validate the optional field `singleSelectFields` (array)
+          for (int i = 0; i < jsonArraysingleSelectFields.size(); i++) {
+            JiraSingleSelectField.validateJsonElement(jsonArraysingleSelectFields.get(i));
+          };
         }
       }
-    }
+      if (jsonObj.get("singleVersionPickerFields") != null && !jsonObj.get("singleVersionPickerFields").isJsonNull()) {
+        JsonArray jsonArraysingleVersionPickerFields = jsonObj.getAsJsonArray("singleVersionPickerFields");
+        if (jsonArraysingleVersionPickerFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("singleVersionPickerFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `singleVersionPickerFields` to be an array in the JSON string but got `%s`", jsonObj.get("singleVersionPickerFields").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `singleVersionPickerFields` (array)
+          for (int i = 0; i < jsonArraysingleVersionPickerFields.size(); i++) {
+            JiraSingleVersionPickerField.validateJsonElement(jsonArraysingleVersionPickerFields.get(i));
+          };
+        }
+      }
+      // validate the optional field `status`
+      if (jsonObj.get("status") != null && !jsonObj.get("status").isJsonNull()) {
+        JiraStatusInput.validateJsonElement(jsonObj.get("status"));
+      }
+      // validate the optional field `timeTrackingField`
+      if (jsonObj.get("timeTrackingField") != null && !jsonObj.get("timeTrackingField").isJsonNull()) {
+        JiraTimeTrackingField.validateJsonElement(jsonObj.get("timeTrackingField"));
+      }
+      if (jsonObj.get("urlFields") != null && !jsonObj.get("urlFields").isJsonNull()) {
+        JsonArray jsonArrayurlFields = jsonObj.getAsJsonArray("urlFields");
+        if (jsonArrayurlFields != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("urlFields").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `urlFields` to be an array in the JSON string but got `%s`", jsonObj.get("urlFields").toString()));
+          }
+
+          // validate the optional field `urlFields` (array)
+          for (int i = 0; i < jsonArrayurlFields.size(); i++) {
+            JiraUrlField.validateJsonElement(jsonArrayurlFields.get(i));
+          };
+        }
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!JiraIssueFields.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'JiraIssueFields' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<JiraIssueFields> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(JiraIssueFields.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<JiraIssueFields>() {
+           @Override
+           public void write(JsonWriter out, JiraIssueFields value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public JiraIssueFields read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of JiraIssueFields given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of JiraIssueFields
+   * @throws IOException if the JSON string is invalid with respect to JiraIssueFields
+   */
+  public static JiraIssueFields fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, JiraIssueFields.class);
+  }
+
+  /**
+   * Convert an instance of JiraIssueFields to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

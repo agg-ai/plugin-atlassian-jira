@@ -13,49 +13,64 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.OldToNewSecurityLevelMappingsBean;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Issue security scheme, project, and remapping details.
  */
-@JsonPropertyOrder({
-  AssociateSecuritySchemeWithProjectDetails.JSON_PROPERTY_OLD_TO_NEW_SECURITY_LEVEL_MAPPINGS,
-  AssociateSecuritySchemeWithProjectDetails.JSON_PROPERTY_PROJECT_ID,
-  AssociateSecuritySchemeWithProjectDetails.JSON_PROPERTY_SCHEME_ID
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AssociateSecuritySchemeWithProjectDetails {
-  public static final String JSON_PROPERTY_OLD_TO_NEW_SECURITY_LEVEL_MAPPINGS = "oldToNewSecurityLevelMappings";
+  public static final String SERIALIZED_NAME_OLD_TO_NEW_SECURITY_LEVEL_MAPPINGS = "oldToNewSecurityLevelMappings";
+  @SerializedName(SERIALIZED_NAME_OLD_TO_NEW_SECURITY_LEVEL_MAPPINGS)
   @javax.annotation.Nullable
   private List<OldToNewSecurityLevelMappingsBean> oldToNewSecurityLevelMappings = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_PROJECT_ID = "projectId";
+  public static final String SERIALIZED_NAME_PROJECT_ID = "projectId";
+  @SerializedName(SERIALIZED_NAME_PROJECT_ID)
   @javax.annotation.Nonnull
   private String projectId;
 
-  public static final String JSON_PROPERTY_SCHEME_ID = "schemeId";
+  public static final String SERIALIZED_NAME_SCHEME_ID = "schemeId";
+  @SerializedName(SERIALIZED_NAME_SCHEME_ID)
   @javax.annotation.Nonnull
   private String schemeId;
 
-  public AssociateSecuritySchemeWithProjectDetails() { 
+  public AssociateSecuritySchemeWithProjectDetails() {
   }
 
   public AssociateSecuritySchemeWithProjectDetails oldToNewSecurityLevelMappings(@javax.annotation.Nullable List<OldToNewSecurityLevelMappingsBean> oldToNewSecurityLevelMappings) {
@@ -76,15 +91,10 @@ public class AssociateSecuritySchemeWithProjectDetails {
    * @return oldToNewSecurityLevelMappings
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OLD_TO_NEW_SECURITY_LEVEL_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<OldToNewSecurityLevelMappingsBean> getOldToNewSecurityLevelMappings() {
     return oldToNewSecurityLevelMappings;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OLD_TO_NEW_SECURITY_LEVEL_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOldToNewSecurityLevelMappings(@javax.annotation.Nullable List<OldToNewSecurityLevelMappingsBean> oldToNewSecurityLevelMappings) {
     this.oldToNewSecurityLevelMappings = oldToNewSecurityLevelMappings;
   }
@@ -100,15 +110,10 @@ public class AssociateSecuritySchemeWithProjectDetails {
    * @return projectId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getProjectId() {
     return projectId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_PROJECT_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setProjectId(@javax.annotation.Nonnull String projectId) {
     this.projectId = projectId;
   }
@@ -124,23 +129,16 @@ public class AssociateSecuritySchemeWithProjectDetails {
    * @return schemeId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SCHEME_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getSchemeId() {
     return schemeId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_SCHEME_ID, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setSchemeId(@javax.annotation.Nonnull String schemeId) {
     this.schemeId = schemeId;
   }
 
 
-  /**
-   * Return true if this AssociateSecuritySchemeWithProjectDetails object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -182,59 +180,115 @@ public class AssociateSecuritySchemeWithProjectDetails {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("oldToNewSecurityLevelMappings", "projectId", "schemeId"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("projectId", "schemeId"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AssociateSecuritySchemeWithProjectDetails
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `oldToNewSecurityLevelMappings` to the URL query string
-    if (getOldToNewSecurityLevelMappings() != null) {
-      for (int i = 0; i < getOldToNewSecurityLevelMappings().size(); i++) {
-        if (getOldToNewSecurityLevelMappings().get(i) != null) {
-          joiner.add(getOldToNewSecurityLevelMappings().get(i).toUrlQueryString(String.format(Locale.ROOT, "%soldToNewSecurityLevelMappings%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AssociateSecuritySchemeWithProjectDetails.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AssociateSecuritySchemeWithProjectDetails is not found in the empty JSON string", AssociateSecuritySchemeWithProjectDetails.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `projectId` to the URL query string
-    if (getProjectId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprojectId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProjectId()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AssociateSecuritySchemeWithProjectDetails.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AssociateSecuritySchemeWithProjectDetails` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    // add `schemeId` to the URL query string
-    if (getSchemeId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sschemeId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSchemeId()))));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : AssociateSecuritySchemeWithProjectDetails.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("oldToNewSecurityLevelMappings") != null && !jsonObj.get("oldToNewSecurityLevelMappings").isJsonNull()) {
+        JsonArray jsonArrayoldToNewSecurityLevelMappings = jsonObj.getAsJsonArray("oldToNewSecurityLevelMappings");
+        if (jsonArrayoldToNewSecurityLevelMappings != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("oldToNewSecurityLevelMappings").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `oldToNewSecurityLevelMappings` to be an array in the JSON string but got `%s`", jsonObj.get("oldToNewSecurityLevelMappings").toString()));
+          }
 
-    return joiner.toString();
+          // validate the optional field `oldToNewSecurityLevelMappings` (array)
+          for (int i = 0; i < jsonArrayoldToNewSecurityLevelMappings.size(); i++) {
+            OldToNewSecurityLevelMappingsBean.validateJsonElement(jsonArrayoldToNewSecurityLevelMappings.get(i));
+          };
+        }
+      }
+      if (!jsonObj.get("projectId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `projectId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("projectId").toString()));
+      }
+      if (!jsonObj.get("schemeId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `schemeId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("schemeId").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AssociateSecuritySchemeWithProjectDetails.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AssociateSecuritySchemeWithProjectDetails' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AssociateSecuritySchemeWithProjectDetails> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AssociateSecuritySchemeWithProjectDetails.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<AssociateSecuritySchemeWithProjectDetails>() {
+           @Override
+           public void write(JsonWriter out, AssociateSecuritySchemeWithProjectDetails value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public AssociateSecuritySchemeWithProjectDetails read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of AssociateSecuritySchemeWithProjectDetails given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AssociateSecuritySchemeWithProjectDetails
+   * @throws IOException if the JSON string is invalid with respect to AssociateSecuritySchemeWithProjectDetails
+   */
+  public static AssociateSecuritySchemeWithProjectDetails fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AssociateSecuritySchemeWithProjectDetails.class);
+  }
+
+  /**
+   * Convert an instance of AssociateSecuritySchemeWithProjectDetails to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

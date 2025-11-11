@@ -13,48 +13,63 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.JqlQueryClause;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * A JQL query clause that consists of nested clauses. For example, &#x60;(labels in (urgent, blocker) OR lastCommentedBy &#x3D; currentUser()). Note that, where nesting is not defined, the parser nests JQL clauses based on the operator precedence. For example, \&quot;A OR B AND C\&quot; is parsed as \&quot;(A OR B) AND C\&quot;. See Setting the precedence of operators for more information about precedence in JQL queries.&#x60;
  */
-@JsonPropertyOrder({
-  CompoundClause.JSON_PROPERTY_CLAUSES,
-  CompoundClause.JSON_PROPERTY_OPERATOR
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class CompoundClause {
-  public static final String JSON_PROPERTY_CLAUSES = "clauses";
+  public static final String SERIALIZED_NAME_CLAUSES = "clauses";
+  @SerializedName(SERIALIZED_NAME_CLAUSES)
   @javax.annotation.Nonnull
   private List<JqlQueryClause> clauses = new ArrayList<>();
 
   /**
    * The operator between the clauses.
    */
+  @JsonAdapter(OperatorEnum.Adapter.class)
   public enum OperatorEnum {
-    AND(String.valueOf("and")),
+    AND("and"),
     
-    OR(String.valueOf("or")),
+    OR("or"),
     
-    NOT(String.valueOf("not"));
+    NOT("not");
 
     private String value;
 
@@ -62,7 +77,6 @@ public class CompoundClause {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -72,7 +86,6 @@ public class CompoundClause {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static OperatorEnum fromValue(String value) {
       for (OperatorEnum b : OperatorEnum.values()) {
         if (b.value.equals(value)) {
@@ -81,13 +94,32 @@ public class CompoundClause {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<OperatorEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final OperatorEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public OperatorEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return OperatorEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      OperatorEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_OPERATOR = "operator";
+  public static final String SERIALIZED_NAME_OPERATOR = "operator";
+  @SerializedName(SERIALIZED_NAME_OPERATOR)
   @javax.annotation.Nonnull
   private OperatorEnum operator;
 
-  public CompoundClause() { 
+  public CompoundClause() {
   }
 
   public CompoundClause clauses(@javax.annotation.Nonnull List<JqlQueryClause> clauses) {
@@ -108,15 +140,10 @@ public class CompoundClause {
    * @return clauses
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CLAUSES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<JqlQueryClause> getClauses() {
     return clauses;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_CLAUSES, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setClauses(@javax.annotation.Nonnull List<JqlQueryClause> clauses) {
     this.clauses = clauses;
   }
@@ -132,23 +159,16 @@ public class CompoundClause {
    * @return operator
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OPERATOR, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public OperatorEnum getOperator() {
     return operator;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OPERATOR, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setOperator(@javax.annotation.Nonnull OperatorEnum operator) {
     this.operator = operator;
   }
 
 
-  /**
-   * Return true if this CompoundClause object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -188,54 +208,110 @@ public class CompoundClause {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("clauses", "operator"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("clauses", "operator"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to CompoundClause
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `clauses` to the URL query string
-    if (getClauses() != null) {
-      for (int i = 0; i < getClauses().size(); i++) {
-        if (getClauses().get(i) != null) {
-          joiner.add(getClauses().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sclauses%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!CompoundClause.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in CompoundClause is not found in the empty JSON string", CompoundClause.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `operator` to the URL query string
-    if (getOperator() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soperator%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperator()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!CompoundClause.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `CompoundClause` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    return joiner.toString();
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : CompoundClause.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // ensure the json data is an array
+      if (!jsonObj.get("clauses").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `clauses` to be an array in the JSON string but got `%s`", jsonObj.get("clauses").toString()));
+      }
+
+      JsonArray jsonArrayclauses = jsonObj.getAsJsonArray("clauses");
+      // validate the required field `clauses` (array)
+      for (int i = 0; i < jsonArrayclauses.size(); i++) {
+        JqlQueryClause.validateJsonElement(jsonArrayclauses.get(i));
+      };
+      if (!jsonObj.get("operator").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `operator` to be a primitive type in the JSON string but got `%s`", jsonObj.get("operator").toString()));
+      }
+      // validate the required field `operator`
+      OperatorEnum.validateJsonElement(jsonObj.get("operator"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!CompoundClause.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'CompoundClause' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<CompoundClause> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(CompoundClause.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<CompoundClause>() {
+           @Override
+           public void write(JsonWriter out, CompoundClause value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public CompoundClause read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of CompoundClause given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of CompoundClause
+   * @throws IOException if the JSON string is invalid with respect to CompoundClause
+   */
+  public static CompoundClause fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, CompoundClause.class);
+  }
+
+  /**
+   * Convert an instance of CompoundClause to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

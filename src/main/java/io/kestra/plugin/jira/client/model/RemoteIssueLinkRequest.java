@@ -13,57 +13,68 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.Application;
 import io.kestra.plugin.jira.client.model.RemoteObject;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Details of a remote issue link.
  */
-@JsonPropertyOrder({
-  RemoteIssueLinkRequest.JSON_PROPERTY_APPLICATION,
-  RemoteIssueLinkRequest.JSON_PROPERTY_GLOBAL_ID,
-  RemoteIssueLinkRequest.JSON_PROPERTY_OBJECT,
-  RemoteIssueLinkRequest.JSON_PROPERTY_RELATIONSHIP
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class RemoteIssueLinkRequest {
-  public static final String JSON_PROPERTY_APPLICATION = "application";
+  public static final String SERIALIZED_NAME_APPLICATION = "application";
+  @SerializedName(SERIALIZED_NAME_APPLICATION)
   @javax.annotation.Nullable
   private Application application;
 
-  public static final String JSON_PROPERTY_GLOBAL_ID = "globalId";
+  public static final String SERIALIZED_NAME_GLOBAL_ID = "globalId";
+  @SerializedName(SERIALIZED_NAME_GLOBAL_ID)
   @javax.annotation.Nullable
   private String globalId;
 
-  public static final String JSON_PROPERTY_OBJECT = "object";
+  public static final String SERIALIZED_NAME_OBJECT = "object";
+  @SerializedName(SERIALIZED_NAME_OBJECT)
   @javax.annotation.Nonnull
   private RemoteObject _object;
 
-  public static final String JSON_PROPERTY_RELATIONSHIP = "relationship";
+  public static final String SERIALIZED_NAME_RELATIONSHIP = "relationship";
+  @SerializedName(SERIALIZED_NAME_RELATIONSHIP)
   @javax.annotation.Nullable
   private String relationship;
 
-  public RemoteIssueLinkRequest() { 
+  public RemoteIssueLinkRequest() {
   }
 
   public RemoteIssueLinkRequest application(@javax.annotation.Nullable Application application) {
@@ -76,15 +87,10 @@ public class RemoteIssueLinkRequest {
    * @return application
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Application getApplication() {
     return application;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setApplication(@javax.annotation.Nullable Application application) {
     this.application = application;
   }
@@ -100,15 +106,10 @@ public class RemoteIssueLinkRequest {
    * @return globalId
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_GLOBAL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getGlobalId() {
     return globalId;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_GLOBAL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGlobalId(@javax.annotation.Nullable String globalId) {
     this.globalId = globalId;
   }
@@ -124,15 +125,10 @@ public class RemoteIssueLinkRequest {
    * @return _object
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OBJECT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public RemoteObject getObject() {
     return _object;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OBJECT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setObject(@javax.annotation.Nonnull RemoteObject _object) {
     this._object = _object;
   }
@@ -148,15 +144,10 @@ public class RemoteIssueLinkRequest {
    * @return relationship
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RELATIONSHIP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRelationship() {
     return relationship;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RELATIONSHIP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRelationship(@javax.annotation.Nullable String relationship) {
     this.relationship = relationship;
   }
@@ -171,11 +162,11 @@ public class RemoteIssueLinkRequest {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the RemoteIssueLinkRequest instance itself
    */
-  @JsonAnySetter
   public RemoteIssueLinkRequest putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -185,18 +176,19 @@ public class RemoteIssueLinkRequest {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -205,9 +197,7 @@ public class RemoteIssueLinkRequest {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this RemoteIssueLinkRequest object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -253,59 +243,136 @@ public class RemoteIssueLinkRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("application", "globalId", "object", "relationship"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("object"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to RemoteIssueLinkRequest
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!RemoteIssueLinkRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in RemoteIssueLinkRequest is not found in the empty JSON string", RemoteIssueLinkRequest.openapiRequiredFields.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : RemoteIssueLinkRequest.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("globalId") != null && !jsonObj.get("globalId").isJsonNull()) && !jsonObj.get("globalId").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `globalId` to be a primitive type in the JSON string but got `%s`", jsonObj.get("globalId").toString()));
+      }
+      if ((jsonObj.get("relationship") != null && !jsonObj.get("relationship").isJsonNull()) && !jsonObj.get("relationship").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `relationship` to be a primitive type in the JSON string but got `%s`", jsonObj.get("relationship").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!RemoteIssueLinkRequest.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'RemoteIssueLinkRequest' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<RemoteIssueLinkRequest> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(RemoteIssueLinkRequest.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<RemoteIssueLinkRequest>() {
+           @Override
+           public void write(JsonWriter out, RemoteIssueLinkRequest value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public RemoteIssueLinkRequest read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             RemoteIssueLinkRequest instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of RemoteIssueLinkRequest given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of RemoteIssueLinkRequest
+   * @throws IOException if the JSON string is invalid with respect to RemoteIssueLinkRequest
+   */
+  public static RemoteIssueLinkRequest fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, RemoteIssueLinkRequest.class);
+  }
 
-    // add `application` to the URL query string
-    if (getApplication() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sapplication%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getApplication()))));
-    }
-
-    // add `globalId` to the URL query string
-    if (getGlobalId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sglobalId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getGlobalId()))));
-    }
-
-    // add `object` to the URL query string
-    if (getObject() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sobject%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getObject()))));
-    }
-
-    // add `relationship` to the URL query string
-    if (getRelationship() != null) {
-      joiner.add(String.format(Locale.ROOT, "%srelationship%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRelationship()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of RemoteIssueLinkRequest to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

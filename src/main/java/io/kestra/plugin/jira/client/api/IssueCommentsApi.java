@@ -10,1005 +10,1024 @@
  * Do not edit the class manually.
  */
 
+
 package io.kestra.plugin.jira.client.api;
 
+import io.kestra.plugin.jira.client.invoker.ApiCallback;
 import io.kestra.plugin.jira.client.invoker.ApiClient;
 import io.kestra.plugin.jira.client.invoker.ApiException;
 import io.kestra.plugin.jira.client.invoker.ApiResponse;
 import io.kestra.plugin.jira.client.invoker.Configuration;
 import io.kestra.plugin.jira.client.invoker.Pair;
+import io.kestra.plugin.jira.client.invoker.ProgressRequestBody;
+import io.kestra.plugin.jira.client.invoker.ProgressResponseBody;
+
+import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+
 
 import io.kestra.plugin.jira.client.model.Comment;
 import io.kestra.plugin.jira.client.model.IssueCommentListRequestBean;
 import io.kestra.plugin.jira.client.model.PageBeanComment;
 import io.kestra.plugin.jira.client.model.PageOfComments;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.http.HttpRequest;
-import java.nio.channels.Channels;
-import java.nio.channels.Pipe;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.StringJoiner;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
-import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class IssueCommentsApi {
-  /**
-   * Utility class for extending HttpRequest.Builder functionality.
-   */
-  private static class HttpRequestBuilderExtensions {
+    private ApiClient localVarApiClient;
+    private int localHostIndex;
+    private String localCustomBaseUrl;
+
+    public IssueCommentsApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public IssueCommentsApi(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public ApiClient getApiClient() {
+        return localVarApiClient;
+    }
+
+    public void setApiClient(ApiClient apiClient) {
+        this.localVarApiClient = apiClient;
+    }
+
+    public int getHostIndex() {
+        return localHostIndex;
+    }
+
+    public void setHostIndex(int hostIndex) {
+        this.localHostIndex = hostIndex;
+    }
+
+    public String getCustomBaseUrl() {
+        return localCustomBaseUrl;
+    }
+
+    public void setCustomBaseUrl(String customBaseUrl) {
+        this.localCustomBaseUrl = customBaseUrl;
+    }
+
     /**
-     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
-     *
-     * @param builder the HttpRequest.Builder to which headers will be added
-     * @param headers a map of header names and values to add; may be null
-     * @return the same HttpRequest.Builder instance with the additional headers set
+     * Build call for addComment
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param comment  (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit has been breached for one of the following fields:   *  comments  *  attachments </td><td>  -  </td></tr>
+     </table>
      */
-    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                builder.header(entry.getKey(), entry.getValue());
-            }
-        }
-        return builder;
-    }
-  }
-  private final HttpClient memberVarHttpClient;
-  private final ObjectMapper memberVarObjectMapper;
-  private final String memberVarBaseUri;
-  private final Consumer<HttpRequest.Builder> memberVarInterceptor;
-  private final Duration memberVarReadTimeout;
-  private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
-  private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+    public okhttp3.Call addCommentCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
 
-  public IssueCommentsApi() {
-    this(Configuration.getDefaultApiClient());
-  }
-
-  public IssueCommentsApi(ApiClient apiClient) {
-    memberVarHttpClient = apiClient.getHttpClient();
-    memberVarObjectMapper = apiClient.getObjectMapper();
-    memberVarBaseUri = apiClient.getBaseUri();
-    memberVarInterceptor = apiClient.getRequestInterceptor();
-    memberVarReadTimeout = apiClient.getReadTimeout();
-    memberVarResponseInterceptor = apiClient.getResponseInterceptor();
-    memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
-  }
-
-
-  protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
-    String body = response.body() == null ? null : new String(response.body().readAllBytes());
-    String message = formatExceptionMessage(operationId, response.statusCode(), body);
-    return new ApiException(response.statusCode(), message, response.headers(), body);
-  }
-
-  private String formatExceptionMessage(String operationId, int statusCode, String body) {
-    if (body == null || body.isEmpty()) {
-      body = "[no body]";
-    }
-    return operationId + " call failed with: " + statusCode + " - " + body;
-  }
-
-  /**
-   * Download file from the given response.
-   *
-   * @param response Response
-   * @return File
-   * @throws ApiException If fail to read file content from response and write to disk
-   */
-  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
-    try {
-      File file = prepareDownloadFile(response);
-      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-      return file;
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-  }
-
-  /**
-   * <p>Prepare the file for download from the response.</p>
-   *
-   * @param response a {@link java.net.http.HttpResponse} object.
-   * @return a {@link java.io.File} object.
-   * @throws java.io.IOException if any.
-   */
-  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
-    String filename = null;
-    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
-    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
-      // Get filename from the Content-Disposition header.
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
-      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
-      if (matcher.find())
-        filename = matcher.group(1);
-    }
-    File file = null;
-    if (filename != null) {
-      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
-      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
-      file = filePath.toFile();
-      tempDir.toFile().deleteOnExit();   // best effort cleanup
-      file.deleteOnExit(); // best effort cleanup
-    } else {
-      file = java.nio.file.Files.createTempFile("download-", "").toFile();
-      file.deleteOnExit(); // best effort cleanup
-    }
-    return file;
-  }
-
-  /**
-   * Add comment
-   * Adds a comment to an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Add comments* [ project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param comment  (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @return Comment
-   * @throws ApiException if fails to make API call
-   */
-  public Comment addComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand) throws ApiException {
-    return addComment(issueIdOrKey, comment, expand, null);
-  }
-
-  /**
-   * Add comment
-   * Adds a comment to an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Add comments* [ project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param comment  (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @param headers Optional headers to include in the request
-   * @return Comment
-   * @throws ApiException if fails to make API call
-   */
-  public Comment addComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<Comment> localVarResponse = addCommentWithHttpInfo(issueIdOrKey, comment, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Add comment
-   * Adds a comment to an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Add comments* [ project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param comment  (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @return ApiResponse&lt;Comment&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Comment> addCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand) throws ApiException {
-    return addCommentWithHttpInfo(issueIdOrKey, comment, expand, null);
-  }
-
-  /**
-   * Add comment
-   * Adds a comment to an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Add comments* [ project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param comment  (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Comment&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Comment> addCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = addCommentRequestBuilder(issueIdOrKey, comment, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("addComment", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Comment>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Comment responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Comment>() {});
-        
-        localVarResponse.body().close();
+        Object localVarPostBody = comment;
 
-        return new ApiResponse<Comment>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
 
-  private HttpRequest.Builder addCommentRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling addComment");
-    }
-    // verify the required parameter 'comment' is set
-    if (comment == null) {
-      throw new ApiException(400, "Missing the required parameter 'comment' when calling addComment");
-    }
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(comment);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Delete comment
-   * Deletes a comment.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any comment or *Delete own comments* to delete comment created by the user,  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id) throws ApiException {
-    deleteComment(issueIdOrKey, id, null);
-  }
-
-  /**
-   * Delete comment
-   * Deletes a comment.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any comment or *Delete own comments* to delete comment created by the user,  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param headers Optional headers to include in the request
-   * @throws ApiException if fails to make API call
-   */
-  public void deleteComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    deleteCommentWithHttpInfo(issueIdOrKey, id, headers);
-  }
-
-  /**
-   * Delete comment
-   * Deletes a comment.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any comment or *Delete own comments* to delete comment created by the user,  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id) throws ApiException {
-    return deleteCommentWithHttpInfo(issueIdOrKey, id, null);
-  }
-
-  /**
-   * Delete comment
-   * Deletes a comment.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any comment or *Delete own comments* to delete comment created by the user,  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Void&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Void> deleteCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = deleteCommentRequestBuilder(issueIdOrKey, id, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("deleteComment", localVarResponse);
-        }
-        return new ApiResponse<>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            null
-        );
-      } finally {
-        // Drain the InputStream
-        while (localVarResponse.body().read() != -1) {
-          // Ignore
-        }
-        localVarResponse.body().close();
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder deleteCommentRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling deleteComment");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling deleteComment");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("DELETE", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get comment
-   * Returns a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @return Comment
-   * @throws ApiException if fails to make API call
-   */
-  public Comment getComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
-    return getComment(issueIdOrKey, id, expand, null);
-  }
-
-  /**
-   * Get comment
-   * Returns a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @param headers Optional headers to include in the request
-   * @return Comment
-   * @throws ApiException if fails to make API call
-   */
-  public Comment getComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<Comment> localVarResponse = getCommentWithHttpInfo(issueIdOrKey, id, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get comment
-   * Returns a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @return ApiResponse&lt;Comment&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Comment> getCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
-    return getCommentWithHttpInfo(issueIdOrKey, id, expand, null);
-  }
-
-  /**
-   * Get comment
-   * Returns a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Comment&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Comment> getCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getCommentRequestBuilder(issueIdOrKey, id, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getComment", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Comment>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Comment responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Comment>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<Comment>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getCommentRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling getComment");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling getComment");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get comments
-   * Returns all comments for an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are included in the response where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param orderBy [Order](#ordering) the results by a field. Accepts *created* to sort comments by their created date. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @return PageOfComments
-   * @throws ApiException if fails to make API call
-   */
-  public PageOfComments getComments(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand) throws ApiException {
-    return getComments(issueIdOrKey, startAt, maxResults, orderBy, expand, null);
-  }
-
-  /**
-   * Get comments
-   * Returns all comments for an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are included in the response where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param orderBy [Order](#ordering) the results by a field. Accepts *created* to sort comments by their created date. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageOfComments
-   * @throws ApiException if fails to make API call
-   */
-  public PageOfComments getComments(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageOfComments> localVarResponse = getCommentsWithHttpInfo(issueIdOrKey, startAt, maxResults, orderBy, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get comments
-   * Returns all comments for an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are included in the response where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param orderBy [Order](#ordering) the results by a field. Accepts *created* to sort comments by their created date. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @return ApiResponse&lt;PageOfComments&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageOfComments> getCommentsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand) throws ApiException {
-    return getCommentsWithHttpInfo(issueIdOrKey, startAt, maxResults, orderBy, expand, null);
-  }
-
-  /**
-   * Get comments
-   * Returns all comments for an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are included in the response where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is role visibility is restricted to.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
-   * @param maxResults The maximum number of items to return per page. (optional, default to 100)
-   * @param orderBy [Order](#ordering) the results by a field. Accepts *created* to sort comments by their created date. (optional)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageOfComments&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageOfComments> getCommentsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getCommentsRequestBuilder(issueIdOrKey, startAt, maxResults, orderBy, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getComments", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageOfComments>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageOfComments responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageOfComments>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageOfComments>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getCommentsRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling getComments");
-    }
-
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "startAt";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("startAt", startAt));
-    localVarQueryParameterBaseName = "maxResults";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("maxResults", maxResults));
-    localVarQueryParameterBaseName = "orderBy";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("orderBy", orderBy));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Get comments by IDs
-   * Returns a [paginated](#pagination) list of comments specified by a list of comment IDs.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are returned where the user:   *  has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueCommentListRequestBean The list of comment IDs. (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;renderedBody&#x60; Returns the comment body rendered in HTML.  *  &#x60;properties&#x60; Returns the comment&#39;s properties. (optional)
-   * @return PageBeanComment
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanComment getCommentsByIds(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand) throws ApiException {
-    return getCommentsByIds(issueCommentListRequestBean, expand, null);
-  }
-
-  /**
-   * Get comments by IDs
-   * Returns a [paginated](#pagination) list of comments specified by a list of comment IDs.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are returned where the user:   *  has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueCommentListRequestBean The list of comment IDs. (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;renderedBody&#x60; Returns the comment body rendered in HTML.  *  &#x60;properties&#x60; Returns the comment&#39;s properties. (optional)
-   * @param headers Optional headers to include in the request
-   * @return PageBeanComment
-   * @throws ApiException if fails to make API call
-   */
-  public PageBeanComment getCommentsByIds(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<PageBeanComment> localVarResponse = getCommentsByIdsWithHttpInfo(issueCommentListRequestBean, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Get comments by IDs
-   * Returns a [paginated](#pagination) list of comments specified by a list of comment IDs.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are returned where the user:   *  has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueCommentListRequestBean The list of comment IDs. (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;renderedBody&#x60; Returns the comment body rendered in HTML.  *  &#x60;properties&#x60; Returns the comment&#39;s properties. (optional)
-   * @return ApiResponse&lt;PageBeanComment&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanComment> getCommentsByIdsWithHttpInfo(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand) throws ApiException {
-    return getCommentsByIdsWithHttpInfo(issueCommentListRequestBean, expand, null);
-  }
-
-  /**
-   * Get comments by IDs
-   * Returns a [paginated](#pagination) list of comments specified by a list of comment IDs.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are returned where the user:   *  has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
-   * @param issueCommentListRequestBean The list of comment IDs. (required)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;renderedBody&#x60; Returns the comment body rendered in HTML.  *  &#x60;properties&#x60; Returns the comment&#39;s properties. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;PageBeanComment&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<PageBeanComment> getCommentsByIdsWithHttpInfo(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getCommentsByIdsRequestBuilder(issueCommentListRequestBean, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("getCommentsByIds", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<PageBeanComment>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        PageBeanComment responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PageBeanComment>() {});
-        
-        localVarResponse.body().close();
-
-        return new ApiResponse<PageBeanComment>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
-
-  private HttpRequest.Builder getCommentsByIdsRequestBuilder(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueCommentListRequestBean' is set
-    if (issueCommentListRequestBean == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueCommentListRequestBean' when calling getCommentsByIds");
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/comment/list";
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
-    }
-
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
-
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueCommentListRequestBean);
-      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
-
-  /**
-   * Update comment
-   * Updates a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any comment or *Edit own comments* to update comment created by the user.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.  **WARNING:** Child comments inherit visibility from their parent comment. Attempting to update a child comment&#39;s visibility will result in a 400 (Bad Request) error.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param comment  (required)
-   * @param notifyUsers Whether users are notified when a comment is updated. (optional, default to true)
-   * @param overrideEditableFlag Whether screen security is overridden to enable uneditable fields to be edited. Available to Connect app users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) and Forge apps acting on behalf of users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). (optional, default to false)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @return Comment
-   * @throws ApiException if fails to make API call
-   */
-  public Comment updateComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand) throws ApiException {
-    return updateComment(issueIdOrKey, id, comment, notifyUsers, overrideEditableFlag, expand, null);
-  }
-
-  /**
-   * Update comment
-   * Updates a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any comment or *Edit own comments* to update comment created by the user.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.  **WARNING:** Child comments inherit visibility from their parent comment. Attempting to update a child comment&#39;s visibility will result in a 400 (Bad Request) error.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param comment  (required)
-   * @param notifyUsers Whether users are notified when a comment is updated. (optional, default to true)
-   * @param overrideEditableFlag Whether screen security is overridden to enable uneditable fields to be edited. Available to Connect app users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) and Forge apps acting on behalf of users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). (optional, default to false)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @param headers Optional headers to include in the request
-   * @return Comment
-   * @throws ApiException if fails to make API call
-   */
-  public Comment updateComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    ApiResponse<Comment> localVarResponse = updateCommentWithHttpInfo(issueIdOrKey, id, comment, notifyUsers, overrideEditableFlag, expand, headers);
-    return localVarResponse.getData();
-  }
-
-  /**
-   * Update comment
-   * Updates a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any comment or *Edit own comments* to update comment created by the user.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.  **WARNING:** Child comments inherit visibility from their parent comment. Attempting to update a child comment&#39;s visibility will result in a 400 (Bad Request) error.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param comment  (required)
-   * @param notifyUsers Whether users are notified when a comment is updated. (optional, default to true)
-   * @param overrideEditableFlag Whether screen security is overridden to enable uneditable fields to be edited. Available to Connect app users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) and Forge apps acting on behalf of users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). (optional, default to false)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @return ApiResponse&lt;Comment&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Comment> updateCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand) throws ApiException {
-    return updateCommentWithHttpInfo(issueIdOrKey, id, comment, notifyUsers, overrideEditableFlag, expand, null);
-  }
-
-  /**
-   * Update comment
-   * Updates a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any comment or *Edit own comments* to update comment created by the user.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.  **WARNING:** Child comments inherit visibility from their parent comment. Attempting to update a child comment&#39;s visibility will result in a 400 (Bad Request) error.
-   * @param issueIdOrKey The ID or key of the issue. (required)
-   * @param id The ID of the comment. (required)
-   * @param comment  (required)
-   * @param notifyUsers Whether users are notified when a comment is updated. (optional, default to true)
-   * @param overrideEditableFlag Whether screen security is overridden to enable uneditable fields to be edited. Available to Connect app users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) and Forge apps acting on behalf of users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). (optional, default to false)
-   * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
-   * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;Comment&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<Comment> updateCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = updateCommentRequestBuilder(issueIdOrKey, id, comment, notifyUsers, overrideEditableFlag, expand, headers);
-    try {
-      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
-          localVarRequestBuilder.build(),
-          HttpResponse.BodyHandlers.ofInputStream());
-      if (memberVarResponseInterceptor != null) {
-        memberVarResponseInterceptor.accept(localVarResponse);
-      }
-      try {
-        if (localVarResponse.statusCode()/ 100 != 2) {
-          throw getApiException("updateComment", localVarResponse);
-        }
-        if (localVarResponse.body() == null) {
-          return new ApiResponse<Comment>(
-              localVarResponse.statusCode(),
-              localVarResponse.headers().map(),
-              null
-          );
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call addCommentValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling addComment(Async)");
         }
 
-        
-        
-        String responseBody = new String(localVarResponse.body().readAllBytes());
-        Comment responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<Comment>() {});
-        
-        localVarResponse.body().close();
+        // verify the required parameter 'comment' is set
+        if (comment == null) {
+            throw new ApiException("Missing the required parameter 'comment' when calling addComment(Async)");
+        }
 
-        return new ApiResponse<Comment>(
-            localVarResponse.statusCode(),
-            localVarResponse.headers().map(),
-            responseValue
-        );
-      } finally {
-      }
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new ApiException(e);
-    }
-  }
+        return addCommentCall(issueIdOrKey, comment, expand, _callback);
 
-  private HttpRequest.Builder updateCommentRequestBuilder(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'issueIdOrKey' is set
-    if (issueIdOrKey == null) {
-      throw new ApiException(400, "Missing the required parameter 'issueIdOrKey' when calling updateComment");
-    }
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling updateComment");
-    }
-    // verify the required parameter 'comment' is set
-    if (comment == null) {
-      throw new ApiException(400, "Missing the required parameter 'comment' when calling updateComment");
     }
 
-    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
-
-    String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
-        .replace("{issueIdOrKey}", ApiClient.urlEncode(issueIdOrKey.toString()))
-        .replace("{id}", ApiClient.urlEncode(id.toString()));
-
-    List<Pair> localVarQueryParams = new ArrayList<>();
-    StringJoiner localVarQueryStringJoiner = new StringJoiner("&");
-    String localVarQueryParameterBaseName;
-    localVarQueryParameterBaseName = "notifyUsers";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("notifyUsers", notifyUsers));
-    localVarQueryParameterBaseName = "overrideEditableFlag";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("overrideEditableFlag", overrideEditableFlag));
-    localVarQueryParameterBaseName = "expand";
-    localVarQueryParams.addAll(ApiClient.parameterToPairs("expand", expand));
-
-    if (!localVarQueryParams.isEmpty() || localVarQueryStringJoiner.length() != 0) {
-      StringJoiner queryJoiner = new StringJoiner("&");
-      localVarQueryParams.forEach(p -> queryJoiner.add(p.getName() + '=' + p.getValue()));
-      if (localVarQueryStringJoiner.length() != 0) {
-        queryJoiner.add(localVarQueryStringJoiner.toString());
-      }
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath + '?' + queryJoiner.toString()));
-    } else {
-      localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+    /**
+     * Add comment
+     * Adds a comment to an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Add comments* [ project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param comment  (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @return Comment
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit has been breached for one of the following fields:   *  comments  *  attachments </td><td>  -  </td></tr>
+     </table>
+     */
+    public Comment addComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<Comment> localVarResp = addCommentWithHttpInfo(issueIdOrKey, comment, expand);
+        return localVarResp.getData();
     }
 
-    localVarRequestBuilder.header("Content-Type", "application/json");
-    localVarRequestBuilder.header("Accept", "application/json");
+    /**
+     * Add comment
+     * Adds a comment to an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Add comments* [ project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param comment  (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @return ApiResponse&lt;Comment&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit has been breached for one of the following fields:   *  comments  *  attachments </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Comment> addCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = addCommentValidateBeforeCall(issueIdOrKey, comment, expand, null);
+        Type localVarReturnType = new TypeToken<Comment>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
 
-    try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(comment);
-      localVarRequestBuilder.method("PUT", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
-    } catch (IOException e) {
-      throw new ApiException(e);
-    }
-    if (memberVarReadTimeout != null) {
-      localVarRequestBuilder.timeout(memberVarReadTimeout);
-    }
-    // Add custom headers if provided
-    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
-    if (memberVarInterceptor != null) {
-      memberVarInterceptor.accept(localVarRequestBuilder);
-    }
-    return localVarRequestBuilder;
-  }
+    /**
+     * Add comment (asynchronously)
+     * Adds a comment to an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* and *Add comments* [ project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param comment  (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 201 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+        <tr><td> 413 </td><td> Returned if the per-issue limit has been breached for one of the following fields:   *  comments  *  attachments </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call addCommentAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable String expand, final ApiCallback<Comment> _callback) throws ApiException {
 
+        okhttp3.Call localVarCall = addCommentValidateBeforeCall(issueIdOrKey, comment, expand, _callback);
+        Type localVarReturnType = new TypeToken<Comment>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for deleteComment
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the user does not have permission to delete the comment. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+        <tr><td> 405 </td><td> Returned if an anonymous call is made to the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteCommentCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        final String[] localVarAccepts = {
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "DELETE", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call deleteCommentValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling deleteComment(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling deleteComment(Async)");
+        }
+
+        return deleteCommentCall(issueIdOrKey, id, _callback);
+
+    }
+
+    /**
+     * Delete comment
+     * Deletes a comment.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any comment or *Delete own comments* to delete comment created by the user,  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the user does not have permission to delete the comment. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+        <tr><td> 405 </td><td> Returned if an anonymous call is made to the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public void deleteComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id) throws ApiException {
+        deleteCommentWithHttpInfo(issueIdOrKey, id);
+    }
+
+    /**
+     * Delete comment
+     * Deletes a comment.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any comment or *Delete own comments* to delete comment created by the user,  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the user does not have permission to delete the comment. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+        <tr><td> 405 </td><td> Returned if an anonymous call is made to the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Void> deleteCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id) throws ApiException {
+        okhttp3.Call localVarCall = deleteCommentValidateBeforeCall(issueIdOrKey, id, null);
+        return localVarApiClient.execute(localVarCall);
+    }
+
+    /**
+     * Delete comment (asynchronously)
+     * Deletes a comment.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Delete all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to delete any comment or *Delete own comments* to delete comment created by the user,  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 204 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the user does not have permission to delete the comment. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+        <tr><td> 405 </td><td> Returned if an anonymous call is made to the operation. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call deleteCommentAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, final ApiCallback<Void> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = deleteCommentValidateBeforeCall(issueIdOrKey, id, _callback);
+        localVarApiClient.executeAsync(localVarCall, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getComment
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getCommentCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getCommentValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling getComment(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling getComment(Async)");
+        }
+
+        return getCommentCall(issueIdOrKey, id, expand, _callback);
+
+    }
+
+    /**
+     * Get comment
+     * Returns a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @return Comment
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Comment getComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<Comment> localVarResp = getCommentWithHttpInfo(issueIdOrKey, id, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get comment
+     * Returns a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @return ApiResponse&lt;Comment&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Comment> getCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getCommentValidateBeforeCall(issueIdOrKey, id, expand, null);
+        Type localVarReturnType = new TypeToken<Comment>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get comment (asynchronously)
+     * Returns a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getCommentAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nullable String expand, final ApiCallback<Comment> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getCommentValidateBeforeCall(issueIdOrKey, id, expand, _callback);
+        Type localVarReturnType = new TypeToken<Comment>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getComments
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param orderBy [Order](#ordering) the results by a field. Accepts *created* to sort comments by their created date. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if &#x60;orderBy&#x60; is set to a value other than *created*. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getCommentsCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (startAt != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("startAt", startAt));
+        }
+
+        if (maxResults != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("maxResults", maxResults));
+        }
+
+        if (orderBy != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("orderBy", orderBy));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "GET", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getCommentsValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling getComments(Async)");
+        }
+
+        return getCommentsCall(issueIdOrKey, startAt, maxResults, orderBy, expand, _callback);
+
+    }
+
+    /**
+     * Get comments
+     * Returns all comments for an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are included in the response where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param orderBy [Order](#ordering) the results by a field. Accepts *created* to sort comments by their created date. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @return PageOfComments
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if &#x60;orderBy&#x60; is set to a value other than *created*. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageOfComments getComments(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PageOfComments> localVarResp = getCommentsWithHttpInfo(issueIdOrKey, startAt, maxResults, orderBy, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get comments
+     * Returns all comments for an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are included in the response where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param orderBy [Order](#ordering) the results by a field. Accepts *created* to sort comments by their created date. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @return ApiResponse&lt;PageOfComments&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if &#x60;orderBy&#x60; is set to a value other than *created*. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageOfComments> getCommentsWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getCommentsValidateBeforeCall(issueIdOrKey, startAt, maxResults, orderBy, expand, null);
+        Type localVarReturnType = new TypeToken<PageOfComments>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get comments (asynchronously)
+     * Returns all comments for an issue.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are included in the response where the user has:   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is role visibility is restricted to.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param startAt The index of the first item to return in a page of results (page offset). (optional, default to 0)
+     * @param maxResults The maximum number of items to return per page. (optional, default to 100)
+     * @param orderBy [Order](#ordering) the results by a field. Accepts *created* to sort comments by their created date. (optional)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if &#x60;orderBy&#x60; is set to a value other than *created*. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue is not found or the user does not have permission to view it. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getCommentsAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nullable Long startAt, @javax.annotation.Nullable Integer maxResults, @javax.annotation.Nullable String orderBy, @javax.annotation.Nullable String expand, final ApiCallback<PageOfComments> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getCommentsValidateBeforeCall(issueIdOrKey, startAt, maxResults, orderBy, expand, _callback);
+        Type localVarReturnType = new TypeToken<PageOfComments>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for getCommentsByIds
+     * @param issueCommentListRequestBean The list of comment IDs. (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;renderedBody&#x60; Returns the comment body rendered in HTML.  *  &#x60;properties&#x60; Returns the comment&#39;s properties. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request contains more than 1000 IDs or is empty. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getCommentsByIdsCall(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = issueCommentListRequestBean;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/comment/list";
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "POST", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call getCommentsByIdsValidateBeforeCall(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueCommentListRequestBean' is set
+        if (issueCommentListRequestBean == null) {
+            throw new ApiException("Missing the required parameter 'issueCommentListRequestBean' when calling getCommentsByIds(Async)");
+        }
+
+        return getCommentsByIdsCall(issueCommentListRequestBean, expand, _callback);
+
+    }
+
+    /**
+     * Get comments by IDs
+     * Returns a [paginated](#pagination) list of comments specified by a list of comment IDs.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are returned where the user:   *  has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueCommentListRequestBean The list of comment IDs. (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;renderedBody&#x60; Returns the comment body rendered in HTML.  *  &#x60;properties&#x60; Returns the comment&#39;s properties. (optional)
+     * @return PageBeanComment
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request contains more than 1000 IDs or is empty. </td><td>  -  </td></tr>
+     </table>
+     */
+    public PageBeanComment getCommentsByIds(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<PageBeanComment> localVarResp = getCommentsByIdsWithHttpInfo(issueCommentListRequestBean, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Get comments by IDs
+     * Returns a [paginated](#pagination) list of comments specified by a list of comment IDs.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are returned where the user:   *  has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueCommentListRequestBean The list of comment IDs. (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;renderedBody&#x60; Returns the comment body rendered in HTML.  *  &#x60;properties&#x60; Returns the comment&#39;s properties. (optional)
+     * @return ApiResponse&lt;PageBeanComment&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request contains more than 1000 IDs or is empty. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<PageBeanComment> getCommentsByIdsWithHttpInfo(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = getCommentsByIdsValidateBeforeCall(issueCommentListRequestBean, expand, null);
+        Type localVarReturnType = new TypeToken<PageBeanComment>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Get comments by IDs (asynchronously)
+     * Returns a [paginated](#pagination) list of comments specified by a list of comment IDs.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:** Comments are returned where the user:   *  has *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project containing the comment.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  If the comment has visibility restrictions, belongs to the group or has the role visibility is restricted to.
+     * @param issueCommentListRequestBean The list of comment IDs. (required)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts a comma-separated list. Expand options include:   *  &#x60;renderedBody&#x60; Returns the comment body rendered in HTML.  *  &#x60;properties&#x60; Returns the comment&#39;s properties. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the request contains more than 1000 IDs or is empty. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call getCommentsByIdsAsync(@javax.annotation.Nonnull IssueCommentListRequestBean issueCommentListRequestBean, @javax.annotation.Nullable String expand, final ApiCallback<PageBeanComment> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = getCommentsByIdsValidateBeforeCall(issueCommentListRequestBean, expand, _callback);
+        Type localVarReturnType = new TypeToken<PageBeanComment>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
+    /**
+     * Build call for updateComment
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param comment  (required)
+     * @param notifyUsers Whether users are notified when a comment is updated. (optional, default to true)
+     * @param overrideEditableFlag Whether screen security is overridden to enable uneditable fields to be edited. Available to Connect app users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) and Forge apps acting on behalf of users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). (optional, default to false)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @param _callback Callback for upload/download progress
+     * @return Call to execute
+     * @throws ApiException If fail to serialize the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the user does not have permission to edit the comment or the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateCommentCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        String basePath = null;
+        // Operation Servers
+        String[] localBasePaths = new String[] {  };
+
+        // Determine Base Path to Use
+        if (localCustomBaseUrl != null){
+            basePath = localCustomBaseUrl;
+        } else if ( localBasePaths.length > 0 ) {
+            basePath = localBasePaths[localHostIndex];
+        } else {
+            basePath = null;
+        }
+
+        Object localVarPostBody = comment;
+
+        // create path and map variables
+        String localVarPath = "/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
+            .replace("{" + "issueIdOrKey" + "}", localVarApiClient.escapeString(issueIdOrKey.toString()))
+            .replace("{" + "id" + "}", localVarApiClient.escapeString(id.toString()));
+
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        List<Pair> localVarCollectionQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, String> localVarCookieParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        if (notifyUsers != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("notifyUsers", notifyUsers));
+        }
+
+        if (overrideEditableFlag != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("overrideEditableFlag", overrideEditableFlag));
+        }
+
+        if (expand != null) {
+            localVarQueryParams.addAll(localVarApiClient.parameterToPair("expand", expand));
+        }
+
+        final String[] localVarAccepts = {
+            "application/json"
+        };
+        final String localVarAccept = localVarApiClient.selectHeaderAccept(localVarAccepts);
+        if (localVarAccept != null) {
+            localVarHeaderParams.put("Accept", localVarAccept);
+        }
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = localVarApiClient.selectHeaderContentType(localVarContentTypes);
+        if (localVarContentType != null) {
+            localVarHeaderParams.put("Content-Type", localVarContentType);
+        }
+
+        String[] localVarAuthNames = new String[] { "OAuth2", "basicAuth" };
+        return localVarApiClient.buildCall(basePath, localVarPath, "PUT", localVarQueryParams, localVarCollectionQueryParams, localVarPostBody, localVarHeaderParams, localVarCookieParams, localVarFormParams, localVarAuthNames, _callback);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private okhttp3.Call updateCommentValidateBeforeCall(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand, final ApiCallback _callback) throws ApiException {
+        // verify the required parameter 'issueIdOrKey' is set
+        if (issueIdOrKey == null) {
+            throw new ApiException("Missing the required parameter 'issueIdOrKey' when calling updateComment(Async)");
+        }
+
+        // verify the required parameter 'id' is set
+        if (id == null) {
+            throw new ApiException("Missing the required parameter 'id' when calling updateComment(Async)");
+        }
+
+        // verify the required parameter 'comment' is set
+        if (comment == null) {
+            throw new ApiException("Missing the required parameter 'comment' when calling updateComment(Async)");
+        }
+
+        return updateCommentCall(issueIdOrKey, id, comment, notifyUsers, overrideEditableFlag, expand, _callback);
+
+    }
+
+    /**
+     * Update comment
+     * Updates a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any comment or *Edit own comments* to update comment created by the user.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.  **WARNING:** Child comments inherit visibility from their parent comment. Attempting to update a child comment&#39;s visibility will result in a 400 (Bad Request) error.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param comment  (required)
+     * @param notifyUsers Whether users are notified when a comment is updated. (optional, default to true)
+     * @param overrideEditableFlag Whether screen security is overridden to enable uneditable fields to be edited. Available to Connect app users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) and Forge apps acting on behalf of users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). (optional, default to false)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @return Comment
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the user does not have permission to edit the comment or the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+     </table>
+     */
+    public Comment updateComment(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand) throws ApiException {
+        ApiResponse<Comment> localVarResp = updateCommentWithHttpInfo(issueIdOrKey, id, comment, notifyUsers, overrideEditableFlag, expand);
+        return localVarResp.getData();
+    }
+
+    /**
+     * Update comment
+     * Updates a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any comment or *Edit own comments* to update comment created by the user.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.  **WARNING:** Child comments inherit visibility from their parent comment. Attempting to update a child comment&#39;s visibility will result in a 400 (Bad Request) error.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param comment  (required)
+     * @param notifyUsers Whether users are notified when a comment is updated. (optional, default to true)
+     * @param overrideEditableFlag Whether screen security is overridden to enable uneditable fields to be edited. Available to Connect app users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) and Forge apps acting on behalf of users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). (optional, default to false)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @return ApiResponse&lt;Comment&gt;
+     * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the user does not have permission to edit the comment or the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+     </table>
+     */
+    public ApiResponse<Comment> updateCommentWithHttpInfo(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand) throws ApiException {
+        okhttp3.Call localVarCall = updateCommentValidateBeforeCall(issueIdOrKey, id, comment, notifyUsers, overrideEditableFlag, expand, null);
+        Type localVarReturnType = new TypeToken<Comment>(){}.getType();
+        return localVarApiClient.execute(localVarCall, localVarReturnType);
+    }
+
+    /**
+     * Update comment (asynchronously)
+     * Updates a comment.  This operation can be accessed anonymously.  **[Permissions](#permissions) required:**   *  *Browse projects* [project permission](https://confluence.atlassian.com/x/yodKLg) for the project that the issue containing the comment is in.  *  If [issue-level security](https://confluence.atlassian.com/x/J4lKLg) is configured, issue-level security permission to view the issue.  *  *Edit all comments*[ project permission](https://confluence.atlassian.com/x/yodKLg) to update any comment or *Edit own comments* to update comment created by the user.  *  If the comment has visibility restrictions, the user belongs to the group or has the role visibility is restricted to.  **WARNING:** Child comments inherit visibility from their parent comment. Attempting to update a child comment&#39;s visibility will result in a 400 (Bad Request) error.
+     * @param issueIdOrKey The ID or key of the issue. (required)
+     * @param id The ID of the comment. (required)
+     * @param comment  (required)
+     * @param notifyUsers Whether users are notified when a comment is updated. (optional, default to true)
+     * @param overrideEditableFlag Whether screen security is overridden to enable uneditable fields to be edited. Available to Connect app users with the *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg) and Forge apps acting on behalf of users with *Administer Jira* [global permission](https://confluence.atlassian.com/x/x4dKLg). (optional, default to false)
+     * @param expand Use [expand](#expansion) to include additional information about comments in the response. This parameter accepts &#x60;renderedBody&#x60;, which returns the comment body rendered in HTML. (optional)
+     * @param _callback The callback to be executed when the API call finishes
+     * @return The request call
+     * @throws ApiException If fail to process the API call, e.g. serializing the request body object
+     * @http.response.details
+     <table border="1">
+       <caption>Response Details</caption>
+        <tr><td> Status Code </td><td> Description </td><td> Response Headers </td></tr>
+        <tr><td> 200 </td><td> Returned if the request is successful. </td><td>  -  </td></tr>
+        <tr><td> 400 </td><td> Returned if the user does not have permission to edit the comment or the request is invalid. </td><td>  -  </td></tr>
+        <tr><td> 401 </td><td> Returned if the authentication credentials are incorrect or missing. </td><td>  -  </td></tr>
+        <tr><td> 404 </td><td> Returned if the issue or comment is not found or the user does not have permission to view the issue or comment. </td><td>  -  </td></tr>
+     </table>
+     */
+    public okhttp3.Call updateCommentAsync(@javax.annotation.Nonnull String issueIdOrKey, @javax.annotation.Nonnull String id, @javax.annotation.Nonnull Comment comment, @javax.annotation.Nullable Boolean notifyUsers, @javax.annotation.Nullable Boolean overrideEditableFlag, @javax.annotation.Nullable String expand, final ApiCallback<Comment> _callback) throws ApiException {
+
+        okhttp3.Call localVarCall = updateCommentValidateBeforeCall(issueIdOrKey, id, comment, notifyUsers, overrideEditableFlag, expand, _callback);
+        Type localVarReturnType = new TypeToken<Comment>(){}.getType();
+        localVarApiClient.executeAsync(localVarCall, localVarReturnType, _callback);
+        return localVarCall;
+    }
 }

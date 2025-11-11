@@ -13,107 +13,121 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.AssociatedItemBean;
 import io.kestra.plugin.jira.client.model.ChangedValueBean;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * An audit record.
  */
-@JsonPropertyOrder({
-  AuditRecordBean.JSON_PROPERTY_ASSOCIATED_ITEMS,
-  AuditRecordBean.JSON_PROPERTY_AUTHOR_KEY,
-  AuditRecordBean.JSON_PROPERTY_CATEGORY,
-  AuditRecordBean.JSON_PROPERTY_CHANGED_VALUES,
-  AuditRecordBean.JSON_PROPERTY_CREATED,
-  AuditRecordBean.JSON_PROPERTY_DESCRIPTION,
-  AuditRecordBean.JSON_PROPERTY_EVENT_SOURCE,
-  AuditRecordBean.JSON_PROPERTY_ID,
-  AuditRecordBean.JSON_PROPERTY_OBJECT_ITEM,
-  AuditRecordBean.JSON_PROPERTY_REMOTE_ADDRESS,
-  AuditRecordBean.JSON_PROPERTY_SUMMARY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AuditRecordBean {
-  public static final String JSON_PROPERTY_ASSOCIATED_ITEMS = "associatedItems";
+  public static final String SERIALIZED_NAME_ASSOCIATED_ITEMS = "associatedItems";
+  @SerializedName(SERIALIZED_NAME_ASSOCIATED_ITEMS)
   @javax.annotation.Nullable
   private List<AssociatedItemBean> associatedItems = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_AUTHOR_KEY = "authorKey";
+  public static final String SERIALIZED_NAME_AUTHOR_KEY = "authorKey";
+  @SerializedName(SERIALIZED_NAME_AUTHOR_KEY)
   @javax.annotation.Nullable
   private String authorKey;
 
-  public static final String JSON_PROPERTY_CATEGORY = "category";
+  public static final String SERIALIZED_NAME_CATEGORY = "category";
+  @SerializedName(SERIALIZED_NAME_CATEGORY)
   @javax.annotation.Nullable
   private String category;
 
-  public static final String JSON_PROPERTY_CHANGED_VALUES = "changedValues";
+  public static final String SERIALIZED_NAME_CHANGED_VALUES = "changedValues";
+  @SerializedName(SERIALIZED_NAME_CHANGED_VALUES)
   @javax.annotation.Nullable
   private List<ChangedValueBean> changedValues = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_CREATED = "created";
+  public static final String SERIALIZED_NAME_CREATED = "created";
+  @SerializedName(SERIALIZED_NAME_CREATED)
   @javax.annotation.Nullable
   private OffsetDateTime created;
 
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nullable
   private String description;
 
-  public static final String JSON_PROPERTY_EVENT_SOURCE = "eventSource";
+  public static final String SERIALIZED_NAME_EVENT_SOURCE = "eventSource";
+  @SerializedName(SERIALIZED_NAME_EVENT_SOURCE)
   @javax.annotation.Nullable
   private String eventSource;
 
-  public static final String JSON_PROPERTY_ID = "id";
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable
   private Long id;
 
-  public static final String JSON_PROPERTY_OBJECT_ITEM = "objectItem";
+  public static final String SERIALIZED_NAME_OBJECT_ITEM = "objectItem";
+  @SerializedName(SERIALIZED_NAME_OBJECT_ITEM)
   @javax.annotation.Nullable
   private AssociatedItemBean objectItem;
 
-  public static final String JSON_PROPERTY_REMOTE_ADDRESS = "remoteAddress";
+  public static final String SERIALIZED_NAME_REMOTE_ADDRESS = "remoteAddress";
+  @SerializedName(SERIALIZED_NAME_REMOTE_ADDRESS)
   @javax.annotation.Nullable
   private String remoteAddress;
 
-  public static final String JSON_PROPERTY_SUMMARY = "summary";
+  public static final String SERIALIZED_NAME_SUMMARY = "summary";
+  @SerializedName(SERIALIZED_NAME_SUMMARY)
   @javax.annotation.Nullable
   private String summary;
 
-  public AuditRecordBean() { 
+  public AuditRecordBean() {
   }
 
-  @JsonCreator
   public AuditRecordBean(
-    @JsonProperty(JSON_PROPERTY_ASSOCIATED_ITEMS) List<AssociatedItemBean> associatedItems, 
-    @JsonProperty(JSON_PROPERTY_AUTHOR_KEY) String authorKey, 
-    @JsonProperty(JSON_PROPERTY_CATEGORY) String category, 
-    @JsonProperty(JSON_PROPERTY_CHANGED_VALUES) List<ChangedValueBean> changedValues, 
-    @JsonProperty(JSON_PROPERTY_CREATED) OffsetDateTime created, 
-    @JsonProperty(JSON_PROPERTY_DESCRIPTION) String description, 
-    @JsonProperty(JSON_PROPERTY_EVENT_SOURCE) String eventSource, 
-    @JsonProperty(JSON_PROPERTY_ID) Long id, 
-    @JsonProperty(JSON_PROPERTY_REMOTE_ADDRESS) String remoteAddress, 
-    @JsonProperty(JSON_PROPERTY_SUMMARY) String summary
+     List<AssociatedItemBean> associatedItems, 
+     String authorKey, 
+     String category, 
+     List<ChangedValueBean> changedValues, 
+     OffsetDateTime created, 
+     String description, 
+     String eventSource, 
+     Long id, 
+     String remoteAddress, 
+     String summary
   ) {
-  this();
+    this();
     this.associatedItems = associatedItems;
     this.authorKey = authorKey;
     this.category = category;
@@ -131,12 +145,9 @@ public class AuditRecordBean {
    * @return associatedItems
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ASSOCIATED_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<AssociatedItemBean> getAssociatedItems() {
     return associatedItems;
   }
-
 
 
 
@@ -145,12 +156,9 @@ public class AuditRecordBean {
    * @return authorKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAuthorKey() {
     return authorKey;
   }
-
 
 
 
@@ -159,12 +167,9 @@ public class AuditRecordBean {
    * @return category
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCategory() {
     return category;
   }
-
 
 
 
@@ -173,12 +178,9 @@ public class AuditRecordBean {
    * @return changedValues
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CHANGED_VALUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ChangedValueBean> getChangedValues() {
     return changedValues;
   }
-
 
 
 
@@ -187,12 +189,9 @@ public class AuditRecordBean {
    * @return created
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getCreated() {
     return created;
   }
-
 
 
 
@@ -201,12 +200,9 @@ public class AuditRecordBean {
    * @return description
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
-
 
 
 
@@ -215,12 +211,9 @@ public class AuditRecordBean {
    * @return eventSource
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EVENT_SOURCE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEventSource() {
     return eventSource;
   }
-
 
 
 
@@ -229,12 +222,9 @@ public class AuditRecordBean {
    * @return id
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
-
 
 
 
@@ -248,15 +238,10 @@ public class AuditRecordBean {
    * @return objectItem
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OBJECT_ITEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AssociatedItemBean getObjectItem() {
     return objectItem;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_OBJECT_ITEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setObjectItem(@javax.annotation.Nullable AssociatedItemBean objectItem) {
     this.objectItem = objectItem;
   }
@@ -267,12 +252,9 @@ public class AuditRecordBean {
    * @return remoteAddress
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REMOTE_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRemoteAddress() {
     return remoteAddress;
   }
-
 
 
 
@@ -281,8 +263,6 @@ public class AuditRecordBean {
    * @return summary
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SUMMARY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSummary() {
     return summary;
   }
@@ -290,9 +270,6 @@ public class AuditRecordBean {
 
 
 
-  /**
-   * Return true if this AuditRecordBean object is equal to o.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -350,104 +327,138 @@ public class AuditRecordBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("associatedItems", "authorKey", "category", "changedValues", "created", "description", "eventSource", "id", "objectItem", "remoteAddress", "summary"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AuditRecordBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `associatedItems` to the URL query string
-    if (getAssociatedItems() != null) {
-      for (int i = 0; i < getAssociatedItems().size(); i++) {
-        if (getAssociatedItems().get(i) != null) {
-          joiner.add(getAssociatedItems().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sassociatedItems%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AuditRecordBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AuditRecordBean is not found in the empty JSON string", AuditRecordBean.openapiRequiredFields.toString()));
         }
       }
-    }
 
-    // add `authorKey` to the URL query string
-    if (getAuthorKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sauthorKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAuthorKey()))));
-    }
-
-    // add `category` to the URL query string
-    if (getCategory() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scategory%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
-    }
-
-    // add `changedValues` to the URL query string
-    if (getChangedValues() != null) {
-      for (int i = 0; i < getChangedValues().size(); i++) {
-        if (getChangedValues().get(i) != null) {
-          joiner.add(getChangedValues().get(i).toUrlQueryString(String.format(Locale.ROOT, "%schangedValues%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AuditRecordBean.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AuditRecordBean` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
         }
       }
-    }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (jsonObj.get("associatedItems") != null && !jsonObj.get("associatedItems").isJsonNull()) {
+        JsonArray jsonArrayassociatedItems = jsonObj.getAsJsonArray("associatedItems");
+        if (jsonArrayassociatedItems != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("associatedItems").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `associatedItems` to be an array in the JSON string but got `%s`", jsonObj.get("associatedItems").toString()));
+          }
 
-    // add `created` to the URL query string
-    if (getCreated() != null) {
-      joiner.add(String.format(Locale.ROOT, "%screated%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCreated()))));
-    }
+          // validate the optional field `associatedItems` (array)
+          for (int i = 0; i < jsonArrayassociatedItems.size(); i++) {
+            AssociatedItemBean.validateJsonElement(jsonArrayassociatedItems.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("authorKey") != null && !jsonObj.get("authorKey").isJsonNull()) && !jsonObj.get("authorKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `authorKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("authorKey").toString()));
+      }
+      if ((jsonObj.get("category") != null && !jsonObj.get("category").isJsonNull()) && !jsonObj.get("category").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `category` to be a primitive type in the JSON string but got `%s`", jsonObj.get("category").toString()));
+      }
+      if (jsonObj.get("changedValues") != null && !jsonObj.get("changedValues").isJsonNull()) {
+        JsonArray jsonArraychangedValues = jsonObj.getAsJsonArray("changedValues");
+        if (jsonArraychangedValues != null) {
+          // ensure the json data is an array
+          if (!jsonObj.get("changedValues").isJsonArray()) {
+            throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `changedValues` to be an array in the JSON string but got `%s`", jsonObj.get("changedValues").toString()));
+          }
 
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
+          // validate the optional field `changedValues` (array)
+          for (int i = 0; i < jsonArraychangedValues.size(); i++) {
+            ChangedValueBean.validateJsonElement(jsonArraychangedValues.get(i));
+          };
+        }
+      }
+      if ((jsonObj.get("description") != null && !jsonObj.get("description").isJsonNull()) && !jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      if ((jsonObj.get("eventSource") != null && !jsonObj.get("eventSource").isJsonNull()) && !jsonObj.get("eventSource").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `eventSource` to be a primitive type in the JSON string but got `%s`", jsonObj.get("eventSource").toString()));
+      }
+      // validate the optional field `objectItem`
+      if (jsonObj.get("objectItem") != null && !jsonObj.get("objectItem").isJsonNull()) {
+        AssociatedItemBean.validateJsonElement(jsonObj.get("objectItem"));
+      }
+      if ((jsonObj.get("remoteAddress") != null && !jsonObj.get("remoteAddress").isJsonNull()) && !jsonObj.get("remoteAddress").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `remoteAddress` to be a primitive type in the JSON string but got `%s`", jsonObj.get("remoteAddress").toString()));
+      }
+      if ((jsonObj.get("summary") != null && !jsonObj.get("summary").isJsonNull()) && !jsonObj.get("summary").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `summary` to be a primitive type in the JSON string but got `%s`", jsonObj.get("summary").toString()));
+      }
+  }
 
-    // add `eventSource` to the URL query string
-    if (getEventSource() != null) {
-      joiner.add(String.format(Locale.ROOT, "%seventSource%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getEventSource()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AuditRecordBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AuditRecordBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AuditRecordBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AuditRecordBean.class));
 
-    // add `id` to the URL query string
-    if (getId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<AuditRecordBean>() {
+           @Override
+           public void write(JsonWriter out, AuditRecordBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `objectItem` to the URL query string
-    if (getObjectItem() != null) {
-      joiner.add(getObjectItem().toUrlQueryString(prefix + "objectItem" + suffix));
-    }
+           @Override
+           public AuditRecordBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    // add `remoteAddress` to the URL query string
-    if (getRemoteAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sremoteAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRemoteAddress()))));
+       }.nullSafe();
     }
+  }
 
-    // add `summary` to the URL query string
-    if (getSummary() != null) {
-      joiner.add(String.format(Locale.ROOT, "%ssummary%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSummary()))));
-    }
+  /**
+   * Create an instance of AuditRecordBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AuditRecordBean
+   * @throws IOException if the JSON string is invalid with respect to AuditRecordBean
+   */
+  public static AuditRecordBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AuditRecordBean.class);
+  }
 
-    return joiner.toString();
+  /**
+   * Convert an instance of AuditRecordBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

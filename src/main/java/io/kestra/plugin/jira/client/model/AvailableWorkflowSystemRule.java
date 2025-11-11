@@ -13,74 +13,89 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * The Atlassian provided system rules available.
  */
-@JsonPropertyOrder({
-  AvailableWorkflowSystemRule.JSON_PROPERTY_DESCRIPTION,
-  AvailableWorkflowSystemRule.JSON_PROPERTY_INCOMPATIBLE_RULE_KEYS,
-  AvailableWorkflowSystemRule.JSON_PROPERTY_IS_AVAILABLE_FOR_INITIAL_TRANSITION,
-  AvailableWorkflowSystemRule.JSON_PROPERTY_IS_VISIBLE,
-  AvailableWorkflowSystemRule.JSON_PROPERTY_NAME,
-  AvailableWorkflowSystemRule.JSON_PROPERTY_RULE_KEY,
-  AvailableWorkflowSystemRule.JSON_PROPERTY_RULE_TYPE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AvailableWorkflowSystemRule {
-  public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  public static final String SERIALIZED_NAME_DESCRIPTION = "description";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTION)
   @javax.annotation.Nonnull
   private String description;
 
-  public static final String JSON_PROPERTY_INCOMPATIBLE_RULE_KEYS = "incompatibleRuleKeys";
+  public static final String SERIALIZED_NAME_INCOMPATIBLE_RULE_KEYS = "incompatibleRuleKeys";
+  @SerializedName(SERIALIZED_NAME_INCOMPATIBLE_RULE_KEYS)
   @javax.annotation.Nonnull
   private List<String> incompatibleRuleKeys = new ArrayList<>();
 
-  public static final String JSON_PROPERTY_IS_AVAILABLE_FOR_INITIAL_TRANSITION = "isAvailableForInitialTransition";
+  public static final String SERIALIZED_NAME_IS_AVAILABLE_FOR_INITIAL_TRANSITION = "isAvailableForInitialTransition";
+  @SerializedName(SERIALIZED_NAME_IS_AVAILABLE_FOR_INITIAL_TRANSITION)
   @javax.annotation.Nonnull
   private Boolean isAvailableForInitialTransition;
 
-  public static final String JSON_PROPERTY_IS_VISIBLE = "isVisible";
+  public static final String SERIALIZED_NAME_IS_VISIBLE = "isVisible";
+  @SerializedName(SERIALIZED_NAME_IS_VISIBLE)
   @javax.annotation.Nonnull
   private Boolean isVisible;
 
-  public static final String JSON_PROPERTY_NAME = "name";
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
   @javax.annotation.Nonnull
   private String name;
 
-  public static final String JSON_PROPERTY_RULE_KEY = "ruleKey";
+  public static final String SERIALIZED_NAME_RULE_KEY = "ruleKey";
+  @SerializedName(SERIALIZED_NAME_RULE_KEY)
   @javax.annotation.Nonnull
   private String ruleKey;
 
   /**
    * The rule type.
    */
+  @JsonAdapter(RuleTypeEnum.Adapter.class)
   public enum RuleTypeEnum {
-    CONDITION(String.valueOf("Condition")),
+    CONDITION("Condition"),
     
-    VALIDATOR(String.valueOf("Validator")),
+    VALIDATOR("Validator"),
     
-    FUNCTION(String.valueOf("Function")),
+    FUNCTION("Function"),
     
-    SCREEN(String.valueOf("Screen"));
+    SCREEN("Screen");
 
     private String value;
 
@@ -88,7 +103,6 @@ public class AvailableWorkflowSystemRule {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -98,7 +112,6 @@ public class AvailableWorkflowSystemRule {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static RuleTypeEnum fromValue(String value) {
       for (RuleTypeEnum b : RuleTypeEnum.values()) {
         if (b.value.equals(value)) {
@@ -107,13 +120,32 @@ public class AvailableWorkflowSystemRule {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<RuleTypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final RuleTypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public RuleTypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return RuleTypeEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      RuleTypeEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_RULE_TYPE = "ruleType";
+  public static final String SERIALIZED_NAME_RULE_TYPE = "ruleType";
+  @SerializedName(SERIALIZED_NAME_RULE_TYPE)
   @javax.annotation.Nonnull
   private RuleTypeEnum ruleType;
 
-  public AvailableWorkflowSystemRule() { 
+  public AvailableWorkflowSystemRule() {
   }
 
   public AvailableWorkflowSystemRule description(@javax.annotation.Nonnull String description) {
@@ -126,15 +158,10 @@ public class AvailableWorkflowSystemRule {
    * @return description
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getDescription() {
     return description;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setDescription(@javax.annotation.Nonnull String description) {
     this.description = description;
   }
@@ -158,15 +185,10 @@ public class AvailableWorkflowSystemRule {
    * @return incompatibleRuleKeys
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_INCOMPATIBLE_RULE_KEYS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<String> getIncompatibleRuleKeys() {
     return incompatibleRuleKeys;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_INCOMPATIBLE_RULE_KEYS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIncompatibleRuleKeys(@javax.annotation.Nonnull List<String> incompatibleRuleKeys) {
     this.incompatibleRuleKeys = incompatibleRuleKeys;
   }
@@ -182,15 +204,10 @@ public class AvailableWorkflowSystemRule {
    * @return isAvailableForInitialTransition
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_IS_AVAILABLE_FOR_INITIAL_TRANSITION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getIsAvailableForInitialTransition() {
     return isAvailableForInitialTransition;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_AVAILABLE_FOR_INITIAL_TRANSITION, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIsAvailableForInitialTransition(@javax.annotation.Nonnull Boolean isAvailableForInitialTransition) {
     this.isAvailableForInitialTransition = isAvailableForInitialTransition;
   }
@@ -206,15 +223,10 @@ public class AvailableWorkflowSystemRule {
    * @return isVisible
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getIsVisible() {
     return isVisible;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setIsVisible(@javax.annotation.Nonnull Boolean isVisible) {
     this.isVisible = isVisible;
   }
@@ -230,15 +242,10 @@ public class AvailableWorkflowSystemRule {
    * @return name
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
@@ -254,15 +261,10 @@ public class AvailableWorkflowSystemRule {
    * @return ruleKey
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_RULE_KEY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getRuleKey() {
     return ruleKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RULE_KEY, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRuleKey(@javax.annotation.Nonnull String ruleKey) {
     this.ruleKey = ruleKey;
   }
@@ -278,23 +280,16 @@ public class AvailableWorkflowSystemRule {
    * @return ruleType
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_RULE_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public RuleTypeEnum getRuleType() {
     return ruleType;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_RULE_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRuleType(@javax.annotation.Nonnull RuleTypeEnum ruleType) {
     this.ruleType = ruleType;
   }
 
 
-  /**
-   * Return true if this AvailableWorkflowSystemRule object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -344,78 +339,115 @@ public class AvailableWorkflowSystemRule {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("description", "incompatibleRuleKeys", "isAvailableForInitialTransition", "isVisible", "name", "ruleKey", "ruleType"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("description", "incompatibleRuleKeys", "isAvailableForInitialTransition", "isVisible", "name", "ruleKey", "ruleType"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AvailableWorkflowSystemRule
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
-    }
-
-    StringJoiner joiner = new StringJoiner("&");
-
-    // add `description` to the URL query string
-    if (getDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
-    }
-
-    // add `incompatibleRuleKeys` to the URL query string
-    if (getIncompatibleRuleKeys() != null) {
-      for (int i = 0; i < getIncompatibleRuleKeys().size(); i++) {
-        joiner.add(String.format(Locale.ROOT, "%sincompatibleRuleKeys%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-            ApiClient.urlEncode(ApiClient.valueToString(getIncompatibleRuleKeys().get(i)))));
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AvailableWorkflowSystemRule.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AvailableWorkflowSystemRule is not found in the empty JSON string", AvailableWorkflowSystemRule.openapiRequiredFields.toString()));
+        }
       }
-    }
 
-    // add `isAvailableForInitialTransition` to the URL query string
-    if (getIsAvailableForInitialTransition() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisAvailableForInitialTransition%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsAvailableForInitialTransition()))));
-    }
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AvailableWorkflowSystemRule.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AvailableWorkflowSystemRule` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
 
-    // add `isVisible` to the URL query string
-    if (getIsVisible() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisVisible%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsVisible()))));
-    }
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : AvailableWorkflowSystemRule.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("description").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `description` to be a primitive type in the JSON string but got `%s`", jsonObj.get("description").toString()));
+      }
+      // ensure the required json array is present
+      if (jsonObj.get("incompatibleRuleKeys") == null) {
+        throw new IllegalArgumentException("Expected the field `linkedContent` to be an array in the JSON string but got `null`");
+      } else if (!jsonObj.get("incompatibleRuleKeys").isJsonArray()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `incompatibleRuleKeys` to be an array in the JSON string but got `%s`", jsonObj.get("incompatibleRuleKeys").toString()));
+      }
+      if (!jsonObj.get("name").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `name` to be a primitive type in the JSON string but got `%s`", jsonObj.get("name").toString()));
+      }
+      if (!jsonObj.get("ruleKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `ruleKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ruleKey").toString()));
+      }
+      if (!jsonObj.get("ruleType").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `ruleType` to be a primitive type in the JSON string but got `%s`", jsonObj.get("ruleType").toString()));
+      }
+      // validate the required field `ruleType`
+      RuleTypeEnum.validateJsonElement(jsonObj.get("ruleType"));
+  }
 
-    // add `name` to the URL query string
-    if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
-    }
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AvailableWorkflowSystemRule.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AvailableWorkflowSystemRule' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AvailableWorkflowSystemRule> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AvailableWorkflowSystemRule.class));
 
-    // add `ruleKey` to the URL query string
-    if (getRuleKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sruleKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRuleKey()))));
-    }
+       return (TypeAdapter<T>) new TypeAdapter<AvailableWorkflowSystemRule>() {
+           @Override
+           public void write(JsonWriter out, AvailableWorkflowSystemRule value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
 
-    // add `ruleType` to the URL query string
-    if (getRuleType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sruleType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRuleType()))));
-    }
+           @Override
+           public AvailableWorkflowSystemRule read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
 
-    return joiner.toString();
+       }.nullSafe();
+    }
+  }
+
+  /**
+   * Create an instance of AvailableWorkflowSystemRule given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AvailableWorkflowSystemRule
+   * @throws IOException if the JSON string is invalid with respect to AvailableWorkflowSystemRule
+   */
+  public static AvailableWorkflowSystemRule fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AvailableWorkflowSystemRule.class);
+  }
+
+  /**
+   * Convert an instance of AvailableWorkflowSystemRule to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

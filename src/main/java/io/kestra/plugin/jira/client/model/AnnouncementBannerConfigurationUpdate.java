@@ -13,51 +13,66 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Configuration of the announcement banner.
  */
-@JsonPropertyOrder({
-  AnnouncementBannerConfigurationUpdate.JSON_PROPERTY_IS_DISMISSIBLE,
-  AnnouncementBannerConfigurationUpdate.JSON_PROPERTY_IS_ENABLED,
-  AnnouncementBannerConfigurationUpdate.JSON_PROPERTY_MESSAGE,
-  AnnouncementBannerConfigurationUpdate.JSON_PROPERTY_VISIBILITY
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class AnnouncementBannerConfigurationUpdate {
-  public static final String JSON_PROPERTY_IS_DISMISSIBLE = "isDismissible";
+  public static final String SERIALIZED_NAME_IS_DISMISSIBLE = "isDismissible";
+  @SerializedName(SERIALIZED_NAME_IS_DISMISSIBLE)
   @javax.annotation.Nullable
   private Boolean isDismissible;
 
-  public static final String JSON_PROPERTY_IS_ENABLED = "isEnabled";
+  public static final String SERIALIZED_NAME_IS_ENABLED = "isEnabled";
+  @SerializedName(SERIALIZED_NAME_IS_ENABLED)
   @javax.annotation.Nullable
   private Boolean isEnabled;
 
-  public static final String JSON_PROPERTY_MESSAGE = "message";
+  public static final String SERIALIZED_NAME_MESSAGE = "message";
+  @SerializedName(SERIALIZED_NAME_MESSAGE)
   @javax.annotation.Nullable
   private String message;
 
-  public static final String JSON_PROPERTY_VISIBILITY = "visibility";
+  public static final String SERIALIZED_NAME_VISIBILITY = "visibility";
+  @SerializedName(SERIALIZED_NAME_VISIBILITY)
   @javax.annotation.Nullable
   private String visibility;
 
-  public AnnouncementBannerConfigurationUpdate() { 
+  public AnnouncementBannerConfigurationUpdate() {
   }
 
   public AnnouncementBannerConfigurationUpdate isDismissible(@javax.annotation.Nullable Boolean isDismissible) {
@@ -70,15 +85,10 @@ public class AnnouncementBannerConfigurationUpdate {
    * @return isDismissible
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_DISMISSIBLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsDismissible() {
     return isDismissible;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_DISMISSIBLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsDismissible(@javax.annotation.Nullable Boolean isDismissible) {
     this.isDismissible = isDismissible;
   }
@@ -94,15 +104,10 @@ public class AnnouncementBannerConfigurationUpdate {
    * @return isEnabled
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_IS_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsEnabled() {
     return isEnabled;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_IS_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsEnabled(@javax.annotation.Nullable Boolean isEnabled) {
     this.isEnabled = isEnabled;
   }
@@ -118,15 +123,10 @@ public class AnnouncementBannerConfigurationUpdate {
    * @return message
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMessage() {
     return message;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMessage(@javax.annotation.Nullable String message) {
     this.message = message;
   }
@@ -142,23 +142,16 @@ public class AnnouncementBannerConfigurationUpdate {
    * @return visibility
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_VISIBILITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVisibility() {
     return visibility;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_VISIBILITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVisibility(@javax.annotation.Nullable String visibility) {
     this.visibility = visibility;
   }
 
 
-  /**
-   * Return true if this AnnouncementBannerConfigurationUpdate object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,59 +195,94 @@ public class AnnouncementBannerConfigurationUpdate {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("isDismissible", "isEnabled", "message", "visibility"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to AnnouncementBannerConfigurationUpdate
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!AnnouncementBannerConfigurationUpdate.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in AnnouncementBannerConfigurationUpdate is not found in the empty JSON string", AnnouncementBannerConfigurationUpdate.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!AnnouncementBannerConfigurationUpdate.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `AnnouncementBannerConfigurationUpdate` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("message") != null && !jsonObj.get("message").isJsonNull()) && !jsonObj.get("message").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `message` to be a primitive type in the JSON string but got `%s`", jsonObj.get("message").toString()));
+      }
+      if ((jsonObj.get("visibility") != null && !jsonObj.get("visibility").isJsonNull()) && !jsonObj.get("visibility").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `visibility` to be a primitive type in the JSON string but got `%s`", jsonObj.get("visibility").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!AnnouncementBannerConfigurationUpdate.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'AnnouncementBannerConfigurationUpdate' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<AnnouncementBannerConfigurationUpdate> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(AnnouncementBannerConfigurationUpdate.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<AnnouncementBannerConfigurationUpdate>() {
+           @Override
+           public void write(JsonWriter out, AnnouncementBannerConfigurationUpdate value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public AnnouncementBannerConfigurationUpdate read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of AnnouncementBannerConfigurationUpdate given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of AnnouncementBannerConfigurationUpdate
+   * @throws IOException if the JSON string is invalid with respect to AnnouncementBannerConfigurationUpdate
+   */
+  public static AnnouncementBannerConfigurationUpdate fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, AnnouncementBannerConfigurationUpdate.class);
+  }
 
-    // add `isDismissible` to the URL query string
-    if (getIsDismissible() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisDismissible%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsDismissible()))));
-    }
-
-    // add `isEnabled` to the URL query string
-    if (getIsEnabled() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisEnabled%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsEnabled()))));
-    }
-
-    // add `message` to the URL query string
-    if (getMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
-    }
-
-    // add `visibility` to the URL query string
-    if (getVisibility() != null) {
-      joiner.add(String.format(Locale.ROOT, "%svisibility%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVisibility()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of AnnouncementBannerConfigurationUpdate to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

@@ -13,36 +13,51 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * An operand that is a JQL keyword. See [Advanced searching - keywords reference](https://confluence.atlassian.com/jiracorecloud/advanced-searching-keywords-reference-765593717.html#Advancedsearching-keywordsreference-EMPTYEMPTY) for more information about operand keywords.
  */
-@JsonPropertyOrder({
-  KeywordOperand.JSON_PROPERTY_KEYWORD
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class KeywordOperand {
   /**
    * The keyword that is the operand value.
    */
+  @JsonAdapter(KeywordEnum.Adapter.class)
   public enum KeywordEnum {
-    EMPTY(String.valueOf("empty"));
+    EMPTY("empty");
 
     private String value;
 
@@ -50,7 +65,6 @@ public class KeywordOperand {
       this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
       return value;
     }
@@ -60,7 +74,6 @@ public class KeywordOperand {
       return String.valueOf(value);
     }
 
-    @JsonCreator
     public static KeywordEnum fromValue(String value) {
       for (KeywordEnum b : KeywordEnum.values()) {
         if (b.value.equals(value)) {
@@ -69,13 +82,32 @@ public class KeywordOperand {
       }
       throw new IllegalArgumentException("Unexpected value '" + value + "'");
     }
+
+    public static class Adapter extends TypeAdapter<KeywordEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final KeywordEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public KeywordEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return KeywordEnum.fromValue(value);
+      }
+    }
+
+    public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      String value = jsonElement.getAsString();
+      KeywordEnum.fromValue(value);
+    }
   }
 
-  public static final String JSON_PROPERTY_KEYWORD = "keyword";
+  public static final String SERIALIZED_NAME_KEYWORD = "keyword";
+  @SerializedName(SERIALIZED_NAME_KEYWORD)
   @javax.annotation.Nonnull
   private KeywordEnum keyword;
 
-  public KeywordOperand() { 
+  public KeywordOperand() {
   }
 
   public KeywordOperand keyword(@javax.annotation.Nonnull KeywordEnum keyword) {
@@ -88,23 +120,16 @@ public class KeywordOperand {
    * @return keyword
    */
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_KEYWORD, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public KeywordEnum getKeyword() {
     return keyword;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_KEYWORD, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setKeyword(@javax.annotation.Nonnull KeywordEnum keyword) {
     this.keyword = keyword;
   }
 
 
-  /**
-   * Return true if this KeywordOperand object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -142,44 +167,100 @@ public class KeywordOperand {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("keyword"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(Arrays.asList("keyword"));
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to KeywordOperand
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!KeywordOperand.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in KeywordOperand is not found in the empty JSON string", KeywordOperand.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!KeywordOperand.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `KeywordOperand` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+
+      // check to make sure all required properties/fields are present in the JSON string
+      for (String requiredField : KeywordOperand.openapiRequiredFields) {
+        if (jsonElement.getAsJsonObject().get(requiredField) == null) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field `%s` is not found in the JSON string: %s", requiredField, jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if (!jsonObj.get("keyword").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `keyword` to be a primitive type in the JSON string but got `%s`", jsonObj.get("keyword").toString()));
+      }
+      // validate the required field `keyword`
+      KeywordEnum.validateJsonElement(jsonObj.get("keyword"));
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!KeywordOperand.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'KeywordOperand' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<KeywordOperand> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(KeywordOperand.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<KeywordOperand>() {
+           @Override
+           public void write(JsonWriter out, KeywordOperand value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public KeywordOperand read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of KeywordOperand given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of KeywordOperand
+   * @throws IOException if the JSON string is invalid with respect to KeywordOperand
+   */
+  public static KeywordOperand fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, KeywordOperand.class);
+  }
 
-    // add `keyword` to the URL query string
-    if (getKeyword() != null) {
-      joiner.add(String.format(Locale.ROOT, "%skeyword%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getKeyword()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of KeywordOperand to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

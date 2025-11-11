@@ -13,52 +13,67 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.CustomTemplateOptions;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Request to edit a custom template
  */
-@JsonPropertyOrder({
-  EditTemplateRequest.JSON_PROPERTY_TEMPLATE_DESCRIPTION,
-  EditTemplateRequest.JSON_PROPERTY_TEMPLATE_GENERATION_OPTIONS,
-  EditTemplateRequest.JSON_PROPERTY_TEMPLATE_KEY,
-  EditTemplateRequest.JSON_PROPERTY_TEMPLATE_NAME
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class EditTemplateRequest {
-  public static final String JSON_PROPERTY_TEMPLATE_DESCRIPTION = "templateDescription";
+  public static final String SERIALIZED_NAME_TEMPLATE_DESCRIPTION = "templateDescription";
+  @SerializedName(SERIALIZED_NAME_TEMPLATE_DESCRIPTION)
   @javax.annotation.Nullable
   private String templateDescription;
 
-  public static final String JSON_PROPERTY_TEMPLATE_GENERATION_OPTIONS = "templateGenerationOptions";
+  public static final String SERIALIZED_NAME_TEMPLATE_GENERATION_OPTIONS = "templateGenerationOptions";
+  @SerializedName(SERIALIZED_NAME_TEMPLATE_GENERATION_OPTIONS)
   @javax.annotation.Nullable
   private CustomTemplateOptions templateGenerationOptions;
 
-  public static final String JSON_PROPERTY_TEMPLATE_KEY = "templateKey";
+  public static final String SERIALIZED_NAME_TEMPLATE_KEY = "templateKey";
+  @SerializedName(SERIALIZED_NAME_TEMPLATE_KEY)
   @javax.annotation.Nullable
   private String templateKey;
 
-  public static final String JSON_PROPERTY_TEMPLATE_NAME = "templateName";
+  public static final String SERIALIZED_NAME_TEMPLATE_NAME = "templateName";
+  @SerializedName(SERIALIZED_NAME_TEMPLATE_NAME)
   @javax.annotation.Nullable
   private String templateName;
 
-  public EditTemplateRequest() { 
+  public EditTemplateRequest() {
   }
 
   public EditTemplateRequest templateDescription(@javax.annotation.Nullable String templateDescription) {
@@ -71,15 +86,10 @@ public class EditTemplateRequest {
    * @return templateDescription
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTemplateDescription() {
     return templateDescription;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTemplateDescription(@javax.annotation.Nullable String templateDescription) {
     this.templateDescription = templateDescription;
   }
@@ -95,15 +105,10 @@ public class EditTemplateRequest {
    * @return templateGenerationOptions
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_GENERATION_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CustomTemplateOptions getTemplateGenerationOptions() {
     return templateGenerationOptions;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_GENERATION_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTemplateGenerationOptions(@javax.annotation.Nullable CustomTemplateOptions templateGenerationOptions) {
     this.templateGenerationOptions = templateGenerationOptions;
   }
@@ -119,15 +124,10 @@ public class EditTemplateRequest {
    * @return templateKey
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTemplateKey() {
     return templateKey;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTemplateKey(@javax.annotation.Nullable String templateKey) {
     this.templateKey = templateKey;
   }
@@ -143,23 +143,16 @@ public class EditTemplateRequest {
    * @return templateName
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTemplateName() {
     return templateName;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTemplateName(@javax.annotation.Nullable String templateName) {
     this.templateName = templateName;
   }
 
 
-  /**
-   * Return true if this EditTemplateRequest object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -203,59 +196,101 @@ public class EditTemplateRequest {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("templateDescription", "templateGenerationOptions", "templateKey", "templateName"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to EditTemplateRequest
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!EditTemplateRequest.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in EditTemplateRequest is not found in the empty JSON string", EditTemplateRequest.openapiRequiredFields.toString()));
+        }
+      }
+
+      Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
+      // check to see if the JSON string contains additional fields
+      for (Map.Entry<String, JsonElement> entry : entries) {
+        if (!EditTemplateRequest.openapiFields.contains(entry.getKey())) {
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` in the JSON string is not defined in the `EditTemplateRequest` properties. JSON: %s", entry.getKey(), jsonElement.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      if ((jsonObj.get("templateDescription") != null && !jsonObj.get("templateDescription").isJsonNull()) && !jsonObj.get("templateDescription").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `templateDescription` to be a primitive type in the JSON string but got `%s`", jsonObj.get("templateDescription").toString()));
+      }
+      // validate the optional field `templateGenerationOptions`
+      if (jsonObj.get("templateGenerationOptions") != null && !jsonObj.get("templateGenerationOptions").isJsonNull()) {
+        CustomTemplateOptions.validateJsonElement(jsonObj.get("templateGenerationOptions"));
+      }
+      if ((jsonObj.get("templateKey") != null && !jsonObj.get("templateKey").isJsonNull()) && !jsonObj.get("templateKey").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `templateKey` to be a primitive type in the JSON string but got `%s`", jsonObj.get("templateKey").toString()));
+      }
+      if ((jsonObj.get("templateName") != null && !jsonObj.get("templateName").isJsonNull()) && !jsonObj.get("templateName").isJsonPrimitive()) {
+        throw new IllegalArgumentException(String.format(Locale.ROOT, "Expected the field `templateName` to be a primitive type in the JSON string but got `%s`", jsonObj.get("templateName").toString()));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!EditTemplateRequest.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'EditTemplateRequest' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<EditTemplateRequest> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(EditTemplateRequest.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<EditTemplateRequest>() {
+           @Override
+           public void write(JsonWriter out, EditTemplateRequest value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public EditTemplateRequest read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             return thisAdapter.fromJsonTree(jsonElement);
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of EditTemplateRequest given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of EditTemplateRequest
+   * @throws IOException if the JSON string is invalid with respect to EditTemplateRequest
+   */
+  public static EditTemplateRequest fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, EditTemplateRequest.class);
+  }
 
-    // add `templateDescription` to the URL query string
-    if (getTemplateDescription() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stemplateDescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTemplateDescription()))));
-    }
-
-    // add `templateGenerationOptions` to the URL query string
-    if (getTemplateGenerationOptions() != null) {
-      joiner.add(getTemplateGenerationOptions().toUrlQueryString(prefix + "templateGenerationOptions" + suffix));
-    }
-
-    // add `templateKey` to the URL query string
-    if (getTemplateKey() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stemplateKey%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTemplateKey()))));
-    }
-
-    // add `templateName` to the URL query string
-    if (getTemplateName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stemplateName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTemplateName()))));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of EditTemplateRequest to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 

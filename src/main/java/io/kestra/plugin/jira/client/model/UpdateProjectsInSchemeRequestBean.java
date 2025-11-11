@@ -13,46 +13,57 @@
 
 package io.kestra.plugin.jira.client.model;
 
-import java.util.Map;
-import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.kestra.plugin.jira.client.model.PrioritySchemeChangesWithoutMappings;
+import java.io.IOException;
 import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
-import io.kestra.plugin.jira.client.invoker.ApiClient;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Locale;
+
+import io.kestra.plugin.jira.client.invoker.JSON;
+
 /**
  * Update projects in a scheme
  */
-@JsonPropertyOrder({
-  UpdateProjectsInSchemeRequestBean.JSON_PROPERTY_ADD,
-  UpdateProjectsInSchemeRequestBean.JSON_PROPERTY_REMOVE
-})
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
 public class UpdateProjectsInSchemeRequestBean {
-  public static final String JSON_PROPERTY_ADD = "add";
+  public static final String SERIALIZED_NAME_ADD = "add";
+  @SerializedName(SERIALIZED_NAME_ADD)
   @javax.annotation.Nullable
   private PrioritySchemeChangesWithoutMappings add;
 
-  public static final String JSON_PROPERTY_REMOVE = "remove";
+  public static final String SERIALIZED_NAME_REMOVE = "remove";
+  @SerializedName(SERIALIZED_NAME_REMOVE)
   @javax.annotation.Nullable
   private PrioritySchemeChangesWithoutMappings remove;
 
-  public UpdateProjectsInSchemeRequestBean() { 
+  public UpdateProjectsInSchemeRequestBean() {
   }
 
   public UpdateProjectsInSchemeRequestBean add(@javax.annotation.Nullable PrioritySchemeChangesWithoutMappings add) {
@@ -65,15 +76,10 @@ public class UpdateProjectsInSchemeRequestBean {
    * @return add
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ADD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PrioritySchemeChangesWithoutMappings getAdd() {
     return add;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_ADD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAdd(@javax.annotation.Nullable PrioritySchemeChangesWithoutMappings add) {
     this.add = add;
   }
@@ -89,15 +95,10 @@ public class UpdateProjectsInSchemeRequestBean {
    * @return remove
    */
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REMOVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PrioritySchemeChangesWithoutMappings getRemove() {
     return remove;
   }
 
-
-  @JsonProperty(value = JSON_PROPERTY_REMOVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRemove(@javax.annotation.Nullable PrioritySchemeChangesWithoutMappings remove) {
     this.remove = remove;
   }
@@ -112,11 +113,11 @@ public class UpdateProjectsInSchemeRequestBean {
   /**
    * Set the additional (undeclared) property with the specified name and value.
    * If the property does not already exist, create it otherwise replace it.
-   * @param key the name of the property
-   * @param value the value of the property
-   * @return self reference
+   *
+   * @param key name of the property
+   * @param value value of the property
+   * @return the UpdateProjectsInSchemeRequestBean instance itself
    */
-  @JsonAnySetter
   public UpdateProjectsInSchemeRequestBean putAdditionalProperty(String key, Object value) {
     if (this.additionalProperties == null) {
         this.additionalProperties = new HashMap<String, Object>();
@@ -126,18 +127,19 @@ public class UpdateProjectsInSchemeRequestBean {
   }
 
   /**
-   * Return the additional (undeclared) properties.
-   * @return the additional (undeclared) properties
+   * Return the additional (undeclared) property.
+   *
+   * @return a map of objects
    */
-  @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return additionalProperties;
   }
 
   /**
    * Return the additional (undeclared) property with the specified name.
-   * @param key the name of the property
-   * @return the additional (undeclared) property with the specified name
+   *
+   * @param key name of the property
+   * @return an object
    */
   public Object getAdditionalProperty(String key) {
     if (this.additionalProperties == null) {
@@ -146,9 +148,7 @@ public class UpdateProjectsInSchemeRequestBean {
     return this.additionalProperties.get(key);
   }
 
-  /**
-   * Return true if this UpdateProjectsInSchemeRequestBean object is equal to o.
-   */
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -190,49 +190,131 @@ public class UpdateProjectsInSchemeRequestBean {
     return o.toString().replace("\n", "\n    ");
   }
 
-  /**
-   * Convert the instance into URL query string.
-   *
-   * @return URL query string
-   */
-  public String toUrlQueryString() {
-    return toUrlQueryString(null);
+
+  public static HashSet<String> openapiFields;
+  public static HashSet<String> openapiRequiredFields;
+
+  static {
+    // a set of all properties/fields (JSON key names)
+    openapiFields = new HashSet<String>(Arrays.asList("add", "remove"));
+
+    // a set of required properties/fields (JSON key names)
+    openapiRequiredFields = new HashSet<String>(0);
   }
 
   /**
-   * Convert the instance into URL query string.
+   * Validates the JSON Element and throws an exception if issues found
    *
-   * @param prefix prefix of the query string
-   * @return URL query string
+   * @param jsonElement JSON Element
+   * @throws IOException if the JSON Element is invalid with respect to UpdateProjectsInSchemeRequestBean
    */
-  public String toUrlQueryString(String prefix) {
-    String suffix = "";
-    String containerSuffix = "";
-    String containerPrefix = "";
-    if (prefix == null) {
-      // style=form, explode=true, e.g. /pet?name=cat&type=manx
-      prefix = "";
-    } else {
-      // deepObject style e.g. /pet?id[name]=cat&id[type]=manx
-      prefix = prefix + "[";
-      suffix = "]";
-      containerSuffix = "]";
-      containerPrefix = "[";
+  public static void validateJsonElement(JsonElement jsonElement) throws IOException {
+      if (jsonElement == null) {
+        if (!UpdateProjectsInSchemeRequestBean.openapiRequiredFields.isEmpty()) { // has required fields but JSON element is null
+          throw new IllegalArgumentException(String.format(Locale.ROOT, "The required field(s) %s in UpdateProjectsInSchemeRequestBean is not found in the empty JSON string", UpdateProjectsInSchemeRequestBean.openapiRequiredFields.toString()));
+        }
+      }
+        JsonObject jsonObj = jsonElement.getAsJsonObject();
+      // validate the optional field `add`
+      if (jsonObj.get("add") != null && !jsonObj.get("add").isJsonNull()) {
+        PrioritySchemeChangesWithoutMappings.validateJsonElement(jsonObj.get("add"));
+      }
+      // validate the optional field `remove`
+      if (jsonObj.get("remove") != null && !jsonObj.get("remove").isJsonNull()) {
+        PrioritySchemeChangesWithoutMappings.validateJsonElement(jsonObj.get("remove"));
+      }
+  }
+
+  public static class CustomTypeAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+       if (!UpdateProjectsInSchemeRequestBean.class.isAssignableFrom(type.getRawType())) {
+         return null; // this class only serializes 'UpdateProjectsInSchemeRequestBean' and its subtypes
+       }
+       final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
+       final TypeAdapter<UpdateProjectsInSchemeRequestBean> thisAdapter
+                        = gson.getDelegateAdapter(this, TypeToken.get(UpdateProjectsInSchemeRequestBean.class));
+
+       return (TypeAdapter<T>) new TypeAdapter<UpdateProjectsInSchemeRequestBean>() {
+           @Override
+           public void write(JsonWriter out, UpdateProjectsInSchemeRequestBean value) throws IOException {
+             JsonObject obj = thisAdapter.toJsonTree(value).getAsJsonObject();
+             obj.remove("additionalProperties");
+             // serialize additional properties
+             if (value.getAdditionalProperties() != null) {
+               for (Map.Entry<String, Object> entry : value.getAdditionalProperties().entrySet()) {
+                 if (entry.getValue() instanceof String)
+                   obj.addProperty(entry.getKey(), (String) entry.getValue());
+                 else if (entry.getValue() instanceof Number)
+                   obj.addProperty(entry.getKey(), (Number) entry.getValue());
+                 else if (entry.getValue() instanceof Boolean)
+                   obj.addProperty(entry.getKey(), (Boolean) entry.getValue());
+                 else if (entry.getValue() instanceof Character)
+                   obj.addProperty(entry.getKey(), (Character) entry.getValue());
+                 else {
+                   JsonElement jsonElement = gson.toJsonTree(entry.getValue());
+                   if (jsonElement.isJsonArray()) {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonArray());
+                   } else {
+                     obj.add(entry.getKey(), jsonElement.getAsJsonObject());
+                   }
+                 }
+               }
+             }
+             elementAdapter.write(out, obj);
+           }
+
+           @Override
+           public UpdateProjectsInSchemeRequestBean read(JsonReader in) throws IOException {
+             JsonElement jsonElement = elementAdapter.read(in);
+             validateJsonElement(jsonElement);
+             JsonObject jsonObj = jsonElement.getAsJsonObject();
+             // store additional fields in the deserialized instance
+             UpdateProjectsInSchemeRequestBean instance = thisAdapter.fromJsonTree(jsonObj);
+             for (Map.Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+               if (!openapiFields.contains(entry.getKey())) {
+                 if (entry.getValue().isJsonPrimitive()) { // primitive type
+                   if (entry.getValue().getAsJsonPrimitive().isString())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsString());
+                   else if (entry.getValue().getAsJsonPrimitive().isNumber())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsNumber());
+                   else if (entry.getValue().getAsJsonPrimitive().isBoolean())
+                     instance.putAdditionalProperty(entry.getKey(), entry.getValue().getAsBoolean());
+                   else
+                     throw new IllegalArgumentException(String.format(Locale.ROOT, "The field `%s` has unknown primitive type. Value: %s", entry.getKey(), entry.getValue().toString()));
+                 } else if (entry.getValue().isJsonArray()) {
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), List.class));
+                 } else { // JSON object
+                     instance.putAdditionalProperty(entry.getKey(), gson.fromJson(entry.getValue(), HashMap.class));
+                 }
+               }
+             }
+             return instance;
+           }
+
+       }.nullSafe();
     }
+  }
 
-    StringJoiner joiner = new StringJoiner("&");
+  /**
+   * Create an instance of UpdateProjectsInSchemeRequestBean given an JSON string
+   *
+   * @param jsonString JSON string
+   * @return An instance of UpdateProjectsInSchemeRequestBean
+   * @throws IOException if the JSON string is invalid with respect to UpdateProjectsInSchemeRequestBean
+   */
+  public static UpdateProjectsInSchemeRequestBean fromJson(String jsonString) throws IOException {
+    return JSON.getGson().fromJson(jsonString, UpdateProjectsInSchemeRequestBean.class);
+  }
 
-    // add `add` to the URL query string
-    if (getAdd() != null) {
-      joiner.add(getAdd().toUrlQueryString(prefix + "add" + suffix));
-    }
-
-    // add `remove` to the URL query string
-    if (getRemove() != null) {
-      joiner.add(getRemove().toUrlQueryString(prefix + "remove" + suffix));
-    }
-
-    return joiner.toString();
+  /**
+   * Convert an instance of UpdateProjectsInSchemeRequestBean to an JSON string
+   *
+   * @return JSON string
+   */
+  public String toJson() {
+    return JSON.getGson().toJson(this);
   }
 }
 
