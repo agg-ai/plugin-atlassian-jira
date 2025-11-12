@@ -82,9 +82,9 @@ openApiGenerate {
     generatorName = "java"
     inputSpec = "$rootDir/openapi/swagger-v3.v3.json".toString()
     outputDir = "$rootDir".toString()
-    apiPackage = "io.kestra.plugin.jira.client.api"
-    modelPackage = "io.kestra.plugin.jira.client.model"
-    invokerPackage = "io.kestra.plugin.jira.client.invoker"
+    apiPackage = "io.kestra.plugin.atlassian_jira.client.api"
+    modelPackage = "io.kestra.plugin.atlassian_jira.client.model"
+    invokerPackage = "io.kestra.plugin.atlassian_jira.client.invoker"
     
     // Generate into src/main/java
     additionalProperties = [
