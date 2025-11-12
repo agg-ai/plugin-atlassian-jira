@@ -50,7 +50,7 @@ public class SearchIssuesTask extends AbstractTask implements RunnableTask<Searc
   @Schema(title = "Maximum number of issues to return", description = "Maximum number of issues to return. Defaults to 50.")
   protected Property<Integer> maxResults;
 
-  @Schema(title = "Fields to return", description = "Fields to return.")
+  @Schema(title = "Fields to return", description = "Fields to return. Defaults to 'key', 'summary', 'project'.")
   protected Property<List<String>> fields;
 
   @Schema(title = "Expand", description = "Use to include additional information about issues in the response.")
@@ -89,7 +89,7 @@ public class SearchIssuesTask extends AbstractTask implements RunnableTask<Searc
     }
 
     if (renderedFields.isEmpty()) {
-      renderedFields = List.of("key", "summary");
+      renderedFields = List.of("key", "summary", "project");
     }
 
     SearchAndReconcileResults results = issueSearchApi.searchAndReconsileIssuesUsingJql(

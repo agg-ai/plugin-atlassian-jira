@@ -52,7 +52,7 @@ import java.util.Locale;
  * Details about a created issue or subtask.
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-public class CreatedIssue {
+public class CreatedIssue implements io.kestra.core.models.tasks.Output {
   public static final String SERIALIZED_NAME_ID = "id";
   @SerializedName(SERIALIZED_NAME_ID)
   @javax.annotation.Nullable

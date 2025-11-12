@@ -1,1 +1,2 @@
+io.kestra.plugin.atlassian_jira.issues.CreateIssueTask
 io.kestra.plugin.atlassian_jira.issues.SearchIssuesTask
