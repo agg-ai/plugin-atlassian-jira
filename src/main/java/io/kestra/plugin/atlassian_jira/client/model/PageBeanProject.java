@@ -15,14 +15,11 @@ package io.kestra.plugin.atlassian_jira.client.model;
 import java.util.Objects;
 import java.util.Locale;
 import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import io.kestra.plugin.atlassian_jira.client.invoker.JSON;
-import io.kestra.plugin.atlassian_jira.client.model.Project;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -30,32 +27,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Locale;
 
 /**
  * A page of items.
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-public class PageBeanProject {
+public class PageBeanProject implements io.kestra.core.models.tasks.Output {
   public static final String SERIALIZED_NAME_IS_LAST = "isLast";
   @SerializedName(SERIALIZED_NAME_IS_LAST)
   @javax.annotation.Nullable

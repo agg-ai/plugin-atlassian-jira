@@ -10,6 +10,12 @@ import io.kestra.core.serializers.JacksonMapper;
 public class PropertyHelper {
     private static final ObjectMapper OBJECT_MAPPER = JacksonMapper.ofJson();
 
+    public static String safeRenderString(RunContext runContext, Property<String> property, String defaultValue) {
+        var result = safeRender(runContext, property, defaultValue, String.class, false);
+        result = result != null && result.isEmpty() ? defaultValue : result;
+        return result;
+    }
+
     public static <T> T safeRender(RunContext runContext, Property<T> property, T defaultValue, Class<T> type) {
         return safeRender(runContext, property, defaultValue, type, false);
     }

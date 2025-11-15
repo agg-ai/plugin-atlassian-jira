@@ -27,7 +27,7 @@ import java.util.List;
 
         tasks:
           - id: search_issues
-            type: io.kestra.plugin.jira.issues.SearchIssuesTask
+            type: io.kestra.plugin.jira.issues.SearchIssues
             jql: "project = PROJ AND status = Open"
             nextPageToken: null
             maxResults: 50
@@ -39,7 +39,7 @@ import java.util.List;
             reconcileIssues: null
     """))
 @Schema(title = "Search for issues in Jira using JQL.")
-public class SearchIssuesTask extends AbstractTask implements RunnableTask<SearchAndReconcileResults> {
+public class SearchIssues extends AbstractTask implements RunnableTask<SearchAndReconcileResults> {
   @Schema(title = "JQL query to search for issues", description = "Unbounded JQL queries are not allowed here. Please add a search restriction to your query.")
   @NotNull
   protected Property<String> jql;

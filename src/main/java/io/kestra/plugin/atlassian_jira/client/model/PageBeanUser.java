@@ -55,7 +55,7 @@ import java.util.Locale;
  * A page of items.
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.17.0")
-public class PageBeanUser {
+public class PageBeanUser implements io.kestra.core.models.tasks.Output {
   public static final String SERIALIZED_NAME_IS_LAST = "isLast";
   @SerializedName(SERIALIZED_NAME_IS_LAST)
   @javax.annotation.Nullable
