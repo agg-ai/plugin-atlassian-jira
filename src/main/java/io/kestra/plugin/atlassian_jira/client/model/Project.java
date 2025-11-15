@@ -976,15 +976,22 @@ public class Project {
       }
     }
 
-    Set<Map.Entry<String, JsonElement>> entries = jsonElement.getAsJsonObject().entrySet();
-    // check to see if the JSON string contains additional fields
-    for (Map.Entry<String, JsonElement> entry : entries) {
-      if (!Project.openapiFields.contains(entry.getKey())) {
-        throw new IllegalArgumentException(String.format(Locale.ROOT,
-            "The field `%s` in the JSON string is not defined in the `Project` properties. JSON: %s", entry.getKey(),
-            jsonElement.toString()));
-      }
-    }
+    // Note: We skip validation of unknown fields to be more lenient with API
+    // responses
+    // that may include additional fields not in the OpenAPI spec (e.g., entityId)
+    // Unknown fields will simply be ignored during deserialization
+    // Set<Map.Entry<String, JsonElement>> entries =
+    // jsonElement.getAsJsonObject().entrySet();
+    // // check to see if the JSON string contains additional fields
+    // for (Map.Entry<String, JsonElement> entry : entries) {
+    // if (!Project.openapiFields.contains(entry.getKey())) {
+    // throw new IllegalArgumentException(String.format(Locale.ROOT,
+    // "The field `%s` in the JSON string is not defined in the `Project`
+    // properties. JSON: %s", entry.getKey(),
+    // jsonElement.toString()));
+    // }
+    // }
+
     JsonObject jsonObj = jsonElement.getAsJsonObject();
     // validate the optional field `archivedBy`
     if (jsonObj.get("archivedBy") != null && !jsonObj.get("archivedBy").isJsonNull()) {
