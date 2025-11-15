@@ -10,6 +10,7 @@ import io.kestra.plugin.atlassian_jira.client.api.UserSearchApi;
 import io.kestra.plugin.atlassian_jira.client.model.User;
 import io.kestra.plugin.atlassian_jira.helpers.PropertyHelper;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -45,10 +46,8 @@ import java.util.List;
 public class SearchUsers extends AbstractTask implements RunnableTask<SearchUsers.Output> {
 
   @Schema(title = "Query", description = "The query to filter the results by. Users with a matching 'displayName' or 'emailAddress' are returned (case insensitive).")
+  @NotNull
   protected Property<String> query;
-
-  @Schema(title = "Username", description = "The username to filter the results by.")
-  protected Property<String> username;
 
   @Schema(title = "Account ID", description = "The account ID to filter the results by.")
   protected Property<String> accountId;
@@ -67,16 +66,19 @@ public class SearchUsers extends AbstractTask implements RunnableTask<SearchUser
     var apiClient = getApiClient(runContext);
     var userSearchApi = new UserSearchApi(apiClient);
 
-    var renderedQuery = PropertyHelper.safeRenderString(runContext, query, null);
-    var renderedUsername = PropertyHelper.safeRenderString(runContext, username, null);
+    var renderedQuery = runContext.render(query).as(String.class).orElseThrow();
     var renderedAccountId = PropertyHelper.safeRenderString(runContext, accountId, null);
     var renderedStartAt = runContext.render(startAt).as(Integer.class).orElse(null);
     var renderedMaxResults = runContext.render(maxResults).as(Integer.class).orElse(50);
     var renderedProperty = PropertyHelper.safeRenderString(runContext, property, null);
 
+    if (renderedQuery == null) {
+      throw new IllegalArgumentException("Query must be provided.");
+    }
+
     var results = userSearchApi.findUsers(
         renderedQuery,
-        renderedUsername,
+        null, // restricted because of GDPR
         renderedAccountId,
         renderedStartAt,
         renderedMaxResults,

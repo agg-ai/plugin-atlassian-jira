@@ -44,11 +44,9 @@ public class EditIssue extends AbstractTask implements RunnableTask<EditIssue.Ou
   protected Property<String> issueIdOrKey;
 
   @Schema(title = "Issue Type", description = "The type of the issue to create.")
-  @NotNull
   protected Property<String> issueType;
 
   @Schema(title = "Summary", description = "The summary of the issue to create.")
-  @NotNull
   protected Property<String> summary;
 
   @Schema(title = "Description (ADF formatted)", description = "The Atlassian Document Format description of the issue to create. For ADF formatted details, refer to: [Atlassian Document Format](https://developer.atlassian.com/cloud/jira/platform/apis/document/structure)")
