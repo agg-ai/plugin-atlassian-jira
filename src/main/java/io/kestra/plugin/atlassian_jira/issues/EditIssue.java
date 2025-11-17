@@ -10,6 +10,7 @@ import io.kestra.plugin.atlassian_jira.client.api.IssuesApi;
 import io.kestra.plugin.atlassian_jira.client.model.FieldUpdateOperation;
 import io.kestra.plugin.atlassian_jira.client.model.IssueUpdateDetails;
 import io.kestra.plugin.atlassian_jira.helpers.PropertyHelper;
+import io.kestra.plugin.atlassian_jira.models.AdfDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -50,7 +51,7 @@ public class EditIssue extends AbstractTask implements RunnableTask<EditIssue.Ou
   protected Property<String> summary;
 
   @Schema(title = "Description (ADF formatted)", description = "The Atlassian Document Format description of the issue to create. For ADF formatted details, refer to: [Atlassian Document Format](https://developer.atlassian.com/cloud/jira/platform/apis/document/structure)")
-  protected Property<String> isueDescription;
+  protected Property<AdfDocument> adfDescription;
 
   @Schema(title = "Priority", description = "The priority of the issue to create.", allowableValues = { "Highest",
       "High", "Medium", "Low", "Lowest" })
@@ -76,7 +77,7 @@ public class EditIssue extends AbstractTask implements RunnableTask<EditIssue.Ou
     var renderedIssueIdOrKey = runContext.render(issueIdOrKey).as(String.class).orElseThrow();
     var renderedIssueType = runContext.render(issueType).as(String.class).orElseThrow();
     var renderedSummary = runContext.render(summary).as(String.class).orElseThrow();
-    var renderedDescription = runContext.render(isueDescription).as(String.class).orElse(null);
+    var renderedDescription = PropertyHelper.safeRender(runContext, adfDescription, null, AdfDocument.class);
     var renderedPriority = runContext.render(priority).as(String.class).orElse(null);
     var renderedAssigneeAccountId = runContext.render(assigneeAccountId).as(String.class).orElse(null);
     var renderedReporterAccountId = runContext.render(reporterAccountId).as(String.class).orElse(null);
@@ -86,15 +87,17 @@ public class EditIssue extends AbstractTask implements RunnableTask<EditIssue.Ou
     var issueUpdateDetails = new IssueUpdateDetails();
     Map<String, Object> fields = new HashMap<>();
 
-    // === REQUIRED FIELDS ===
-    Map<String, Object> issueType = new HashMap<>();
-    issueType.put("name", renderedIssueType);
-    fields.put("issuetype", issueType);
+    if (renderedIssueType != null && !renderedIssueType.isEmpty()) {
+      Map<String, Object> issueType = new HashMap<>();
+      issueType.put("name", renderedIssueType);
+      fields.put("issuetype", issueType);
+    }
 
-    fields.put("summary", renderedSummary);
+    if (renderedSummary != null && !renderedSummary.isEmpty()) {
+      fields.put("summary", renderedSummary);
+    }
 
-    // === OPTIONAL FIELDS ===
-    if (renderedDescription != null && !renderedDescription.isEmpty()) {
+    if (renderedDescription != null) {
       fields.put("description", renderedDescription);
     }
 
