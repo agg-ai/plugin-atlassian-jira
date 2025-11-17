@@ -55,7 +55,7 @@ public class CreateIssue extends AbstractTask implements RunnableTask<CreatedIss
   protected Property<String> summary;
 
   @Schema(title = "Description (ADF formatted)", description = "The Atlassian Document Format description of the issue to create. For ADF formatted details, refer to: [Atlassian Document Format](https://developer.atlassian.com/cloud/jira/platform/apis/document/structure)")
-  protected Property<String> isueDescription;
+  protected Property<String> issueDescription;
 
   @Schema(title = "Priority", description = "The priority of the issue to create.", allowableValues = { "Highest",
       "High", "Medium", "Low", "Lowest" })
